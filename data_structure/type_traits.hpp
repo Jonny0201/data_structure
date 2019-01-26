@@ -162,9 +162,34 @@ namespace data_structure {
         using type = typename remove_all_extents<T>::type;
     };
     template <typename T>
+    struct remove_const_reference final {
+        using result = typename remove_const<typename remove_reference<T>::result>::result;
+        using type = typename remove_const<typename remove_reference<T>::type>::type;
+    };
+    template <typename T>
+    struct remove_volatile_reference final {
+        using result = typename remove_volatile<typename remove_reference<T>::result>::result;
+        using type = typename remove_volatile<typename remove_reference<T>::type>::type;
+    };
+    template <typename T>
     struct remove_cvreference final {
         using result = typename remove_cv<typename remove_reference<T>::result>::result;
         using type = typename remove_cv<typename remove_reference<T>::type>::type;
+    };
+    template <typename T>
+    struct remove_const_pointer final {
+        using result = typename remove_const<typename remove_pointer<T>::result>::result;
+        using type = typename remove_const<typename remove_pointer<T>::type>::type;
+    };
+    template <typename T>
+    struct remove_volatile_pointer final {
+        using result = typename remove_volatile<typename remove_pointer<T>::result>::result;
+        using type = typename remove_volatile<typename remove_pointer<T>::type>::type;
+    };
+    template <typename T>
+    struct remove_cvpointer final {
+        using result = typename remove_cv<typename remove_pointer<T>::result>::result;
+        using type = typename remove_cv<typename remove_pointer<T>::type>::type;
     };
 }
 
@@ -243,6 +268,37 @@ namespace data_structure {
     struct add_cv final {
         using result = const volatile T;
         using type = const volatile T;
+    };
+    template <typename T>
+    struct add_const_reference final {
+        using result = typename add_lvalue_reference<typename add_const<T>::result>::result;
+        using type = typename add_lvalue_reference<typename add_const<T>::type>::type;
+    };
+    template <typename T>
+    struct add_volatile_reference final {
+        using result = typename add_lvalue_reference<typename add_volatile<T>::result>::result;
+        using type = typename add_lvalue_reference<typename add_volatile<T>::type>::type;
+    };
+    template <typename T>
+    struct add_cvreference final {
+        using result = typename add_lvalue_reference<typename add_cv<T>::result>::result;
+        using type = typename add_lvalue_reference<typename add_cv<T>::type>::type;
+    };
+    template <typename> struct add_pointer;
+    template <typename T>
+    struct add_const_pointer final {
+        using result = typename add_pointer<typename add_const<T>::result>::result;
+        using type = typename add_pointer<typename add_const<T>::type>::type;
+    };
+    template <typename T>
+    struct add_volatile_pointer final {
+        using result = typename add_pointer<typename add_volatile<T>::result>::result;
+        using type = typename add_pointer<typename add_volatile<T>::type>::type;
+    };
+    template <typename T>
+    struct add_cvpointer final {
+        using result = typename add_pointer<typename add_cv<T>::result>::result;
+        using type = typename add_pointer<typename add_cv<T>::type>::type;
     };
 }
 
