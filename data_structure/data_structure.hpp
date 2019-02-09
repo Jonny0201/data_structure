@@ -19,6 +19,14 @@
 
 #include "type_traits.hpp"
 #include "iterator.hpp"
+//#include "allocator.hpp"
+#include "functional.hpp"
+//#include "memory.hpp"
+
+namespace data_structure {
+    using size_t = decltype(sizeof 0);
+    using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
+}
 
 namespace ds = data_structure;
 
