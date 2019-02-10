@@ -2638,7 +2638,8 @@ namespace data_structure {
     template <typename T, typename ...Args>
     struct is_constructible {
         using value_type = bool;
-        using result = typename conditional<__is_constructible(T, Args...), __true_type, __false_type>::result;
+        using result = typename conditional<
+                __is_constructible(T, Args...), __true_type, __false_type>::result;
         constexpr static inline auto value {static_cast<value_type>(result())};
         constexpr value_type operator()() const noexcept {
             return is_constructible<T, Args...>::value;
@@ -2662,7 +2663,8 @@ namespace data_structure {
     template <typename T>
     struct is_trivially_constructible<T> {
         using value_type = bool;
-        using result = typename conditional<__has_trivial_constructor(T), __true_type, __false_type>::result;
+        using result = typename conditional<
+                __has_trivial_constructor(T), __true_type, __false_type>::result;
         constexpr static inline auto value {static_cast<value_type>(result())};
         constexpr value_type operator()() const noexcept {
             return is_trivially_constructible<T>::value;
@@ -2967,7 +2969,8 @@ namespace data_structure {
     template <typename T, typename Arg>
     struct is_trivially_assignable {
         using value_type = bool;
-        using result = typename conditional<__is_trivially_assignable(T, Arg), __true_type, __false_type>::result;
+        using result = typename conditional<
+                __is_trivially_assignable(T, Arg), __true_type, __false_type>::result;
         constexpr static inline auto value {static_cast<value_type>(result())};
         constexpr value_type operator()() const noexcept {
             return is_trivially_assignable<T, Arg>::value;
@@ -3463,21 +3466,7 @@ namespace data_structure {
             return is_virtual_base_of<Base, Derived>::value;
         }
     };
-    template <typename From, typename To>
-    struct is_convertible {
-        using value_type = bool;
-        using result = typename conditional<
-                __is_convertible(From, To) and not is_abstract<To>::value,
-                __true_type, __false_type>::result;
-        constexpr static inline auto value {static_cast<value_type>(result())};
-        constexpr value_type operator()() const noexcept {
-            return is_convertible<From, To>::value;
-        }
-        constexpr explicit operator value_type() const noexcept {
-            return is_convertible<From, To>::value;
-        }
-    };
-#if false
+#if defined(__GNUC__) && not defined(__clang__)
     namespace __data_structure_0 {
         using namespace data_structure::__data_structure_auxiliary;
         template <typename T>
@@ -3701,6 +3690,33 @@ namespace data_structure {
             }
         };
     }
+    template <typename From, typename To>
+    struct is_convertible {
+        using value_type = bool;
+        using result = typename __data_structure_0::is_convertible<From, To>::result;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_convertible<From, To>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_convertible<From, To>::value;
+        }
+    };
+#else
+    template <typename From, typename To>
+    struct is_convertible {
+        using value_type = bool;
+        using result = typename conditional<
+                __is_convertible(From, To) and not is_abstract<To>::value,
+                __true_type, __false_type>::result;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_convertible<From, To>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_convertible<From, To>::value;
+        }
+    };
 #endif
     namespace __data_structure_auxiliary {
         template <typename From, typename To>
