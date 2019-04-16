@@ -64,6 +64,8 @@ namespace data_structure {
     }
     namespace __data_structure_auxiliary {}
     namespace __dsa = __data_structure_auxiliary;
+    using true_type = __true_type;
+    using false_type = __false_type;
 }
 
 namespace data_structure {
@@ -5382,6 +5384,10 @@ namespace data_structure {
         using this_type = T;
         using subcontainer = void;
     };
+    template <typename T>
+    struct type_holder final {
+        using type = T;
+    };
     template <typename BaseType, typename WaitingType>
     struct copy_const final {
     private:
@@ -8286,51 +8292,57 @@ namespace data_structure {
         using value_type = typename allocator_type::value_type;
         using reference = typename allocator_type::reference;
         using const_reference = typename allocator_type::const_reference;
-        using volatile_reference = typename allocator_type::volatile_reference;
-        using cv_reference = typename allocator_type::cv_reference;
         using rvalue_reference = typename allocator_type::rvalue_reference;
         using pointer = typename allocator_type::pointer;
         using const_pointer = typename allocator_type::const_pointer;
-        using volatile_pointer = typename allocator_type::volatile_pointer;
-        using cv_pointer = typename allocator_type::cv_pointer;
         using void_pointer = typename allocator_type::void_pointer;
         using const_void_pointer = typename allocator_type::const_void_pointer;
     public:
         static void *operator new (unsigned long n)
-                noexcept(noexcept(allocator_type::operator new(n))) __attribute__((always_inline)) {
-            return allocator_type::operator new(n);
+                noexcept(noexcept(allocator_type::operator new(n))) {
+            return allocator_type::operator new (n);
         }
         static void operator delete (void *p)
-                noexcept(noexcept(allocator_type::operator delete(p))) __attribute__((always_inline)) {
-            return allocator_type::operator delete(p);
+                noexcept(noexcept(allocator_type::operator delete(p))) {
+            return allocator_type::operator delete (p);
+        }
+        template <typename ...Args>
+        static void *operator new (unsigned long n, Args &&...args)
+                noexcept(noexcept(allocator_type::operator new (n, forward<Args>(args)...))) {
+            return allocator_type::operator new (n, forward<Args>(args)...);
+        }
+        template <typename ...Args>
+        static void operator delete (void *p, Args &&...args)
+                noexcept(noexcept(allocator_type::operator delete(p, forward<Args>(args)...))) {
+            return allocator_type::operator delete(p, forward<Args>(args)...);
         }
     public:
         static pointer allocate(allocator_type &allocator, size_type n)
-                noexcept(noexcept(allocator.allocate(n))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator.allocate(n))) {
             return allocator.allocate(n);
         }
         static pointer allocate(size_type n)
-                noexcept(noexcept(allocator_type::allocate(n))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator_type::allocate(n))) {
             return allocator_type::allocate(n);
         }
         static void deallocate(allocator_type &allocator, pointer begin, size_type n)
-                noexcept(noexcept(allocator.deallocate(begin, n))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator.deallocate(begin, n))) {
             allocator.deallocate(begin, n);
         }
         static void deallocate(pointer begin, size_type n)
-                noexcept(noexcept(allocator_type::deallocate(begin, n))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator_type::deallocate(begin, n))) {
             allocator_type::deallocate(begin, n);
         }
         static void construct(allocator_type &allocator, pointer obj, const_reference value)
-                noexcept(noexcept(allocator.construct(obj, value))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator.construct(obj, value))) {
             allocator.construct(obj, value);
         }
         static void construct(pointer obj, const_reference value)
-                noexcept(noexcept(allocator_type::construct(obj, value))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator_type::construct(obj, value))) {
             allocator_type::construct(obj, value);
         }
         static void construct(allocator_type &allocator, pointer obj, rvalue_reference value)
-                noexcept(noexcept(allocator.construct(obj, move(value)))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator.construct(obj, move(value)))) {
             allocator.construct(obj, move(value));
         }
         static void construct(pointer obj, rvalue_reference value)
@@ -8348,30 +8360,33 @@ namespace data_structure {
             allocator_type::construct(obj, forward<Args>(args)...);
         }
         static void destroy(allocator_type &allocator, pointer obj)
-                noexcept(noexcept(allocator.destroy(obj))) __attribute__((always_inline)) {
+                noexcept(noexcept(allocator.destroy(obj))) {
             allocator.destroy(obj);
         }
         static void destroy(pointer obj) noexcept(noexcept(allocator_type::destroy(obj))) {
             allocator_type::destroy(obj);
         }
+        static void destroy(allocator_type &allocator, pointer begin, pointer end)
+                noexcept(noexcept(allocator.destroy(begin, end))) {
+            allocator.destroy(begin, end);
+        }
+        static void destroy(pointer begin, pointer end)
+                noexcept(noexcept(allocator_type::destroy(begin, end))) {
+            allocator_type::destroy(begin, end);
+        }
     };
     template <typename Container>
     struct container_traits {
         using container_type = Container;
+        using allocator_type = typename container_type::allocator_type;
         using size_type = typename container_type::size_type;
         using difference_type = typename container_type::difference_type;
         using value_type = typename container_type::value_type;
         using reference = typename container_type::reference;
         using const_reference = typename container_type::const_reference;
-        using volatile_reference = typename container_type::volatile_reference;
-        using cv_reference = typename container_type::cv_reference;
         using rvalue_reference = typename container_type::rvalue_reference;
         using pointer = typename container_type::pointer;
         using const_pointer = typename container_type::const_pointer;
-        using volatile_pointer = typename container_type::volatile_pointer;
-        using cv_pointer = typename container_type::cv_pointer;
-        using void_pointer = typename container_type::void_pointer;
-        using const_void_pointer = typename container_type::const_void_pointer;
     public:
         static container_type empty_container() noexcept(is_nothrow_constructible<container_type>::value) {
             return container_type();
@@ -9968,6 +9983,88 @@ namespace data_structure {
         is_unary_plus_operator_nothrow(long) noexcept {
             static_assert(not is_type<T>::value,
                     "The function is_unary_plus_operator_nothrow() cannot be called!");
+            return {};
+        }
+        template <typename T, typename In>
+        constexpr inline typename select_second_type<
+                decltype(declval<T>()[declval<In>()]), __true_type>::type
+        test_subscripting_operator(int) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_subscripting_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename In>
+        constexpr inline typename select_second_type<
+                decltype(lvalue_auxiliary<T>::lhs[declval<In>()]), __true_type>::type
+        test_subscripting_operator(long) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_subscripting_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename>
+        constexpr inline __false_type test_subscripting_operator(...) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_subscripting_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename In>
+        constexpr inline typename conditional<
+                noexcept(declval<T>()[declval<In>()]), __true_type, __false_type>::type
+        is_subscripting_operator_nothrow(int) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function is_subscripting_operator_nothrow() cannot be called!");
+            return {};
+        }
+        template <typename T, typename In>
+        constexpr inline typename conditional<
+                noexcept(lvalue_auxiliary<T>::lhs[declval<In>()]), __true_type, __false_type>::type
+        is_subscripting_operator_nothrow(long) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function is_subscripting_operator_nothrow() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...Args>
+        constexpr inline typename select_second_type<
+                decltype(declval<T>()(declval<Args>()...)), __true_type>::type
+        test_function_call_operator(int) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_function_call_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...Args>
+        constexpr inline typename select_second_type<
+                decltype(lvalue_auxiliary<T>::lhs(declval<Args>()...)), __true_type>::type
+        test_function_call_operator(long) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_function_call_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...>
+        constexpr inline __false_type test_function_call_operator(...) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function test_function_call_operator() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...Args>
+        constexpr inline typename conditional<
+                noexcept(declval<T>()(declval<Args>()...)), __true_type, __false_type>::type
+        is_function_call_operator_nothrow(int) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function is_function_call_operator_nothrow() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...Args>
+        constexpr inline typename conditional<
+                noexcept(lvalue_auxiliary<T>::lhs(declval<Args>()...)), __true_type, __false_type>::type
+        is_function_call_operator_nothrow(long) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function is_function_call_operator_nothrow() cannot be called!");
+            return {};
+        }
+        template <typename T, typename ...>
+        constexpr inline __false_type is_function_call_operator_nothrow(...) noexcept {
+            static_assert(not is_type<T>::value,
+                    "The function is_function_call_operator_nothrow() cannot be called!");
             return {};
         }
     }
@@ -12129,6 +12226,82 @@ namespace data_structure {
         }
         constexpr explicit operator value_type() const noexcept {
             return has_nothrow_unary_plus_operator<T>::value;
+        }
+    };
+    template <typename T, typename In>
+    struct has_subscripting_operator {
+        using value_type = bool;
+        using result = decltype(__dsa::test_subscripting_operator<T, In>(0));
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_subscripting_operator<T, In>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_subscripting_operator<T, In>::value;
+        }
+    };
+    namespace __data_structure_auxiliary {
+        template <typename T, typename In,
+                bool HasSubscriptingOperator = has_subscripting_operator<T, In>::value>
+        struct has_nothrow_subscripting_operator_auxiliary {
+            using value_type = bool;
+            using result = __false_type;
+            constexpr static inline auto value {static_cast<value_type>(result())};
+            constexpr value_type operator()() const noexcept {
+                return has_nothrow_subscripting_operator_auxiliary<T, In, HasSubscriptingOperator>::value;
+            }
+            constexpr explicit operator value_type() const noexcept {
+                return has_nothrow_subscripting_operator_auxiliary<T, In, HasSubscriptingOperator>::value;
+            }
+        };
+        template <typename T, typename In>
+        struct has_nothrow_subscripting_operator_auxiliary<T, In, true> {
+            using value_type = bool;
+            using result = decltype(is_subscripting_operator_nothrow<T, In>(0));
+            constexpr static inline auto value {static_cast<value_type>(result())};
+            constexpr value_type operator()() const noexcept {
+                return has_nothrow_subscripting_operator_auxiliary<T, In, true>::value;
+            }
+            constexpr explicit operator value_type() const noexcept {
+                return has_nothrow_subscripting_operator_auxiliary<T, In, true>::value;
+            }
+        };
+    }
+    template <typename T, typename In>
+    struct has_nothrow_subscripting_operator {
+        using value_type = bool;
+        using result = typename __dsa::has_nothrow_subscripting_operator_auxiliary<T, In>::result;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_nothrow_subscripting_operator<T, In>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_nothrow_subscripting_operator<T, In>::value;
+        }
+    };
+    template <typename T, typename ...Args>
+    struct has_function_call_operator {
+        using value_type = bool;
+        using result = decltype(__dsa::test_function_call_operator<T, Args...>(0));
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_function_call_operator<T, Args...>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_function_call_operator<T, Args...>::value;
+        }
+    };
+    template <typename T, typename ...Args>
+    struct has_nothrow_function_call_operator {
+        using value_type = bool;
+        using result = typename conditional<has_function_call_operator<T, Args...>::value,
+                decltype(__dsa::is_function_call_operator_nothrow<T, Args...>(0)), __false_type>::result;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_nothrow_function_call_operator<T, Args...>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_nothrow_function_call_operator<T, Args...>::value;
         }
     };
 }
