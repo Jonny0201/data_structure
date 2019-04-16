@@ -19,9 +19,13 @@
 
 #include "type_traits.hpp"
 #include "iterator.hpp"
-//#include "allocator.hpp"
+#include "allocator.hpp"
 #include "functional.hpp"
 #include "memory.hpp"
+//#include "vector.hpp"
+#include "meta.hpp"
+#include "algorithm.hpp"
+#include "preprocessor.hpp"
 
 namespace data_structure {
     using size_t = decltype(sizeof 0);
