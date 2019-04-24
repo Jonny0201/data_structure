@@ -35,6 +35,18 @@ namespace data_structure {
         using const_pointer = typename add_const_pointer<value_type>::type;
         using void_pointer = void *;
         using const_void_pointer = const void *;
+    private:
+        constexpr void destroy(pointer, true_type) noexcept {}
+        void destroy(pointer p, false_type) noexcept(is_nothrow_destructible<value_type>::value) {
+            p->~value_type();
+        }
+        constexpr void destroy(pointer, pointer, true_type) noexcept {}
+        void destroy(pointer begin, pointer end, false_type)
+        noexcept(is_nothrow_destructible<value_type>::value) {
+            for(auto cursor {begin}; cursor not_eq end; ++cursor) {
+                cursor->~value_type();
+            }
+        }
     public:
         constexpr allocator() noexcept = default;
         constexpr allocator(const allocator &) noexcept = default;
@@ -118,18 +130,6 @@ namespace data_structure {
         using const_pointer = typename add_const_pointer<value_type>::type;
         using void_pointer = void *;
         using const_void_pointer = const void *;
-    private:
-        constexpr void destroy(pointer, true_type) noexcept {}
-        void destroy(pointer p, false_type) noexcept(is_nothrow_destructible<value_type>::value) {
-            p->~value_type();
-        }
-        constexpr void destroy(pointer, pointer, true_type) noexcept {}
-        void destroy(pointer begin, pointer end, false_type)
-                noexcept(is_nothrow_destructible<value_type>::value) {
-            for(auto cursor {begin}; cursor not_eq end; ++cursor) {
-                cursor->~value_type();
-            }
-        }
     public:
         constexpr allocator() noexcept = default;
         constexpr allocator(const allocator &) noexcept = default;
