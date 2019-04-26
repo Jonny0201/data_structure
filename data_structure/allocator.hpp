@@ -195,17 +195,13 @@ namespace data_structure {
             return begin;
         }
         constexpr void destroy(pointer p) const noexcept(is_nothrow_destructible<value_type>::value) {
-            if constexpr(is_trivially_destructible<value_type>::value) {
-
-            }else {
+            if constexpr(not is_trivially_destructible<value_type>::value) {
                 p->~value_type();
             }
         }
         constexpr void destroy(pointer begin, const_pointer end) const
                 noexcept(is_nothrow_destructible<value_type>::value) {
-            if constexpr(is_trivially_destructible<value_type>::value) {
-
-            }else {
+            if constexpr(not is_trivially_destructible<value_type>::value) {
                 while(begin not_eq end) {
                     begin++->~value_type();
                 }
