@@ -22,10 +22,11 @@
 #include "allocator.hpp"
 #include "functional.hpp"
 #include "memory.hpp"
-//#include "vector.hpp"
+#include "vector.hpp"
 #include "meta.hpp"
 #include "algorithm.hpp"
 #include "preprocessor.hpp"
+#include "__config.hpp"
 
 namespace data_structure {
     using size_t = decltype(sizeof 0);
