@@ -5108,6 +5108,174 @@ namespace data_structure {
             return is_nothrow_invocable_r<R, F, Args...>::value;
         }
     };
+    template <typename T>
+    struct is_char_type {
+        using value_type = bool;
+        using result = __false_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<T>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<T>::value;
+        }
+    };
+    template <>
+    struct is_char_type<char> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<char>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<char>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const char> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const char>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const char>::value;
+        }
+    };
+    template <>
+    struct is_char_type<volatile char> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<volatile char>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<volatile char>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const volatile char> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const volatile char>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const volatile char>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const wchar_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const wchar_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const wchar_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<volatile wchar_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<volatile wchar_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<volatile wchar_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const volatile wchar_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const volatile wchar_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const volatile wchar_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const char16_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const char16_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const char16_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<volatile char16_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<volatile char16_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<volatile char16_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const volatile char16_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const volatile char16_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const volatile char16_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const char32_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const char32_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const char32_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<volatile char32_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<volatile char32_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<volatile char32_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const volatile char32_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const volatile char32_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const volatile char32_t>::value;
+        }
+    };
 }
 
 namespace data_structure {
