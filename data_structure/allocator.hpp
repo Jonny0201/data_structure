@@ -170,23 +170,23 @@ namespace data_structure {
             __base::operator delete (p, std::nothrow);
         }
     public:
-        pointer allocate(size_type n) const {
+        static pointer allocate(size_type n) {
             return reinterpret_cast<pointer>(__base::allocate(n));
         }
-        pointer allocate(size_type n, dynamic) const noexcept {
+        static pointer allocate(size_type n, dynamic) noexcept {
             return reinterpret_cast<pointer>(__base::allocate(n, dynamic()));
         }
-        void deallocate(pointer p, size_type n) const noexcept {
+        static void deallocate(pointer p, size_type n) noexcept {
             __base::deallocate(p, n);
         }
         template <typename ...Args>
-        pointer construct(pointer p, Args &&...args) const
+        static pointer construct(pointer p, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             return new (p) value_type(forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
-        pointer construct(pointer begin, const_pointer end, Args &&...args) const
+        static pointer construct(pointer begin, const_pointer end, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             auto cursor {begin};
             while(cursor not_eq end) {
@@ -194,12 +194,12 @@ namespace data_structure {
             }
             return begin;
         }
-        constexpr void destroy(pointer p) const noexcept(is_nothrow_destructible<value_type>::value) {
+        static constexpr void destroy(pointer p) noexcept(is_nothrow_destructible<value_type>::value) {
             if constexpr(not is_trivially_destructible<value_type>::value) {
                 p->~value_type();
             }
         }
-        constexpr void destroy(pointer begin, const_pointer end) const
+        static constexpr void destroy(pointer begin, const_pointer end)
                 noexcept(is_nothrow_destructible<value_type>::value) {
             if constexpr(not is_trivially_destructible<value_type>::value) {
                 while(begin not_eq end) {
