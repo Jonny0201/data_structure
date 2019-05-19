@@ -26,6 +26,7 @@ namespace data_structure {
     template <bool>
     class __vector_common {};
     extern template class __vector_common<true>;
+    
     template <typename T, typename Allocator = allocator<type_holder<T>>>
     class vector_base : protected __vector_common<true> {
     public:
@@ -45,25 +46,26 @@ namespace data_structure {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same<value_type, typename alloc_traits::value_type>::value,
-                "The Allocator::value_type must be same as template argument T!");
+                "The Allocator::value_type must be the same as template argument T!");
     protected:
         pointer first;
         pointer last;
         pointer cursor;
     private:
+        constexpr static size_type alloc_size_ctor(size_type) noexcept;
 #ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
         consteval
 #else
         constexpr
 #endif
         static size_type default_size() noexcept;
-        static void handle_exception_from_alloc(pointer, pointer);
-        static void destroy_from_insert_or_erase(pointer, pointer);
+        static void handle_exception_from_alloc(pointer, pointer) noexcept;
+        static void destroy_from_insert_or_erase(pointer, pointer) noexcept;
     private:
         size_type recommend(size_type = 0) const noexcept;
         pointer allocate(size_type);
         void reallocate(size_type = 0);
-        void handle_exception_from_ctor();
+        void deallocate_and_set_null() noexcept;
         void deallocate() noexcept(is_nothrow_destructible<value_type>::value);
         bool full() const noexcept;
         void resize_for_shrink_or_reserve(size_type);
@@ -73,7 +75,7 @@ namespace data_structure {
         vector_base(size_type, const_reference);
         template <typename InputIterator>
         vector_base(typename enable_if<is_input_iterator<InputIterator>::value and
-                        not is_forward_iterator<InputIterator>::value, InputIterator>::type,
+                                not is_forward_iterator<InputIterator>::value, InputIterator>::type,
                 InputIterator);
         template <typename ForwardIterator>
         vector_base(typename enable_if<
@@ -86,7 +88,7 @@ namespace data_structure {
         vector_base(const vector_base<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
         vector_base(vector_base<value_type, AllocatorRHS> &&) noexcept;
-        ~vector_base() noexcept(is_nothrow_destructible<value_type>::value);
+        ~vector_base() noexcept;
     public:
         vector_base &operator=(const vector_base &);
         vector_base &operator=(vector_base &&) noexcept;
@@ -212,6 +214,11 @@ namespace data_structure {
 namespace data_structure {
     /* private function */
     template <typename T, typename Allocator>
+    constexpr inline typename vector_base<T, Allocator>::size_type
+    vector_base<T, Allocator>::alloc_size_ctor(size_type size) noexcept {
+        return size > 5 ? size + size / 5 : size * 2;
+    }
+    template <typename T, typename Allocator>
 #ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
     consteval
 #else
@@ -228,75 +235,56 @@ namespace data_structure {
             return this->default_size();
         }
         const auto capacity {this->capacity() * 2};
-        if(size > capacity) {
-            return size;
+        if(capacity) {
+            if(size > capacity) {
+                return size;
+            }
+            return capacity;
         }
-        return capacity;
+        return size;
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::pointer
     vector_base<T, Allocator>::allocate(size_type size) {
-        return reinterpret_cast<pointer>(alloc_traits::operator new (size));
+        return reinterpret_cast<pointer>(alloc_traits::operator new (size * sizeof(value_type)));
     }
     template <typename T, typename Allocator>
-    inline void vector_base<T, Allocator>::handle_exception_from_ctor() {
-        if constexpr(not is_trivially_destructible<value_type>::value) {
-            if constexpr(not is_nothrow_destructible<value_type>::value) {
-                try {
-                    alloc_traits::destroy(this->first, --this->cursor);
-                }catch(...) {
-                    std::terminate();       //OS will reclaim the memory
-                }
-            }else {
-                alloc_traits::destroy(this->first, --this->cursor);
-            }
-        }
+    inline void vector_base<T, Allocator>::deallocate_and_set_null() noexcept {
+        alloc_traits::destroy(this->first, this->cursor);
         alloc_traits::operator delete (this->first);
         this->first = this->last = this->cursor = nullptr;
     }
     template <typename T, typename Allocator>
     inline void vector_base<T, Allocator>::reallocate(size_type n) {
-        size_type new_size {};
-        if(not n) {
-            if(not this->capacity()) {
-                new_size = default_size();
-            }else {
-                new_size = this->capacity() * 2;
-            }
-        }else {
-            new_size = this->capacity() + n;
-        }
+        const auto new_size {[&]() noexcept -> size_type {
+            const auto capacity {this->capacity() * 2};
+            return capacity > n ? capacity : n + capacity;
+        }()};
         auto new_first {this->allocate(new_size)};
         auto new_cursor {new_first};
         auto cursor {this->first};
         while(cursor not_eq this->cursor) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value or
                     is_nothrow_move_constructible<value_type>::value) {
-                alloc_traits::construct(new_cursor++, move(*cursor++));
-            }else if constexpr(is_move_constructible<value_type>::value) {
-                try {
-                    alloc_traits::construct(new_cursor, move(*cursor++));
-                    ++new_cursor;
-                }catch(...) {
-                    this->handle_exception_from_alloc(new_first, new_cursor);
-                    this->deallocate();
-                    this->first = this->cursor = this->last = nullptr;
-                    throw;
-                }
+                alloc_traits::construct(new_cursor++, data_structure::move(*cursor++));
             }else {
                 try {
-                    alloc_traits::construct(new_cursor, *cursor++);
+                    alloc_traits::construct(new_cursor, data_structure::move(*cursor++));
                     ++new_cursor;
                 }catch(...) {
-                    //strong guarantee
                     this->handle_exception_from_alloc(new_first, new_cursor);
+                    if constexpr(is_nothrow_move_constructible<value_type>::value) {
+                        this->deallocate();
+                        this->first = this->cursor = this->last = nullptr;
+                    }
                     throw;
                 }
             }
         }
-        this->first = move(new_first);
-        this->cursor = move(new_cursor);
-        this->last = this->first + move(new_size);
+        this->deallocate();
+        this->first = data_structure::move(new_first);
+        this->cursor = data_structure::move(new_cursor);
+        this->last = this->first + new_size;
     }
     template <typename T, typename Allocator>
     inline void vector_base<T, Allocator>::deallocate()
@@ -309,17 +297,9 @@ namespace data_structure {
         return this->last == this->cursor;
     }
     template <typename T, typename Allocator>
-    inline void vector_base<T, Allocator>::handle_exception_from_alloc(pointer begin, pointer end) {
-        if constexpr(not is_nothrow_destructible<value_type>::value) {
-            if constexpr(is_nothrow_destructible<value_type>::value) {
-                alloc_traits::destroy(begin, end);
-            }else {
-                try {
-                    alloc_traits::destroy(begin, end);
-                }catch(...) {
-                    std::terminate();       //OS will reclaim the memory
-                }
-            }
+    inline void vector_base<T, Allocator>::handle_exception_from_alloc(pointer begin, pointer end) noexcept {
+        if constexpr(not is_trivially_destructible<value_type>::value) {
+            alloc_traits::destroy(begin, end);
         }
         alloc_traits::operator delete (begin);
     }
@@ -345,19 +325,11 @@ namespace data_structure {
         this->deallocate();
         this->first = move(new_first);
         this->cursor = move(new_cursor);
-        this->last = this->first + size;
+        this->last = this->first + move(size);
     }
     template <typename T, typename Allocator>
-    inline void vector_base<T, Allocator>::destroy_from_insert_or_erase(pointer begin, pointer end) {
-        if constexpr(is_nothrow_destructible<value_type>::value) {
-            alloc_traits::destroy(begin, end);
-        }else {
-            try {
-                alloc_traits::destroy(begin, end);
-            }catch(...) {
-                std::terminate();
-            }
-        }
+    inline void vector_base<T, Allocator>::destroy_from_insert_or_erase(pointer begin, pointer end) noexcept {
+        alloc_traits::destroy(begin, end);
     }
 
     /* public function */
@@ -366,16 +338,17 @@ namespace data_structure {
             first {nullptr}, last {nullptr}, cursor {nullptr} {}
     template <typename T, typename Allocator>
     vector_base<T, Allocator>::vector_base(size_type size) :
-            first {this->allocate(this->recommend(size * 2))},
-            last {this->first + this->recommend(size * 2)}, cursor {this->first} {
+            first {this->allocate(this->alloc_size_ctor(size))},
+            last {this->first + this->alloc_size_ctor(size)}, cursor {this->first} {
         while(size--) {
             if constexpr(is_nothrow_default_constructible<value_type>::value) {
                 alloc_traits::construct(this->cursor++);
             }else {
                 try {
-                    alloc_traits::construct(this->cursor++);
+                    alloc_traits::construct(this->cursor);
+                    ++this->cursor;
                 }catch(...) {
-                    this->handle_exception_from_ctor();
+                    this->deallocate();
                     throw;
                 }
             }
@@ -383,16 +356,17 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     vector_base<T, Allocator>::vector_base(size_type size, const_reference value) :
-            first {this->allocate(this->recommend(size * 2))},
-            last {this->first + this->recommend(size * 2)}, cursor {this->first} {
+            first {this->allocate(this->alloc_size_ctor(size))},
+            last {this->first + this->alloc_size_ctor(size)}, cursor {this->first} {
         while(size--) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
                 alloc_traits::construct(this->cursor++, value);
             }else {
                 try {
-                    alloc_traits::construct(this->cursor++, value);
+                    alloc_traits::construct(this->cursor, value);
+                    ++this->cursor;
                 }catch(...) {
-                    this->handle_exception_from_ctor();
+                    this->deallocate();
                     throw;
                 }
             }
@@ -400,16 +374,15 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     template <typename InputIterator>
-    vector_base<T, Allocator>::vector_base(
-            typename enable_if<is_input_iterator<InputIterator>::value and
+    vector_base<T, Allocator>::vector_base(typename enable_if<is_input_iterator<InputIterator>::value and
                     not is_forward_iterator<InputIterator>::value, InputIterator>::type begin,
-            InputIterator end) : first {this->allocate()}, last {this->first + this->recommend()},
-            cursor {this->first} {
+            InputIterator end) : first {this->allocate(this->default_size())},
+            last {this->first + this->default_size()}, cursor {this->first} {
         while(begin not_eq end) {
             try {
                 this->push_back(move(*begin++));
             }catch(...) {
-                this->handle_exception_from_ctor();
+                this->deallocate();
                 throw;
             }
         }
@@ -419,17 +392,18 @@ namespace data_structure {
     vector_base<T, Allocator>::vector_base(
             typename enable_if<
                     is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type begin,
-            ForwardIterator end) : first {this->allocate(this->recommend(distance(begin, end) * 2))},
-            last {this->first + this->recommend(distance(begin, end) * 2)}, cursor {this->first} {
+            ForwardIterator end) : first {this->allocate(this->alloc_size_ctor(distance(begin, end)))},
+            last {this->first + this->alloc_size_ctor(distance(begin, end))}, cursor {this->first} {
         while(begin not_eq end) {
             if constexpr(is_nothrow_constructible<
                     value_type, typename iterator_traits<ForwardIterator>::reference>::value) {
                 alloc_traits::construct(this->cursor++, *begin++);
             }else {
                 try {
-                    alloc_traits::construct(this->cursor++, *begin++);
+                    alloc_traits::construct(this->cursor, *begin++);
+                    ++this->cursor;
                 }catch(...) {
-                    this->handle_exception_from_ctor();
+                    this->deallocate();
                     throw;
                 }
             }
@@ -457,8 +431,7 @@ namespace data_structure {
         rhs.first = nullptr;
     }
     template <typename T, typename Allocator>
-    inline
-    vector_base<T, Allocator>::~vector_base() noexcept(is_nothrow_destructible<value_type>::value) {
+    inline vector_base<T, Allocator>::~vector_base() noexcept {
         this->deallocate();
     }
     template <typename T, typename Allocator>
@@ -523,7 +496,7 @@ namespace data_structure {
                     *cursor = value;
                 }
                 if(cursor not_eq this->cursor) {
-                    alloc_traits::destroy(cursor, this->cursor);
+                    this->destroy_from_insert_or_erase(cursor, this->cursor);
                     this->cursor = move(cursor);
                 }
                 return;
@@ -538,10 +511,10 @@ namespace data_structure {
             }
             return;
         }
+        const auto new_size {recommend(size)};
         if(this->first) {
             this->deallocate();
         }
-        const auto new_size {recommend(size)};
         this->first = this->cursor = this->allocate(new_size);
         this->last = this->first + new_size;
         while(size--) {
@@ -587,6 +560,7 @@ namespace data_structure {
             }
             while(cursor not_eq this->cursor) {
                 *cursor = *begin++;
+                ++cursor;
             }
             while(begin not_eq end) {
                 alloc_traits::construct(this->cursor, *begin++);
@@ -610,61 +584,61 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator vector_base<T, Allocator>::begin() noexcept {
-        return {this->first};
+        return iterator(this->first);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_iterator
     vector_base<T, Allocator>::begin() const noexcept {
-        return {this->first};
+        return const_iterator {this->first};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator vector_base<T, Allocator>::end() noexcept {
-        return {this->cursor};
+        return iterator {this->cursor};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_iterator
     vector_base<T, Allocator>::end() const noexcept {
-        return {this->cursor};
+        return const_iterator {this->cursor};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::reverse_iterator
     vector_base<T, Allocator>::rbegin() noexcept {
-        return {this->cursor - 1};
+        return reverse_iterator {this->cursor - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_reverse_iterator
     vector_base<T, Allocator>::rbegin() const noexcept {
-        return {this->cursor - 1};
+        return const_reverse_iterator {this->cursor - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::reverse_iterator
     vector_base<T, Allocator>::rend() noexcept {
-        return {this->first - 1};
+        return reverse_iterator {this->first - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_reverse_iterator
     vector_base<T, Allocator>::rend() const noexcept {
-        return {this->first - 1};
+        return const_reverse_iterator {this->first - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_iterator
     vector_base<T, Allocator>::cbegin() const noexcept {
-        return {this->first};
+        return const_iterator {this->first};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_iterator
     vector_base<T, Allocator>::cend() const noexcept {
-        return {this->cursor};
+        return const_iterator {this->cursor};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_reverse_iterator
     vector_base<T, Allocator>::crbegin() const noexcept {
-        return {this->cursor - 1};
+        return const_reverse_iterator {this->cursor - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_reverse_iterator
     vector_base<T, Allocator>::crend() const noexcept {
-        return {this->first - 1};
+        return const_reverse_iterator {this->first - 1};
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::size_type vector_base<T, Allocator>::size() const noexcept {
@@ -785,9 +759,7 @@ namespace data_structure {
         if(this->first == this->cursor) {
             return;
         }
-        if constexpr(is_trivially_destructible<value_type>::value) {
-
-        }else {
+        if constexpr(not is_trivially_destructible<value_type>::value) {
             alloc_traits::destroy(this->first, this->cursor);
         }
         this->cursor = this->first;
@@ -813,23 +785,16 @@ namespace data_structure {
                 if constexpr(is_nothrow_copy_constructible<value_type>::value or
                         is_nothrow_move_constructible<value_type>::value) {
                     alloc_traits::construct(new_cursor++, move(*cursor++));
-                }else if constexpr(is_move_constructible<value_type>::value) {
+                }else {
                     try {
                         alloc_traits::construct(new_cursor, move(*cursor++));
                         ++new_cursor;
                     }catch(...) {
                         this->handle_exception_from_alloc(new_first, new_cursor);
-                        this->deallocate();
-                        this->first = this->cursor = this->last = nullptr;
-                        throw;
-                    }
-                }else {
-                    try {
-                        alloc_traits::construct(new_cursor, *cursor++);
-                        ++new_cursor;
-                    }catch(...) {
-                        //strong guarantee
-                        this->handle_exception_from_alloc(new_first, new_cursor);
+                        if constexpr(is_move_constructible<value_type>::value) {
+                            this->deallocate();
+                            this->first = this->cursor = this->last = nullptr;
+                        }
                         throw;
                     }
                 }
@@ -855,23 +820,16 @@ namespace data_structure {
                 if constexpr(is_nothrow_copy_constructible<value_type>::value or
                              is_nothrow_move_constructible<value_type>::value) {
                     alloc_traits::construct(new_cursor++, move(*cursor++));
-                }else if constexpr(is_move_constructible<value_type>::value) {
+                }else {
                     try {
                         alloc_traits::construct(new_cursor, move(*cursor++));
                         ++new_cursor;
                     }catch(...) {
                         this->handle_exception_from_alloc(new_first, new_cursor);
-                        this->deallocate();
-                        this->first = this->cursor = this->last = nullptr;
-                        throw;
-                    }
-                }else {
-                    try {
-                        alloc_traits::construct(new_cursor, *cursor++);
-                        ++new_cursor;
-                    }catch(...) {
-                        //strong guarantee
-                        this->handle_exception_from_alloc(new_first, new_cursor);
+                        if constexpr(is_move_constructible<value_type>::value) {
+                            this->deallocate();
+                            this->first = this->cursor = this->last = nullptr;
+                        }
                         throw;
                     }
                 }
@@ -898,91 +856,106 @@ namespace data_structure {
     typename vector_base<T, Allocator>::iterator
     vector_base<T, Allocator>::insert(difference_type pos, const_reference value, size_type size) {
         if(not size) {
-            return {this->cursor};
+            return iterator(this->cursor);
         }
         const auto old_size {this->size()};
         if(size > this->remain()) {
-            if(size > this->capacity() * 2 - old_size) {
-                this->reallocate(size);
-            }else {
-                this->reallocate();
-            }
+            this->reallocate(size);
         }
         if(pos == old_size) {
             const auto return_pointer {this->cursor};
             while(size--) {
                 this->push_back(value);
             }
-            return {return_pointer};
+            return iterator(return_pointer);
         }else if(pos > old_size) {
-            return {this->cursor};
+            return iterator(this->cursor);
         }
-        auto forward_cursor {this->cursor + (size - 1)};
-        auto back_move_cursor {this->cursor - 1};
-        auto back_assign_cursor {back_move_cursor - size};
+        auto construct_cursor {this->cursor + (size - 1)};
+        auto move_cursor {this->cursor - 1};
+        const auto last_pos {move_cursor};
         const auto stop_pos {this->first + (pos - 1)};
-        while(back_move_cursor not_eq back_assign_cursor) {
+        while(move_cursor not_eq stop_pos and construct_cursor not_eq last_pos) {
             if constexpr(is_nothrow_move_constructible<value_type>::value or
                     is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(forward_cursor--, move(*back_move_cursor--));
-            }else if constexpr(is_move_constructible<value_type>::value) {
-                try {
-                    alloc_traits::construct(forward_cursor, move(*back_move_cursor));
-                    --forward_cursor;
-                    --back_move_cursor;
-                }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor,
-                            forward_cursor + (this->cursor - back_move_cursor - 1));
-                    this->deallocate();
-                    this->first = this->cursor = this->last = nullptr;
-                    throw;
-                }
+                alloc_traits::construct(construct_cursor--, data_structure::move(*move_cursor--));
             }else {
                 try {
-                    alloc_traits::construct(forward_cursor, move(*back_move_cursor));
-                    --forward_cursor;
-                    --back_move_cursor;
+                    alloc_traits::construct(construct_cursor, data_structure::move(*move_cursor--));
+                    --construct_cursor;
+                    --move_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor,
-                            forward_cursor + (this->cursor - back_move_cursor - 1));
+                    this->destroy_from_insert_or_erase(construct_cursor + 1,
+                            construct_cursor + (this->cursor - move_cursor - 1));
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(move_cursor, this->cursor);
+                        this->cursor = move_cursor;
+                    }
                     throw;
                 }
             }
         }
-        this->cursor += move(size);
-        while(back_assign_cursor not_eq stop_pos) {
-            if constexpr(is_nothrow_copy_assignable<value_type>::value or
-                    is_nothrow_move_assignable<value_type>::value) {
-                *forward_cursor-- = move(*back_assign_cursor--);
+        this->cursor += size;
+        while(move_cursor not_eq stop_pos) {
+            if constexpr(is_nothrow_copy_assignable<value_type>::value) {
+                *construct_cursor-- = *move_cursor--;
             }else {
                 try {
-                    *forward_cursor = move(*back_assign_cursor);
-                    --forward_cursor;
-                    --back_assign_cursor;
+                    *construct_cursor = *move_cursor;
+                    --construct_cursor;
+                    --move_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor, this->cursor);
-                    this->cursor = forward_cursor;
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(stop_pos + 1, this->cursor);
+                        this->cursor = stop_pos;
+                    }else {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        this->cursor = construct_cursor;
+                    }
                     throw;
                 }
             }
         }
-        forward_cursor = this->first + pos;
-        while(size--) {
-            if constexpr(is_nothrow_copy_assignable<value_type>::value or
-                    is_nothrow_move_assignable<value_type>::value) {
-                *forward_cursor-- = value;
+        if(construct_cursor - last_pos > 0) {
+            while(construct_cursor not_eq last_pos) {
+                if constexpr(is_nothrow_copy_constructible<value_type>::value) {
+                    alloc_traits::construct(construct_cursor--, value);
+                }else {
+                    try {
+                        alloc_traits::construct(construct_cursor--, value);
+                        --construct_cursor;
+                    }catch(...) {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        if constexpr(is_move_constructible<value_type>::value) {
+                            ++move_cursor;
+                            this->destroy_from_insert_or_erase(move_cursor, last_pos + 1);
+                            this->cursor = move_cursor;
+                        }
+                        throw;
+                    }
+                }
+            }
+        }
+        while(construct_cursor not_eq stop_pos) {
+            if constexpr(is_nothrow_copy_assignable<value_type>::value) {
+                *construct_cursor-- = value;
             }else {
                 try {
-                    *forward_cursor = value;
-                    --forward_cursor;
+                    *construct_cursor = value;
+                    --construct_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor, this->cursor);
-                    this->cursor = forward_cursor;
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(stop_pos + 1, this->cursor);
+                        this->cursor = stop_pos;
+                    }else {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        this->cursor = construct_cursor;
+                    }
                     throw;
                 }
             }
         }
-        return {this->first + pos};
+        return iterator(this->first + pos);
     }
     template <typename T, typename Allocator>
     typename vector_base<T, Allocator>::iterator
@@ -991,37 +964,41 @@ namespace data_structure {
             this->reallocate();
         }
         if(pos == this->size()) {
-            const auto return_pointer {this->cursor};
             this->push_back(forward<rvalue_reference>(value));
-            return {return_pointer};
+            return iterator(this->cursor - 1);
         }else if(pos > this->size()) {
-            return {this->cursor};
+            return iterator(this->cursor);
         }
         if constexpr(is_move_constructible<value_type>::value and
                 not is_nothrow_move_constructible<value_type>::value) {
             try {
                 alloc_traits::construct(this->cursor, move(*(this->cursor -1)));
             }catch(...) {
-                this->destroy_from_insert_or_erase(this->cursor - 1, this->cursor);
-                --this->cursor;
+                [&]() mutable noexcept -> void {
+                    alloc_traits::destroy(--this->cursor);
+                }();
                 throw;
             }
         }else {
             alloc_traits::construct(this->cursor, move(*this->cursor - 1));
         }
-        auto move_cursor {this->cursor};
-        ++this->cursor;
-        auto move_size {this->size() - pos};
+        auto move_cursor {this->cursor++};
+        const auto move_size {this->size() - pos};
         while(--move_size) {
             if constexpr(is_nothrow_move_assignable<value_type>::value or
                     is_nothrow_copy_assignable<value_type>::value) {
-                *move_cursor-- = move(*(move_cursor - 1));
+                *move_cursor = move(*(move_cursor - 1));
+                --move_cursor;
             }else {
                 try {
-                    *move_cursor = *(move_cursor - 1);
+                    *move_cursor = move(*(move_cursor - 1));
                     --move_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(move_cursor, this->cursor);
+                    if constexpr(is_move_assignable<value_type>::value) {
+                        this->destroy_from_insert_or_erase(--move_cursor, this->cursor);
+                    }else {
+                        this->destroy_from_insert_or_erase(move_cursor, this->cursor);
+                    }
                     this->cursor = move_cursor;
                     throw;
                 }
@@ -1039,7 +1016,7 @@ namespace data_structure {
                 throw;
             }
         }
-        return {this->first + pos};
+        return iterator(this->first + pos);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
@@ -1092,91 +1069,108 @@ namespace data_structure {
             typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type end) {
         size_type size {distance(begin, end)};
         if(not size) {
-            return {this->cursor};
+            return iterator(this->cursor);
         }
         const auto old_size {this->size()};
         if(size > this->remain()) {
-            if(size > this->capacity() * 2 - old_size) {
-                this->reallocate(size);
-            }else {
-                this->reallocate();
-            }
+            this->reallocate(size);
         }
         if(pos == old_size) {
             const auto return_pointer {this->cursor};
             while(size--) {
                 this->push_back(*begin++);
             }
-            return {return_pointer};
+            return iterator(return_pointer);
         }else if(pos > old_size) {
-            return {this->cursor};
+            return iterator(this->cursor);
         }
-        auto forward_cursor {this->cursor + (size - 1)};
-        auto back_move_cursor {this->cursor - 1};
-        auto back_assign_cursor {back_move_cursor - size};
+        auto construct_cursor {this->cursor + (size - 1)};
+        auto move_cursor {this->cursor - 1};
+        const auto last_pos {move_cursor};
         const auto stop_pos {this->first + (pos - 1)};
-        while(back_move_cursor not_eq back_assign_cursor) {
+        while(move_cursor not_eq stop_pos and construct_cursor not_eq last_pos) {
             if constexpr(is_nothrow_move_constructible<value_type>::value or
                          is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(forward_cursor--, move(*back_move_cursor--));
-            }else if constexpr(is_move_constructible<value_type>::value) {
-                try {
-                    alloc_traits::construct(forward_cursor, move(*back_move_cursor--));
-                    --forward_cursor;
-                }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor,
-                            forward_cursor + (this->cursor - back_move_cursor - 1));
-                    this->deallocate();
-                    this->first = this->cursor = this->last = nullptr;
-                    throw;
-                }
+                alloc_traits::construct(construct_cursor--, move(*move_cursor--));
             }else {
                 try {
-                    alloc_traits::construct(forward_cursor, move(*back_move_cursor));
-                    --forward_cursor;
-                    --back_move_cursor;
+                    alloc_traits::construct(construct_cursor, move(*move_cursor--));
+                    --construct_cursor;
+                    --move_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor,
-                            forward_cursor + (this->cursor - back_move_cursor - 1));
+                    this->destroy_from_insert_or_erase(construct_cursor + 1,
+                            construct_cursor + (this->cursor - move_cursor - 1));
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(move_cursor, this->cursor);
+                        this->cursor = move_cursor;
+                    }
                     throw;
                 }
             }
         }
-        this->cursor += move(size);
-        while(back_assign_cursor not_eq stop_pos) {
-            if constexpr(is_nothrow_copy_assignable<value_type>::value or
-                         is_nothrow_move_assignable<value_type>::value) {
-                *forward_cursor-- = move(*back_assign_cursor--);
+        this->cursor += size;
+        while(move_cursor not_eq stop_pos) {
+            if constexpr(is_nothrow_copy_assignable<value_type>::value) {
+                *construct_cursor-- = *move_cursor--;
             }else {
                 try {
-                    *forward_cursor = move(*back_assign_cursor);
-                    --forward_cursor;
-                    --back_assign_cursor;
+                    *construct_cursor = *move_cursor;
+                    --construct_cursor;
+                    --move_cursor;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor, this->cursor);
-                    this->cursor = forward_cursor;
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(stop_pos + 1, this->cursor);
+                        this->cursor = stop_pos;
+                    }else {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        this->cursor = construct_cursor;
+                    }
                     throw;
                 }
             }
         }
-        forward_cursor = this->first + pos;
-        while(size--) {
-            if constexpr(is_nothrow_copy_assignable<value_type>::value or
-                         is_nothrow_move_assignable<value_type>::value) {
-                *forward_cursor-- = *begin++;
+        if(construct_cursor - last_pos > 0) {
+            while(construct_cursor not_eq last_pos) {
+                if constexpr(is_nothrow_copy_constructible<value_type>::value) {
+                    alloc_traits::construct(construct_cursor--, *begin++);
+                }else {
+                    try {
+                        alloc_traits::construct(construct_cursor--, *begin);
+                        --construct_cursor;
+                        ++begin;
+                    }catch(...) {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        if constexpr(is_move_constructible<value_type>::value) {
+                            ++move_cursor;
+                            this->destroy_from_insert_or_erase(move_cursor, last_pos + 1);
+                            this->cursor = move_cursor;
+                        }
+                        throw;
+                    }
+                }
+            }
+        }
+        while(construct_cursor not_eq stop_pos) {
+            if constexpr(is_nothrow_copy_assignable<value_type>::value) {
+                *construct_cursor-- = *begin;;
             }else {
                 try {
-                    *forward_cursor = *begin;
-                    --forward_cursor;
+                    *construct_cursor = *begin;
+                    --construct_cursor;
                     ++begin;
                 }catch(...) {
-                    this->destroy_from_insert_or_erase(forward_cursor, this->cursor);
-                    this->cursor = forward_cursor;
+                    if constexpr(is_move_constructible<value_type>::value) {
+                        this->destroy_from_insert_or_erase(stop_pos + 1, this->cursor);
+                        this->cursor = stop_pos;
+                    }else {
+                        this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
+                        this->cursor = construct_cursor;
+                    }
                     throw;
                 }
             }
         }
-        return {this->first + pos};
+        return iterator(this->first + pos);
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
@@ -1219,7 +1213,7 @@ namespace data_structure {
         }
         this->destroy_from_insert_or_erase(move_cursor, this->cursor);
         this->cursor = move(move_cursor);
-        return {this->first + pos};
+        return iterator(this->first + pos);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
@@ -1247,9 +1241,10 @@ namespace data_structure {
         if(lhs.size() not_eq rhs.size()) {
             return false;
         }
-        auto lhs_cursor {lhs.first};
-        auto rhs_cursor {rhs.first};
-        while(lhs_cursor not_eq lhs.cursor) {
+        auto lhs_cursor {lhs.cbegin()};
+        auto rhs_cursor {rhs.cbegin()};
+        const auto lhs_end_pos {lhs.cend()};
+        while(lhs_cursor not_eq lhs_end_pos) {
             if(*lhs_cursor++ not_eq *rhs_cursor++) {
                 return false;
             }
@@ -1265,17 +1260,19 @@ namespace data_structure {
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     bool operator<(const vector_base<T, AllocatorLHS> &lhs, const vector_base<T, AllocatorRHS> &rhs)
             noexcept(has_nothrow_less_operator<T>::value) {
-        auto lhs_cursor {lhs.first};
-        auto rhs_cursor {rhs.first};
+        auto lhs_cursor {lhs.cbegin()};
+        auto rhs_cursor {rhs.cbegin};
         if(lhs.size() < rhs.size()) {
-            while(lhs_cursor not_eq lhs.cursor) {
+            const auto lhs_end_pos {lhs.cend()};
+            while(lhs_cursor not_eq lhs_end_pos) {
                 if(not(*lhs_cursor++ < *rhs_cursor++)) {
                     return false;
                 }
             }
             return true;
         }
-        while(rhs_cursor not_eq rhs.cursor) {
+        const auto rhs_end_pos {rhs.cend()};
+        while(rhs_cursor not_eq rhs_end_pos) {
             if(not(*lhs_cursor++ < *rhs_cursor++)) {
                 return false;
             }
@@ -1300,11 +1297,6 @@ namespace data_structure {
             noexcept(has_nothrow_less_operator<T>::value) {
         return not(lhs < rhs);
     }
-}
-
-namespace data_structure {
-    template <typename T, typename Allocator = allocator<type_holder<T>>>
-    class vector final : public vector_base<T, Allocator> {};
 }
 
 #endif //DATA_STRUCTURE_VECTOR_HPP
