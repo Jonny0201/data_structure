@@ -90,7 +90,7 @@ namespace data_structure {
         template <typename ...Args>
         pointer construct(pointer p, Args &&...args) const
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
-            return new (p) value_type(forward<Args>(args)...);
+            return new (p) value_type(data_structure::forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
@@ -182,7 +182,7 @@ namespace data_structure {
         template <typename ...Args>
         static pointer construct(pointer p, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
-            return new (p) value_type(forward<Args>(args)...);
+            return new (p) value_type(data_structure::forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
