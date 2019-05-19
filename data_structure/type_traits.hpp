@@ -8510,22 +8510,12 @@ namespace data_structure {
             allocator_type::construct(obj, value);
         }
         static void construct(allocator_type &allocator, pointer obj, rvalue_reference value)
-                noexcept(noexcept(allocator.construct(obj, move(value)))) {
-            allocator.construct(obj, move(value));
+                noexcept(noexcept(allocator.construct(obj, data_structure::move(value)))) {
+            allocator.construct(obj, data_structure::move(value));
         }
         static void construct(pointer obj, rvalue_reference value)
-                noexcept(noexcept(allocator_type::construct(obj, move(value)))) {
-            allocator_type::construct(obj, move(value));
-        }
-        template <typename ...Args>
-        static void construct(allocator_type &allocator, pointer obj, Args &&...args)
-                noexcept(noexcept(allocator.construct(obj, forward<Args>(args)...))) {
-            allocator.construct(obj, forward<Args>(args)...);
-        }
-        template <typename ...Args>
-        static void construct(pointer obj, Args &&...args)
-                noexcept(noexcept(allocator_type::construct(obj, forward<Args>(args)...))) {
-            allocator_type::construct(obj, forward<Args>(args)...);
+                noexcept(noexcept(allocator_type::construct(obj, data_structure::move(value)))) {
+            allocator_type::construct(obj, data_structure::move(value));
         }
         static void destroy(allocator_type &allocator, pointer obj)
                 noexcept(noexcept(allocator.destroy(obj))) {
