@@ -26,7 +26,7 @@ namespace data_structure {
     template <bool>
     class __vector_common {};
     extern template class __vector_common<true>;
-    
+
     template <typename T, typename Allocator = allocator<type_holder<T>>>
     class vector_base : protected __vector_common<true> {
     public:
@@ -922,7 +922,7 @@ namespace data_structure {
                     alloc_traits::construct(construct_cursor--, value);
                 }else {
                     try {
-                        alloc_traits::construct(construct_cursor--, value);
+                        alloc_traits::construct(construct_cursor, value);
                         --construct_cursor;
                     }catch(...) {
                         this->destroy_from_insert_or_erase(construct_cursor + 1, this->cursor);
@@ -1135,7 +1135,7 @@ namespace data_structure {
                     alloc_traits::construct(construct_cursor--, *begin++);
                 }else {
                     try {
-                        alloc_traits::construct(construct_cursor--, *begin);
+                        alloc_traits::construct(construct_cursor, *begin);
                         --construct_cursor;
                         ++begin;
                     }catch(...) {
