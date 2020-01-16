@@ -17,6 +17,8 @@
 #ifndef DATA_STRUCTURE_TYPE_TRAITS_HPP
 #define DATA_STRUCTURE_TYPE_TRAITS_HPP
 
+#include "__config.hpp"
+
 /* template parameters
  *
  * O for object
@@ -3290,12 +3292,14 @@ namespace data_structure {
         typename select_second_type<decltype(swap(declval<LHS>(), declval<RHS>())), __true_type>::type
         test_swapping_with(int) noexcept {
             static_assert(not is_type<LHS>::value, "The function test_swapping_with() cannot be called!");
+            return {};
         }
         template <typename LHS, typename RHS>
         constexpr inline
         typename select_second_type<LHS, __false_type>::result
         test_swapping_with(...) noexcept {
             static_assert(not is_type<LHS>::value, "The function test_swapping_with() cannot be called!");
+            return {};
         }
         template <typename LHS, typename RHS = LHS>
         struct is_swappable_with_auxiliary {
@@ -3315,6 +3319,19 @@ namespace data_structure {
                 return is_swappable_with_auxiliary<LHS, RHS>::value;
             }
         };
+        template <typename T>
+        constexpr inline
+        typename select_second_type<decltype(declval<T &>().swap(declval<T &>())), __true_type>::type
+        test_has_swap_function(int) noexcept {
+            static_assert(not is_type<T>::value, "The function test_has_swap_function() cannot be called!");
+            return {};
+        }
+        template <typename T>
+        constexpr inline
+        typename select_second_type<T, __false_type>::type test_has_swap_function(...) noexcept {
+            static_assert(not is_type<T>::value, "The function test_has_swap_function() cannot be called!");
+            return {};
+        }
     }
     template <typename LHS, typename RHS>
     struct is_swappable_with {
@@ -3326,6 +3343,18 @@ namespace data_structure {
         }
         constexpr explicit operator value_type() const noexcept {
             return is_swappable_with<LHS, RHS>::value;
+        }
+    };
+    template <typename T>
+    struct has_swap_function {
+        using value_type = bool;
+        using result = decltype(__dsa::test_has_swap_function<T>(0));
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_swap_function<T>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_swap_function<T>::value;
         }
     };
     namespace __data_structure_auxiliary {
