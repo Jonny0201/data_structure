@@ -17,43 +17,24 @@
 #ifndef DATA_STRUCTURE_MEMORY_HPP
 #define DATA_STRUCTURE_MEMORY_HPP
 
-#include <memory>
-#include <initializer_list>
-#include <limits>
+#include "__config.hpp"
 #include "meta.hpp"
 
 namespace data_structure {
     template <typename T>
-    constexpr inline auto address_of(T &arg) noexcept {
+    constexpr inline T *address_of(T &arg) noexcept {
         return reinterpret_cast<T *>(
                 &const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
     }
     template <typename T>
-    constexpr inline auto addressof(T &arg) noexcept {
+    constexpr inline T *addressof(T &arg) noexcept {
         return address_of(arg);
     }
 }
 
 namespace data_structure {
-    template <bool>
-    class __memory_pool_thread_support {};
-    template <>
-    class __memory_pool_thread_support<true> {
-    protected:
-        static bool mutex;
-    protected:
-        static bool wait_mutex() noexcept {
-            if(mutex) {
-                return true;
-            }
-            mutex = true;
-            return false;
-        }
-    };
-    bool __memory_pool_thread_support<true>::mutex {false};
-
-    template <bool Thread = false, decltype(sizeof 0) Align = 8, decltype(sizeof 0) MaxBytes = 128>
-    class __memory_pool : private __memory_pool_thread_support<Thread> {
+    template <decltype(sizeof 0) Align = 8, decltype(sizeof 0) MaxBytes = 128>
+    class __memory_pool {
     private:
         enum {
             align = Align,
@@ -64,11 +45,6 @@ namespace data_structure {
             free_list_node *free_list_link;
             char client_data[0];        //client_data[1] for compatibility
         };
-        enum : bool {
-            thread_support = Thread
-        };
-    private:
-        using __base = __memory_pool_thread_support<thread_support>;
     public:
         using size_type = decltype(sizeof 0);
         using difference_type = decltype(static_cast<char *>(nullptr) - static_cast<char *>(nullptr));
@@ -138,26 +114,23 @@ namespace data_structure {
         static void release() noexcept;
 #endif
     };
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    typename __memory_pool<Thread, Align, MaxBytes>::free_list_node *volatile
-    __memory_pool<Thread, Align, MaxBytes>::free_list[free_list_extent] {};
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    char *__memory_pool<Thread, Align, MaxBytes>::start {nullptr};
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    char *__memory_pool<Thread, Align, MaxBytes>::end {nullptr};
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    typename __memory_pool<Thread, Align, MaxBytes>::size_type
-    __memory_pool<Thread, Align, MaxBytes>::chunk_size {0};
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    typename __memory_pool<Align, MaxBytes>::free_list_node *volatile
+    __memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    char *__memory_pool<Align, MaxBytes>::start {nullptr};
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    char *__memory_pool<Align, MaxBytes>::end {nullptr};
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    typename __memory_pool<Align, MaxBytes>::size_type
+    __memory_pool<Align, MaxBytes>::chunk_size {0};
 }
 
 namespace data_structure {
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    void *__memory_pool<Thread, Align, MaxBytes>::allocate(size_type size) {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    void *__memory_pool<Align, MaxBytes>::allocate(size_type size) {
         if(size > max_bytes) {
             return operator new (size);
-        }
-        if constexpr(thread_support) {
-            while(__base::wait_mutex()) {}
         }
         auto first {*(free_list + free_list_index(size))};
         if(not first) {
@@ -165,18 +138,12 @@ namespace data_structure {
         }
         auto result_node {first};
         first = result_node->free_list_link;
-        if constexpr(thread_support) {
-            __base::mutex = false;
-        }
         return result_node;
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    void *__memory_pool<Thread, Align, MaxBytes>::allocate(size_type size, dynamic) noexcept {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    void *__memory_pool<Align, MaxBytes>::allocate(size_type size, dynamic) noexcept {
         if(size > max_bytes) {
             return operator new (size, {});
-        }
-        if constexpr(thread_support) {
-            while(__base::wait_mutex()) {}
         }
         auto first {*(free_list + free_list_index(size))};
         if(not first) {
@@ -184,30 +151,21 @@ namespace data_structure {
         }
         auto result_node {first};
         first = result_node->free_list_link;
-        if constexpr(thread_support) {
-            __base::mutex = false;
-        }
         return result_node;
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    void __memory_pool<Thread, Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    void __memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
         if(size > max_bytes) {
             operator delete (p, size);
             return;
-        }
-        if constexpr(thread_support) {
-            while(__base::wait_mutex()) {}
         }
         auto first {*(free_list + free_list_index(size))};
         auto return_node {reinterpret_cast<free_list_node *>(p)};
         return_node->free_list_link = first;
         first = return_node;
-        if constexpr(thread_support) {
-            __base::mutex = false;
-        }
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    void *__memory_pool<Thread, Align, MaxBytes>::refill(size_type size) {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    void *__memory_pool<Align, MaxBytes>::refill(size_type size) {
         size_type nodes {16};
         auto chunk {chunk_alloc(size, nodes)};
         if(nodes == 1) {
@@ -225,8 +183,8 @@ namespace data_structure {
         current_node->free_list_link = nullptr;
         return chunk;
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    void *__memory_pool<Thread, Align, MaxBytes>::refill(size_type size, dynamic) noexcept {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    void *__memory_pool<Align, MaxBytes>::refill(size_type size, dynamic) noexcept {
         size_type nodes {16};
         auto chunk {chunk_alloc(size, nodes, {})};
         if(nodes == 1) {
@@ -244,8 +202,8 @@ namespace data_structure {
         current_node->free_list_link = nullptr;
         return chunk;
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    char *__memory_pool<Thread, Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
         auto total_bytes {size * nodes};
         auto bytes_left {static_cast<size_type>(end - start)};
         if(bytes_left >= total_bytes) {
@@ -287,8 +245,8 @@ namespace data_structure {
         end = start + bytes_to_get;
         return chunk_alloc(size, nodes);
     }
-    template <bool Thread, decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
-    char *__memory_pool<Thread, Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes, dynamic)
+    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes, dynamic)
             noexcept {
         auto total_bytes {size * nodes};
         auto bytes_left {static_cast<size_type>(end - start)};
