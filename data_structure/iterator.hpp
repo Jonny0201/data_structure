@@ -338,7 +338,7 @@ namespace data_structure {
 
 namespace data_structure {
     template <typename Iterator>
-    class __wrap_iterator {
+    class __wrap_iterator final {
     private:
         using iterator_type = Iterator;
     public:
@@ -431,27 +431,27 @@ namespace data_structure {
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator!=(const __wrap_iterator<IteratorLHS> &lhs,
-                           const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator<(const __wrap_iterator<IteratorLHS> &lhs,
-                           const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base() < 0;
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator<=(const __wrap_iterator<IteratorLHS> &lhs,
-                           const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base() <= 0;
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator>(const __wrap_iterator<IteratorLHS> &lhs,
-                           const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs <= rhs);
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator>=(const __wrap_iterator<IteratorLHS> &lhs,
-                           const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs < rhs);
     }
 }
@@ -512,7 +512,7 @@ namespace data_structure {
             return *this;
         }
         reverse_iterator operator++(int)
-        noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
+                noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
             auto tmp {*this};
             ++*this;
             return tmp;
@@ -522,33 +522,33 @@ namespace data_structure {
             return *this;
         }
         reverse_iterator operator--(int)
-        noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
+                noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
             auto tmp {*this};
             --*this;
             return tmp;
         }
         reverse_iterator &operator+=(difference_type n)
-        noexcept(has_nothrow_minus_assignment_operator<iterator_type>::value) {
+                noexcept(has_nothrow_minus_assignment_operator<iterator_type>::value) {
             this->iter -= n;
             return *this;
         }
         reverse_iterator operator+(difference_type n) const
-        noexcept(has_nothrow_minus_operator<iterator_type>::value and
+                noexcept(has_nothrow_minus_operator<iterator_type>::value and
                  is_nothrow_constructible<reverse_iterator, iterator_type>::value) {
             return reverse_iterator {this->iter - n};
         }
         reverse_iterator &operator-=(difference_type n)
-        noexcept(has_nothrow_plus_assignment_operator<iterator_type>::value) {
+                noexcept(has_nothrow_plus_assignment_operator<iterator_type>::value) {
             this->iter += n;
             return *this;
         }
         reverse_iterator operator-(difference_type n) const
-        noexcept(has_nothrow_plus_operator<iterator_type>::value and
+                noexcept(has_nothrow_plus_operator<iterator_type>::value and
                  is_nothrow_constructible<reverse_iterator, iterator_type>::value) {
             return reverse_iterator {this->iter + n};
         }
         reference operator[](difference_type n) const
-        noexcept(has_nothrow_subscripting_operator<iterator_type, difference_type>::value) {
+                noexcept(has_nothrow_subscripting_operator<iterator_type, difference_type>::value) {
             return this->iter[n];
         }
     public:
@@ -558,39 +558,242 @@ namespace data_structure {
     };
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator-(const reverse_iterator<IteratorLHS> &lhs,
-                          const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator==(const reverse_iterator<IteratorLHS> &lhs,
-                           const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() == rhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator!=(const reverse_iterator<IteratorLHS> &lhs,
-                           const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator<(const reverse_iterator<IteratorLHS> &lhs,
-                          const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base() < 0;
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator<=(const reverse_iterator<IteratorLHS> &lhs,
-                           const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base() <= 0;
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator>(const reverse_iterator<IteratorLHS> &lhs,
-                          const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs <= rhs);
     }
     template <typename IteratorLHS, typename IteratorRHS>
     inline bool operator>=(const reverse_iterator<IteratorLHS> &lhs,
-                           const reverse_iterator<IteratorRHS> &rhs) noexcept {
+            const reverse_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs < rhs);
     }
+}
+
+namespace data_structure {
+    namespace __data_structure_auxiliary {
+        template <typename T>
+        struct forward_list_node final {
+        public:
+            using void_pointer = void *;
+            using next_type = forward_list_node *;
+            using value_type = T;
+            using reference = typename add_lvalue_reference<value_type>::type;
+            using const_reference = typename add_const_reference<value_type>::type;
+            using rvalue_reference = typename add_rvalue_reference<value_type>::type;
+            using pointer = typename add_pointer<value_type>::type;
+            using const_pointer = typename add_const_pointer<value_type>::type;
+        public:
+            next_type next;
+            value_type value;
+        };
+        template <typename NodeType>
+        struct node_type_traits final {
+            using node_type = NodeType;
+            using void_pointer = typename node_type::void_pointer;
+            using next_type = typename node_type::next_type;
+            using value_type = typename node_type::value_type;
+            using reference = typename node_type::reference;
+            using const_reference = typename node_type::const_reference;
+            using rvalue_reference = typename node_type::rvalue_reference;
+            using pointer = typename node_type::pointer;
+            using const_pointer = typename node_type::const_pointer;
+        };
+        template <typename T>
+        struct node_type_traits<T *> final {
+        public:
+            using node_type = T *;
+            using void_pointer = void *;
+            using next_type = node_type;
+            using value_type = typename remove_cvpointer<T *>::type;
+            using reference = typename add_lvalue_reference<value_type>::type;
+            using const_reference = typename add_const_reference<value_type>::type;
+            using rvalue_reference = typename add_rvalue_reference<value_type>::type;
+            using pointer = typename add_pointer<value_type>::type;
+            using const_pointer = typename add_const_pointer<value_type>::type;
+        };
+    }
+    template <typename NodeType, bool IsConst>
+    class forward_list_iterator final {
+        friend class forward_list_iterator<NodeType, true>;
+        template <typename T, typename Allocator>
+        friend class forward_list;
+    private:
+        using node_type = typename add_pointer<NodeType>::type;
+        using node_type_traits = __data_structure_auxiliary::node_type_traits<NodeType>;
+    public:
+        using size_type = decltype(sizeof 0);
+        using difference_type = decltype(static_cast<typename node_type_traits::pointer>(0) -
+                static_cast<typename node_type_traits::pointer>(0));
+        using value_type = typename node_type_traits::value_type;
+        using reference = typename node_type_traits::reference;
+        using const_reference = typename node_type_traits::const_reference;
+        using rvalue_reference = typename node_type_traits::rvalue_reference;
+        using pointer = typename node_type_traits::pointer;
+        using const_pointer = typename node_type_traits::const_pointer;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr forward_list_iterator() noexcept : node {nullptr} {}
+        explicit constexpr forward_list_iterator(node_type node)
+                noexcept(is_nothrow_copy_constructible<node_type>::value) : node {node} {}
+        constexpr forward_list_iterator(const forward_list_iterator &) = default;
+        constexpr forward_list_iterator(forward_list_iterator &&) noexcept = default;
+        ~forward_list_iterator() = default;
+    public:
+        forward_list_iterator &operator=(const forward_list_iterator &) = default;
+        forward_list_iterator &operator=(forward_list_iterator &&) noexcept = default;
+        reference operator*() const noexcept(has_nothrow_dereference_operator<node_type>::value) {
+            return this->node->value;
+        }
+        pointer operator->() const noexcept(has_nothrow_dereference_operator<node_type>::value) {
+            return &**this;
+        }
+        forward_list_iterator &operator++()
+                noexcept(is_nothrow_copy_assignable<typename node_type_traits::next_type>::value) {
+            this->node = this->node->next;
+            return *this;
+        }
+        forward_list_iterator operator++(int)
+                noexcept(is_nothrow_copy_assignable<typename node_type_traits::next_type>::value and
+                        is_nothrow_copy_constructible<forward_list_iterator>::value) {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+        operator forward_list_iterator<NodeType, true>() const
+                noexcept(is_nothrow_copy_constructible<NodeType>::value) {
+            return forward_list_iterator<NodeType, true>(this->node);
+        }
+    private:
+        friend bool operator==(const forward_list_iterator &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return lhs.node == rhs.node;
+        }
+        friend bool operator==(const forward_list_iterator &lhs, const forward_list_iterator<NodeType, true> &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return lhs.node == rhs.node;
+        }
+        friend bool operator==(const forward_list_iterator<NodeType, true> &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return lhs.node == rhs.node;
+        }
+        friend bool operator!=(const forward_list_iterator &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return not(lhs == rhs);
+        }
+        friend bool operator!=(const forward_list_iterator &lhs, const forward_list_iterator<NodeType, true> &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return not(lhs == rhs);
+        }
+        friend bool operator!=(const forward_list_iterator<NodeType, true> &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return not(lhs == rhs);
+        }
+    };
+    template <typename NodeType>
+    class forward_list_iterator<NodeType, true> final {
+        friend forward_list_iterator<NodeType, false>;
+        template <typename T, typename Allocator>
+        friend class forward_list;
+    private:
+        using node_type = typename add_pointer<NodeType>::type;
+        using node_type_traits = __data_structure_auxiliary::node_type_traits<NodeType>;
+    public:
+        using size_type = decltype(sizeof 0);
+        using difference_type = decltype(static_cast<typename node_type_traits::pointer>(0) -
+                static_cast<typename node_type_traits::pointer>(0));
+        using value_type = typename node_type_traits::value_type;
+        using reference = typename node_type_traits::reference;
+        using const_reference = typename node_type_traits::const_reference;
+        using rvalue_reference = typename node_type_traits::rvalue_reference;
+        using pointer = typename node_type_traits::pointer;
+        using const_pointer = typename node_type_traits::const_pointer;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr forward_list_iterator() noexcept : node {nullptr} {}
+        explicit constexpr forward_list_iterator(node_type node)
+                noexcept(is_nothrow_copy_constructible<node_type>::value) : node {node} {}
+        constexpr forward_list_iterator(const forward_list_iterator &) = default;
+        constexpr forward_list_iterator(forward_list_iterator &&) noexcept = default;
+        ~forward_list_iterator() = default;
+    public:
+        forward_list_iterator &operator=(const forward_list_iterator &) = default;
+        forward_list_iterator &operator=(forward_list_iterator &&) noexcept = default;
+        forward_list_iterator &operator=(const forward_list_iterator<node_type, false> &rhs)
+                noexcept(is_nothrow_copy_assignable<node_type>::value) {
+            this->node = rhs.node;
+            return *this;
+        }
+        forward_list_iterator &operator=(forward_list_iterator<node_type, false> &&rhs)
+                noexcept(is_nothrow_move_assignable<node_type>::value) {
+            this->node = move(rhs.node);
+            return *this;
+        }
+        const_reference operator*() const noexcept(has_nothrow_dereference_operator<node_type>::value) {
+            return this->node->value;
+        }
+        const_pointer operator->() const noexcept(has_nothrow_dereference_operator<node_type>::value) {
+            return &**this;
+        }
+        forward_list_iterator &operator++()
+                noexcept(is_nothrow_copy_assignable<typename node_type_traits::next_type>::value) {
+            this->node = this->node->next;
+            return *this;
+        }
+        forward_list_iterator operator++(int)
+                noexcept(is_nothrow_copy_assignable<typename node_type_traits::next_type>::value and
+                        is_nothrow_copy_constructible<forward_list_iterator>::value) {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        operator forward_list_iterator<NodeType, false>() const
+                noexcept(is_nothrow_copy_constructible<NodeType>::value) {
+            return forward_list_iterator<NodeType, false>(this->node);
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    private:
+        friend bool operator==(const forward_list_iterator &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return lhs.node == rhs.node;
+        }
+        friend bool operator!=(const forward_list_iterator &lhs, const forward_list_iterator &rhs)
+                noexcept(has_nothrow_equal_to_operator<NodeType>::value) {
+            return not(lhs == rhs);
+        }
+    };
 }
 
 #endif //DATA_STRUCTURE_ITERATOR_HPP
