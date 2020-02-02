@@ -77,3 +77,7 @@ Tentatively
 - splay_tree
 - b_tree
 - graph
+
+## Release Note ##
+
+There isn't any release note for this project, but I may stop updating temporarily for many reasons (such as preparation for Master's application last time) (｡ì _ í｡).
