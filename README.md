@@ -58,7 +58,7 @@ Tentatively
 - symmetric_matrix
 - toeplitz_matrix
 - square_band_matrix
-- spare matrix
+- spare_matrix
 - stack
 - queue (Adaptor)
 - deque (Adaptor)
