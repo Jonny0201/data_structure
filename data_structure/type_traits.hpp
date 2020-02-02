@@ -8546,6 +8546,13 @@ namespace data_structure {
                 noexcept(noexcept(allocator_type::construct(obj, data_structure::move(value)))) {
             allocator_type::construct(obj, data_structure::move(value));
         }
+        static void construct(allocator_type &allocator, pointer obj)
+                noexcept(noexcept(allocator.construct(obj))) {
+            allocator.construct(obj);
+        }
+        static void construct(pointer obj) noexcept(noexcept(allocator_type::construct(obj))) {
+            allocator_type::construct(obj);
+        }
         static void destroy(allocator_type &allocator, pointer obj)
                 noexcept(noexcept(allocator.destroy(obj))) {
             allocator.destroy(obj);
