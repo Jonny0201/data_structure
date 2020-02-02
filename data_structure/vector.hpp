@@ -20,7 +20,6 @@
 #include "allocator.hpp"
 #include "iterator.hpp"
 #include "algorithm.hpp"
-#include "__config.hpp"
 
 namespace data_structure {
     template <bool>
@@ -53,12 +52,7 @@ namespace data_structure {
         pointer cursor;
     private:
         constexpr static size_type alloc_size_ctor(size_type) noexcept;
-#ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
-        consteval
-#else
-        constexpr
-#endif
-        static size_type default_size() noexcept;
+        constexpr static size_type default_size() noexcept;
         static void handle_exception_from_alloc(pointer, pointer) noexcept;
         static void destroy_from_insert_or_erase(pointer, pointer) noexcept;
     private:
@@ -125,12 +119,7 @@ namespace data_structure {
         size_type size() const noexcept;
         size_type capacity() const noexcept;
         bool empty() const noexcept;
-#ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
-        consteval
-#else
-        constexpr
-#endif
-        size_type max_size() const noexcept;
+        constexpr size_type max_size() const noexcept;
         size_type remain() const noexcept;
         void reserve(size_type);
         void shrink_to_fit();
@@ -219,12 +208,7 @@ namespace data_structure {
         return size > 5 ? size + size / 5 : size * 2;
     }
     template <typename T, typename Allocator>
-#ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
-    consteval
-#else
-    constexpr
-#endif
-    inline typename vector_base<T, Allocator>::size_type
+    constexpr inline typename vector_base<T, Allocator>::size_type
     vector_base<T, Allocator>::default_size() noexcept {
         return sizeof(value_type) > 128 ? 16 : 64;
     }
@@ -436,19 +420,20 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline vector_base<T, Allocator> &vector_base<T, Allocator>::operator=(const vector_base &rhs) {
-        this->assign(rhs.cbegin(), rhs.cend());
+        if(this not_eq &rhs) {
+            this->assign(rhs.cbegin(), rhs.cend());
+        }
         return *this;
     }
     template <typename T, typename Allocator>
     inline vector_base<T, Allocator> &vector_base<T, Allocator>::operator=(vector_base &&rhs) noexcept {
-        if(this == &rhs) {
-            return *this;
+        if(this not_eq &rhs) {
+            this->~vector_base();
+            this->first = move(rhs.first);
+            this->last = move(rhs.last);
+            this->cursor = move(rhs.cursor);
+            rhs.first = nullptr;
         }
-        this->~vector_base();
-        this->first = move(rhs.first);
-        this->last = move(rhs.last);
-        this->cursor = move(rhs.cursor);
-        rhs.first = nullptr;
         return *this;
     }
     template <typename T, typename Allocator>
@@ -545,7 +530,7 @@ namespace data_structure {
     template <typename ForwardIterator>
     typename enable_if<is_forward_iterator<ForwardIterator>::value, void>::type
     vector_base<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
-        const size_type new_size {distance(begin, end)};
+        const size_type new_size {static_cast<size_type>(distance(begin, end))};
         if(new_size <= this->capacity()) {
             auto cursor {this->first};
             if(new_size <= this->size()) {
@@ -654,12 +639,7 @@ namespace data_structure {
         return this->first == this->cursor;
     }
     template <typename T, typename Allocator>
-#ifdef _DATA_STRUCTURE_HAS_CONSTEVAL
-    consteval
-#else
-    constexpr
-#endif
-    inline typename vector_base<T, Allocator>::size_type
+    constexpr inline typename vector_base<T, Allocator>::size_type
     vector_base<T, Allocator>::max_size() const noexcept {
         return std::numeric_limits<size_type>::max() / sizeof(value_type);
     }
