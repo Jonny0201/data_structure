@@ -27,6 +27,7 @@
 #include "algorithm.hpp"
 #include "preprocessor.hpp"
 #include "__config.hpp"
+#include "forward_list.hpp"
 
 namespace data_structure {
     using size_t = decltype(sizeof 0);
