@@ -165,92 +165,114 @@ namespace data_structure {
         void push_front(rvalue_reference);
         void pop_front() noexcept;
     public:
-        void merge(forward_list &);
-        void merge(forward_list &&);
+        void merge(forward_list &) noexcept(has_nothrow_less_operator<value_type>::value and
+                has_nothrow_equal_to_operator<value_type>::value);
+        void merge(forward_list &&) noexcept(has_nothrow_less_operator<value_type>::value and
+                has_nothrow_equal_to_operator<value_type>::value);
         template <typename AllocatorRHS>
-        void merge(forward_list<value_type, AllocatorRHS> &);
+        void merge(forward_list<value_type, AllocatorRHS> &)
+                noexcept(has_nothrow_less_operator<value_type>::value and
+                        has_nothrow_equal_to_operator<value_type>::value);
         template <typename AllocatorRHS>
-        void merge(forward_list<value_type, AllocatorRHS> &&);
+        void merge(forward_list<value_type, AllocatorRHS> &&)
+                noexcept(has_nothrow_less_operator<value_type>::value and
+                        has_nothrow_equal_to_operator<value_type>::value);
         template <typename Compare>
-        void merge(forward_list &, Compare);
+        void merge(forward_list &, Compare)
+                noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value);
         template <typename Compare>
-        void merge(forward_list &&, Compare);
+        void merge(forward_list &&, Compare)
+                noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value);
         template <typename Compare, typename AllocatorRHS>
-        void merge(forward_list<value_type, AllocatorRHS> &, Compare);
+        void merge(forward_list<value_type, AllocatorRHS> &, Compare)
+                noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value);
         template <typename Compare, typename AllocatorRHS>
-        void merge(forward_list<value_type, AllocatorRHS> &&, Compare);
-        void splice_after(difference_type, forward_list &);
-        void splice_after(const_iterator, forward_list &);
-        void splice_after(difference_type, forward_list &&);
-        void splice_after(const_iterator, forward_list &&);
-        void splice_after(difference_type, forward_list &, difference_type);
-        void splice_after(difference_type, forward_list &, const_iterator);
-        void splice_after(difference_type, forward_list &&, difference_type);
-        void splice_after(difference_type, forward_list &&, const_iterator);
-        void splice_after(const_iterator, forward_list &, difference_type);
-        void splice_after(const_iterator, forward_list &, const_iterator);
-        void splice_after(const_iterator, forward_list &&, difference_type);
-        void splice_after(const_iterator, forward_list &&, const_iterator);
-        void splice_after(difference_type, forward_list &, difference_type, size_type);
-        void splice_after(difference_type, forward_list &, const_iterator, size_type);
-        void splice_after(difference_type, forward_list &&, difference_type, size_type);
-        void splice_after(difference_type, forward_list &&, const_iterator, size_type);
-        void splice_after(const_iterator, forward_list &, difference_type, size_type);
-        void splice_after(const_iterator, forward_list &, const_iterator , size_type);
-        void splice_after(const_iterator , forward_list &&, difference_type, size_type);
-        void splice_after(const_iterator, forward_list &&, const_iterator, size_type);
-        void splice_after(difference_type, forward_list &, const_iterator, const_iterator);
-        void splice_after(difference_type, forward_list &&, const_iterator, const_iterator);
-        void splice_after(const_iterator, forward_list &, const_iterator, const_iterator);
-        void splice_after(const_iterator, forward_list &&, const_iterator, const_iterator);
+        void merge(forward_list<value_type, AllocatorRHS> &&, Compare)
+                noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value);
+        void splice_after(difference_type, forward_list &) noexcept;
+        void splice_after(const_iterator, forward_list &) noexcept;
+        void splice_after(difference_type, forward_list &&) noexcept;
+        void splice_after(const_iterator, forward_list &&) noexcept;
+        void splice_after(difference_type, forward_list &, difference_type) noexcept;
+        void splice_after(difference_type, forward_list &, const_iterator) noexcept;
+        void splice_after(difference_type, forward_list &&, difference_type) noexcept;
+        void splice_after(difference_type, forward_list &&, const_iterator) noexcept;
+        void splice_after(const_iterator, forward_list &, difference_type) noexcept;
+        void splice_after(const_iterator, forward_list &, const_iterator) noexcept;
+        void splice_after(const_iterator, forward_list &&, difference_type) noexcept;
+        void splice_after(const_iterator, forward_list &&, const_iterator) noexcept;
+        void splice_after(difference_type, forward_list &, difference_type, size_type) noexcept;
+        void splice_after(difference_type, forward_list &, const_iterator, size_type) noexcept;
+        void splice_after(difference_type, forward_list &&, difference_type, size_type) noexcept;
+        void splice_after(difference_type, forward_list &&, const_iterator, size_type) noexcept;
+        void splice_after(const_iterator, forward_list &, difference_type, size_type) noexcept;
+        void splice_after(const_iterator, forward_list &, const_iterator , size_type) noexcept;
+        void splice_after(const_iterator , forward_list &&, difference_type, size_type) noexcept;
+        void splice_after(const_iterator, forward_list &&, const_iterator, size_type) noexcept;
+        void splice_after(difference_type, forward_list &, const_iterator, const_iterator) noexcept;
+        void splice_after(difference_type, forward_list &&, const_iterator, const_iterator) noexcept;
+        void splice_after(const_iterator, forward_list &, const_iterator, const_iterator) noexcept;
+        void splice_after(const_iterator, forward_list &&, const_iterator, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, difference_type);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type, size_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, size_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type, size_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type, size_type);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator , size_type);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator , size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator , forward_list<value_type, AllocatorRHS> &&, difference_type, size_type);
+        void splice_after(const_iterator , forward_list<value_type, AllocatorRHS> &&, difference_type, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator);
+        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator)
+                noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator);
+        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator)
+                noexcept;
         void remove(const_reference) noexcept(has_nothrow_equal_to_operator<value_type>::value);
         template <typename UnaryPredicate>
         void remove_if(UnaryPredicate)
@@ -905,12 +927,12 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::swap(forward_list &rhs) noexcept {
-        swap(this->head, rhs.head);
+        __DS::swap(this->head, rhs.head);
     }
     template <typename T, typename Allocator>
     template <typename AllocatorRHS>
     inline void forward_list<T, Allocator>::swap(forward_list<T, AllocatorRHS> &rhs) noexcept {
-        swap(this->head, rhs.head);
+        __DS::swap(this->head, rhs.head);
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::resize(size_type size, const_reference value) {
@@ -1226,6 +1248,160 @@ namespace data_structure {
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     inline bool operator>=(const forward_list<T, AllocatorLHS> &lhs, const forward_list<T, AllocatorRHS> &rhs) {
         return not(lhs < rhs);
+    }
+}
+
+namespace data_structure {
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::merge(forward_list<value_type, Allocator> &rhs)
+            noexcept(has_nothrow_less_operator<value_type>::value and
+                    has_nothrow_equal_to_operator<value_type>::value) {
+        if(not rhs.head->next) {
+            return;
+        }
+        if(distance(this->cbegin(), this->cend()) > distance(rhs.cbegin(), rhs.cend())) {
+            this->swap(rhs);
+        }
+        auto current_lhs {this->head->next};
+        auto current_rhs {rhs.head->next};
+        rhs.head->next = nullptr;
+        auto before_current {this->head};
+        while(current_rhs) {
+            //Exception-unsafe if the comparison functions throw an exception.
+            //NEED TO BE REVISION
+            if(current_rhs->value < current_lhs->value or current_rhs->value == current_lhs->value) {
+                before_current->next = current_rhs;
+                auto backup {current_rhs->next};
+                current_rhs->next = current_lhs;
+                before_current = current_rhs;
+                current_rhs = backup;
+                continue;
+            }
+            before_current = current_lhs;
+            current_lhs = current_lhs->next;
+            if(not current_lhs) {
+                break;
+            }
+        }
+        before_current->next = current_rhs;
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::merge(forward_list &&rhs)
+            noexcept(has_nothrow_less_operator<value_type>::value and
+                    has_nothrow_equal_to_operator<value_type>::value) {
+        this->merge(rhs);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::merge(forward_list<value_type, AllocatorRHS> &rhs)
+            noexcept(has_nothrow_less_operator<value_type>::value and
+                     has_nothrow_equal_to_operator<value_type>::value) {
+        this->merge(*reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::merge(forward_list<value_type, AllocatorRHS> &&rhs)
+            noexcept(has_nothrow_less_operator<value_type>::value and
+                   has_nothrow_equal_to_operator<value_type>::value) {
+        this->merge(*reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    void forward_list<T, Allocator>::merge(forward_list &rhs, Compare cmp)
+            noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
+        if(not rhs.head->next) {
+            return;
+        }
+        if(distance(this->cbegin(), this->cend()) > distance(rhs.cbegin(), rhs.cend())) {
+            this->swap(rhs);
+        }
+        auto current_lhs {this->head->next};
+        auto current_rhs {rhs.head->next};
+        rhs.head->next = nullptr;
+        auto before_current {this->head};
+        while(current_rhs) {
+            //Exception-unsafe if the function cmp throws an exception.
+            //NEED TO BE REVISION
+            if(cmp(current_rhs, current_lhs)) {
+                before_current->next = current_rhs;
+                auto backup {current_rhs->next};
+                current_rhs->next = current_lhs;
+                before_current = current_rhs;
+                current_rhs = backup;
+                continue;
+            }
+            before_current = current_lhs;
+            current_lhs = current_lhs->next;
+            if(not current_lhs) {
+                break;
+            }
+        }
+        before_current->next = current_rhs;
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    inline void forward_list<T, Allocator>::merge(forward_list &&rhs, Compare cmp)
+            noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(rhs, cmp);
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare, typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::merge(forward_list<value_type, AllocatorRHS> &rhs, Compare cmp)
+            noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(
+                *reinterpret_cast<forward_list *>(&rhs), cmp);
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare, typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::merge(forward_list<value_type, AllocatorRHS> &&rhs, Compare cmp)
+            noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(
+                *reinterpret_cast<forward_list *>(&rhs), cmp);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::remove(const_reference value)
+            noexcept(has_nothrow_equal_to_operator<value_type>::value) {
+        auto cursor {this->head};
+        auto next {cursor->next};
+        while(next) {
+            if(next->value == value) {
+                auto backup {next};
+                next = next->next;
+                cursor->next = next;
+                this->destroy(backup);
+            }
+        }
+    }
+    template <typename T, typename Allocator>
+    template <typename UnaryPredicate>
+    void forward_list<T, Allocator>::remove_if(UnaryPredicate pred)
+            noexcept(has_nothrow_function_call_operator<UnaryPredicate, value_type>::value) {
+        auto cursor {this->head};
+        auto next {cursor->next};
+        while(next) {
+            if(UnaryPredicate(next->value)) {
+                auto backup {next};
+                next = next->next;
+                cursor->next = next;
+                this->destroy(backup);
+            }
+        }
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::reverse() noexcept {
+        auto current {this->head->next};
+        if(not current) {
+            return;
+        }
+        auto backup {current->next};
+        current->next = nullptr;
+        while(backup) {
+            auto next {backup->next};
+            backup->next = current;
+            current = backup;
+            backup = next;
+        }
+        this->head->next = current;
     }
 }
 
