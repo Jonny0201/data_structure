@@ -17,6 +17,12 @@
 #ifndef DATA_STRUCTURE_CONFIG_HPP
 #define DATA_STRUCTURE_CONFIG_HPP
 
+#include <memory>
+#include <initializer_list>
+#include <limits>
+
+#define __DS data_structure
+
 /* __config for C++ 2a */
 
 #if __has_keyword(consteval)
@@ -42,5 +48,10 @@
 #if __has_keyword(module) && __has_keyword(import)
 #define _DATA_STRUCTURE_HAS_MODULE
 #endif
+
+namespace data_structure {
+    template <typename T>
+    using initializer_list = std::initializer_list<T>;
+}
 
 #endif //DATA_STRUCTURE_CONFIG_HPP
