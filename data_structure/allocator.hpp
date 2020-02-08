@@ -78,23 +78,23 @@ namespace data_structure {
             ::operator delete (p);
         }
     public:
-        pointer allocate(size_type n) const {
-            return reinterpret_cast<pointer>(this->operator new (n));
+        static pointer allocate(size_type n) {
+            return reinterpret_cast<pointer>(allocator::operator new (n));
         }
-        pointer allocate(size_type n, dynamic) const noexcept {
-            return reinterpret_cast<pointer>(this->operator new (n, dynamic()));
+        static pointer allocate(size_type n, dynamic) noexcept {
+            return reinterpret_cast<pointer>(allocator::operator new (n, dynamic()));
         }
-        void deallocate(pointer p, size_type n) const noexcept {
-            this->operator delete (p);
+        static void deallocate(pointer p, size_type n) noexcept {
+            allocator::operator delete (p);
         }
         template <typename ...Args>
-        pointer construct(pointer p, Args &&...args) const
+        static pointer construct(pointer p, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             return new (p) value_type(data_structure::forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
-        pointer construct(pointer begin, const_pointer end, Args &&...args) const
+        static pointer construct(pointer begin, const_pointer end, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             auto cursor {begin};
             while(cursor not_eq end) {
@@ -102,13 +102,13 @@ namespace data_structure {
             }
             return begin;
         }
-        constexpr void destroy(pointer p) const noexcept(is_nothrow_destructible<value_type>::value) {
-            this->destroy(p, typename conditional<
+        constexpr static void destroy(pointer p) noexcept(is_nothrow_destructible<value_type>::value) {
+            allocator::destroy(p, typename conditional<
                     is_trivially_destructible<value_type>::value, true_type, false_type>::result());
         }
-        constexpr void destroy(pointer begin, const_pointer end) const
+        constexpr static void destroy(pointer begin, const_pointer end)
                 noexcept(is_nothrow_destructible<value_type>::value) {
-            this->destroy(begin, end, typename conditional<
+            allocator::destroy(begin, end, typename conditional<
                     is_trivially_destructible<value_type>::value, true_type, false_type>::result());
         }
     };
