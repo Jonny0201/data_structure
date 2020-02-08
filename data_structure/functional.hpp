@@ -48,4 +48,106 @@ namespace data_structure {
     };
 }
 
+namespace data_structure {
+    template <typename Arg1, typename Arg2, typename Result>
+    struct binary_function {
+        using first_argument_type = Arg1;
+        using second_argument_type = Arg2;
+        using result_type = Result;
+    };
+}
+
+namespace data_structure {
+    template <typename LHS, typename RHS = LHS>
+    struct less : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+                noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) < forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct less<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+                noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) < forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct less_equal : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+                noexcept(noexcept(forward<LHS>(lhs) <= forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) <= forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct less_equal<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+                noexcept(noexcept(forward<LHS>(lhs) <= forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) <= forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct greater : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) > forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) > forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct greater<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) > forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) > forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct greater_equal : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) >= forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) >= forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct greater_equal<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) >= forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) >= forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct equal_to : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) == forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) == forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct equal_to<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) == forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) == forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct not_equal_to : binary_function<LHS, RHS, bool> {
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) != forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) != forward<RHS>(rhs);
+        }
+    };
+    template <>
+    struct not_equal_to<void, void> {
+        template <typename LHS, typename RHS = LHS>
+        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
+        noexcept(noexcept(forward<LHS>(lhs) != forward<RHS>(rhs))) {
+            return forward<LHS>(lhs) != forward<RHS>(rhs);
+        }
+    };
+}
+
 #endif //DATA_STRUCTURE_FUNCTIONAL_HPP
