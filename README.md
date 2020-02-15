@@ -30,6 +30,7 @@ Jonny
 
 - vector
 - forward_list
+- array
 
 ### Algorithms ###
 
@@ -47,7 +48,6 @@ Tentatively
 - circular_forward_list
 - list
 - circular_list
-- array
 - matrix
 - square_matrix
 - diagonal_matrix
