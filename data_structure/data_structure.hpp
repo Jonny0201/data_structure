@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -28,12 +28,6 @@
 #include "__config.hpp"
 #include "forward_list.hpp"
 #include "list.hpp"
-
-namespace data_structure {
-    using size_t = decltype(sizeof 0);
-    using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
-}
-
-namespace ds = data_structure;
+#include "array.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP

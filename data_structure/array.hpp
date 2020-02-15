@@ -25,8 +25,8 @@ namespace data_structure {
     template <typename T, decltype(sizeof 0) Size>
     struct array final {
     public:
-        using size_type = decltype(Size);
-        using difference_type = decltype(static_cast<char *>(nullptr) - static_cast<char *>(nullptr));
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
         using value_type = T;
         using reference = typename add_lvalue_reference<value_type>::type;
         using const_reference = typename add_const_reference<value_type>::type;
@@ -154,8 +154,8 @@ namespace data_structure {
             T data[1];
         };
     public:
-        using size_type = decltype(sizeof 0);
-        using difference_type = decltype(static_cast<char *>(nullptr) - static_cast<char *>(nullptr));
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
         using value_type = T;
         using reference = typename add_lvalue_reference<value_type>::type;
         using const_reference = typename add_const_reference<value_type>::type;

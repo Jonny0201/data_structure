@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -22,12 +22,8 @@
 #include "algorithm.hpp"
 
 namespace data_structure {
-    template <bool>
-    class __vector_common {};
-    extern template class __vector_common<true>;
-
     template <typename T, typename Allocator = allocator<type_holder<T>>>
-    class vector_base : protected __vector_common<true> {
+    class vector_base {
     public:
         using allocator_type = Allocator;
         using size_type = typename allocator_traits<allocator_type>::size_type;
@@ -40,8 +36,8 @@ namespace data_structure {
         using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
         using iterator = __wrap_iterator<pointer>;
         using const_iterator = __wrap_iterator<const_pointer>;
-        using reverse_iterator = data_structure::reverse_iterator<iterator>;
-        using const_reverse_iterator = data_structure::reverse_iterator<const_iterator>;
+        using reverse_iterator = ds::reverse_iterator<iterator>;
+        using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same<value_type, typename alloc_traits::value_type>::value,
@@ -75,7 +71,7 @@ namespace data_structure {
         vector_base(typename enable_if<
                         is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type,
                 ForwardIterator);
-        vector_base(std::initializer_list<value_type>);
+        vector_base(initializer_list<value_type>);
         vector_base(const vector_base &);
         vector_base(vector_base &&) noexcept;
         template <typename AllocatorRHS>
@@ -86,7 +82,7 @@ namespace data_structure {
     public:
         vector_base &operator=(const vector_base &);
         vector_base &operator=(vector_base &&) noexcept;
-        vector_base &operator=(std::initializer_list<value_type>);
+        vector_base &operator=(initializer_list<value_type>);
         template <typename AllocatorRHS>
         vector_base &operator=(const vector_base<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
@@ -103,7 +99,7 @@ namespace data_structure {
         template <typename ForwardIterator>
         typename enable_if<is_forward_iterator<ForwardIterator>::value, void>::type
         assign(ForwardIterator, ForwardIterator);
-        void assign(std::initializer_list<value_type>);
+        void assign(initializer_list<value_type>);
         iterator begin() noexcept;
         const_iterator begin() const noexcept;
         iterator end() noexcept;
@@ -143,8 +139,8 @@ namespace data_structure {
         iterator insert(difference_type, rvalue_reference);
         iterator insert(const_iterator, const_reference, size_type = 1);
         iterator insert(const_iterator, rvalue_reference);
-        iterator insert(const_iterator, std::initializer_list<value_type>);
-        iterator insert(difference_type, std::initializer_list<value_type>);
+        iterator insert(const_iterator, initializer_list<value_type>);
+        iterator insert(difference_type, initializer_list<value_type>);
         template <typename InputIterator>
         iterator insert(const_iterator, InputIterator,
                 typename enable_if<is_input_iterator<InputIterator>::value and
@@ -394,7 +390,7 @@ namespace data_structure {
         }
     }
     template <typename T, typename Allocator>
-    inline vector_base<T, Allocator>::vector_base(std::initializer_list<value_type> list) :
+    inline vector_base<T, Allocator>::vector_base(initializer_list<value_type> list) :
             vector_base(list.begin(), list.end()) {}
     template <typename T, typename Allocator>
     inline vector_base<T, Allocator>::vector_base(const vector_base &rhs) :
@@ -438,7 +434,7 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline vector_base<T, Allocator> &
-    vector_base<T, Allocator>::operator=(std::initializer_list<value_type> list) {
+    vector_base<T, Allocator>::operator=(initializer_list<value_type> list) {
         this->assign(list.begin(), list.end());
         return *this;
     }
@@ -564,7 +560,7 @@ namespace data_structure {
         }
     }
     template <typename T, typename Allocator>
-    inline void vector_base<T, Allocator>::assign(std::initializer_list<value_type> list) {
+    inline void vector_base<T, Allocator>::assign(initializer_list<value_type> list) {
         this->assign(list.begin(), list.end());
     }
     template <typename T, typename Allocator>
@@ -1010,12 +1006,12 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::insert(difference_type pos, std::initializer_list<value_type> list) {
+    vector_base<T, Allocator>::insert(difference_type pos, initializer_list<value_type> list) {
         return this->insert(pos, list.begin(), list.end());
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::insert(const_iterator pos, std::initializer_list<value_type> list) {
+    vector_base<T, Allocator>::insert(const_iterator pos, initializer_list<value_type> list) {
         return this->insert(pos - const_iterator(this->first), list.begin(), list.end());
     }
     template <typename T, typename Allocator>
@@ -1269,7 +1265,7 @@ namespace data_structure {
     inline
     bool operator>(const vector_base<T, AllocatorLHS> &lhs, const vector_base<T, AllocatorRHS> &rhs)
             noexcept(has_nothrow_less_operator<T>::value and has_nothrow_equal_to_operator<T>::value) {
-        return not(lhs <= rhs);
+        return rhs < lhs;
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     inline

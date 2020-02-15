@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ namespace data_structure {
 }
 
 namespace data_structure {
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct less : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
                 noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
@@ -70,10 +70,10 @@ namespace data_structure {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
                 noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) < forward<RHS>(rhs);
+            return __DS::forward<LHS>(lhs) < __DS::forward<RHS>(rhs);
         }
     };
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct less_equal : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
                 noexcept(noexcept(forward<LHS>(lhs) <= forward<RHS>(rhs))) {
@@ -88,7 +88,7 @@ namespace data_structure {
             return forward<LHS>(lhs) <= forward<RHS>(rhs);
         }
     };
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct greater : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
         noexcept(noexcept(forward<LHS>(lhs) > forward<RHS>(rhs))) {
@@ -103,7 +103,7 @@ namespace data_structure {
             return forward<LHS>(lhs) > forward<RHS>(rhs);
         }
     };
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct greater_equal : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
         noexcept(noexcept(forward<LHS>(lhs) >= forward<RHS>(rhs))) {
@@ -118,7 +118,7 @@ namespace data_structure {
             return forward<LHS>(lhs) >= forward<RHS>(rhs);
         }
     };
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct equal_to : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
         noexcept(noexcept(forward<LHS>(lhs) == forward<RHS>(rhs))) {
@@ -133,7 +133,7 @@ namespace data_structure {
             return forward<LHS>(lhs) == forward<RHS>(rhs);
         }
     };
-    template <typename LHS, typename RHS = LHS>
+    template <typename LHS = void, typename RHS = LHS>
     struct not_equal_to : binary_function<LHS, RHS, bool> {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
         noexcept(noexcept(forward<LHS>(lhs) != forward<RHS>(rhs))) {

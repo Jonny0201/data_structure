@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -21,12 +21,20 @@
 #include <initializer_list>
 #include <limits>
 
+#define __DATA_STRUCTURE_START(x, ...)
+#define __DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(data_structure macro)
 #define __DS data_structure
+__DATA_STRUCTURE_END
 
-/* __config for C++ 2a */
-
+__DATA_STRUCTURE_START(configure for C++ 2a)
 #if __has_keyword(consteval)
 #define _DATA_STRUCTURE_HAS_CONSTEVAL
+#endif
+
+#if __has_keyword(constinit)
+#define _DATA_STRUCTURE_HAS_CONSTINIT
 #endif
 
 #if __has_keyword(char8_t)
@@ -48,10 +56,29 @@
 #if __has_keyword(module) && __has_keyword(import)
 #define _DATA_STRUCTURE_HAS_MODULE
 #endif
+__DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(namespace creation)
 namespace data_structure {
     template <typename T>
     using initializer_list = std::initializer_list<T>;
+    using size_t = decltype(sizeof 0);
+    using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
+
+    inline namespace __data_structure_helper {}
+    namespace __data_structure_auxiliary {}
+    namespace __data_structure_impl {}
+    namespace __data_structure_testing {}
+
+    namespace __dsh = __data_structure_helper;
+    namespace __dsa = __data_structure_auxiliary;
+    namespace __dsi = __data_structure_impl;
+    namespace __dst = __data_structure_testing;
 }
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(namespace alias)
+namespace ds = data_structure;
+__DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_CONFIG_HPP

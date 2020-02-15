@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -52,6 +52,42 @@ namespace data_structure {
         auto tmp {move(lhs)};
         lhs = move(rhs);
         rhs = move(tmp);
+    }
+
+    template <typename T, typename OutputIterator, typename SizeType>
+    OutputIterator fill_n(OutputIterator first, SizeType size, const T &value) {
+        while(size > 0) {
+            *first++ = value;
+            --size;
+        }
+        return first;
+    }
+    template <typename T, typename ForwardIterator>
+    void fill(typename enable_if<is_forward_iterator<ForwardIterator>::value and
+                    not is_random_access_iterator<ForwardIterator>::value, ForwardIterator>::type first,
+            ForwardIterator last, const T &value) {
+        while(first not_eq last) {
+            *first++ = value;
+        }
+    }
+    template <typename T, typename RandomAccessIterator>
+    inline void fill(typename enable_if<is_random_access_iterator<RandomAccessIterator>::value,
+            RandomAccessIterator>::type first, RandomAccessIterator last, const T &value) {
+        ds::fill_n(first, last - first, value);
+    }
+    template <typename ForwardIteratorLHS, typename ForwardIteratorRHS = ForwardIteratorLHS>
+    ForwardIteratorRHS swap_ranges(ForwardIteratorLHS first_lhs,
+            ForwardIteratorLHS last_lhs, ForwardIteratorRHS first_rhs)
+            noexcept(is_nothrow_swappable_with<typename iterator_traits<ForwardIteratorLHS>::value_type,
+                    typename iterator_traits<ForwardIteratorRHS>::value_type>::value) {
+        while(first_lhs not_eq last_lhs) {
+            ds::swap(*first_lhs++, *first_rhs);
+        }
+        return first_rhs;
+    }
+    template <typename T, decltype(sizeof 0) N>
+    inline void swap_ranges(T (&array_lhs)[N], T (&array_rhs)[N]) noexcept(is_nothrow_swappable<T>::value) {
+        ds::swap_ranges(array_lhs, array_lhs + N, array_rhs);
     }
 
     namespace __data_structure_testing {

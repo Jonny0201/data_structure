@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ namespace data_structure {
     template <typename T>
     class allocator final {
     public:
-        using size_type = decltype(sizeof 0);
-        using difference_type = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
         using value_type = T;
         using reference = typename add_lvalue_reference<value_type>::type;
         using const_reference = typename add_const_reference<value_type>::type;

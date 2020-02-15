@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -76,6 +76,8 @@ namespace data_structure {
         static node_type insert_auxiliary(node_type, node_type,
                 typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type,
                 ForwardIterator);
+        template <typename Compare>
+        static node_type merge_auxiliary(node_type, node_type, Compare &) noexcept;
     public:
         forward_list();
         explicit forward_list(size_type);
@@ -281,9 +283,9 @@ namespace data_structure {
         template <typename BinaryPredicate>
         void unique(BinaryPredicate)
                 noexcept(has_nothrow_function_call_operator<BinaryPredicate, value_type>::value);
-        void sort();
+        void sort() noexcept;
         template <typename Compare>
-        void sort(Compare);
+        void sort(Compare) noexcept;
         void reverse() noexcept;
     };
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
@@ -714,6 +716,48 @@ namespace data_structure {
         before_begin->next = first;
         cursor->next = after_end;
         return first;
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    typename forward_list<T, Allocator>::node_type
+    forward_list<T, Allocator>::merge_auxiliary(node_type lhs, node_type rhs, Compare &cmp) noexcept {
+        if(not lhs) {
+            return rhs;
+        }
+        if(not rhs) {
+            return lhs;
+        }
+        node_type result {};
+        if(cmp(rhs->value, lhs->value)) {
+            auto next {rhs};
+            while(next->next and cmp(next->next->value, lhs->value)) {
+                next = next->next;
+            }
+            result = rhs;
+            rhs = next->next;
+            next->next = lhs;
+        }else {
+            result = lhs;
+        }
+        auto before_lhs {lhs};
+        lhs = lhs->next;
+        while(lhs and rhs) {
+            if(cmp(rhs->value, lhs->value)) {
+                auto rhs_cursor {rhs};
+                while(rhs_cursor->next and cmp(rhs_cursor->next->value, lhs->value)) {
+                    rhs_cursor = rhs_cursor->next;
+                }
+                before_lhs->next = rhs;
+                rhs = rhs_cursor->next;
+                rhs_cursor->next = lhs;
+            }
+            before_lhs = lhs;
+            lhs = lhs->next;
+        }
+        if(rhs) {
+            before_lhs->next = rhs;
+        }
+        return result;
     }
 
     /* public function */
@@ -1256,34 +1300,52 @@ namespace data_structure {
     void forward_list<T, Allocator>::merge(forward_list<value_type, Allocator> &rhs)
             noexcept(has_nothrow_less_operator<value_type>::value and
                     has_nothrow_equal_to_operator<value_type>::value) {
-        if(not rhs.head->next) {
+        if(not rhs.head->next or &rhs == this) {
             return;
         }
-        if(distance(this->cbegin(), this->cend()) > distance(rhs.cbegin(), rhs.cend())) {
+        if(distance(this->cbegin(), this->cend()) < distance(rhs.cbegin(), rhs.cend())) {
             this->swap(rhs);
         }
         auto current_lhs {this->head->next};
         auto current_rhs {rhs.head->next};
-        rhs.head->next = nullptr;
         auto before_current {this->head};
-        while(current_rhs) {
-            //Exception-unsafe if the comparison functions throw an exception.
-            //NEED TO BE REVISION
-            if(current_rhs->value < current_lhs->value or current_rhs->value == current_lhs->value) {
-                before_current->next = current_rhs;
-                auto backup {current_rhs->next};
-                current_rhs->next = current_lhs;
-                before_current = current_rhs;
-                current_rhs = backup;
-                continue;
+        while(current_lhs and current_rhs) {
+            if constexpr(has_nothrow_less_operator<value_type>::value and
+                    has_nothrow_equal_to_operator<value_type>::value) {
+                if(current_rhs->value < current_lhs->value or current_rhs->value == current_lhs->value) {
+                    before_current->next = current_rhs;
+                    while(current_rhs->next and (current_rhs->next->value < current_lhs->value or
+                                                 current_rhs->next->value == current_lhs->value)) {
+                        current_rhs = current_rhs->next;
+                    }
+                    auto backup {current_rhs->next};
+                    current_rhs->next = current_lhs;
+                    current_rhs = backup;
+                }
+            }else {
+                try {
+                    if(current_rhs->value < current_lhs->value or current_rhs->value == current_lhs->value) {
+                        before_current->next = current_rhs;
+                        while(current_rhs->next and (current_rhs->next->value < current_lhs->value or
+                                                     current_rhs->next->value == current_lhs->value)) {
+                            current_rhs = current_rhs->next;
+                        }
+                        auto backup {current_rhs->next};
+                        current_rhs->next = current_lhs;
+                        current_rhs = backup;
+                    }
+                }catch(...) {
+                    rhs.head->next = current_rhs;
+                    throw;
+                }
             }
             before_current = current_lhs;
             current_lhs = current_lhs->next;
-            if(not current_lhs) {
-                break;
-            }
         }
-        before_current->next = current_rhs;
+        if(current_rhs) {
+            before_current->next = current_rhs;
+        }
+        rhs.head->next = nullptr;
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::merge(forward_list &&rhs)
@@ -1309,34 +1371,49 @@ namespace data_structure {
     template <typename Compare>
     void forward_list<T, Allocator>::merge(forward_list &rhs, Compare cmp)
             noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
-        if(not rhs.head->next) {
+        if(not rhs.head->next or &rhs == this) {
             return;
         }
-        if(distance(this->cbegin(), this->cend()) > distance(rhs.cbegin(), rhs.cend())) {
+        if(distance(this->cbegin(), this->cend()) < distance(rhs.cbegin(), rhs.cend())) {
             this->swap(rhs);
         }
         auto current_lhs {this->head->next};
         auto current_rhs {rhs.head->next};
-        rhs.head->next = nullptr;
         auto before_current {this->head};
-        while(current_rhs) {
-            //Exception-unsafe if the function cmp throws an exception.
-            //NEED TO BE REVISION
-            if(cmp(current_rhs, current_lhs)) {
-                before_current->next = current_rhs;
-                auto backup {current_rhs->next};
-                current_rhs->next = current_lhs;
-                before_current = current_rhs;
-                current_rhs = backup;
-                continue;
+        while(current_lhs and current_rhs) {
+            if constexpr(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
+                if(cmp(current_rhs->value, current_lhs->value)) {
+                    before_current->next = current_rhs;
+                    while(current_rhs->next and cmp(current_rhs->next->value, current_lhs->value)) {
+                        current_rhs = current_rhs->next;
+                    }
+                    auto backup {current_rhs->next};
+                    current_rhs->next = current_lhs;
+                    current_rhs = backup;
+                }
+            }else {
+                try {
+                    if(cmp(current_rhs->value, current_lhs->value)) {
+                        before_current->next = current_rhs;
+                        while(current_rhs->next and cmp(current_rhs->next->value, current_lhs->value)) {
+                            current_rhs = current_rhs->next;
+                        }
+                        auto backup {current_rhs->next};
+                        current_rhs->next = current_lhs;
+                        current_rhs = backup;
+                    }
+                }catch(...) {
+                    rhs.head->next = current_rhs;
+                    throw;
+                }
             }
             before_current = current_lhs;
             current_lhs = current_lhs->next;
-            if(not current_lhs) {
-                break;
-            }
         }
-        before_current->next = current_rhs;
+        if(current_rhs) {
+            before_current->next = current_rhs;
+        }
+        rhs.head->next = nullptr;
     }
     template <typename T, typename Allocator>
     template <typename Compare>

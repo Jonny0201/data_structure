@@ -46,8 +46,8 @@ namespace data_structure {
             char client_data[0];        //client_data[1] for compatibility
         };
     public:
-        using size_type = decltype(sizeof 0);
-        using difference_type = decltype(static_cast<char *>(nullptr) - static_cast<char *>(nullptr));
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
         using pointer = void *;
         using const_pointer = const void *;
         using volatile_pointer = volatile void *;

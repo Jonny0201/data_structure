@@ -64,8 +64,6 @@ namespace data_structure {
             ~__false_type() noexcept = default;
         };
     }
-    namespace __data_structure_auxiliary {}
-    namespace __dsa = __data_structure_auxiliary;
     using true_type = __true_type;
     using false_type = __false_type;
 }
@@ -314,13 +312,13 @@ namespace data_structure {
     }
     template <typename T>
     constexpr inline T &&forward(typename remove_reference<T>::type &value) noexcept {
-        return static_cast<typename remove_reference<T>::type &&>(value);
+        return static_cast<T &&>(value);
     }
     template <typename> struct is_lvalue_reference;
     template <typename T>
     constexpr inline T &&forward(typename remove_reference<T>::type &&value) noexcept {
         static_assert(is_lvalue_reference<T>::value, "Cannot forward an rvalue as an lvalue!");
-        return static_cast<typename remove_reference<T>::type &&>(value);
+        return static_cast<T &&>(value);
     }
 }
 
@@ -11126,6 +11124,57 @@ namespace data_structure {
         }
         constexpr explicit operator value_type() const noexcept {
             return has_nothrow_less_operator<LHS, RHS>::value;
+        }
+    };
+    template <typename LHS, typename RHS = LHS>
+    struct has_less_equal_operator {
+        using value_type = bool;
+        using result = decltype(__dsa::test_less_equal_operator<LHS, RHS>(0));
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_less_equal_operator<LHS, RHS>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_less_equal_operator<LHS, RHS>::value;
+        }
+    };
+    namespace __data_structure_auxiliary {
+        template <typename LHS, typename RHS = LHS,
+                bool HasLessEqualOperator = has_less_equal_operator<LHS, RHS>::value>
+        struct has_nothrow_less_equal_operator_auxiliary {
+            using value_type = bool;
+            using result = __false_type;
+            constexpr static inline auto value {static_cast<value_type>(result())};
+            constexpr value_type operator()() const noexcept {
+                return has_nothrow_less_equal_operator_auxiliary<LHS, RHS, HasLessEqualOperator>::value;
+            }
+            constexpr explicit operator value_type() const noexcept {
+                return has_nothrow_less_equal_operator_auxiliary<LHS, RHS, HasLessEqualOperator>::value;
+            }
+        };
+        template <typename LHS, typename RHS>
+        struct has_nothrow_less_equal_operator_auxiliary<LHS, RHS, true> {
+            using value_type = bool;
+            using result = decltype(__dsa::is_less_equal_operator_nothrow<LHS, RHS>(0));
+            constexpr static inline auto value {static_cast<value_type>(result())};
+            constexpr value_type operator()() const noexcept {
+                return has_nothrow_less_equal_operator_auxiliary<LHS, RHS, true>::value;
+            }
+            constexpr explicit operator value_type() const noexcept {
+                return has_nothrow_less_equal_operator_auxiliary<LHS, RHS, true>::value;
+            }
+        };
+    }
+    template <typename LHS, typename RHS = LHS>
+    struct has_nothrow_less_equal_operator {
+        using value_type = bool;
+        using result = typename __dsa::has_nothrow_less_equal_operator_auxiliary<LHS, RHS>::result;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return has_nothrow_less_equal_operator<LHS, RHS>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return has_nothrow_less_equal_operator<LHS, RHS>::value;
         }
     };
     template <typename LHS, typename RHS = LHS>
