@@ -57,12 +57,12 @@ Tentatively
 - toeplitz_matrix
 - square_band_matrix
 - spare_matrix
-- stack
+- stack (Adaptor)
 - queue (Adaptor)
-- deque (Adaptor)
-- dictionary
+- deque
+- dictionary (Adaptor)
 - skip_list
-- tree
+- tree (irregular_skip_list)
 - binary_tree
 - priority_queue (Adaptor)
 - leftist_tree
