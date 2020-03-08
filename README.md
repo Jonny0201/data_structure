@@ -4,8 +4,6 @@
 ![](https://img.shields.io/badge/Contributors-1-BrightGreen.svg)
 ![](https://img.shields.io/badge/License-Apache%202.0-green.svg)
 
-<https://jonny.vip>
-
 In computer science, a data structure is a data organization, management, and storage format that enables efficient access and modification. More precisely, a data structure is a collection of data values, the relationships among them, and the functions or operations that can be applied to the data.
 
 Data structures serve as the basis for abstract data types (ADT). The ADT defines the logical form of the data type. The data structure implements the physical form of the data type.
