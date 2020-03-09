@@ -26,14 +26,10 @@ namespace data_structure {
         return reinterpret_cast<T *>(
                 &const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
     }
-    template <typename T>
-    constexpr inline T *addressof(T &arg) noexcept {
-        return address_of(arg);
-    }
 }
 
 namespace data_structure {
-    template <decltype(sizeof 0) Align = 8, decltype(sizeof 0) MaxBytes = 128>
+    template <size_t Align = 8, size_t MaxBytes = 128>
     class __memory_pool {
     private:
         enum {
@@ -106,7 +102,7 @@ namespace data_structure {
     public:
         __memory_pool &operator=(const __memory_pool &) noexcept = default;
         __memory_pool &operator=(__memory_pool &&) noexcept = default;
-        constexpr operator bool() const noexcept {
+        explicit constexpr operator bool() const noexcept {
             return this->start;
         }
 #ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
@@ -114,20 +110,20 @@ namespace data_structure {
         static void release() noexcept;
 #endif
     };
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     typename __memory_pool<Align, MaxBytes>::free_list_node *volatile
     __memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     char *__memory_pool<Align, MaxBytes>::start {nullptr};
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     char *__memory_pool<Align, MaxBytes>::end {nullptr};
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     typename __memory_pool<Align, MaxBytes>::size_type
     __memory_pool<Align, MaxBytes>::chunk_size {0};
 }
 
 namespace data_structure {
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     void *__memory_pool<Align, MaxBytes>::allocate(size_type size) {
         if(size > max_bytes) {
             return operator new (size);
@@ -140,7 +136,7 @@ namespace data_structure {
         first = result_node->free_list_link;
         return result_node;
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     void *__memory_pool<Align, MaxBytes>::allocate(size_type size, dynamic) noexcept {
         if(size > max_bytes) {
             return operator new (size, {});
@@ -153,7 +149,7 @@ namespace data_structure {
         first = result_node->free_list_link;
         return result_node;
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     void __memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
         if(size > max_bytes) {
             operator delete (p, size);
@@ -164,7 +160,7 @@ namespace data_structure {
         return_node->free_list_link = first;
         first = return_node;
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     void *__memory_pool<Align, MaxBytes>::refill(size_type size) {
         size_type nodes {16};
         auto chunk {chunk_alloc(size, nodes)};
@@ -183,7 +179,7 @@ namespace data_structure {
         current_node->free_list_link = nullptr;
         return chunk;
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     void *__memory_pool<Align, MaxBytes>::refill(size_type size, dynamic) noexcept {
         size_type nodes {16};
         auto chunk {chunk_alloc(size, nodes, {})};
@@ -202,7 +198,7 @@ namespace data_structure {
         current_node->free_list_link = nullptr;
         return chunk;
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
         auto total_bytes {size * nodes};
         auto bytes_left {static_cast<size_type>(end - start)};
@@ -245,7 +241,7 @@ namespace data_structure {
         end = start + bytes_to_get;
         return chunk_alloc(size, nodes);
     }
-    template <decltype(sizeof 0) Align, decltype(sizeof 0) MaxBytes>
+    template <size_t Align, size_t MaxBytes>
     char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes, dynamic)
             noexcept {
         auto total_bytes {size * nodes};
