@@ -29,5 +29,7 @@
 #include "forward_list.hpp"
 #include "list.hpp"
 #include "array.hpp"
+#include "heap.hpp"
+#include "priority_queue.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
