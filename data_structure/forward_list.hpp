@@ -321,7 +321,7 @@ namespace data_structure {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                alloc_traits::destroy(address_of(cursor->value));
+                alloc_traits::destroy(ds::address_of(cursor->value));
             }
             alloc_traits::operator delete(backup);
         }
@@ -334,7 +334,7 @@ namespace data_structure {
             auto backup {begin};
             begin = begin->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                alloc_traits::destroy(address_of(backup->value));
+                alloc_traits::destroy(ds::address_of(backup->value));
             }
             alloc_traits::operator delete(backup);
         }
@@ -347,10 +347,10 @@ namespace data_structure {
         auto cursor {first};
         while(true) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), value);
+                alloc_traits::construct(ds::address_of(cursor->value), value);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), value);
+                    alloc_traits::construct(ds::address_of(cursor->value), value);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -365,7 +365,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    destroy(address_of(cursor->value));
+                    destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -385,10 +385,10 @@ namespace data_structure {
         auto cursor {first};
         while(true) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), move(*begin++));
+                alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), move(*begin++));
+                    alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -403,7 +403,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -423,10 +423,10 @@ namespace data_structure {
         auto cursor {first};
         while(true) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), *begin++);
+                alloc_traits::construct(ds::address_of(cursor->value), *begin++);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), *begin++);
+                    alloc_traits::construct(ds::address_of(cursor->value), *begin++);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -441,7 +441,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -466,16 +466,16 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
             if constexpr(is_nothrow_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->next->value));
+                alloc_traits::construct(ds::address_of(cursor->next->value));
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->next->value));
+                    alloc_traits::construct(ds::address_of(cursor->next->value));
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
@@ -502,16 +502,16 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->next->value), value);
+                alloc_traits::construct(ds::address_of(cursor->next->value), value);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->next->value), value);
+                    alloc_traits::construct(ds::address_of(cursor->next->value), value);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
@@ -541,17 +541,17 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
             if constexpr(is_nothrow_move_constructible<value_type>::value or
                     is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->next->value), move(*begin++));
+                alloc_traits::construct(ds::address_of(cursor->next->value), ds::move(*begin++));
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->next->value), move(*begin++));
+                    alloc_traits::construct(ds::address_of(cursor->next->value), ds::move(*begin++));
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
@@ -581,16 +581,16 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->next->value), *begin++);
+                alloc_traits::construct(ds::address_of(cursor->next->value), *begin++);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->next->value), *begin++);
+                    alloc_traits::construct(ds::address_of(cursor->next->value), *begin++);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
@@ -609,10 +609,10 @@ namespace data_structure {
         auto cursor {first};
         while(true) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), value);
+                alloc_traits::construct(ds::address_of(cursor->value), value);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), value);
+                    alloc_traits::construct(ds::address_of(cursor->value), value);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -627,7 +627,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    destroy(address_of(cursor->value));
+                    destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -649,10 +649,10 @@ namespace data_structure {
         while(true) {
             if constexpr(is_nothrow_move_constructible<value_type>::value or
                     is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), move(*begin++));
+                alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), move(*begin++));
+                    alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -667,7 +667,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -688,10 +688,10 @@ namespace data_structure {
         auto cursor {first};
         while(true) {
             if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(address_of(cursor->value), *begin++);
+                alloc_traits::construct(ds::address_of(cursor->value), *begin++);
             }else {
                 try {
-                    alloc_traits::construct(address_of(cursor->value), *begin++);
+                    alloc_traits::construct(ds::address_of(cursor->value), *begin++);
                 }catch(...) {
                     cursor->next = nullptr;
                     forward_list::handle_exception(first);
@@ -706,7 +706,7 @@ namespace data_structure {
             }catch(...) {
                 cursor->next = nullptr;
                 if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(address_of(cursor->value));
+                    forward_list::destroy(ds::address_of(cursor->value));
                 }
                 forward_list::handle_exception(first);
                 throw;
@@ -807,7 +807,7 @@ namespace data_structure {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                forward_list::destroy(address_of(backup->value));
+                forward_list::destroy(ds::address_of(backup->value));
             }
             alloc_traits::operator delete(backup);
         }
@@ -871,7 +871,7 @@ namespace data_structure {
         auto cursor {this->begin()};
         const auto last {this->end()};
         while(cursor not_eq last and begin not_eq end) {
-            *cursor++ = move(*begin++);
+            *cursor++ = ds::move(*begin++);
             ++before_cursor;
         }
         if(begin not_eq end) {
@@ -1020,10 +1020,10 @@ namespace data_structure {
         auto new_node {this->allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
                 is_nothrow_copy_constructible<value_type>::value) {
-            alloc_traits::construct(address_of(new_node->value), move(value));
+            alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
-                alloc_traits::construct(address_of(new_node->value), move(value));
+                alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
             }catch(...) {
                 alloc_traits::operator delete(new_node);
             }
@@ -1038,10 +1038,10 @@ namespace data_structure {
         auto new_node {forward_list::allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
                 is_nothrow_copy_constructible<value_type>::value) {
-            alloc_traits::construct(address_of(new_node->value), move(value));
+            alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
-                alloc_traits::construct(address_of(new_node->value), move(value));
+                alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
             }catch(...) {
                 alloc_traits::operator delete(new_node);
             }
@@ -1138,7 +1138,7 @@ namespace data_structure {
             cursor = backup;
             backup = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                alloc_traits::destroy(address_of(cursor->value));
+                alloc_traits::destroy(ds::address_of(cursor->value));
             }
             alloc_traits::operator delete(cursor);
         }while(--size and backup);
@@ -1156,7 +1156,7 @@ namespace data_structure {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                alloc_traits::destroy(address_of(backup->value));
+                alloc_traits::destroy(ds::address_of(backup->value));
             }
             alloc_traits::operator delete(backup);
         }
@@ -1174,7 +1174,7 @@ namespace data_structure {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
-                alloc_traits::destroy(address_of(backup->value));
+                alloc_traits::destroy(ds::address_of(backup->value));
             }
             alloc_traits::operator delete(backup);
         }
@@ -1185,27 +1185,27 @@ namespace data_structure {
     template <typename ...Args>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::emplace_after(difference_type pos, Args &&...args) {
-        return this->insert_after(pos, value_type(forward<Args>(args)...));
+        return this->insert_after(pos, value_type(ds::forward<Args>(args)...));
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::emplace_after(const_iterator pos, Args &&...args) {
-        return this->insert_after(pos, value_type(forward<Args>(args)...));
+        return this->insert_after(pos, value_type(ds::forward<Args>(args)...));
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
     inline void forward_list<T, Allocator>::emplace_front(Args &&...args) {
-        this->push_front(value_type(forward<Args>(args)...));
+        this->push_front(value_type(ds::forward<Args>(args)...));
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::push_front(const_reference value) {
         auto new_node {this->allocate()};
         if constexpr(not is_nothrow_copy_constructible<value_type>::value) {
-            alloc_traits::construct(address_of(new_node->value), value);
+            alloc_traits::construct(ds::address_of(new_node->value), value);
         }else {
             try {
-                alloc_traits::construct(address_of(new_node->value), value);
+                alloc_traits::construct(ds::address_of(new_node->value), value);
             }catch(...) {
                 alloc_traits::operator delete(new_node);
                 this->head->next = nullptr;
@@ -1221,10 +1221,10 @@ namespace data_structure {
         auto new_node {this->allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
                 is_nothrow_copy_constructible<value_type>::value) {
-            alloc_traits::construct(address_of(new_node->value), move(value));
+            alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
-                alloc_traits::construct(address_of(new_node->value), move(value));
+                alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
             }catch(...) {
                 alloc_traits::operator delete(new_node);
                 this->head->next = nullptr;
@@ -1243,7 +1243,7 @@ namespace data_structure {
         }
         const auto next {deprecated_node->next};
         if constexpr(not is_trivially_destructible<value_type>::value) {
-            alloc_traits::destroy(address_of(deprecated_node->value));
+            alloc_traits::destroy(ds::address_of(deprecated_node->value));
         }
         alloc_traits::operator delete(deprecated_node);
         this->head->next = next;
