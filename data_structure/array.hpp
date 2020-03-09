@@ -22,7 +22,7 @@
 #include "algorithm.hpp"
 
 namespace data_structure {
-    template <typename T, decltype(sizeof 0) Size>
+    template <typename T, size_t Size>
     struct array final {
     public:
         using size_type = size_t;
