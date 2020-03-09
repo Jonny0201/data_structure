@@ -29,7 +29,7 @@ Jonny
 - vector
 - forward_list
 - array
-- priority_queue
+- priority_queue (Adaptor)
 
 ### Algorithms ###
 
