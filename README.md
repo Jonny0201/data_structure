@@ -29,6 +29,7 @@ Jonny
 - vector
 - forward_list
 - array
+- priority_queue
 
 ### Algorithms ###
 
@@ -39,6 +40,9 @@ Jonny
 - binary_search
 - bucket_sort
 - radix_sort
+- make_heap
+- push_heap
+- pop_heap
 
 ## TODOs ##
 Tentatively
@@ -64,7 +68,6 @@ Tentatively
 - skip_list
 - tree (irregular_skip_list)
 - binary_tree
-- priority_queue (Adaptor)
 - leftist_tree
 - winner_tree
 - loser_tree
