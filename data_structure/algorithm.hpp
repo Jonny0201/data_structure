@@ -19,6 +19,7 @@
 
 #include "type_traits.hpp"
 #include "iterator.hpp"
+#include "heap.hpp"
 
 namespace data_structure {
     template <typename Iterator>
@@ -38,8 +39,7 @@ namespace data_structure {
             Iterator end) {
         return end - begin;
     }
-    inline decltype(static_cast<char *>(nullptr) - static_cast<char *>(nullptr)) distance(
-            void *begin, void *end) noexcept {
+    inline ptrdiff_t distance(void *begin, void *end) noexcept {
         return reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin);
     }
 
@@ -49,9 +49,9 @@ namespace data_structure {
     }
     template <typename T>
     inline typename enable_if<not has_swap_function<T>::value, void>::type swap(T &lhs, T &rhs) noexcept {
-        auto tmp {move(lhs)};
-        lhs = move(rhs);
-        rhs = move(tmp);
+        auto tmp {ds::move(lhs)};
+        lhs = ds::move(rhs);
+        rhs = ds::move(tmp);
     }
 
     template <typename T, typename OutputIterator, typename SizeType>
@@ -93,7 +93,7 @@ namespace data_structure {
     namespace __data_structure_testing {
         template <typename RandomAccessIterator>
         void ranking_sort(RandomAccessIterator begin, RandomAccessIterator end) {
-            const auto size {distance(begin, end)};
+            const auto size {ds::distance(begin, end)};
             auto rank {::new int[size] {}};
             try {
                 for(auto i {1}; i < size; ++i) {
@@ -108,8 +108,8 @@ namespace data_structure {
                 for(auto i {0}; i < size; ++i) {
                     auto &save {rank[i]};
                     while(save not_eq i) {
-                        swap(begin[save], begin[i]);
-                        swap(rank[save], save);
+                        ds::swap(begin[save], begin[i]);
+                        ds::swap(rank[save], save);
                     }
                 }
             }catch(...) {
@@ -120,21 +120,21 @@ namespace data_structure {
         template <typename BidirectionalIterator>
         BidirectionalIterator __selection_sort_index_max_element(BidirectionalIterator begin,
                 BidirectionalIterator end) {
-            auto it {move(begin++)};
+            auto it {ds::move(begin++)};
             while(begin not_eq end) {
                 if(*begin > *it) {
                     it = begin;
                 }
                 ++begin;
             }
-            return move(it);
+            return ds::move(it);
         }
         template <typename BidirectionalIterator>
         void selection_sort(BidirectionalIterator begin, BidirectionalIterator end) {
             auto max_iter {__data_structure_testing::__selection_sort_index_max_element(begin, end)};
             for(--end; end not_eq begin; --end) {
                 if(max_iter not_eq end) {
-                    swap(*max_iter, *end);
+                    ds::swap(*max_iter, *end);
                 }
                 max_iter = __data_structure_testing::__selection_sort_index_max_element(begin, end);
             }
@@ -155,14 +155,14 @@ namespace data_structure {
         }
         template <typename RandomAccessIterator>
         void insertion_sort(RandomAccessIterator begin, RandomAccessIterator end) {
-            const auto size {distance(begin, end)};
+            const auto size {ds::distance(begin, end)};
             for(auto i {1}; i < size; ++i) {
                 auto j {i - 1};
-                auto save {move(begin[i])};
+                auto save {ds::move(begin[i])};
                 for(; j >= 0 and save < begin[j]; --j) {
                     begin[j + 1] = begin[j];
                 }
-                begin[j + 1] = move(save);
+                begin[j + 1] = ds::move(save);
             }
         }
         template <typename ForwardIterator, typename Arg>
@@ -176,7 +176,7 @@ namespace data_structure {
                 const Arg &value) {
             const auto return_iterator {end};
             while(begin < end) {
-                auto middle {begin + distance(begin, end) / 2};
+                auto middle {begin + ds::distance(begin, end) / 2};
                 if(*middle == value) {
                     return middle;
                 }else if(*middle < value) {
@@ -263,7 +263,7 @@ namespace data_structure {
                     ++exponent;
                     list.clear();
                     if(flag) {
-                        forward_list = std::move(bucket[0]);
+                        forward_list = ds::move(bucket[0]);
                         break;
                     }
                     for(auto i {0}; i < radix; ++i) {
