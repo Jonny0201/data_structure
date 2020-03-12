@@ -69,7 +69,7 @@ Tentatively
 - tree (irregular_skip_list)
 - binary_tree
 - leftist_tree
-- winner_tree
+- winner_tree (Adaptor)
 - loser_tree
 - binary_search_tree
 - indexed_binary_search_tree
