@@ -78,6 +78,8 @@ namespace data_structure {
                 ForwardIterator);
         template <typename Compare>
         static node_type merge_auxiliary(node_type, node_type, Compare &) noexcept;
+        template <typename Compare>
+        static node_type sort_auxiliary(node_type, difference_type, Compare &) noexcept;
     public:
         forward_list();
         explicit forward_list(size_type);
@@ -125,7 +127,9 @@ namespace data_structure {
         constexpr iterator end() noexcept;
         constexpr const_iterator end() const noexcept;
         constexpr const_iterator cend() const noexcept;
+        [[nodiscard]]
         bool empty() const noexcept;
+        [[nodiscard]]
         constexpr size_type max_size() const noexcept;
         void clear() noexcept;
         void swap(forward_list &) noexcept;
@@ -282,7 +286,7 @@ namespace data_structure {
         void unique() noexcept(has_nothrow_equal_to_operator<value_type>::value);
         template <typename BinaryPredicate>
         void unique(BinaryPredicate)
-                noexcept(has_nothrow_function_call_operator<BinaryPredicate, value_type>::value);
+                noexcept(has_nothrow_function_call_operator<BinaryPredicate, value_type, value_type>::value);
         void sort() noexcept;
         template <typename Compare>
         void sort(Compare) noexcept;
@@ -758,6 +762,38 @@ namespace data_structure {
             before_lhs->next = rhs;
         }
         return result;
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    typename forward_list<T, Allocator>::node_type
+    forward_list<T, Allocator>::sort_auxiliary(node_type begin, difference_type size, Compare &cmp) noexcept {
+        switch(size) {
+            case 0:
+                [[fallthrough]];
+            case 1:
+                return begin;
+            case 2:
+                if(cmp(begin->next->value, begin->value)) {
+                    auto next {begin->next};
+                    next->next = begin;
+                    begin->next = nullptr;
+                    begin = next;
+                }
+                return begin;
+            default:
+                break;
+        }
+        auto size_front {size / 2};
+        size -= size_front;
+        auto mid_node {[](difference_type n, node_type begin) -> node_type {
+            for(auto i {0}; i < n; ++i) {
+                begin = begin->next;
+            }
+            return begin;
+        }(size_front - 1, begin)};
+        auto after_mid {mid_node->next};
+        mid_node->next = nullptr;
+        return merge_auxiliary(sort_auxiliary(begin, size_front, cmp), sort_auxiliary(after_mid, size, cmp), cmp);
     }
 
     /* public function */
@@ -1463,6 +1499,31 @@ namespace data_structure {
                 this->destroy(backup);
             }
         }
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::unique() noexcept(has_nothrow_equal_to_operator<value_type>::value) {
+        this->unique(equal_to<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename BinaryPredict>
+    void forward_list<T, Allocator>::unique(BinaryPredict p)
+            noexcept(has_nothrow_function_call_operator<BinaryPredict, value_type, value_type>::value) {
+        for(auto cursor {this->head->next}; cursor;) {
+            auto next {cursor->next};
+            for(; next and p(next->value, cursor->value); next = next->next);
+            this->erase_after(cursor, next);
+            cursor = next;
+        }
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::sort() noexcept {
+        this->sort(less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    inline void forward_list<T, Allocator>::sort(Compare cmp) noexcept {
+        this->head->next = forward_list::sort_auxiliary(this->head->next,
+                ds::distance(this->cbegin(), this->cend()), cmp);
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::reverse() noexcept {
