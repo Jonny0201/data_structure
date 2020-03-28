@@ -70,13 +70,12 @@ Tentatively
 - binary_tree
 - leftist_tree
 - winner_tree (Adaptor)
-- loser_tree
-- binary_search_tree
-- indexed_binary_search_tree
-- avl_tree
-- red_black_tree
-- splay_tree
-- b_tree
+- loser_tree (Adaptor)
+- binary_search_tree (Adaptor)
+- avl_tree (Adaptor)
+- red_black_tree (Adaptor)
+- splay_tree (Adaptor)
+- b_tree (Adaptor)
 - graph
 
 ## Release Note ##
