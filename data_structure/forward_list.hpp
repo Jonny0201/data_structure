@@ -195,89 +195,49 @@ namespace data_structure {
         template <typename Compare, typename AllocatorRHS>
         void merge(forward_list<value_type, AllocatorRHS> &&, Compare)
                 noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value);
-        void splice_after(difference_type, forward_list &) noexcept;
-        void splice_after(const_iterator, forward_list &) noexcept;
-        void splice_after(difference_type, forward_list &&) noexcept;
-        void splice_after(const_iterator, forward_list &&) noexcept;
-        void splice_after(difference_type, forward_list &, difference_type) noexcept;
-        void splice_after(difference_type, forward_list &, const_iterator) noexcept;
-        void splice_after(difference_type, forward_list &&, difference_type) noexcept;
-        void splice_after(difference_type, forward_list &&, const_iterator) noexcept;
-        void splice_after(const_iterator, forward_list &, difference_type) noexcept;
-        void splice_after(const_iterator, forward_list &, const_iterator) noexcept;
-        void splice_after(const_iterator, forward_list &&, difference_type) noexcept;
-        void splice_after(const_iterator, forward_list &&, const_iterator) noexcept;
-        void splice_after(difference_type, forward_list &, difference_type, size_type) noexcept;
-        void splice_after(difference_type, forward_list &, const_iterator, size_type) noexcept;
-        void splice_after(difference_type, forward_list &&, difference_type, size_type) noexcept;
-        void splice_after(difference_type, forward_list &&, const_iterator, size_type) noexcept;
-        void splice_after(const_iterator, forward_list &, difference_type, size_type) noexcept;
-        void splice_after(const_iterator, forward_list &, const_iterator , size_type) noexcept;
-        void splice_after(const_iterator , forward_list &&, difference_type, size_type) noexcept;
-        void splice_after(const_iterator, forward_list &&, const_iterator, size_type) noexcept;
-        void splice_after(difference_type, forward_list &, const_iterator, const_iterator) noexcept;
-        void splice_after(difference_type, forward_list &&, const_iterator, const_iterator) noexcept;
-        void splice_after(const_iterator, forward_list &, const_iterator, const_iterator) noexcept;
-        void splice_after(const_iterator, forward_list &&, const_iterator, const_iterator) noexcept;
+        void splice(difference_type, forward_list &) noexcept;
+        static void splice_after(const_iterator, forward_list &) noexcept;
+        void splice(difference_type, forward_list &&) noexcept;
+        static void splice_after(const_iterator, forward_list &&) noexcept;
+        void splice(difference_type, forward_list &, difference_type) noexcept;
+        void splice(difference_type, const_iterator) noexcept;
+        void splice(difference_type, forward_list &&, difference_type) noexcept;
+        static void splice_after(const_iterator, forward_list &, difference_type) noexcept;
+        static void splice_after(const_iterator, const_iterator) noexcept;
+        static void splice_after(const_iterator, forward_list &&, difference_type) noexcept;
+        void splice(difference_type, forward_list &, difference_type, size_type) noexcept;
+        void splice(difference_type, const_iterator, size_type) noexcept;
+        void splice(difference_type, forward_list &&, difference_type, size_type) noexcept;
+        static void splice_after(const_iterator, forward_list &, difference_type, size_type) noexcept;
+        static void splice_after(const_iterator, const_iterator , size_type) noexcept;
+        static void splice_after(const_iterator , forward_list &&, difference_type, size_type) noexcept;
+        void splice(difference_type, const_iterator, const_iterator) noexcept;
+        static void splice_after(const_iterator, const_iterator, const_iterator) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &) noexcept;
+        static void splice_after(const_iterator, forward_list<T, AllocatorRHS> &) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &&) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&) noexcept;
+        static void splice_after(const_iterator, forward_list<T, AllocatorRHS> &&) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &&, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type) noexcept;
+        static void splice_after(const_iterator, forward_list<T, AllocatorRHS> &, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator) noexcept;
+        static void splice_after(const_iterator, forward_list<T, AllocatorRHS> &&, difference_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &, difference_type, size_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator) noexcept;
+        void splice(difference_type, forward_list<T, AllocatorRHS> &&, difference_type, size_type) noexcept;
         template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, difference_type) noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator) noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, difference_type, size_type)
+        static void splice_after(const_iterator, forward_list<T, AllocatorRHS> &, difference_type, size_type)
                 noexcept;
         template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, difference_type, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, difference_type, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator , size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator , forward_list<value_type, AllocatorRHS> &&, difference_type, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, size_type)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(difference_type, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &, const_iterator, const_iterator)
-                noexcept;
-        template <typename AllocatorRHS>
-        void splice_after(const_iterator, forward_list<value_type, AllocatorRHS> &&, const_iterator, const_iterator)
+        static void splice_after(const_iterator , forward_list<T, AllocatorRHS> &&, difference_type, size_type)
                 noexcept;
         void remove(const_reference) noexcept(has_nothrow_equal_to_operator<value_type>::value);
         template <typename UnaryPredicate>
@@ -1470,6 +1430,115 @@ namespace data_structure {
             noexcept(has_nothrow_function_call_operator<Compare, value_type, value_type>::value) {
         this->merge<typename add_lvalue_reference<Compare>::type>(
                 *reinterpret_cast<forward_list *>(&rhs), cmp);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice(difference_type pos, forward_list &rhs) noexcept {
+        auto cursor {this->head};
+        while(pos--) {
+            cursor = cursor->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = rhs.head->next;
+        rhs.head->next = nullptr;
+        while(cursor->next) {
+            cursor = cursor->next;
+        }
+        cursor->next = backup;
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice_after(const_iterator pos, forward_list &rhs) noexcept {
+        auto cursor {pos.node};
+        auto backup {cursor->next};
+        cursor->next = rhs.head->next;
+        rhs.head->next = nullptr;
+        while(cursor->next) {
+            cursor = cursor->next;
+        }
+        cursor->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(difference_type pos, forward_list &&rhs) noexcept {
+        this->splice(pos, rhs);
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice_after(const_iterator pos, forward_list &&rhs) noexcept {
+        forward_list::splice_after(pos, rhs);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &rhs) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &rhs) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &&rhs) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &&rhs) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs));
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &rhs, difference_type start_pos) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &&rhs, difference_type start_pos) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &rhs, difference_type start_pos) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &&rhs, difference_type start_pos) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &rhs,
+            difference_type start_pos, size_type size) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos, size);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list<T, AllocatorRHS> &&rhs,
+            difference_type start_pos, size_type size) noexcept {
+        this->splice(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos, size);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &rhs,
+            difference_type start_pos, size_type size) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos, size);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list<T, AllocatorRHS> &&rhs,
+            difference_type start_pos, size_type size) noexcept {
+        forward_list::splice_after(pos, *reinterpret_cast<forward_list *>(&rhs), start_pos, size);
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::remove(const_reference value)
