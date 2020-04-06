@@ -74,6 +74,34 @@ namespace data_structure {
     namespace __dsa = __data_structure_auxiliary;
     namespace __dsi = __data_structure_impl;
     namespace __dst = __data_structure_testing;
+
+    inline void *memory_set(void *start, int value, size_t size) noexcept {
+        return __builtin_memset(start, value, size);
+    }
+    inline void *memory_copy(void *start, const void *first, size_t size) noexcept {
+        return __builtin_memcpy(start, first, size);
+    }
+    inline void *memory_move(void *start, const void *first, size_t size) noexcept {
+        return __builtin_memmove(start, first, size);
+    }
+    inline void *memory_character(const void *start, int ch, size_t size) noexcept {
+        return __builtin_memchr(start, ch, size);
+    }
+    inline int memory_compare(const void *start, const void *first, size_t size) noexcept {
+        return __builtin_memcmp(start, first, size);
+    }
+    inline void *memory_allocate(size_t size) noexcept {
+        return std::malloc(size);
+    }
+    inline void memory_deallocate(void *ptr) noexcept {
+        std::free(ptr);
+    }
+    inline void *memory_callocate(size_t num, size_t size) noexcept {
+        return std::calloc(num, size);
+    }
+    inline void *memory_reallocate(void *ptr, size_t size) noexcept {
+        return std::realloc(ptr, size);
+    }
 }
 __DATA_STRUCTURE_END
 
