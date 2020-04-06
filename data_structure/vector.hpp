@@ -21,7 +21,7 @@
 #include "iterator.hpp"
 #include "algorithm.hpp"
 
-namespace data_structure {
+namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator = allocator<type_holder<T>>>
     class vector_base {
     public:
@@ -196,7 +196,7 @@ namespace data_structure {
             noexcept(has_nothrow_less_operator<T>::value);
 }
 
-namespace data_structure {
+namespace data_structure::__data_structure_auxiliary {
     /* private function */
     template <typename T, typename Allocator>
     constexpr inline typename vector_base<T, Allocator>::size_type
@@ -1273,6 +1273,149 @@ namespace data_structure {
             noexcept(has_nothrow_less_operator<T>::value) {
         return not(lhs < rhs);
     }
+}
+
+namespace data_structure::__data_structure_auxiliary {
+    template <typename T, typename Allocator = allocator<type_holder<T>>>
+    class vector_char : public vector_base<T, Allocator> {
+        static_assert(is_char_type<T>::value, "The first template parameter must be character type!");
+    public:
+        using allocator_type = Allocator;
+        using size_type = typename allocator_traits<allocator_type>::size_type;
+        using difference_type = typename allocator_traits<allocator_type>::difference_type;
+        using value_type = T;
+        using reference = typename allocator_traits<allocator_type>::reference;
+        using const_reference = typename allocator_traits<allocator_type>::const_reference;
+        using rvalue_reference = typename allocator_traits<allocator_type>::rvalue_reference;
+        using pointer = typename allocator_traits<allocator_type>::pointer;
+        using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
+        using iterator = __wrap_iterator<pointer>;
+        using const_iterator = __wrap_iterator<const_pointer>;
+        using reverse_iterator = ds::reverse_iterator<iterator>;
+        using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
+    private:
+        using alloc_traits = allocator_traits<allocator_type>;
+        static_assert(is_same<value_type, typename alloc_traits::value_type>::value,
+                "The Allocator::value_type must be the same as template argument T!");
+    public:
+        constexpr static inline size_type no_position {-1};
+    public:
+        using vector_base<T, Allocator>::vector_base;
+        vector_char(const_pointer, difference_type = 0, size_type = no_position);
+        vector_char(const vector_char &, difference_type = 0, size_type = no_position);
+    public:
+        using vector_base<T, Allocator>::operator=;
+        vector_char &operator=(const_pointer);
+        vector_char &operator+=(const vector_char &);
+        vector_char &operator+=(const_pointer);
+        vector_char &operator+=(value_type);
+        vector_char &operator+=(initializer_list<value_type>);
+    public:
+        void assign(const vector_char &, difference_type = 0, size_type = no_position);
+        void assign(const const_pointer, difference_type = 0, size_type = no_position);
+        pointer c_str() noexcept;
+        const_pointer c_str() const noexcept;
+        size_type length() const noexcept;
+        size_type clength() const noexcept;
+        void append(size_type, value_type);
+        void append(const vector_char &, difference_type = 0, size_type = no_position);
+        void append(const_pointer, difference_type = 0, size_type = no_position);
+        template <typename InputIterator>
+        void append(typename enable_if<is_input_iterator<InputIterator>::value and
+                not is_forward_iterator<InputIterator>::value, InputIterator>::type, InputIterator);
+        template <typename ForwardIterator>
+        void append(typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type,
+                ForwardIterator);
+        void append(initializer_list<value_type>);
+        bool starts_with(const vector_char &) const noexcept;
+        bool starts_with(const_pointer) const noexcept;
+        bool starts_with(value_type) const noexcept;
+        bool ends_with(const vector_char &) const noexcept;
+        bool ends_with(const_pointer) const noexcept;
+        bool ends_with(value_type) const noexcept;
+        bool upper() const noexcept;
+        bool lower() const noexcept;
+        bool number() const noexcept;
+        bool symbol() const noexcept;
+        void to_upper() noexcept;
+        void to_lower() noexcept;
+        vector_char substring(difference_type = 0, size_type = no_position) const;
+        void substring(pointer, difference_type = 0, size_type = no_position) const noexcept;
+        void copy(pointer, difference_type = 0, size_type = no_position) const noexcept;
+        int compare(const vector_char &) const noexcept;
+        int compare(const_pointer) const noexcept;
+        int compare(size_type, size_type, const vector_char &,
+                difference_type = 0, size_type = no_position) const noexcept;
+        int compare(size_type, size_type, const_pointer,
+                difference_type = 0, size_type = no_position) const noexcept;
+        iterator remove(const vector_char &, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove(const_pointer, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove(value_type) noexcept;
+        iterator remove_first_of(const vector_char &, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove_first_of(const_pointer, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove_first_of(value_type) noexcept;
+        iterator remove_last_of(const vector_char &, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove_last_of(const_pointer, difference_type = 0, size_type = no_position) noexcept;
+        iterator remove_last_of(value_type) noexcept;
+        iterator replace(size_type, size_type, const vector_char &,
+                difference_type = 0, size_type = no_position) noexcept;
+        iterator replace(size_type, size_type, const_pointer,
+                difference_type = 0, size_type = no_position) noexcept;
+        iterator replace(size_type, size_type, value_type) noexcept;
+        iterator replace(size_type, size_type, initializer_list<value_type>) noexcept;
+        size_type find(const vector_char &, size_type = no_position) noexcept;
+        size_type find(const_pointer, size_type = no_position) noexcept;
+        size_type find(value_type, size_type = no_position) noexcept;
+        size_type rfind(const vector_char &, size_type = no_position) noexcept;
+        size_type rfind(const_pointer, size_type = no_position) noexcept;
+        size_type rfind(value_type, size_type = no_position) noexcept;
+        iterator find_first_of(const vector_char &, size_type = no_position) noexcept;
+        iterator find_first_of(const_pointer, size_type = no_position) noexcept;
+        iterator find_first_of(value_type, size_type = no_position) noexcept;
+        iterator find_last_of(const vector_char &, size_type = no_position) noexcept;
+        iterator find_last_of(const_pointer, size_type = no_position) noexcept;
+        iterator find_last_of(value_type, size_type = no_position) noexcept;
+    };
+}
+
+namespace data_structure {
+    template <typename T, typename Allocator = allocator<type_holder<T>>>
+    class vector final : public __dsa::vector_base<T, Allocator> {
+    public:
+        using __dsa::vector_base<T, Allocator>::vector_base;
+    };
+
+    template <typename Allocator>
+    class vector<char, Allocator> final : public __dsa::vector_char<char, Allocator> {
+    public:
+        using __dsa::vector_char<char, Allocator>::vector_char;
+    };
+
+    template <typename Allocator>
+    class vector<wchar_t, Allocator> final : public __dsa::vector_char<wchar_t, Allocator> {
+    public:
+        using __dsa::vector_char<wchar_t, Allocator>::vector_char;
+    };
+
+    template <typename Allocator>
+    class vector<char16_t, Allocator> final : public __dsa::vector_char<char16_t, Allocator> {
+    public:
+        using __dsa::vector_char<char16_t, Allocator>::vector_char;
+    };
+
+    template <typename Allocator>
+    class vector<char32_t, Allocator> final : public __dsa::vector_char<char32_t, Allocator> {
+    public:
+        using __dsa::vector_char<char32_t, Allocator>::vector_char;
+    };
+
+#ifdef _DATA_STRUCTURE_HAS_CHAR8_T
+    template <typename Allocator>
+    class vector<char8_t, Allocator> final : public __dsa::vector_char<char8_t, Allocator> {
+    public:
+        using __dsa::vector_char<char8_t, Allocator>::vector_char;
+    };
+#endif
 }
 
 #endif //DATA_STRUCTURE_VECTOR_HPP
