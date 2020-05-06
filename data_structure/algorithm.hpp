@@ -165,28 +165,6 @@ namespace data_structure {
                 begin[j + 1] = ds::move(save);
             }
         }
-        template <typename ForwardIterator, typename Arg>
-        ForwardIterator binary_search(ForwardIterator begin, typename enable_if<
-                is_forward_iterator<ForwardIterator>::value and
-                        not is_random_access_iterator<ForwardIterator>::value, ForwardIterator>::type end,
-                const Arg &value);
-        template <typename RandomAccessIterator, typename Arg>
-        RandomAccessIterator binary_search(RandomAccessIterator begin, typename enable_if<
-                is_random_access_iterator<RandomAccessIterator>::value, RandomAccessIterator>::type end,
-                const Arg &value) {
-            const auto return_iterator {end};
-            while(begin < end) {
-                auto middle {begin + ds::distance(begin, end) / 2};
-                if(*middle == value) {
-                    return middle;
-                }else if(*middle < value) {
-                    begin = middle + 1;
-                }else {
-                    end = middle;
-                }
-            }
-            return return_iterator;
-        }
         template <typename ForwardList, typename ForwardIterator>
         void bucket_sort(ForwardIterator begin, ForwardIterator end, ForwardList &forward_list,
                 typename iterator_traits<ForwardIterator>::size_type range,
@@ -279,6 +257,91 @@ namespace data_structure {
             }
             ::delete[] bucket;
         }
+    }
+}
+
+namespace data_structure {
+    template <typename ForwardIterator, typename Arg>
+    ForwardIterator binary_search(ForwardIterator begin, typename enable_if<
+            is_forward_iterator<ForwardIterator>::value and
+                    not is_random_access_iterator<ForwardIterator>::value, ForwardIterator>::type end,
+            const Arg &value);
+    template <typename RandomAccessIterator, typename Arg>
+    RandomAccessIterator binary_search(RandomAccessIterator begin, typename enable_if<
+            is_random_access_iterator<RandomAccessIterator>::value, RandomAccessIterator>::type end,
+            const Arg &value) {
+        const auto return_iterator {end};
+        while(begin < end) {
+            auto middle {begin + ds::distance(begin, end) / 2};
+            if(*middle == value) {
+                return middle;
+            }else if(*middle < value) {
+                begin = middle + 1;
+            }else {
+                end = middle;
+            }
+        }
+        return return_iterator;
+    }
+
+    template <typename RandomAccessIterator, typename Compare>
+    void quick_sort(RandomAccessIterator, RandomAccessIterator,
+            typename iterator_traits<RandomAccessIterator>::difference_type,
+            typename iterator_traits<RandomAccessIterator>::difference_type, Compare &,
+            void (*)(RandomAccessIterator, RandomAccessIterator, Compare));
+    template <typename RandomAccessIterator, typename Compare>
+    inline void quick_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare,
+            void (*selector)(RandomAccessIterator, RandomAccessIterator, Compare) =
+                    [](RandomAccessIterator, RandomAccessIterator, Compare) noexcept -> void {}) {
+        auto size {ds::distance(begin, end)};
+        if(size <= 1) {
+            return;
+        }
+        ds::quick_sort(begin, end, 0, size - 1, compare, selector);
+    }
+    template <typename RandomAccessIterator, typename Compare>
+    void quick_sort(RandomAccessIterator begin, RandomAccessIterator end,
+            typename iterator_traits<RandomAccessIterator>::difference_type left,
+            typename iterator_traits<RandomAccessIterator>::difference_type right,
+            Compare &compare, void (*selector)(RandomAccessIterator, RandomAccessIterator, Compare)) {
+        if(left >= right) {
+            return;
+        }
+        auto left_cursor {left}, right_cursor {right};
+        selector(begin, end, compare);
+        auto pivot {move(begin[right])};
+        auto move_flag {true};
+        while(true) {
+            if(move_flag) {
+                while(compare(begin[left_cursor], pivot) and left_cursor < right_cursor) {
+                    ++left_cursor;
+                }
+                if(left_cursor < right_cursor) {
+                    begin[right_cursor--] = move(begin[left_cursor]);
+                    move_flag = false;
+                    continue;
+                }
+            }else {
+                while(compare(pivot, begin[right_cursor]) and left_cursor < right_cursor) {
+                    --right_cursor;
+                }
+                if(left_cursor < right_cursor) {
+                    begin[left_cursor++] = move(begin[right_cursor]);
+                    move_flag = true;
+                    continue;
+                }
+            }
+            begin[left_cursor] = move(pivot);
+            ds::quick_sort(begin, end, left, left_cursor - 1, compare, selector);
+            ds::quick_sort(begin, end, right_cursor + 1, right, compare, selector);
+            return;
+        }
+    }
+    template <typename RandomAccessIterator>
+    inline void quick_sort(RandomAccessIterator begin, RandomAccessIterator end,
+            void (*selector)(RandomAccessIterator, RandomAccessIterator, less<>) =
+                    [](RandomAccessIterator, RandomAccessIterator, less<>) noexcept -> void {}) {
+        ds::quick_sort(begin, end, less<> {}, selector);
     }
 }
 
