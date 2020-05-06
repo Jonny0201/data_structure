@@ -43,6 +43,7 @@ Jonny
 - make_heap
 - push_heap
 - pop_heap
+- quick_sort
 
 ## TODOs ##
 Tentatively
