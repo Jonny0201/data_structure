@@ -200,17 +200,17 @@ namespace data_structure {
         void splice(difference_type, forward_list &&) noexcept;
         static void splice_after(const_iterator, forward_list &&) noexcept;
         void splice(difference_type, forward_list &, difference_type) noexcept;
-        void splice(difference_type, const_iterator) noexcept;
         void splice(difference_type, forward_list &&, difference_type) noexcept;
+        void splice(difference_type, const_iterator) noexcept;
         static void splice_after(const_iterator, forward_list &, difference_type) noexcept;
-        static void splice_after(const_iterator, const_iterator) noexcept;
         static void splice_after(const_iterator, forward_list &&, difference_type) noexcept;
+        static void splice_after(const_iterator, const_iterator) noexcept;
         void splice(difference_type, forward_list &, difference_type, size_type) noexcept;
-        void splice(difference_type, const_iterator, size_type) noexcept;
         void splice(difference_type, forward_list &&, difference_type, size_type) noexcept;
+        void splice(difference_type, const_iterator, size_type) noexcept;
         static void splice_after(const_iterator, forward_list &, difference_type, size_type) noexcept;
-        static void splice_after(const_iterator, const_iterator , size_type) noexcept;
         static void splice_after(const_iterator , forward_list &&, difference_type, size_type) noexcept;
+        static void splice_after(const_iterator, const_iterator , size_type) noexcept;
         void splice(difference_type, const_iterator, const_iterator) noexcept;
         static void splice_after(const_iterator, const_iterator, const_iterator) noexcept;
         template <typename AllocatorRHS>
@@ -951,7 +951,7 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline bool forward_list<T, Allocator>::empty() const noexcept {
-        return this->head->next;
+        return not this->head->next;
     }
     template <typename T, typename Allocator>
     constexpr inline typename forward_list<T, Allocator>::size_type
@@ -1433,6 +1433,9 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::splice(difference_type pos, forward_list &rhs) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
         auto cursor {this->head};
         while(pos--) {
             cursor = cursor->next;
@@ -1447,6 +1450,9 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::splice_after(const_iterator pos, forward_list &rhs) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
         auto cursor {pos.node};
         auto backup {cursor->next};
         cursor->next = rhs.head->next;
@@ -1463,6 +1469,163 @@ namespace data_structure {
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::splice_after(const_iterator pos, forward_list &&rhs) noexcept {
         forward_list::splice_after(pos, rhs);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list &rhs, difference_type start_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        auto cursor {this->head};
+        while(pos--) {
+            cursor = cursor->next;
+        }
+        auto splice_pos {rhs.head};
+        while(start_pos--) {
+            splice_pos = splice_pos->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = splice_pos->next;
+        splice_pos->next = nullptr;
+        while(cursor->next) {
+            cursor = cursor->next;
+        }
+        cursor->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list &&rhs, difference_type start_pos) noexcept {
+        this->splice(pos, rhs, start_pos);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice(difference_type pos, const_iterator start_pos) noexcept {
+        auto cursor {this->head};
+        while(pos--) {
+            cursor = cursor->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = start_pos.node->next;
+        start_pos.node->next = nullptr;
+        while(cursor->next) {
+            cursor = cursor->next;
+        }
+        cursor->next = backup;
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list &rhs, difference_type start_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        auto cursor {rhs.head};
+        while(start_pos--) {
+            cursor = cursor->next;
+        }
+        auto backup {pos.node->next};
+        pos.node->next = cursor->next;
+        cursor->next = nullptr;
+        while(pos.node->next) {
+            ++pos;
+        }
+        pos.node->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list &&rhs, difference_type start_pos) noexcept {
+        forward_list::splice_after(pos, rhs, start_pos);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice_after(const_iterator pos, const_iterator start_pos) noexcept {
+        auto backup {pos.node->next};
+        pos.node->next = start_pos.node->next;
+        start_pos.node->next = nullptr;
+        while(pos.node->next) {
+            ++pos;
+        }
+        pos.node->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list &rhs, difference_type start_pos, size_type size) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        auto begin {rhs.head};
+        while(start_pos--) {
+            begin = begin->next;
+        }
+        auto end {begin};
+        while(size--) {
+            end = end->next;
+        }
+        this->splice(pos, iterator(begin), iterator(end));
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, forward_list &&rhs, difference_type start_pos, size_type size) noexcept {
+        this->splice(pos, rhs, start_pos, size);
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, const_iterator start_pos, size_type size) noexcept {
+        auto end {start_pos};
+        while(size--) {
+            ++end;
+        }
+        this->splice(pos, start_pos, end);
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list &rhs, difference_type start_pos, size_type size) noexcept {
+        auto begin {rhs.head};
+        while(start_pos--) {
+            begin = begin->next;
+        }
+        auto end {begin};
+        while(size--) {
+            end = end->next;
+        }
+        forward_list::splice_after(pos, iterator(begin), iterator(end));
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, forward_list && rhs, difference_type start_pos, size_type size) noexcept {
+        forward_list::splice_after(pos, rhs, start_pos, size);
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, const_iterator start_pos, size_type size) noexcept {
+        auto end {start_pos};
+        while(size--) {
+            ++end;
+        }
+        forward_list::splice_after(pos, start_pos, end);
+    }
+    template <typename T, typename Allocator>
+    inline void forward_list<T, Allocator>::splice(
+            difference_type pos, const_iterator begin, const_iterator end) noexcept {
+        if(begin == end) {
+            return;
+        }
+        auto cursor {this->head};
+        while(pos--) {
+            cursor = cursor->next;
+        }
+        forward_list::splice_after(iterator(cursor), begin, end);
+    }
+    template <typename T, typename Allocator>
+    void forward_list<T, Allocator>::splice_after(
+            const_iterator pos, const_iterator begin, const_iterator end) noexcept {
+        if(begin == end) {
+            return;
+        }
+        auto backup {pos.node->next};
+        pos.node->next = begin.node->next;
+        begin.node->next = end.node;
+        while(pos.node->next not_eq end.node) {
+            ++pos;
+        }
+        pos.node->next = backup;
     }
     template <typename T, typename Allocator>
     template <typename AllocatorRHS>
