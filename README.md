@@ -30,6 +30,7 @@ Jonny
 - forward_list
 - array
 - priority_queue (Adaptor)
+- list
 
 ### Algorithms ###
 
@@ -48,9 +49,6 @@ Jonny
 ## TODOs ##
 Tentatively
 - static_list
-- circular_forward_list
-- list
-- circular_list
 - matrix
 - square_matrix
 - diagonal_matrix
