@@ -48,15 +48,6 @@ namespace data_structure {
         static void destroy(pointer) noexcept;
         static void handle_exception_from_constructor(node_type) noexcept;
         static void handle_exception(node_type) noexcept;
-        static node_type allocate_sized(size_type, const_reference);
-        template <typename InputIterator>
-        static node_type allocate_sized(typename enable_if<
-                is_input_iterator<InputIterator>::value and not is_forward_iterator<InputIterator>::value,
-                InputIterator>::type, InputIterator);
-        template <typename ForwardIterator>
-        static node_type allocate_sized(
-                typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type,
-                ForwardIterator);
         static node_type allocate_from_constructor(size_type);
         static node_type allocate_from_constructor(size_type, const_reference);
         template <typename InputIterator>
@@ -102,6 +93,7 @@ namespace data_structure {
     public:
         forward_list &operator=(const forward_list &);
         forward_list &operator=(forward_list &&) noexcept;
+        forward_list &operator=(initializer_list<value_type>);
         template <typename AllocatorRHS>
         forward_list &operator=(const forward_list<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
@@ -116,16 +108,27 @@ namespace data_structure {
         void assign(typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type,
                 ForwardIterator);
         void assign(std::initializer_list<value_type>);
+        [[nodiscard]]
         reference front();
+        [[nodiscard]]
         const_reference front() const;
+        [[nodiscard]]
         iterator before_begin() noexcept;
+        [[nodiscard]]
         const_iterator before_begin() const noexcept;
+        [[nodiscard]]
         iterator begin() noexcept;
+        [[nodiscard]]
         const_iterator begin() const noexcept;
+        [[nodiscard]]
         const_iterator cbefore_begin() const noexcept;
+        [[nodiscard]]
         const_iterator cbegin() const noexcept;
+        [[nodiscard]]
         constexpr iterator end() noexcept;
+        [[nodiscard]]
         constexpr const_iterator end() const noexcept;
+        [[nodiscard]]
         constexpr const_iterator cend() const noexcept;
         [[nodiscard]]
         bool empty() const noexcept;
@@ -161,6 +164,7 @@ namespace data_structure {
         iterator erase(difference_type, size_type = 1) noexcept;
         static iterator erase_after(const_iterator, size_type = 1) noexcept;
         static iterator erase_after(const_iterator, const_iterator) noexcept;
+        static iterator erase_after(const_iterator) noexcept;
         template <typename ...Args>
         iterator emplace_after(difference_type, Args &&...);
         template <typename ...Args>
@@ -269,7 +273,7 @@ namespace data_structure {
 }
 
 namespace data_structure {
-    /* private function */
+    /* private functions */
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::node_type forward_list<T, Allocator>::allocate() {
         return reinterpret_cast<node_type>(alloc_traits::operator new(sizeof(node_value_type)));
@@ -281,7 +285,7 @@ namespace data_structure {
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::handle_exception_from_constructor(node_type begin) noexcept {
         auto cursor {begin->next};
-        while(cursor->next) {
+        while(cursor) {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
@@ -289,7 +293,6 @@ namespace data_structure {
             }
             alloc_traits::operator delete(backup);
         }
-        alloc_traits::operator delete(cursor);
         alloc_traits::operator delete(begin);
     }
     template <typename T, typename Allocator>
@@ -306,132 +309,18 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     typename forward_list<T, Allocator>::node_type
-    forward_list<T, Allocator>::allocate_sized(size_type size, const_reference value) {
-        const auto first {forward_list::allocate()};
-        auto cursor {first};
-        while(true) {
-            if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(ds::address_of(cursor->value), value);
-            }else {
-                try {
-                    alloc_traits::construct(ds::address_of(cursor->value), value);
-                }catch(...) {
-                    cursor->next = nullptr;
-                    forward_list::handle_exception(first);
-                    throw;
-                }
-            }
-            if(not --size) {
-                break;
-            }
-            try {
-                cursor->next = forward_list::allocate();
-            }catch(...) {
-                cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    destroy(ds::address_of(cursor->value));
-                }
-                forward_list::handle_exception(first);
-                throw;
-            }
-            cursor = cursor->next;
-        }
-        cursor->next = nullptr;
-        return first;
-    }
-    template <typename T, typename Allocator>
-    template <typename InputIterator>
-    typename forward_list<T, Allocator>::node_type
-    forward_list<T, Allocator>::allocate_sized(typename enable_if<
-            is_input_iterator<InputIterator>::value and not is_forward_iterator<InputIterator>::value,
-            InputIterator>::type begin, InputIterator end) {
-        const auto first {forward_list::allocate()};
-        auto cursor {first};
-        while(true) {
-            if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
-            }else {
-                try {
-                    alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
-                }catch(...) {
-                    cursor->next = nullptr;
-                    forward_list::handle_exception(first);
-                    throw;
-                }
-            }
-            if(begin == end) {
-                break;
-            }
-            try {
-                cursor->next = forward_list::allocate();
-            }catch(...) {
-                cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
-                forward_list::handle_exception(first);
-                throw;
-            }
-            cursor = cursor->next;
-        }
-        cursor->next = nullptr;
-        return first;
-    }
-    template <typename T, typename Allocator>
-    template <typename ForwardIterator>
-    typename forward_list<T, Allocator>::node_type
-    forward_list<T, Allocator>::allocate_sized(
-            typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type begin,
-            ForwardIterator end) {
-        const auto first {forward_list::allocate()};
-        auto cursor {first};
-        while(true) {
-            if constexpr(is_nothrow_copy_constructible<value_type>::value) {
-                alloc_traits::construct(ds::address_of(cursor->value), *begin++);
-            }else {
-                try {
-                    alloc_traits::construct(ds::address_of(cursor->value), *begin++);
-                }catch(...) {
-                    cursor->next = nullptr;
-                    forward_list::handle_exception(first);
-                    throw;
-                }
-            }
-            if(begin == end) {
-                break;
-            }
-            try {
-                cursor->next = forward_list::allocate();
-            }catch(...) {
-                cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
-                forward_list::handle_exception(first);
-                throw;
-            }
-            cursor = cursor->next;
-        }
-        cursor->next = nullptr;
-        return first;
-    }
-    template <typename T, typename Allocator>
-    typename forward_list<T, Allocator>::node_type
     forward_list<T, Allocator>::allocate_from_constructor(size_type size) {
         const auto first {forward_list::allocate()};
-        if(not size) {
+        if(size == 0) {
             first->next = nullptr;
             return first;
         }
         auto cursor {first};
-        while(size--) {
+        do {
             try {
                 cursor->next = forward_list::allocate();
             }catch(...) {
                 cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
@@ -441,13 +330,14 @@ namespace data_structure {
                 try {
                     alloc_traits::construct(ds::address_of(cursor->next->value));
                 }catch(...) {
+                    alloc_traits::operator delete(cursor->next);
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
                     throw;
                 }
             }
             cursor = cursor->next;
-        }
+        }while(--size > 0);
         cursor->next = nullptr;
         return first;
     }
@@ -455,19 +345,16 @@ namespace data_structure {
     typename forward_list<T, Allocator>::node_type
     forward_list<T, Allocator>::allocate_from_constructor(size_type size, const_reference value) {
         const auto first {forward_list::allocate()};
-        if(not size) {
+        if(size == 0) {
             first->next = nullptr;
             return first;
         }
         auto cursor {first};
-        while(size--) {
+        do {
             try {
                 cursor->next = forward_list::allocate();
             }catch(...) {
                 cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
@@ -477,13 +364,14 @@ namespace data_structure {
                 try {
                     alloc_traits::construct(ds::address_of(cursor->next->value), value);
                 }catch(...) {
+                    alloc_traits::operator delete(cursor->next);
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
                     throw;
                 }
             }
             cursor = cursor->next;
-        }
+        }while(--size > 0);
         cursor->next = nullptr;
         return first;
     }
@@ -493,37 +381,35 @@ namespace data_structure {
     forward_list<T, Allocator>::allocate_from_constructor(typename enable_if<
             is_input_iterator<InputIterator>::value and not is_forward_iterator<InputIterator>::value,
             InputIterator>::type begin, InputIterator end) {
+        using iterator_value_type = typename iterator_traits<InputIterator>::rvalue_reference;
         const auto first {forward_list::allocate()};
         if(begin == end) {
             first->next = nullptr;
             return first;
         }
         auto cursor {first};
-        while(begin not_eq end) {
+        do {
             try {
                 cursor->next = forward_list::allocate();
             }catch(...) {
                 cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
-            if constexpr(is_nothrow_move_constructible<value_type>::value or
-                    is_nothrow_copy_constructible<value_type>::value) {
+            if constexpr(is_nothrow_constructible<value_type, iterator_value_type>::value) {
                 alloc_traits::construct(ds::address_of(cursor->next->value), ds::move(*begin++));
             }else {
                 try {
                     alloc_traits::construct(ds::address_of(cursor->next->value), ds::move(*begin++));
                 }catch(...) {
+                    alloc_traits::operator delete(cursor->next);
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
                     throw;
                 }
             }
             cursor = cursor->next;
-        }
+        }while(begin not_eq end);
         cursor->next = nullptr;
         return first;
     }
@@ -533,36 +419,35 @@ namespace data_structure {
     forward_list<T, Allocator>::allocate_from_constructor(
             typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type begin,
             ForwardIterator end) {
+        using iterator_value_type = typename iterator_traits<ForwardIterator>::reference;
         const auto first {forward_list::allocate()};
         if(begin == end) {
             first->next = nullptr;
             return first;
         }
         auto cursor {first};
-        while(begin not_eq end) {
+        do {
             try {
                 cursor->next = forward_list::allocate();
             }catch(...) {
                 cursor->next = nullptr;
-                if constexpr(not is_trivially_destructible<value_type>::value) {
-                    forward_list::destroy(ds::address_of(cursor->value));
-                }
                 forward_list::handle_exception_from_constructor(first);
                 throw;
             }
-            if constexpr(is_nothrow_copy_constructible<value_type>::value) {
+            if constexpr(is_nothrow_constructible<value_type, iterator_value_type>::value) {
                 alloc_traits::construct(ds::address_of(cursor->next->value), *begin++);
             }else {
                 try {
                     alloc_traits::construct(ds::address_of(cursor->next->value), *begin++);
                 }catch(...) {
+                    alloc_traits::operator delete(cursor->next);
                     cursor->next = nullptr;
                     forward_list::handle_exception_from_constructor(first);
                     throw;
                 }
             }
             cursor = cursor->next;
-        }
+        }while(begin not_eq end);
         cursor->next = nullptr;
         return first;
     }
@@ -583,7 +468,7 @@ namespace data_structure {
                     throw;
                 }
             }
-            if(not --size) {
+            if(--size == 0) {
                 break;
             }
             try {
@@ -608,11 +493,11 @@ namespace data_structure {
             node_type before_begin, node_type after_end, typename enable_if<
                     is_input_iterator<InputIterator>::value and not is_forward_iterator<InputIterator>::value,
                     InputIterator>::type begin, InputIterator end) {
+        using iterator_value_type = typename iterator_traits<InputIterator>::rvalue_reference;
         const auto first {forward_list::allocate()};
         auto cursor {first};
         while(true) {
-            if constexpr(is_nothrow_move_constructible<value_type>::value or
-                    is_nothrow_copy_constructible<value_type>::value) {
+            if constexpr(is_nothrow_constructible<value_type, rvalue_reference>::value) {
                 alloc_traits::construct(ds::address_of(cursor->value), ds::move(*begin++));
             }else {
                 try {
@@ -648,10 +533,11 @@ namespace data_structure {
             node_type before_begin, node_type after_end, typename enable_if<
                     is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type begin,
                     ForwardIterator end) {
+        using iterator_value_type = typename iterator_traits<ForwardIterator>::reference;
         const auto first {forward_list::allocate()};
         auto cursor {first};
         while(true) {
-            if constexpr(is_nothrow_copy_constructible<value_type>::value) {
+            if constexpr(is_nothrow_constructible<value_type, iterator_value_type>::value) {
                 alloc_traits::construct(ds::address_of(cursor->value), *begin++);
             }else {
                 try {
@@ -756,7 +642,7 @@ namespace data_structure {
         return merge_auxiliary(sort_auxiliary(begin, size_front, cmp), sort_auxiliary(after_mid, size, cmp), cmp);
     }
 
-    /* public function */
+    /* public functions */
     template <typename T, typename Allocator>
     inline forward_list<T, Allocator>::forward_list() : forward_list(0) {}
     template <typename T, typename Allocator>
@@ -798,6 +684,9 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     forward_list<T, Allocator>::~forward_list() noexcept {
+        if(not this->head) {
+            return;
+        }
         auto cursor {this->head->next};
         while(cursor) {
             auto backup {cursor};
@@ -826,6 +715,11 @@ namespace data_structure {
         return *this;
     }
     template <typename T, typename Allocator>
+    inline forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(initializer_list<value_type> init_list) {
+        this->assign(init_list.begin(), init_list.end());
+        return *this;
+    }
+    template <typename T, typename Allocator>
     template <typename AllocatorRHS>
     inline forward_list<T, Allocator> &
     forward_list<T, Allocator>::operator=(const forward_list<T, AllocatorRHS> &rhs) {
@@ -843,6 +737,9 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::assign(size_type size, const_reference value) {
+        if(size == 0) {
+            return;
+        }
         auto before_cursor {this->before_begin()};
         auto cursor {this->begin()};
         const auto end {this->end()};
@@ -853,6 +750,7 @@ namespace data_structure {
         }
         if(size) {
             this->insert_after(before_cursor, value, size);
+            return;
         }
         if(cursor not_eq end) {
             this->erase_after(before_cursor, end);
@@ -956,7 +854,7 @@ namespace data_structure {
     template <typename T, typename Allocator>
     constexpr inline typename forward_list<T, Allocator>::size_type
     forward_list<T, Allocator>::max_size() const noexcept {
-        return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        return std::numeric_limits<size_type>::max() / sizeof(node_value_type);
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::clear() noexcept {
@@ -967,12 +865,15 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::swap(forward_list &rhs) noexcept {
-        __DS::swap(this->head, rhs.head);
+        if(this == &rhs) {
+            return;
+        }
+        ds::swap(this->head, rhs.head);
     }
     template <typename T, typename Allocator>
     template <typename AllocatorRHS>
     inline void forward_list<T, Allocator>::swap(forward_list<T, AllocatorRHS> &rhs) noexcept {
-        __DS::swap(this->head, rhs.head);
+        ds::swap(this->head, rhs.head);
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::resize(size_type size, const_reference value) {
@@ -981,15 +882,15 @@ namespace data_structure {
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::insert(difference_type pos, const_reference value, size_type size) {
-        if(not size) {
+        if(size == 0) {
             return iterator(nullptr);
         }
         auto cursor {this->head};
-        while(pos and cursor->next) {
+        while(pos > 0 and cursor->next) {
             cursor = cursor->next;
             --pos;
         }
-        if(pos) {
+        if(pos > 0) {
             return iterator(nullptr);
         }
         return iterator(this->insert_auxiliary(cursor, cursor->next, value, size));
@@ -997,7 +898,7 @@ namespace data_structure {
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::insert_after(const_iterator pos, const_reference value, size_type size) {
-        if(not size or not pos.node) {
+        if(size == 0 or not pos.node) {
             return iterator(nullptr);
         }
         return iterator(forward_list::insert_auxiliary(pos.node, pos.node->next, value, size));
@@ -1006,16 +907,16 @@ namespace data_structure {
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::insert(difference_type pos, rvalue_reference value) {
         auto cursor {this->head};
-        while(pos and cursor->next) {
+        while(pos > 0 and cursor->next) {
             cursor = cursor->next;
             --pos;
         }
-        if(pos) {
+        if(pos > 0) {
             return iterator(nullptr);
         }
         auto new_node {this->allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
-                is_nothrow_copy_constructible<value_type>::value) {
+                (not is_move_constructible<value_type>::value and is_nothrow_copy_constructible<value_type>::value)) {
             alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
@@ -1033,7 +934,7 @@ namespace data_structure {
     forward_list<T, Allocator>::insert_after(const_iterator pos, rvalue_reference value) {
         auto new_node {forward_list::allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
-                is_nothrow_copy_constructible<value_type>::value) {
+                (not is_move_constructible<value_type>::value and is_nothrow_copy_constructible<value_type>::value)) {
             alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
@@ -1056,11 +957,11 @@ namespace data_structure {
             return iterator(nullptr);
         }
         auto cursor {this->head};
-        while(pos and cursor->next) {
+        while(pos > 0 and cursor->next) {
             cursor = cursor->next;
             --pos;
         }
-        if(pos) {
+        if(pos > 0) {
             return iterator(nullptr);
         }
         return this->insert_auxiliary(cursor, cursor->next, begin, end);
@@ -1085,11 +986,11 @@ namespace data_structure {
             return iterator(nullptr);
         }
         auto cursor {this->head};
-        while(pos and cursor->next) {
+        while(pos > 0 and cursor->next) {
             cursor = cursor->next;
             --pos;
         }
-        if(pos) {
+        if(pos > 0) {
             return iterator(nullptr);
         }
         return this->insert_auxiliary(cursor, cursor->next, begin, end);
@@ -1117,15 +1018,15 @@ namespace data_structure {
     template <typename T, typename Allocator>
     typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase(difference_type pos, size_type size) noexcept {
-        if(not this->head or not size) {
+        if(size == 0) {
             return iterator(nullptr);
         }
         auto cursor {this->head};
-        while(pos and cursor->next) {
+        while(pos > 0 and cursor->next) {
             cursor = cursor->next;
             --pos;
         }
-        if(pos or not cursor->next) {
+        if(pos > 0 or not cursor->next) {
             return iterator(nullptr);
         }
         auto chasm {cursor};
@@ -1137,18 +1038,18 @@ namespace data_structure {
                 alloc_traits::destroy(ds::address_of(cursor->value));
             }
             alloc_traits::operator delete(cursor);
-        }while(--size and backup);
+        }while(--size > 0 and backup);
         chasm->next = backup;
         return iterator(backup);
     }
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase_after(const_iterator pos, size_type size) noexcept {
-        if(not pos.node or not size) {
+        if(not pos.node or size == 0) {
             return iterator(nullptr);
         }
         auto cursor {pos.node->next};
-        while(size-- and cursor) {
+        while(size-- > 0 and cursor) {
             auto backup {cursor};
             cursor = cursor->next;
             if constexpr(not is_trivially_destructible<value_type>::value) {
@@ -1162,7 +1063,7 @@ namespace data_structure {
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase_after(const_iterator begin, const_iterator end) noexcept {
-        if(not begin.node or begin == end) {
+        if(begin == end or not begin.node) {
             return iterator(nullptr);
         }
         auto cursor {begin.node->next};
@@ -1233,6 +1134,9 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     void forward_list<T, Allocator>::pop_front() noexcept {
+        if(this->empty()) {
+            return;
+        }
         auto deprecated_node {this->head->next};
         if(not deprecated_node) {
             return;
@@ -1279,7 +1183,7 @@ namespace data_structure {
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     inline bool operator<=(const forward_list<T, AllocatorLHS> &lhs, const forward_list<T, AllocatorRHS> &rhs) {
-        return lhs < rhs or lhs == rhs;
+        return not(rhs < lhs);
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     inline bool operator>(const forward_list<T, AllocatorLHS> &lhs, const forward_list<T, AllocatorRHS> &rhs) {
