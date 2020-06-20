@@ -338,10 +338,9 @@ namespace data_structure {
 
 namespace data_structure {
     template <typename Iterator>
-    class __wrap_iterator final {
-    private:
-        using iterator_type = Iterator;
+    class wrap_iterator final {
     public:
+        using iterator_type = Iterator;
         using size_type = typename iterator_traits<iterator_type>::size_type;
         using difference_type = typename iterator_traits<iterator_type>::difference_type;
         using value_type = typename iterator_traits<iterator_type>::value_type;
@@ -351,107 +350,119 @@ namespace data_structure {
         using pointer = typename iterator_traits<iterator_type>::pointer;
         using const_pointer = typename iterator_traits<iterator_type>::const_pointer;
         using iterator_category = typename iterator_traits<iterator_type>::iterator_category;
+        static_assert(is_pointer<iterator_type>::value, "The class wrap_iterator is only for pointer type!");
     private:
         iterator_type iter;
     private:
         template <typename IteratorRHS>
-        constexpr __wrap_iterator(const __wrap_iterator<IteratorRHS> &iter,
-                typename enable_if<is_constructible<iterator_type, IteratorRHS>::value>::type *) noexcept :
-                iter {iter.base()} {}
-    public:
-        constexpr __wrap_iterator() noexcept = default;
-        constexpr __wrap_iterator(iterator_type iter) noexcept : iter {iter} {}
+        explicit constexpr wrap_iterator(const wrap_iterator<IteratorRHS> &rhs, typename enable_if<
+                is_nothrow_convertible<IteratorRHS, iterator_type>::value, void>::type *)
+                noexcept : iter {rhs.base()} {}
         template <typename IteratorRHS>
-        constexpr __wrap_iterator(const __wrap_iterator<IteratorRHS> &iter) noexcept :
-                __wrap_iterator(iter, nullptr) {}
-        constexpr __wrap_iterator(const __wrap_iterator &rhs) noexcept = default;
-        constexpr __wrap_iterator(__wrap_iterator &&rhs) noexcept = default;
-        ~__wrap_iterator() noexcept = default;
+        constexpr wrap_iterator &operator_assignment_auxiliary(const wrap_iterator<IteratorRHS> &rhs,
+                typename enable_if<is_nothrow_convertible<IteratorRHS, iterator_type>::value, void>::type *)
+                noexcept {
+            this->iter = rhs.base();
+            return *this;
+        }
     public:
-        __wrap_iterator &operator=(const __wrap_iterator &) noexcept = default;
-        __wrap_iterator &operator=(__wrap_iterator &&) noexcept = default;
+        constexpr wrap_iterator() noexcept = default;
+        explicit constexpr wrap_iterator(iterator_type iterator) noexcept : iter {iterator} {}
+        template <typename IteratorRHS>
+        constexpr wrap_iterator(const wrap_iterator<IteratorRHS> &rhs)
+                noexcept : wrap_iterator(rhs, nullptr) {}
+        constexpr wrap_iterator(const wrap_iterator &) noexcept = default;
+        constexpr wrap_iterator(wrap_iterator &&) noexcept = default;
+        ~wrap_iterator() noexcept = default;
+    public:
+        constexpr wrap_iterator &operator=(const wrap_iterator &) noexcept = default;
+        constexpr wrap_iterator &operator=(wrap_iterator &&) noexcept = default;
+        template <typename IteratorRHS>
+        constexpr wrap_iterator &operator=(const wrap_iterator<IteratorRHS> &rhs) noexcept {
+            return this->operator_assignment_auxiliary(rhs, nullptr);
+        }
         reference operator*() const noexcept {
             return *this->iter;
         }
         pointer operator->() const noexcept {
             return this->iter;
         }
-        __wrap_iterator &operator++() noexcept {
+        reference operator[](difference_type n) const noexcept {
+            return *(this->iter + n);
+        };
+        wrap_iterator &operator++() & noexcept {
             ++this->iter;
             return *this;
         }
-        __wrap_iterator operator++(int) noexcept {
-            auto tmp {*this};
-            ++this->iter;
-            return tmp;
+        wrap_iterator operator++(int) & noexcept {
+            auto backup {*this};
+            ++*this;
+            return backup;
         }
-        __wrap_iterator &operator--() noexcept {
+        wrap_iterator &operator--() & noexcept {
             --this->iter;
             return *this;
         }
-        __wrap_iterator operator--(int) noexcept {
-            auto tmp {*this};
-            --this->iter;
-            return tmp;
+        wrap_iterator operator--(int) & noexcept {
+            auto backup {*this};
+            --*this;
+            return backup;
         }
-        __wrap_iterator &operator+=(difference_type n) noexcept {
+        wrap_iterator &operator+=(difference_type n) & noexcept {
             this->iter += n;
             return *this;
         }
-        __wrap_iterator operator+(difference_type n) const noexcept {
-            auto tmp {*this};
-            tmp += n;
-            return tmp;
-        }
-        __wrap_iterator &operator-=(difference_type n) noexcept {
+        wrap_iterator &operator-=(difference_type n) & noexcept {
             return *this += -n;
         }
-        __wrap_iterator operator-(difference_type n) const noexcept {
-            auto tmp {*this};
-            tmp -= n;
-            return tmp;
+        wrap_iterator operator+(difference_type n) noexcept {
+            auto backup {*this};
+            return backup += n;
         }
-        reference operator[](difference_type n) const noexcept {
-            return *(this->iter + n);
+        wrap_iterator operator-(difference_type n) noexcept {
+            return *this + -n;
+        }
+        explicit operator bool() const noexcept {
+            return static_cast<bool>(this->iter);
         }
     public:
         iterator_type base() const noexcept {
             return this->iter;
         }
     };
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator-(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline auto operator-(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept -> decltype(lhs.base() - rhs.base()) {
         return lhs.base() - rhs.base();
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator==(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator==(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() == rhs.base();
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator!=(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator!=(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator<(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator<(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
         return lhs.base() - rhs.base() < 0;
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator<=(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
-        return lhs.base() - rhs.base() <= 0;
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator>(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
+        return rhs < lhs;
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator>(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
-        return not(lhs <= rhs);
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator<=(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
+        return not(lhs > rhs);
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator>=(const __wrap_iterator<IteratorLHS> &lhs,
-            const __wrap_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator>=(const wrap_iterator<IteratorLHS> &lhs,
+            const wrap_iterator<IteratorRHS> &rhs) noexcept {
         return not(lhs < rhs);
     }
 }
@@ -459,9 +470,8 @@ namespace data_structure {
 namespace data_structure {
     template <typename Iterator>
     class reverse_iterator {
-    private:
-        using iterator_type = Iterator;
     public:
+        using iterator_type = Iterator;
         using size_type = typename iterator_traits<iterator_type>::size_type;
         using difference_type = typename iterator_traits<iterator_type>::difference_type;
         using value_type = typename iterator_traits<iterator_type>::value_type;
@@ -471,124 +481,173 @@ namespace data_structure {
         using pointer = typename iterator_traits<iterator_type>::pointer;
         using const_pointer = typename iterator_traits<iterator_type>::const_pointer;
         using iterator_category = typename iterator_traits<iterator_type>::iterator_category;
+        static_assert(is_base_of<bidirectional_iterator_tag, iterator_category>::value,
+                "The template argument must be at least a bidirectional iterator!");
+    private:
+        using if_random_access_iterator = typename is_random_access_iterator<iterator_type>::result;
     private:
         iterator_type iter;
     private:
         template <typename IteratorRHS>
-        constexpr reverse_iterator(const reverse_iterator<IteratorRHS> &iter,
-                                   typename enable_if<is_constructible<iterator_type, IteratorRHS>::value>::type *)
-        noexcept(is_nothrow_constructible<iterator_type, IteratorRHS>::value) :
-                iter {iter.base()} {}
+        constexpr reverse_iterator(const reverse_iterator<IteratorRHS> &rhs, typename enable_if<
+                is_convertible<IteratorRHS, iterator_type>::value, void>::type *)
+                noexcept(is_nothrow_constructible<IteratorRHS, iterator_type>::value) : iter {rhs.base()} {}
+        template <typename IteratorRHS>
+        constexpr reverse_iterator &operator_assignment_auxiliary(const reverse_iterator<IteratorRHS> &rhs,
+                typename enable_if<is_convertible<IteratorRHS, iterator_type>::value, void>::type *)
+                noexcept(is_nothrow_assignable<IteratorRHS, iterator_type>::value) {
+            this->iter = rhs.base();
+            return *this;
+        }
     public:
         constexpr reverse_iterator() = default;
-        constexpr reverse_iterator(iterator_type iter)
-                noexcept(is_nothrow_copy_constructible<iterator_type>::value) : iter {iter} {}
+        constexpr reverse_iterator(iterator_type iterator)
+                noexcept(is_nothrow_copy_constructible<iterator_type>::value) : iter {iterator} {}
         template <typename IteratorRHS>
-        constexpr reverse_iterator(const reverse_iterator<IteratorRHS> &iter)
+        constexpr reverse_iterator(const reverse_iterator<IteratorRHS> &rhs)
                 noexcept(is_nothrow_constructible<iterator_type, IteratorRHS>::value) :
-                reverse_iterator(iter, nullptr) {}
-        constexpr reverse_iterator(const reverse_iterator &rhs)
-                noexcept(is_nothrow_copy_constructible<iterator_type>::value) = default;
-        constexpr reverse_iterator(reverse_iterator &&rhs)
-                noexcept(is_nothrow_move_constructible<iterator_type>::value) = default;
-        ~reverse_iterator() noexcept(is_nothrow_destructible<iterator_type>::value) = default;
+                reverse_iterator(rhs, nullptr) {}
+        constexpr reverse_iterator(const reverse_iterator &) = default;
+        constexpr reverse_iterator(reverse_iterator &&) = default;
+        ~reverse_iterator() = default;
     public:
-        reverse_iterator &operator=(const reverse_iterator &)
-        noexcept(is_nothrow_copy_assignable<iterator_type>::value) = default;
-        reverse_iterator &operator=(reverse_iterator &&)
-        noexcept(is_nothrow_move_assignable<iterator_type>::value) = default;
-        reference operator*() const
-        noexcept(is_nothrow_copy_constructible<iterator_type>::value and
-                 has_nothrow_dereference_operator<iterator_type>::value and
-                 has_nothrow_pre_decrement_operator<iterator_type>::value) {
-            auto tmp {this->iter};
-            return *--tmp;
+        constexpr reverse_iterator &operator=(const reverse_iterator &) = default;
+        constexpr reverse_iterator &operator=(reverse_iterator &&) = default;
+        template <typename IteratorRHS>
+        constexpr reverse_iterator &operator=(const reverse_iterator<IteratorRHS> &rhs)
+                noexcept(is_nothrow_assignable<iterator_type, IteratorRHS>::value) {
+            return this->operator_assignment_auxiliary(rhs, nullptr);
         }
-        pointer operator->() const noexcept(has_nothrow_dereference_operator<reverse_iterator>::value) {
-            return address_of(this->operator*());
+    public:
+        reference operator*() const noexcept(has_nothrow_dereference_operator<iterator_type>::value) {
+            return *this->iter;
         }
-        reverse_iterator &operator++() noexcept(has_nothrow_pre_decrement_operator<iterator_type>::value) {
+        pointer operator->() const noexcept {
+            return static_cast<pointer>(ds::address_of(this->iter));
+        }
+        template <bool Boolean = true>
+        typename enable_if<if_random_access_iterator()() and Boolean, reference>::type
+        operator[](difference_type n)
+                noexcept(has_nothrow_minus_assignment_operator<iterator_type, difference_type>::value and
+                        has_nothrow_dereference_operator<iterator_type>::value) {
+            return *(this->iter - n);
+        }
+        reverse_iterator &operator++() & noexcept(has_nothrow_pre_increment_operator<iterator_type>::value) {
             --this->iter;
             return *this;
         }
-        reverse_iterator operator++(int)
-                noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
-            auto tmp {*this};
-            ++*this;
-            return tmp;
+        reverse_iterator operator++(int) &
+                noexcept(has_nothrow_post_increment_operator<iterator_type>::value) {
+            auto backup {*this};
+            --this->iter;
+            return backup;
         }
-        reverse_iterator &operator--() noexcept(has_nothrow_pre_increment_operator<iterator_type>::value) {
+        reverse_iterator &operator--() & noexcept(has_nothrow_pre_decrement_operator<iterator_type>::value) {
             ++this->iter;
             return *this;
         }
-        reverse_iterator operator--(int)
-                noexcept(has_nothrow_pre_increment_operator<reverse_iterator>::value) {
-            auto tmp {*this};
-            --*this;
-            return tmp;
+        reverse_iterator operator--(int) &
+                noexcept(has_nothrow_post_decrement_operator<iterator_type>::value) {
+            auto backup {*this};
+            ++this->iter;
+            return backup;
         }
-        reverse_iterator &operator+=(difference_type n)
-                noexcept(has_nothrow_minus_assignment_operator<iterator_type>::value) {
+        template <bool Boolean = true>
+        typename enable_if<if_random_access_iterator()() and Boolean, reverse_iterator &>::type
+        operator+=(difference_type n) &
+                noexcept(has_nothrow_minus_assignment_operator<iterator_type, difference_type>::value) {
             this->iter -= n;
             return *this;
         }
-        reverse_iterator operator+(difference_type n) const
-                noexcept(has_nothrow_minus_operator<iterator_type>::value and
-                 is_nothrow_constructible<reverse_iterator, iterator_type>::value) {
-            return reverse_iterator {this->iter - n};
+        template <bool Boolean = true>
+        typename enable_if<if_random_access_iterator()() and Boolean, reverse_iterator &>::type
+        operator-=(difference_type n) &
+                noexcept(has_nothrow_plus_assignment_operator<iterator_type, difference_type>::value) {
+            return *this += -n;
         }
-        reverse_iterator &operator-=(difference_type n)
-                noexcept(has_nothrow_plus_assignment_operator<iterator_type>::value) {
-            this->iter += n;
-            return *this;
+        template <bool Boolean = true>
+        typename enable_if<if_random_access_iterator() and Boolean, reverse_iterator>::type
+        operator+(difference_type n)
+                noexcept(has_nothrow_minus_assignment_operator<iterator_type, difference_type>::value) {
+            auto backup {*this};
+            backup += n;
+            return backup;
         }
-        reverse_iterator operator-(difference_type n) const
-                noexcept(has_nothrow_plus_operator<iterator_type>::value and
-                 is_nothrow_constructible<reverse_iterator, iterator_type>::value) {
-            return reverse_iterator {this->iter + n};
+        template <bool Boolean = true>
+        typename enable_if<if_random_access_iterator()() and Boolean, reverse_iterator>::type
+        operator-(difference_type n)
+                noexcept(has_nothrow_minus_assignment_operator<iterator_type, difference_type>::value) {
+            return *this + -n;
         }
-        reference operator[](difference_type n) const
-                noexcept(has_nothrow_subscripting_operator<iterator_type, difference_type>::value) {
-            return this->iter[n];
+        template <bool Boolean = true>
+        explicit operator typename enable_if<is_convertible<iterator_type, bool>::value and Boolean, bool>::type()
+                const noexcept(is_nothrow_convertible<iterator_type, bool>::value) {
+            return static_cast<bool>(this->iter);
         }
     public:
-        iterator_type base() const noexcept(has_nothrow_dereference_operator<reverse_iterator>::value) {
-            return this->operator->();
+        iterator_type base() const noexcept(is_nothrow_copy_constructible<iterator_type>::value) {
+            return this->iter;
         }
     };
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator-(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
-        return lhs.base() - rhs.base();
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline auto operator-(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+           noexcept((is_nothrow_convertible<IteratorLHS, IteratorRHS>::value or
+                   is_nothrow_convertible<IteratorRHS, IteratorLHS>::value) and
+                   is_nothrow_copy_constructible<IteratorLHS>::value and
+                   is_nothrow_copy_constructible<IteratorRHS>::value and
+                   has_nothrow_minus_operator<IteratorRHS, IteratorLHS>::value)
+           -> typename enable_if<is_random_access_iterator<IteratorLHS>::value and
+                   is_random_access_iterator<IteratorRHS>::value, decltype(lhs.base() - rhs.base())>::type {
+        return rhs.base() - lhs.base();
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator==(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
-        return lhs.base() == rhs.base();
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator==(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept((is_nothrow_convertible<IteratorLHS, IteratorRHS>::value or
+                      is_nothrow_convertible<IteratorRHS, IteratorLHS>::value) and
+                     is_nothrow_copy_constructible<IteratorLHS>::value and
+                     is_nothrow_copy_constructible<IteratorRHS>::value and
+                     has_nothrow_equal_to_operator<IteratorLHS, IteratorRHS>::value) {
+        return rhs.base() == lhs.base();
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator!=(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline bool operator!=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_equal_to_operator<const reverse_iterator<IteratorLHS> &,
+                    const reverse_iterator<IteratorRHS> &>::value) {
         return not(lhs == rhs);
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator<(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
-        return lhs.base() - rhs.base() < 0;
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline typename enable_if<is_random_access_iterator<IteratorLHS>::value and
+            is_random_access_iterator<IteratorRHS>::value, bool>::type
+    operator<(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept((is_nothrow_convertible<IteratorLHS, IteratorRHS>::value or
+                      is_nothrow_convertible<IteratorRHS, IteratorLHS>::value) and
+                     is_nothrow_copy_constructible<IteratorLHS>::value and
+                     is_nothrow_copy_constructible<IteratorRHS>::value and
+                     has_nothrow_less_operator<IteratorLHS, IteratorRHS>::value) {
+        return lhs < rhs;
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator<=(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
-        return lhs.base() - rhs.base() <= 0;
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline typename enable_if<is_random_access_iterator<IteratorLHS>::value and
+            is_random_access_iterator<IteratorRHS>::value, bool>::type
+    operator>(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_less_operator<const reverse_iterator<IteratorRHS> &,
+                    const reverse_iterator<IteratorLHS> &>::value) {
+        return rhs < lhs;
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator>(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
-        return not(lhs <= rhs);
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline typename enable_if<is_random_access_iterator<IteratorLHS>::value and
+            is_random_access_iterator<IteratorRHS>::value, bool>::type
+    operator<=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_less_operator<const reverse_iterator<IteratorRHS> &,
+                    const reverse_iterator<IteratorLHS> &>::value) {
+        return not (lhs > rhs);
     }
-    template <typename IteratorLHS, typename IteratorRHS>
-    inline bool operator>=(const reverse_iterator<IteratorLHS> &lhs,
-            const reverse_iterator<IteratorRHS> &rhs) noexcept {
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline typename enable_if<is_random_access_iterator<IteratorLHS>::value and
+            is_random_access_iterator<IteratorRHS>::value, bool>::type
+    operator>=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_less_operator<const reverse_iterator<IteratorLHS> &,
+                    const reverse_iterator<IteratorRHS> &>::value) {
         return not(lhs < rhs);
     }
 }
@@ -612,23 +671,30 @@ namespace data_structure {
         };
 
         template <typename T>
-        inline constexpr typename T::previous_type test_have_previous_type_auxiliary(int) noexcept {
-            static_assert(is_type<T>::value, "The function test_have_previous_type_auxiliary"
-                     "cannot be called!");
+        inline constexpr typename T::previous_type test_previous_type_auxiliary(int) noexcept {
+            static_assert(is_type<T>::value, "The function test_previous_type_auxiliary cannot be called!");
             return {};
         }
         template <typename T>
-        inline constexpr void test_have_previous_type_auxiliary(...) noexcept {
-            static_assert(is_type<T>::value, "The function test_have_previous_type_auxiliary"
-                      "cannot be called!");
+        inline constexpr void test_previous_type_auxiliary(...) noexcept {
+            static_assert(is_type<T>::value, "The function test_previous_type_auxiliary cannot be called!");
+        }
+        template <typename T>
+        inline constexpr typename T::next_type test_next_type_auxiliary(int) noexcept {
+            static_assert(is_type<T>::value, "The function test_next_type_auxiliary cannot be called!");
+            return {};
+        }
+        template <typename T>
+        inline constexpr void test_next_type_auxiliary(...) noexcept {
+            static_assert(is_type<T>::value, "The function test_next_type_auxiliary cannot be called!");
         }
 
         template <typename NodeType>
         struct node_type_traits final {
             using node_type = NodeType;
             using void_pointer = typename node_type::void_pointer;
-            using next_type = typename node_type::next_type;
-            using previous_type = decltype(test_have_previous_type_auxiliary<node_type>(0));
+            using next_type = decltype(test_next_type_auxiliary<node_type>(0));
+            using previous_type = decltype(test_previous_type_auxiliary<node_type>(0));
             using value_type = typename node_type::value_type;
             using reference = typename node_type::reference;
             using const_reference = typename node_type::const_reference;
@@ -651,7 +717,7 @@ namespace data_structure {
             using const_pointer = typename add_const_pointer<value_type>::type;
         };
     }
-    template <typename NodeType, bool IsConst>
+    template <typename NodeType, bool IsConst = false>
     class forward_list_iterator final {
         template <typename T, typename Allocator>
         friend class forward_list;
@@ -799,7 +865,7 @@ namespace data_structure {
             value_type value;
         };
     }
-    template <typename NodeType, bool IsConst>
+    template <typename NodeType, bool IsConst = false>
     class list_iterator final {
         template <typename, typename>
         friend class list;
