@@ -43,8 +43,12 @@ namespace data_structure {
             constexpr __true_type() noexcept = default;
             constexpr __true_type(const __true_type &) noexcept = default;
             constexpr __true_type(__true_type &&) noexcept = default;
-            __true_type &operator=(const __true_type &) noexcept = default;
-            __true_type &operator=(__true_type &&) noexcept = default;
+            constexpr __true_type &operator=(const __true_type &) noexcept {
+                return *this;
+            }
+            constexpr __true_type &operator=(__true_type &&) noexcept {
+                return *this;
+            }
             ~__true_type() noexcept = default;
         };
         struct __false_type final {
@@ -59,8 +63,12 @@ namespace data_structure {
             constexpr __false_type() noexcept = default;
             constexpr __false_type(const __false_type &) noexcept = default;
             constexpr __false_type(__false_type &&) noexcept = default;
-            __false_type &operator=(const __false_type &) noexcept = default;
-            __false_type &operator=(__false_type &&) noexcept = default;
+            constexpr __false_type &operator=(const __false_type &) noexcept {
+                return *this;
+            }
+            constexpr __false_type &operator=(__false_type &&) noexcept {
+                return *this;
+            }
             ~__false_type() noexcept = default;
         };
     }
@@ -5196,6 +5204,18 @@ namespace data_structure {
         }
     };
     template <>
+    struct is_char_type<wchar_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<wchar_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<wchar_t>::value;
+        }
+    };
+    template <>
     struct is_char_type<const wchar_t> {
         using value_type = bool;
         using result = __true_type;
@@ -5229,6 +5249,18 @@ namespace data_structure {
         }
         constexpr explicit operator value_type() const noexcept {
             return is_char_type<const volatile wchar_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<char16_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<char16_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<char16_t>::value;
         }
     };
     template <>
@@ -5268,6 +5300,18 @@ namespace data_structure {
         }
     };
     template <>
+    struct is_char_type<char32_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<char32_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<char32_t>::value;
+        }
+    };
+    template <>
     struct is_char_type<const char32_t> {
         using value_type = bool;
         using result = __true_type;
@@ -5303,6 +5347,56 @@ namespace data_structure {
             return is_char_type<const volatile char32_t>::value;
         }
     };
+#ifdef _DATA_STRUCTURE_HAS_CHAR8_T
+    template <>
+    struct is_char_type<char8_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<char8_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<char8_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const char8_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const char8_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const char8_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<volatile char8_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<volatile char8_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<volatile char8_t>::value;
+        }
+    };
+    template <>
+    struct is_char_type<const volatile char8_t> {
+        using value_type = bool;
+        using result = __true_type;
+        constexpr static inline auto value {static_cast<value_type>(result())};
+        constexpr value_type operator()() const noexcept {
+            return is_char_type<const volatile char8_t>::value;
+        }
+        constexpr explicit operator value_type() const noexcept {
+            return is_char_type<const volatile char8_t>::value;
+        }
+    };
+#endif
 }
 
 namespace data_structure {
@@ -12558,5 +12652,12 @@ namespace data_structure {
     };
 }
 #endif
+
+namespace data_structure {
+    template <typename ...>
+    constexpr inline auto make_true {true};
+    template <typename ...>
+    constexpr inline auto make_false {false};
+}
 
 #endif //DATA_STRUCTURE_TYPE_TRAITS_HPP
