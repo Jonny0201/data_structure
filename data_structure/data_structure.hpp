@@ -31,5 +31,6 @@
 #include "array.hpp"
 #include "heap.hpp"
 #include "priority_queue.hpp"
+#include "string.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
