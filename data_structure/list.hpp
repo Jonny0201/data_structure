@@ -19,6 +19,7 @@
 
 #include "type_traits.hpp"
 #include "allocator.hpp"
+#include "iterator.hpp"
 
 namespace data_structure {
     template <typename T, typename Allocator = allocator<type_holder<T>>>
@@ -35,8 +36,8 @@ namespace data_structure {
         using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
         using iterator = list_iterator<__dsa::list_node<value_type>, false>;
         using const_iterator = list_iterator<__dsa::list_node<value_type>, true>;
-        using reverse_iterator = list_reverse_iterator<__dsa::list_node<value_type>, false>;
-        using const_reverse_iterator = list_reverse_iterator<__dsa::list_node<value_type>, true>;
+        using reverse_iterator = ds::reverse_iterator<iterator>;
+        using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         using node_value_type = __dsa::list_node<value_type>;
@@ -163,7 +164,7 @@ namespace data_structure {
         iterator insert(difference_type, std::initializer_list<value_type>);
         iterator insert(const_iterator, std::initializer_list<value_type>);
         iterator erase(difference_type, size_type = 1) noexcept;
-        iterator erase(const_iterator, size_type = 1) noexcept;
+        iterator erase(const_iterator, size_type) noexcept;
         static iterator erase(const_iterator, const_iterator) noexcept;
         static iterator erase(const_iterator) noexcept;
         template <typename ...Args>
@@ -783,27 +784,27 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::reverse_iterator list<T, Allocator>::rbegin() noexcept {
-        return reverse_iterator(this->tail->previous);
+        return reverse_iterator(iterator(this->tail->previous));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::const_reverse_iterator list<T, Allocator>::rbegin() const noexcept {
-        return const_reverse_iterator(this->tail->previous);
+        return const_reverse_iterator(const_iterator(this->tail->previous));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::reverse_iterator list<T, Allocator>::rend() noexcept {
-        return reverse_iterator(this->tail);
+        return reverse_iterator(iterator(this->tail));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::const_reverse_iterator list<T, Allocator>::rend() const noexcept {
-        return const_reverse_iterator(this->tail);
+        return const_reverse_iterator(const_iterator(this->tail));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::const_reverse_iterator list<T, Allocator>::crbegin() const noexcept {
-        return const_reverse_iterator(this->tail->previous);
+        return const_reverse_iterator(const_iterator(this->tail->previous));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::const_reverse_iterator list<T, Allocator>::crend() const noexcept {
-        return const_reverse_iterator(this->tail);
+        return const_reverse_iterator(const_iterator(this->tail));
     }
     template <typename T, typename Allocator>
     inline typename list<T, Allocator>::reference list<T, Allocator>::front() noexcept {
