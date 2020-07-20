@@ -201,12 +201,10 @@ namespace data_structure {
     public:
         alignas(array_t) char_type elements[sizeof(array_t)];
     public:
-        [[nodiscard]]
         constexpr void operator[](difference_type n) noexcept {
             static_assert(not __dsa::is_type<T>::value,
                     "Cannot call array<NodeType, 0>::operator[] on a zero-sized array!");
         }
-        [[nodiscard]]
         constexpr void operator[](difference_type n) const noexcept {
             static_assert(not __dsa::is_type<T>::value,
                     "Cannot call array<NodeType, 0>::operator[] on a zero-sized array!");
