@@ -67,13 +67,15 @@ namespace data_structure {
 
     inline namespace __data_structure_helper {}
     namespace __data_structure_auxiliary {}
-    namespace __data_structure_impl {}
+    namespace __data_structure_implement {}
     namespace __data_structure_testing {}
+    namespace __data_structure_detail {}
 
     namespace __dsh = __data_structure_helper;
     namespace __dsa = __data_structure_auxiliary;
-    namespace __dsi = __data_structure_impl;
+    namespace __dsi = __data_structure_implement;
     namespace __dst = __data_structure_testing;
+    namespace __dsd = __data_structure_detail;
 
     inline void *memory_set(void *start, int value, size_t size) noexcept {
         return __builtin_memset(start, value, size);
