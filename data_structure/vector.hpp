@@ -42,7 +42,7 @@ namespace data_structure::__data_structure_auxiliary {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same<value_type, typename alloc_traits::value_type>::value,
-                "The Allocator::value_type must be the same as template argument T!");
+                "The Allocator::value_type must be the same as template argument NodeType!");
     protected:
         pointer first;
         pointer last;
@@ -101,32 +101,57 @@ namespace data_structure::__data_structure_auxiliary {
         typename enable_if<is_forward_iterator<ForwardIterator>::value, void>::type
         assign(ForwardIterator, ForwardIterator);
         void assign(initializer_list<value_type>);
+        [[nodiscard]]
         iterator begin() noexcept;
+        [[nodiscard]]
         const_iterator begin() const noexcept;
+        [[nodiscard]]
         iterator end() noexcept;
+        [[nodiscard]]
         const_iterator end() const noexcept;
+        [[nodiscard]]
         reverse_iterator rbegin() noexcept;
+        [[nodiscard]]
         const_reverse_iterator rbegin() const noexcept;
+        [[nodiscard]]
         reverse_iterator rend() noexcept;
+        [[nodiscard]]
         const_reverse_iterator rend() const noexcept;
+        [[nodiscard]]
         const_iterator cbegin() const noexcept;
+        [[nodiscard]]
         const_iterator cend() const noexcept;
+        [[nodiscard]]
         const_reverse_iterator crbegin() const noexcept;
+        [[nodiscard]]
         const_reverse_iterator crend() const noexcept;
+        [[nodiscard]]
         size_type size() const noexcept;
+        [[nodiscard]]
         size_type capacity() const noexcept;
+        [[nodiscard]]
         bool empty() const noexcept;
+        [[nodiscard]]
         constexpr size_type max_size() const noexcept;
+        [[nodiscard]]
         size_type remain() const noexcept;
         void reserve(size_type);
         void shrink_to_fit();
+        [[nodiscard]]
         reference at(difference_type) noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         const_reference at(difference_type) const noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         reference front() noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         const_reference front() const noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         reference back() noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         const_reference back() const noexcept(has_nothrow_dereference_operator<pointer>::value);
+        [[nodiscard]]
         pointer data() noexcept;
+        [[nodiscard]]
         const_pointer data() const noexcept;
         void push_back(const_reference);
         void push_back(rvalue_reference);
@@ -162,29 +187,35 @@ namespace data_structure::__data_structure_auxiliary {
         iterator emplace(difference_type, Args &&...);
         template <typename ...Args>
         iterator emplace(const_iterator, Args &&...);
-        iterator erase(difference_type, size_type = 1);
-        iterator erase(const_iterator, size_type);
-        iterator erase(const_iterator, const_iterator);
-        iterator erase(const_iterator);
+        iterator erase(difference_type, size_type = 1) noexcept;
+        iterator erase(const_iterator, size_type) noexcept;
+        iterator erase(const_iterator, const_iterator) noexcept;
+        iterator erase(const_iterator) noexcept;
     };
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
     void swap(vector_base<T, AllocatorLHS> &, vector_base<T, AllocatorRHS> &) noexcept;
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator==(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_equal_to_operator<T>::value);
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator!=(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_equal_to_operator<T>::value);
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator<(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_less_operator<T>::value);
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator<=(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_less_operator<T>::value and has_nothrow_equal_to_operator<T>::value);
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator>(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_less_operator<T>::value and has_nothrow_equal_to_operator<T>::value);
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    [[nodiscard]]
     bool operator>=(const vector_base<T, AllocatorLHS> &, const vector_base<T, AllocatorRHS> &)
             noexcept(has_nothrow_less_operator<T>::value);
 }
@@ -230,7 +261,10 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     inline void vector_base<T, Allocator>::reallocate(size_type n) {
         const auto new_size {[&]() noexcept -> size_type {
-            const auto capacity {this->capacity() * 2};
+            auto capacity {this->capacity() * 2};
+            if(capacity == 0) {
+                capacity = this->default_size();
+            }
             return capacity > n ? capacity : n + capacity;
         }()};
         auto new_first {this->allocate(new_size)};
@@ -824,13 +858,10 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     typename vector_base<T, Allocator>::iterator
     vector_base<T, Allocator>::insert(difference_type pos, const_reference value, size_type size) {
-        if(not size) {
+        if(size == 0) {
             return iterator(this->cursor);
         }
         const auto old_size {this->size()};
-        if(size > this->remain()) {
-            this->reallocate(size);
-        }
         if(pos == old_size) {
             const auto return_pointer {this->cursor};
             while(size--) {
@@ -839,6 +870,9 @@ namespace data_structure::__data_structure_auxiliary {
             return iterator(return_pointer);
         }else if(pos > old_size) {
             return iterator(this->cursor);
+        }
+        if(size > this->remain()) {
+            this->reallocate(size);
         }
         auto construct_cursor {this->cursor + (size - 1)};
         auto move_cursor {this->cursor - 1};
@@ -949,11 +983,11 @@ namespace data_structure::__data_structure_auxiliary {
                 throw;
             }
         }else {
-            alloc_traits::construct(this->cursor, ds::move(*this->cursor - 1));
+            alloc_traits::construct(this->cursor, ds::move(*(this->cursor - 1)));
         }
         auto move_cursor {this->cursor++};
-        const auto move_size {this->size() - pos};
-        while(--move_size) {
+        auto move_size {this->size() - pos};
+        while(--move_size > 0) {
             if constexpr(is_nothrow_move_assignable<value_type>::value or
                     is_nothrow_copy_assignable<value_type>::value) {
                 *move_cursor = ds::move(*(move_cursor - 1));
@@ -1036,7 +1070,7 @@ namespace data_structure::__data_structure_auxiliary {
     typename vector_base<T, Allocator>::iterator
     vector_base<T, Allocator>::insert(difference_type pos, ForwardIterator begin,
             typename enable_if<is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type end) {
-        size_type size {distance(begin, end)};
+        auto size {static_cast<size_type>(ds::distance(begin, end))};
         if(not size) {
             return iterator(this->cursor);
         }
@@ -1045,11 +1079,10 @@ namespace data_structure::__data_structure_auxiliary {
             this->reallocate(size);
         }
         if(pos == old_size) {
-            const auto return_pointer {this->cursor};
             while(size--) {
                 this->push_back(*begin++);
             }
-            return iterator(return_pointer);
+            return this->begin() + old_size;
         }else if(pos > old_size) {
             return iterator(this->cursor);
         }
@@ -1160,7 +1193,7 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::erase(difference_type pos, size_type size) {
+    vector_base<T, Allocator>::erase(difference_type pos, size_type size) noexcept {
         auto move_cursor {this->first + pos};
         auto forward_cursor {move_cursor + size};
         while(forward_cursor not_eq this->cursor) {
@@ -1183,17 +1216,17 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::erase(const_iterator pos, size_type size) {
+    vector_base<T, Allocator>::erase(const_iterator pos, size_type size) noexcept {
         return this->erase(pos - const_iterator(this->first), size);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::erase(const_iterator begin, const_iterator end) {
+    vector_base<T, Allocator>::erase(const_iterator begin, const_iterator end) noexcept {
         return this->erase(begin - const_iterator(this->first), end - begin);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::iterator
-    vector_base<T, Allocator>::erase(const_iterator iter) {
+    vector_base<T, Allocator>::erase(const_iterator iter) noexcept {
         return this->erase(iter, iter + 1);
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
@@ -1322,9 +1355,13 @@ namespace data_structure::__data_structure_auxiliary {
     public:
         void assign(const vector_char &, difference_type = 0, size_type = no_position);
         void assign(const_pointer, difference_type = 0, size_type = no_position);
+        [[nodiscard]]
         pointer c_str() noexcept;
+        [[nodiscard]]
         const_pointer c_str() const noexcept;
+        [[nodiscard]]
         size_type length() const noexcept;
+        [[nodiscard]]
         size_type c_length() const noexcept;
         void append(value_type, size_type = 1);
         void append(const vector_char &, difference_type = 0, size_type = no_position);
@@ -1371,41 +1408,77 @@ namespace data_structure::__data_structure_auxiliary {
         int compare_insensitive(const vector_char &) const noexcept;
         [[nodiscard]]
         int compare_insensitive(const_pointer) const noexcept;
+        [[nodiscard]]
         iterator find(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_insensitive(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator rfind_insensitive(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_of_insensitive(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_of_insensitive(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_first_not_of_insensitive(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of(const_pointer, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of_insensitive(value_type, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of_insensitive(const vector_char &, difference_type = 0) const noexcept;
+        [[nodiscard]]
         iterator find_last_not_of_insensitive(const_pointer, difference_type = 0) const noexcept;
         iterator remove(difference_type, size_type = 1) noexcept;
         iterator remove(value_type) noexcept;
@@ -2067,32 +2140,42 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of(
             value_type ch, difference_type start_pos) const noexcept {
-        return this->find_last_of(ch, start_pos) + 1;
+        const auto result {this->find_last_of(ch, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ? result : result + 1;
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of(
             const vector_char &str, difference_type start_pos) const noexcept {
-        return this->find_last_of(str, start_pos) + static_cast<difference_type>(str.size());
+        const auto result {this->find_last_of(str, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ?
+                result : result + static_cast<difference_type>(str.size());
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of(
             const_pointer str, difference_type start_pos) const noexcept {
-        return this->find_last_of(str, start_pos) + static_cast<difference_type>(string_length(str));
+        const auto result {this->find_last_of(str, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ?
+                result : result + static_cast<difference_type>(string_length(str));
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of_insensitive(
             value_type ch, difference_type start_pos) const noexcept {
-        return this->find_last_of_insensitive(ch, start_pos) + 1;
+        const auto result {this->find_last_of_insensitive(ch, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ? result : result + 1;
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of_insensitive(
             const vector_char &str, difference_type start_pos) const noexcept {
-        return this->find_last_of_insensitive(str, start_pos) + static_cast<difference_type>(str.size());
+        const auto result {this->find_last_of_insensitive(str, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ?
+               result : result + static_cast<difference_type>(str.size());
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator vector_char<T, Allocator>::find_last_not_of_insensitive(
             const_pointer str, difference_type start_pos) const noexcept {
-        return this->find_last_of_insensitive(str, start_pos) + static_cast<difference_type>(string_length(str));
+        const auto result {this->find_last_of_insensitive(str, start_pos)};
+        return result == const_cast<vector_char *>(this)->end() ?
+               result : result + static_cast<difference_type>(string_length(str));
     }
     template <typename T, typename Allocator>
     inline typename vector_char<T, Allocator>::iterator
