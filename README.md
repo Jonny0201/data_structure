@@ -31,6 +31,7 @@ Jonny
 - array
 - priority_queue (Adaptor)
 - list
+- static_forward_list (Adaptor)
 
 ### Algorithms ###
 
