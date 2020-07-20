@@ -17,7 +17,7 @@
 #ifndef DATA_STRUCTURE_ALLOCATOR_HPP
 #define DATA_STRUCTURE_ALLOCATOR_HPP
 
-#include "type_traits.hpp"
+#include "utility.hpp"
 #include "memory.hpp"
 #include "meta.hpp"
 
@@ -51,10 +51,10 @@ namespace data_structure {
         constexpr allocator() noexcept = default;
         constexpr allocator(const allocator &) noexcept = default;
         template <typename U>
-        constexpr allocator(const allocator<U> &) noexcept {}
+        explicit constexpr allocator(const allocator<U> &) noexcept {}
         constexpr allocator(allocator &&) noexcept = default;
         template <typename U>
-        constexpr allocator(allocator<U> &&) noexcept {}
+        explicit constexpr allocator(allocator<U> &&) noexcept {}
         ~allocator() noexcept = default;
     public:
         allocator &operator=(const allocator &) noexcept = default;
@@ -90,7 +90,7 @@ namespace data_structure {
         template <typename ...Args>
         static pointer construct(pointer p, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
-            return new (p) value_type(data_structure::forward<Args>(args)...);
+            return new (p) value_type(ds::forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
@@ -134,10 +134,10 @@ namespace data_structure {
         constexpr allocator() noexcept = default;
         constexpr allocator(const allocator &) noexcept = default;
         template <typename U>
-        constexpr allocator(const allocator<U> &) noexcept {}
+        explicit constexpr allocator(const allocator<U> &) noexcept {}
         constexpr allocator(allocator &&) noexcept = default;
         template <typename U>
-        constexpr allocator(allocator<U> &&) noexcept {}
+        explicit constexpr allocator(allocator<U> &&) noexcept {}
         ~allocator() noexcept = default;
     public:
         allocator &operator=(const allocator &) noexcept = default;
@@ -182,7 +182,7 @@ namespace data_structure {
         template <typename ...Args>
         static pointer construct(pointer p, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
-            return new (p) value_type(data_structure::forward<Args>(args)...);
+            return new (p) value_type(ds::forward<Args>(args)...);
         }
         //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
