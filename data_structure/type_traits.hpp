@@ -23,7 +23,7 @@
  *
  * O for object
  * F for function
- * T for type, Ts for Types
+ * NodeType for type, Ts for Types
  * Arg for argument, Args for arguments
  * R for returning type
  *
@@ -311,23 +311,6 @@ namespace data_structure {
         using result = typename add_pointer<typename add_cv<T>::result>::result;
         using type = typename add_pointer<typename add_cv<T>::type>::type;
     };
-}
-
-namespace data_structure {
-    template <typename T>
-    constexpr inline typename remove_reference<T>::type &&move(T &&value) noexcept {
-        return static_cast<typename remove_reference<T>::type &&>(value);
-    }
-    template <typename T>
-    constexpr inline T &&forward(typename remove_reference<T>::type &value) noexcept {
-        return static_cast<T &&>(value);
-    }
-    template <typename> struct is_lvalue_reference;
-    template <typename T>
-    constexpr inline T &&forward(typename remove_reference<T>::type &&value) noexcept {
-        static_assert(is_lvalue_reference<T>::value, "Cannot forward an rvalue as an lvalue!");
-        return static_cast<T &&>(value);
-    }
 }
 
 namespace data_structure {
@@ -2535,7 +2518,7 @@ namespace data_structure {
         using value_type = bool;
         using result = typename conditional<
 #if defined(__GNUC__) && not defined(__clang__)
-                __is_literal_type(T),
+                __is_literal_type(NodeType),
 #else
                 __is_literal(T),
 #endif
@@ -2562,25 +2545,25 @@ namespace data_structure {
     };
 #if false
     namespace __data_structure_0 {
-        template <typename T>
-        struct is_empty_auxiliary0 : public T {
+        template <typename NodeType>
+        struct is_empty_auxiliary0 : public NodeType {
             double var;
         };
         struct is_empty_auxiliary1 {
             double var;
         };
-        template <typename T>
+        template <typename NodeType>
         struct is_empty {
             using value_type = bool;
             using result = typename conditional<
-                    sizeof(is_empty_auxiliary0<T>) == sizeof(is_empty_auxiliary1),
+                    sizeof(is_empty_auxiliary0<NodeType>) == sizeof(is_empty_auxiliary1),
                     __true_type, __false_type>::result;
             constexpr static inline auto value {static_cast<value_type>(result())};
             constexpr value_type operator()() const noexcept {
-                return is_empty<T>::value;
+                return is_empty<NodeType>::value;
             }
             constexpr explicit operator value_type() const noexcept {
-                return is_empty<T>::value;
+                return is_empty<NodeType>::value;
             }
         };
     }
@@ -3506,9 +3489,9 @@ namespace data_structure {
 #if defined(__GNUC__) && not defined(__clang__)
     namespace __data_structure_0 {
         using namespace data_structure::__data_structure_auxiliary;
-        template <typename T>
-        constexpr inline void test_convert(T) noexcept {
-            static_assert(not is_type<T>::value,
+        template <typename NodeType>
+        constexpr inline void test_convert(NodeType) noexcept {
+            static_assert(not is_type<NodeType>::value,
                     "The function test_converting() cannot be called!");
         }
         template <typename From, typename To>
@@ -3518,40 +3501,40 @@ namespace data_structure {
             static_assert(not is_type<To>::value,
                     "The function test_is_convertible() cannot be called!");
         }
-        template <typename T, typename>
-        constexpr inline typename select_second_type<T, __false_type>::type
+        template <typename NodeType, typename>
+        constexpr inline typename select_second_type<NodeType, __false_type>::type
         test_is_convertible(...) noexcept {
-            static_assert(not is_type<T>::value,
+            static_assert(not is_type<NodeType>::value,
                     "The function test_is_convertible() cannot be called!");
         }
-        template <typename T, bool IsArray = is_array<T>::value,
-                bool IsFunction = is_function<T>::value, bool IsVoid = is_void<T>::value>
+        template <typename NodeType, bool IsArray = is_array<NodeType>::value,
+                bool IsFunction = is_function<NodeType>::value, bool IsVoid = is_void<NodeType>::value>
         struct is_convertible_type_id final {
-            static_assert(not is_type<T>::value, "Invalid template arguments!");
+            static_assert(not is_type<NodeType>::value, "Invalid template arguments!");
         };
-        template <typename T>
-        struct is_convertible_type_id<T, true, false, false> final {
+        template <typename NodeType>
+        struct is_convertible_type_id<NodeType, true, false, false> final {
             constexpr static inline auto value {1};
         };
-        template <typename T>
-        struct is_convertible_type_id<T, false, true, false> final {
+        template <typename NodeType>
+        struct is_convertible_type_id<NodeType, false, true, false> final {
             constexpr static inline auto value {2};
         };
-        template <typename T>
-        struct is_convertible_type_id<T, false, false, true> final {
+        template <typename NodeType>
+        struct is_convertible_type_id<NodeType, false, false, true> final {
             constexpr static inline auto value {3};
         };
-        template <typename T>
-        struct is_convertible_type_id<T, false, false, false> final {
+        template <typename NodeType>
+        struct is_convertible_type_id<NodeType, false, false, false> final {
             constexpr static inline auto value {0};
         };
-        template <typename T, int = is_convertible_type_id<typename remove_reference<T>::type>::value>
+        template <typename NodeType, int = is_convertible_type_id<typename remove_reference<NodeType>::type>::value>
         struct is_convertible_check final {
             constexpr static inline auto value {0};
         };
-        template <typename T>
-        struct is_convertible_check<T, 0> final {
-            constexpr static inline auto value {sizeof(T)};
+        template <typename NodeType>
+        struct is_convertible_check<NodeType, 0> final {
+            constexpr static inline auto value {sizeof(NodeType)};
         };
         template <typename From, typename To, int FromTypeId = is_convertible_type_id<From>::value,
                 int ToTypeId = is_convertible_type_id<To>::value>
@@ -3869,51 +3852,51 @@ namespace data_structure {
             }
         };
         template <>
-        struct is_signed_auxiliary<signed wchar_t, false> {
+        struct is_signed_auxiliary<wchar_t, false> {
             using value_type = bool;
             using result = __true_type;
             constexpr static inline auto value {static_cast<value_type>(result())};
             constexpr value_type operator()() const noexcept {
-                return is_signed_auxiliary<signed wchar_t, false>::value;
+                return is_signed_auxiliary<wchar_t, false>::value;
             }
             constexpr explicit operator value_type() const noexcept {
-                return is_signed_auxiliary<signed wchar_t, false>::value;
+                return is_signed_auxiliary<wchar_t, false>::value;
             }
         };
         template <>
-        struct is_signed_auxiliary<const signed wchar_t, false> {
+        struct is_signed_auxiliary<const wchar_t, false> {
             using value_type = bool;
             using result = __true_type;
             constexpr static inline auto value {static_cast<value_type>(result())};
             constexpr value_type operator()() const noexcept {
-                return is_signed_auxiliary<const signed wchar_t, false>::value;
+                return is_signed_auxiliary<const wchar_t, false>::value;
             }
             constexpr explicit operator value_type() const noexcept {
-                return is_signed_auxiliary<const signed wchar_t, false>::value;
+                return is_signed_auxiliary<const wchar_t, false>::value;
             }
         };
         template <>
-        struct is_signed_auxiliary<volatile signed wchar_t, false> {
+        struct is_signed_auxiliary<volatile wchar_t, false> {
             using value_type = bool;
             using result = __true_type;
             constexpr static inline auto value {static_cast<value_type>(result())};
             constexpr value_type operator()() const noexcept {
-                return is_signed_auxiliary<volatile signed wchar_t, false>::value;
+                return is_signed_auxiliary<volatile wchar_t, false>::value;
             }
             constexpr explicit operator value_type() const noexcept {
-                return is_signed_auxiliary<volatile signed wchar_t, false>::value;
+                return is_signed_auxiliary<volatile wchar_t, false>::value;
             }
         };
         template <>
-        struct is_signed_auxiliary<const volatile signed wchar_t, false> {
+        struct is_signed_auxiliary<const volatile wchar_t, false> {
             using value_type = bool;
             using result = __true_type;
             constexpr static inline auto value {static_cast<value_type>(result())};
             constexpr value_type operator()() const noexcept {
-                return is_signed_auxiliary<const volatile signed wchar_t, false>::value;
+                return is_signed_auxiliary<const volatile wchar_t, false>::value;
             }
             constexpr explicit operator value_type() const noexcept {
-                return is_signed_auxiliary<const volatile signed wchar_t, false>::value;
+                return is_signed_auxiliary<const volatile wchar_t, false>::value;
             }
         };
         template <>
@@ -5994,44 +5977,24 @@ namespace data_structure {
         using type = const volatile signed long long int;
     };
     template <>
-    struct make_signed<signed wchar_t> final {
-        using result = signed wchar_t;
-        using type = signed wchar_t;
+    struct make_signed<__int128_t /* __int128_t */ > final {
+        using result = __int128_t /* __int128_t */ ;
+        using type = __int128_t /* __int128_t */ ;
     };
     template <>
-    struct make_signed<const signed wchar_t> final {
-        using result = const signed wchar_t;
-        using type = const signed wchar_t;
+    struct make_signed<const __int128_t /* __int128_t */ > final {
+        using result = const __int128_t /* __int128_t */ ;
+        using type = const __int128_t /* __int128_t */ ;
     };
     template <>
-    struct make_signed<volatile signed wchar_t> final {
-        using result = volatile signed wchar_t;
-        using type = volatile signed wchar_t;
+    struct make_signed<volatile __int128_t /* __int128_t */ > final {
+        using result = volatile __int128_t /* __int128_t */ ;
+        using type = volatile __int128_t /* __int128_t */ ;
     };
     template <>
-    struct make_signed<const volatile signed wchar_t> final {
-        using result = const volatile signed wchar_t;
-        using type = const volatile signed wchar_t;
-    };
-    template <>
-    struct make_signed<__int128 /* __int128_t */ > final {
-        using result = __int128 /* __int128_t */ ;
-        using type = __int128 /* __int128_t */ ;
-    };
-    template <>
-    struct make_signed<const __int128 /* __int128_t */ > final {
-        using result = const __int128 /* __int128_t */ ;
-        using type = const __int128 /* __int128_t */ ;
-    };
-    template <>
-    struct make_signed<volatile __int128 /* __int128_t */ > final {
-        using result = volatile __int128 /* __int128_t */ ;
-        using type = volatile __int128 /* __int128_t */ ;
-    };
-    template <>
-    struct make_signed<const volatile __int128 /* __int128_t */ > final {
-        using result = __int128 /* __int128_t */ ;
-        using type = const volatile __int128 /* __int128_t */ ;
+    struct make_signed<const volatile __int128_t /* __int128_t */ > final {
+        using result = const volatile __int128_t /* __int128_t */ ;
+        using type = const volatile __int128_t /* __int128_t */ ;
     };
     template <>
     struct make_signed<__uint128_t> final {
@@ -6069,262 +6032,242 @@ namespace data_structure {
     template <>
     struct make_unsigned<signed char> final {
         using result = unsigned char;
-        using type = signed char;
+        using type = unsigned char;
     };
     template <>
     struct make_unsigned<const signed char> final {
         using result = const unsigned char;
-        using type = const signed char;
+        using type = const unsigned char;
     };
     template <>
     struct make_unsigned<volatile signed char> final {
         using result = volatile unsigned char;
-        using type = volatile signed char;
+        using type = volatile unsigned char;
     };
     template <>
     struct make_unsigned<const volatile signed char> final {
         using result = const volatile unsigned char;
-        using type = const volatile signed char;
+        using type = const volatile unsigned char;
     };
     template <>
     struct make_unsigned<unsigned char> final {
         using result = unsigned char;
-        using type = signed char;
+        using type = unsigned char;
     };
     template <>
     struct make_unsigned<const unsigned char> final {
         using result = const unsigned char;
-        using type = const signed char;
+        using type = const unsigned char;
     };
     template <>
     struct make_unsigned<volatile unsigned char> final {
         using result = volatile unsigned char;
-        using type = volatile signed char;
+        using type = volatile unsigned char;
     };
     template <>
     struct make_unsigned<const volatile unsigned char> final {
         using result = const volatile unsigned char;
-        using type = const volatile signed char;
+        using type = const volatile unsigned char;
     };
     template <>
     struct make_unsigned<signed short int> final {
         using result = unsigned short int;
-        using type = signed short int;
+        using type = unsigned short int;
     };
     template <>
     struct make_unsigned<const signed short int> final {
         using result = const unsigned short int;
-        using type = const signed short int;
+        using type = const unsigned short int;
     };
     template <>
     struct make_unsigned<volatile signed short int> final {
         using result = volatile unsigned short int;
-        using type = volatile signed short int;
+        using type = volatile unsigned short int;
     };
     template <>
     struct make_unsigned<const volatile signed short int> final {
         using result = const volatile unsigned short int;
-        using type = const volatile signed short int;
+        using type = const volatile unsigned short int;
     };
     template <>
     struct make_unsigned<unsigned short int> final {
         using result = unsigned short int;
-        using type = signed short int;
+        using type = unsigned short int;
     };
     template <>
     struct make_unsigned<const unsigned short int> final {
         using result = const unsigned short int;
-        using type = const signed short int;
+        using type = const unsigned short int;
     };
     template <>
     struct make_unsigned<volatile unsigned short int> final {
         using result = volatile unsigned short int;
-        using type = volatile signed short int;
+        using type = volatile unsigned short int;
     };
     template <>
     struct make_unsigned<const volatile unsigned short int> final {
         using result = const volatile unsigned short int;
-        using type = const volatile signed short int;
+        using type = const volatile unsigned short int;
     };
     template <>
     struct make_unsigned<signed int> final {
         using result = unsigned int;
-        using type = signed int;
+        using type = unsigned int;
     };
     template <>
     struct make_unsigned<const signed int> final {
         using result = const unsigned int;
-        using type = const signed int;
+        using type = const unsigned int;
     };
     template <>
     struct make_unsigned<volatile signed int> final {
         using result = volatile unsigned int;
-        using type = volatile signed int;
+        using type = volatile unsigned int;
     };
     template <>
     struct make_unsigned<const volatile signed int> final {
         using result = const volatile unsigned int;
-        using type = const volatile signed int;
+        using type = const volatile unsigned int;
     };
     template <>
     struct make_unsigned<unsigned int> final {
         using result = unsigned int;
-        using type = signed int;
+        using type = unsigned int;
     };
     template <>
     struct make_unsigned<const unsigned int> final {
         using result = const unsigned int;
-        using type = const signed int;
+        using type = const unsigned int;
     };
     template <>
     struct make_unsigned<volatile unsigned int> final {
         using result = volatile unsigned int;
-        using type = volatile signed int;
+        using type = volatile unsigned int;
     };
     template <>
     struct make_unsigned<const volatile unsigned int> final {
         using result = const volatile unsigned int;
-        using type = const volatile signed int;
+        using type = const volatile unsigned int;
     };
     template <>
     struct make_unsigned<signed long int> final {
         using result = unsigned long int;
-        using type = signed long int;
+        using type = unsigned long int;
     };
     template <>
     struct make_unsigned<const signed long int> final {
         using result = const unsigned long int;
-        using type = const signed long int;
+        using type = const unsigned long int;
     };
     template <>
     struct make_unsigned<volatile signed long int> final {
         using result = volatile unsigned long int;
-        using type = volatile signed long int;
+        using type = volatile unsigned long int;
     };
     template <>
     struct make_unsigned<const volatile signed long int> final {
         using result = const volatile unsigned long int;
-        using type = const volatile signed long int;
+        using type = const volatile unsigned long int;
     };
     template <>
     struct make_unsigned<unsigned long int> final {
         using result = unsigned long int;
-        using type = signed long int;
+        using type = unsigned long int;
     };
     template <>
     struct make_unsigned<const unsigned long int> final {
         using result = const unsigned long int;
-        using type = const signed long int;
+        using type = const unsigned long int;
     };
     template <>
     struct make_unsigned<volatile unsigned long int> final {
         using result = volatile unsigned long int;
-        using type = volatile signed long int;
+        using type = volatile unsigned long int;
     };
     template <>
     struct make_unsigned<const volatile unsigned long int> final {
         using result = const volatile unsigned long int;
-        using type = const volatile signed long int;
+        using type = const volatile unsigned long int;
     };
     template <>
     struct make_unsigned<signed long long int> final {
         using result = unsigned long long int;
-        using type = signed long long int;
+        using type = unsigned long long int;
     };
     template <>
     struct make_unsigned<const signed long long int> final {
         using result = const unsigned long long int;
-        using type = const signed long long int;
+        using type = const unsigned long long int;
     };
     template <>
     struct make_unsigned<volatile signed long long int> final {
         using result = volatile unsigned long long int;
-        using type = volatile signed long long int;
+        using type = volatile unsigned long long int;
     };
     template <>
     struct make_unsigned<const volatile signed long long int> final {
         using result = const volatile unsigned long long int;
-        using type = const volatile signed long long int;
+        using type = const volatile unsigned long long int;
     };
     template <>
     struct make_unsigned<unsigned long long int> final {
         using result = unsigned long long int;
-        using type = signed long long int;
+        using type = unsigned long long int;
     };
     template <>
     struct make_unsigned<const unsigned long long int> final {
         using result = const unsigned long long int;
-        using type = const signed long long int;
+        using type = const unsigned long long int;
     };
     template <>
     struct make_unsigned<volatile unsigned long long int> final {
         using result = volatile unsigned long long int;
-        using type = volatile signed long long int;
+        using type = volatile unsigned long long int;
     };
     template <>
     struct make_unsigned<const volatile unsigned long long int> final {
         using result = const volatile unsigned long long int;
-        using type = const volatile signed long long int;
+        using type = const volatile unsigned long long int;
     };
     template <>
-    struct make_unsigned<signed wchar_t> final {
-        using result = unsigned wchar_t;
-        using type = signed wchar_t;
+    struct make_unsigned<__int128_t /* __int128_t */ > final {
+        using result = __uint128_t /* __int128_t */ ;
+        using type = __uint128_t /* __int128_t */;
     };
     template <>
-    struct make_unsigned<const signed wchar_t> final {
-        using result = const unsigned wchar_t;
-        using type = const signed wchar_t;
+    struct make_unsigned<const __int128_t /* __int128_t */ > final {
+        using result = const __uint128_t /* __int128_t */ ;
+        using type = const __uint128_t /* __int128_t */;
     };
     template <>
-    struct make_unsigned<volatile signed wchar_t> final {
-        using result = volatile unsigned wchar_t;
-        using type = volatile signed wchar_t;
+    struct make_unsigned<volatile __int128_t /* __int128_t */ > final {
+        using result = volatile __uint128_t /* __int128_t */ ;
+        using type = volatile __uint128_t /* __int128_t */;
     };
     template <>
-    struct make_unsigned<const volatile signed wchar_t> final {
-        using result = const volatile unsigned wchar_t;
-        using type = const volatile signed wchar_t;
-    };
-    template <>
-    struct make_unsigned<__int128 /* __int128_t */ > final {
-        using result = __int128 /* __int128_t */ ;
-        using type = __int128 /* __int128_t */;
-    };
-    template <>
-    struct make_unsigned<const __int128 /* __int128_t */ > final {
-        using result = const __int128 /* __int128_t */ ;
-        using type = const __int128 /* __int128_t */;
-    };
-    template <>
-    struct make_unsigned<volatile __int128 /* __int128_t */ > final {
-        using result = volatile __int128 /* __int128_t */ ;
-        using type = volatile __int128 /* __int128_t */;
-    };
-    template <>
-    struct make_unsigned<const volatile __int128 /* __int128_t */ > final {
-        using result = __int128 /* __int128_t */ ;
-        using type = const volatile __int128 /* __int128_t */;
+    struct make_unsigned<const volatile __int128_t /* __int128_t */ > final {
+        using result = const volatile __uint128_t /* __int128_t */ ;
+        using type = const volatile __uint128_t /* __int128_t */;
     };
     template <>
     struct make_unsigned<__uint128_t> final {
-        using result = __int128 /* __int128_t */ ;
-        using type = __int128 /* __int128_t */ ;
+        using result = __uint128_t /* __int128_t */ ;
+        using type = __uint128_t /* __int128_t */ ;
     };
     template <>
     struct make_unsigned<const __uint128_t> final {
-        using result = const __int128 /* __int128_t */ ;
-        using type = const __int128 /* __int128_t */ ;
+        using result = const __uint128_t /* __int128_t */ ;
+        using type = const __uint128_t /* __int128_t */ ;
     };
     template <>
     struct make_unsigned<volatile __uint128_t> final {
-        using result = volatile __int128 /* __int128_t */ ;
-        using type = volatile __int128 /* __int128_t */ ;
+        using result = volatile __uint128_t /* __int128_t */ ;
+        using type = volatile __uint128_t /* __int128_t */ ;
     };
     template <>
     struct make_unsigned<const volatile __uint128_t> final {
-        using result = const volatile __int128 /* __int128_t */ ;
-        using type = const volatile __int128 /* __int128_t */ ;
+        using result = const volatile __uint128_t /* __int128_t */ ;
+        using type = const volatile __uint128_t /* __int128_t */ ;
     };
     template <typename Integer, Integer Value>
     struct integral_constant {
@@ -6452,9 +6395,9 @@ namespace data_structure {
     };
     namespace __data_structure_auxiliary {
 #if false
-        template <typename T>
+        template <typename NodeType>
         struct floating_point_promotion_auxiliary final {
-            static_assert(is_floating_point<T>::value,
+            static_assert(is_floating_point<NodeType>::value,
                     "The template argument must be a floating point type!");
         };
         template <>
@@ -8572,6 +8515,12 @@ namespace data_structure {
         using result = ThisType;
         using type = ThisType;
     };
+    template <typename T>
+    constexpr typename remove_reference<T>::type &&move(T &&value) noexcept;
+    template <typename T>
+    constexpr T &&forward(typename remove_reference<T>::type &value) noexcept;
+    template <typename T>
+    constexpr T &&forward(typename remove_reference<T>::type &&value) noexcept;
     template <typename Allocator>
     struct allocator_traits {
     public:
@@ -8631,12 +8580,12 @@ namespace data_structure {
             allocator_type::construct(obj, value);
         }
         static void construct(allocator_type &allocator, pointer obj, rvalue_reference value)
-                noexcept(noexcept(allocator.construct(obj, data_structure::move(value)))) {
-            allocator.construct(obj, data_structure::move(value));
+                noexcept(noexcept(allocator.construct(obj, ds::move(value)))) {
+            allocator.construct(obj, ds::move(value));
         }
         static void construct(pointer obj, rvalue_reference value)
-                noexcept(noexcept(allocator_type::construct(obj, data_structure::move(value)))) {
-            allocator_type::construct(obj, data_structure::move(value));
+                noexcept(noexcept(allocator_type::construct(obj, ds::move(value)))) {
+            allocator_type::construct(obj, ds::move(value));
         }
         static void construct(allocator_type &allocator, pointer obj)
                 noexcept(noexcept(allocator.construct(obj))) {
