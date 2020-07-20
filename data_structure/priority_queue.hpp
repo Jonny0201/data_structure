@@ -20,7 +20,7 @@
 #include "vector.hpp"
 
 namespace data_structure {
-    template <typename T, typename Container = vector_base<T>,
+    template <typename T, typename Container = vector<T>,
             typename Compare = less<typename Container::value_type, typename Container::value_type>>
     class priority_queue final {
     public:
@@ -35,7 +35,7 @@ namespace data_structure {
         using pointer = typename container_type::pointer;
         using const_pointer = typename container_type::const_pointer;
         static_assert(is_same<value_type, T>::value,
-                "The Container::value_type must be the same as template argument T!");
+                "The Container::value_type must be the same as template argument NodeType!");
     private:
         using compare_ref = typename add_lvalue_reference<value_compare>::type;
     private:
@@ -101,6 +101,7 @@ namespace data_structure {
             return *this;
         }
     public:
+        [[nodiscard]]
         const_reference top() const {
             return this->container.front();
         }
