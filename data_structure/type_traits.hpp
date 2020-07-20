@@ -8632,6 +8632,30 @@ namespace data_structure {
             return container_type(forward<Args>(args)...);
         }
     };
+    template <typename T>
+    class allocator;
+    template <typename T>
+    struct container_traits<T *> {
+        using container_type = T *;
+        using allocator_type = allocator<type_holder<T>>;
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = typename add_lvalue_reference<value_type>::type;
+        using const_reference = typename add_const_reference<value_type>::type;
+        using rvalue_reference = typename add_rvalue_reference<value_type>::type;
+        using pointer = typename add_pointer<value_type>::type;
+        using const_pointer = typename add_const_pointer<value_type>::type;
+    public:
+        static container_type empty_container() noexcept(is_nothrow_constructible<container_type>::value) {
+            return nullptr;
+        }
+        template <typename ...Args>
+        static container_type filled_container(Args &&...args)
+        noexcept(is_nothrow_constructible<container_type, Args...>::value) {
+            return nullptr;
+        }
+    };
     template <typename Structure>
     struct structure_traits {
     public:
