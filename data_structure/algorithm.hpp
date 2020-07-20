@@ -54,6 +54,15 @@ namespace data_structure {
         rhs = ds::move(tmp);
     }
 
+    template <typename T>
+    inline T max(const T &a, const T &b) {
+        return a < b ? b : a;
+    }
+    template <typename T>
+    inline T min(const T &a, const T &b) {
+        return a < b ? a : b;
+    }
+
     template <typename T, typename OutputIterator, typename SizeType>
     OutputIterator fill_n(OutputIterator first, SizeType size, const T &value) {
         while(size > 0) {
@@ -342,6 +351,40 @@ namespace data_structure {
             void (*selector)(RandomAccessIterator, RandomAccessIterator, less<>) =
                     [](RandomAccessIterator, RandomAccessIterator, less<>) noexcept -> void {}) {
         ds::quick_sort(begin, end, less<> {}, selector);
+    }
+}
+
+namespace data_structure {
+    template <typename ForwardIterator>
+    [[nodiscard]]
+    bool is_loop_list(ForwardIterator begin, ForwardIterator end) {
+        auto quick {begin};
+        while(begin not_eq quick) {
+            ++begin;
+            ++++quick;
+            if(quick == end) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename ForwardIterator>
+    [[nodiscard]]
+    ForwardIterator loop_list_entry(ForwardIterator begin, ForwardIterator end) {
+        auto slow {begin};
+        auto quick {begin};
+        while(slow not_eq quick) {
+            ++slow;
+            ++++quick;
+            if(quick == end) {
+                return end;
+            }
+        }
+        while(slow not_eq begin ){
+            ++slow;
+            ++begin;
+        }
+        return slow;
     }
 }
 
