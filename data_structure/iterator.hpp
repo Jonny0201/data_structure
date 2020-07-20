@@ -385,7 +385,7 @@ namespace data_structure {
             return *this->iter;
         }
         pointer operator->() const noexcept {
-            return this->iter;
+            return const_cast<pointer>(ds::address_of(**this));
         }
         reference operator[](difference_type n) const noexcept {
             return *(this->iter + n);
@@ -523,7 +523,7 @@ namespace data_structure {
             return *this->iter;
         }
         pointer operator->() const noexcept {
-            return static_cast<pointer>(ds::address_of(this->iter));
+            return const_cast<pointer>(ds::address_of(**this));
         }
         template <bool Boolean = true>
         typename enable_if<if_random_access_iterator()() and Boolean, reference>::type
@@ -755,7 +755,7 @@ namespace data_structure {
             return this->node->value;
         }
         pointer operator->() const noexcept {
-            return &**this;
+            return const_cast<pointer>(ds::address_of(**this));
         }
         forward_list_iterator &operator++() noexcept {
             this->node = this->node->next;
@@ -815,7 +815,7 @@ namespace data_structure {
             return this->node->value;
         }
         const_pointer operator->() const noexcept {
-            return &**this;
+            return ds::address_of(**this);
         }
         forward_list_iterator &operator++() noexcept {
             this->node = this->node->next;
@@ -903,22 +903,22 @@ namespace data_structure {
             return this->node->value;
         }
         pointer operator->() const noexcept {
-            return &**this;
+            return const_cast<pointer>(ds::address_of(**this));
         }
-        list_iterator &operator++() noexcept {
+        list_iterator &operator++() & noexcept {
             this->node = this->node->next;
             return *this;
         }
-        list_iterator operator++(int) noexcept {
+        list_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
             return tmp;
         }
-        list_iterator &operator--() noexcept {
+        list_iterator &operator--() & noexcept {
             this->node = this->node->previous;
             return *this;
         }
-        list_iterator operator--(int) noexcept {
+        list_iterator operator--(int) & noexcept {
             auto tmp {*this};
             --*this;
             return tmp;
@@ -968,22 +968,22 @@ namespace data_structure {
             return this->node->value;
         }
         const_pointer operator->() const noexcept {
-            return &**this;
+            return ds::address_of(**this);
         }
-        list_iterator &operator++() noexcept {
+        list_iterator &operator++() & noexcept {
             this->node = this->node->next;
             return *this;
         }
-        list_iterator operator++(int) noexcept {
+        list_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
             return tmp;
         }
-        list_iterator &operator--() noexcept {
+        list_iterator &operator--() & noexcept {
             this->node = this->node->previous;
             return *this;
         }
-        list_iterator operator--(int) noexcept {
+        list_iterator operator--(int) & noexcept {
             auto tmp {*this};
             --*this;
             return tmp;
@@ -1003,6 +1003,186 @@ namespace data_structure {
     template <typename NodeType, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
     inline bool operator!=(const list_iterator<NodeType, IsConstLHS> &lhs,
             const list_iterator<NodeType, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+}
+
+namespace data_structure {
+    namespace __data_structure_auxiliary {
+        template <typename T, typename NextType>
+        struct static_forward_list_node {
+        public:
+            using void_pointer = void *;
+            using next_type = NextType;
+            using value_type = T;
+            using reference = typename add_lvalue_reference<value_type>::type;
+            using const_reference = typename add_const_reference<value_type>::type;
+            using rvalue_reference = typename add_rvalue_reference<value_type>::type;
+            using pointer = typename add_pointer<value_type>::type;
+            using const_pointer = typename add_const_pointer<value_type>::type;
+        public:
+            constexpr static inline next_type null {-1};
+            constexpr static inline next_type empty {-2};
+        public:
+            T value;
+            next_type next;
+        public:
+            void set_null() noexcept {
+                this->next = this->null;
+            }
+            void set_empty() noexcept {
+                this->next = this->empty;
+            }
+            [[nodiscard]]
+            bool is_null() const noexcept {
+                return this->next == this->null;
+            }
+            [[nodiscard]]
+            bool is_empty() const noexcept {
+                return this->next == this->empty;
+            }
+        };
+    }
+    template <typename NodeType, typename Container, bool IsConst = false>
+    class static_forward_list_iterator final {
+        template <typename NodeTp, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const static_forward_list_iterator<NodeTp, ContainerTp, IsConstLHS> &,
+                const static_forward_list_iterator<NodeTp, ContainerTp, IsConstRHS> &) noexcept;
+        template <typename NodeTp, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator!=(const static_forward_list_iterator<NodeTp, ContainerTp, IsConstLHS> &,
+                const static_forward_list_iterator<NodeTp, ContainerTp, IsConstRHS> &) noexcept;
+        template <typename, typename>
+        friend class static_forward_list;
+    private:
+        using node_type = NodeType;
+        using container_type = typename add_lvalue_reference<Container>::type;
+        using node_type_traits = __dsa::node_type_traits<__dsa::static_forward_list_node<
+                typename Container::value_type::value_type, ptrdiff_t>>;
+        using next_type = typename node_type_traits::next_type;
+    public:
+        using size_type = size_t;
+        using difference_type = next_type;
+        using value_type = typename node_type_traits::value_type;
+        using reference = typename node_type_traits::reference;
+        using const_reference = typename node_type_traits::const_reference;
+        using rvalue_reference = typename node_type_traits::rvalue_reference;
+        using pointer = typename node_type_traits::pointer;
+        using const_pointer = typename node_type_traits::const_pointer;
+        using iterator_category = forward_iterator_tag;
+    private:
+        bool head;
+        next_type node;
+        container_type c;
+    public:
+        constexpr static_forward_list_iterator() noexcept = default;
+        constexpr static_forward_list_iterator(next_type node, container_type c, bool head = false) noexcept :
+                head {head}, node {node}, c {c} {}
+        constexpr static_forward_list_iterator(const static_forward_list_iterator &) noexcept = default;
+        constexpr static_forward_list_iterator(static_forward_list_iterator &&) noexcept = default;
+        ~static_forward_list_iterator() noexcept = default;
+    public:
+        constexpr static_forward_list_iterator &operator=(const static_forward_list_iterator &) noexcept = default;
+        constexpr static_forward_list_iterator &operator=(static_forward_list_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->head ? *static_cast<pointer>(nullptr) : this->c[this->node].value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        static_forward_list_iterator &operator++() & noexcept {
+            if(this->head) {
+                this->head = false;
+                return *this;
+            }
+            this->node = this->c[this->node].next;
+            return *this;
+        }
+        static_forward_list_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        operator static_forward_list_iterator<NodeType, Container, true>() const noexcept {
+            return static_forward_list_iterator<NodeType, Container, true>(this->node, this->c);
+        };
+        explicit operator bool() const noexcept {
+            return this->node == node_type::empty;
+        }
+    };
+    template <typename NodeType, typename Container>
+    class static_forward_list_iterator<NodeType, Container, true> final {
+        template <typename NodeTp, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const static_forward_list_iterator<NodeTp, ContainerTp, IsConstLHS> &,
+                const static_forward_list_iterator<NodeTp, ContainerTp, IsConstRHS> &) noexcept;
+        template <typename NodeTp, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator!=(const static_forward_list_iterator<NodeTp, ContainerTp, IsConstLHS> &,
+                const static_forward_list_iterator<NodeTp, ContainerTp, IsConstRHS> &) noexcept;
+        template <typename, typename>
+        friend class static_forward_list;
+    private:
+        using node_type = NodeType;
+        using container_type = typename add_lvalue_reference<Container>::type;
+        using node_type_traits = __dsa::node_type_traits<__dsa::static_forward_list_node<
+                typename Container::value_type::value_type, ptrdiff_t>>;
+        using next_type = typename node_type_traits::next_type;
+    public:
+        using size_type = size_t;
+        using difference_type = next_type;
+        using value_type = typename node_type_traits::value_type;
+        using reference = typename node_type_traits::reference;
+        using const_reference = typename node_type_traits::const_reference;
+        using rvalue_reference = typename node_type_traits::rvalue_reference;
+        using pointer = typename node_type_traits::pointer;
+        using const_pointer = typename node_type_traits::const_pointer;
+        using iterator_category = forward_iterator_tag;
+    private:
+        bool head;
+        next_type node;
+        container_type c;
+    public:
+        constexpr static_forward_list_iterator() noexcept = default;
+        constexpr static_forward_list_iterator(next_type node, container_type c, bool head = false) noexcept :
+                head {head}, node {node}, c {c} {}
+        constexpr static_forward_list_iterator(const static_forward_list_iterator &) noexcept = default;
+        constexpr static_forward_list_iterator(static_forward_list_iterator &&) noexcept = default;
+        ~static_forward_list_iterator() noexcept = default;
+    public:
+        constexpr static_forward_list_iterator &operator=(const static_forward_list_iterator &) noexcept = default;
+        constexpr static_forward_list_iterator &operator=(static_forward_list_iterator &&) noexcept = default;
+        const_reference operator*() const noexcept {
+            return this->head ? *static_cast<pointer>(nullptr) : this->c[this->node].value;
+        }
+        const_pointer operator->() const noexcept {
+            return ds::address_of(**this);
+        }
+        static_forward_list_iterator &operator++() & noexcept {
+            if(this->head) {
+                this->head = false;
+                return *this;
+            }
+            this->node = this->c[this->node].next;
+            return *this;
+        }
+        static_forward_list_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        operator static_forward_list_iterator<NodeType, Container, false>() const noexcept {
+            return static_forward_list_iterator<NodeType, Container, false>(this->node, this->c);
+        };
+        explicit operator bool() const noexcept {
+            return this->node == node_type::empty;
+        }
+    };
+    template <typename NodeType, typename Container, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
+    inline bool operator==(const static_forward_list_iterator<NodeType, Container, IsConstLHS> &lhs,
+            const static_forward_list_iterator<NodeType, Container, IsConstRHS> &rhs) noexcept {
+        return lhs.head == rhs.head and lhs.node == rhs.node and ds::address_of(lhs.c) == ds::address_of(rhs.c);
+    }
+    template <typename NodeType, typename Container, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
+    inline bool operator!=(const static_forward_list_iterator<NodeType, Container, IsConstLHS> &lhs,
+            const static_forward_list_iterator<NodeType, Container, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
 }
