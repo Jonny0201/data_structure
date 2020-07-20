@@ -133,6 +133,8 @@ namespace data_structure {
         [[nodiscard]]
         bool empty() const noexcept;
         [[nodiscard]]
+        size_type size() const noexcept;
+        [[nodiscard]]
         constexpr size_type max_size() const noexcept;
         void clear() noexcept;
         void swap(forward_list &) noexcept;
@@ -162,13 +164,13 @@ namespace data_structure {
         iterator insert(difference_type, std::initializer_list<value_type>);
         static iterator insert_after(const_iterator, std::initializer_list<value_type>);
         iterator erase(difference_type, size_type = 1) noexcept;
-        static iterator erase_after(const_iterator, size_type = 1) noexcept;
+        static iterator erase_after(const_iterator, size_type) noexcept;
         static iterator erase_after(const_iterator, const_iterator) noexcept;
         static iterator erase_after(const_iterator) noexcept;
         template <typename ...Args>
         iterator emplace_after(difference_type, Args &&...);
         template <typename ...Args>
-        iterator emplace_after(const_iterator, Args &&...);
+        static iterator emplace_after(const_iterator, Args &&...);
         template <typename ...Args>
         void emplace_front(Args &&...);
         void push_front(const_reference);
@@ -761,6 +763,9 @@ namespace data_structure {
     void forward_list<T, Allocator>::assign(typename enable_if<
             is_input_iterator<InputIterator>::value and not is_forward_iterator<InputIterator>::value,
             InputIterator>::type begin, InputIterator end) {
+        if(begin == end) {
+            return;
+        }
         auto before_cursor {this->before_begin()};
         auto cursor {this->begin()};
         const auto last {this->end()};
@@ -779,6 +784,9 @@ namespace data_structure {
     template <typename ForwardIterator>
     void forward_list<T, Allocator>::assign(typename enable_if<
             is_forward_iterator<ForwardIterator>::value, ForwardIterator>::type begin, ForwardIterator end) {
+        if(begin == end) {
+            return;
+        }
         auto before_cursor {this->before_begin()};
         auto cursor {this->begin()};
         const auto last {this->end()};
@@ -794,8 +802,8 @@ namespace data_structure {
         }
     }
     template <typename T, typename Allocator>
-    inline void forward_list<T, Allocator>::assign(std::initializer_list<value_type> init_list) {
-        this->assign(init_list.begin(), init_list.end());
+    inline void forward_list<T, Allocator>::assign(std::initializer_list<value_type> list) {
+        this->assign(list.begin(), list.end());
     }
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::reference forward_list<T, Allocator>::front() {
@@ -852,6 +860,16 @@ namespace data_structure {
         return not this->head->next;
     }
     template <typename T, typename Allocator>
+    inline typename forward_list<T, Allocator>::size_type forward_list<T, Allocator>::size() const noexcept {
+        auto cursor {this->head->next};
+        size_type size {0};
+        while(cursor) {
+            ++size;
+            cursor = cursor->next;
+        }
+        return size;
+    }
+    template <typename T, typename Allocator>
     constexpr inline typename forward_list<T, Allocator>::size_type
     forward_list<T, Allocator>::max_size() const noexcept {
         return std::numeric_limits<size_type>::max() / sizeof(node_value_type);
@@ -877,7 +895,16 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline void forward_list<T, Allocator>::resize(size_type size, const_reference value) {
-        this->assign(size, value);
+        size_type this_size {0};
+        auto cursor {this->head};
+        while(cursor->next) {
+            cursor = cursor->next;
+            ++this_size;
+        }
+        if(size <= this_size) {
+            return;
+        }
+        this->insert_after(const_iterator(cursor), value, size - this_size);
     }
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
@@ -904,7 +931,7 @@ namespace data_structure {
         return iterator(forward_list::insert_auxiliary(pos.node, pos.node->next, value, size));
     }
     template <typename T, typename Allocator>
-    inline typename forward_list<T, Allocator>::iterator
+    typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::insert(difference_type pos, rvalue_reference value) {
         auto cursor {this->head};
         while(pos > 0 and cursor->next) {
@@ -916,7 +943,8 @@ namespace data_structure {
         }
         auto new_node {this->allocate()};
         if constexpr(is_nothrow_move_constructible<value_type>::value or
-                (not is_move_constructible<value_type>::value and is_nothrow_copy_constructible<value_type>::value)) {
+                (not is_move_constructible<value_type>::value and
+                        is_nothrow_copy_constructible<value_type>::value)) {
             alloc_traits::construct(ds::address_of(new_node->value), ds::move(value));
         }else {
             try {
@@ -1043,7 +1071,7 @@ namespace data_structure {
         return iterator(backup);
     }
     template <typename T, typename Allocator>
-    inline typename forward_list<T, Allocator>::iterator
+    typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase_after(const_iterator pos, size_type size) noexcept {
         if(not pos.node or size == 0) {
             return iterator(nullptr);
@@ -1061,7 +1089,7 @@ namespace data_structure {
         return iterator(cursor);
     }
     template <typename T, typename Allocator>
-    inline typename forward_list<T, Allocator>::iterator
+    typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase_after(const_iterator begin, const_iterator end) noexcept {
         if(begin == end or not begin.node) {
             return iterator(nullptr);
@@ -1079,6 +1107,13 @@ namespace data_structure {
         return end;
     }
     template <typename T, typename Allocator>
+    inline typename forward_list<T, Allocator>::iterator
+    forward_list<T, Allocator>::erase_after(const_iterator it) noexcept {
+        auto next {it};
+        ++next;
+        return forward_list::erase_after(it, next);
+    }
+    template <typename T, typename Allocator>
     template <typename ...Args>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::emplace_after(difference_type pos, Args &&...args) {
@@ -1088,7 +1123,7 @@ namespace data_structure {
     template <typename ...Args>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::emplace_after(const_iterator pos, Args &&...args) {
-        return this->insert_after(pos, value_type(ds::forward<Args>(args)...));
+        return forward_list::insert_after(pos, value_type(ds::forward<Args>(args)...));
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
@@ -1197,7 +1232,7 @@ namespace data_structure {
 
 namespace data_structure {
     template <typename T, typename Allocator>
-    void forward_list<T, Allocator>::merge(forward_list<value_type, Allocator> &rhs)
+    void forward_list<T, Allocator>::merge(forward_list &rhs)
             noexcept(has_nothrow_less_operator<value_type>::value and
                     has_nothrow_equal_to_operator<value_type>::value) {
         if(not rhs.head->next or &rhs == this) {
