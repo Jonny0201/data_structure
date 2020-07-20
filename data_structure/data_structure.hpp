@@ -32,5 +32,7 @@
 #include "heap.hpp"
 #include "priority_queue.hpp"
 #include "string.hpp"
+#include "static_forward_list.hpp"
+#include "utility.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
