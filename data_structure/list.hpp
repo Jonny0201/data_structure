@@ -187,84 +187,36 @@ namespace data_structure {
         void swap(list<value_type, AllocatorRHS> &) noexcept;
         void clear() noexcept;
     public:
-        void splice(difference_type, list &);
-        void splice(const_iterator, list &);
-        void splice(difference_type, list &&);
-        void splice(const_iterator, list &&);
-        void splice(difference_type, list &, const_iterator);
-        void splice(const_iterator, list &, const_iterator);
-        void splice(difference_type, list &&, const_iterator);
-        void splice(const_iterator, list &&, const_iterator);
-        void splice(difference_type, list &, difference_type);
-        void splice(const_iterator, list &, difference_type);
-        void splice(difference_type, list &&, difference_type);
-        void splice(const_iterator, list &&, difference_type);
-        void splice(difference_type, list &, difference_type, size_type);
-        void splice(const_iterator, list &, difference_type, size_type);
-        void splice(difference_type, list &&, difference_type, size_type);
-        void splice(const_iterator, list &&, difference_type, size_type);
-        void splice(difference_type, list &, const_iterator, const_iterator);
-        void splice(const_iterator, list &, const_iterator, const_iterator);
-        void splice(difference_type, list &&, const_iterator, const_iterator);
-        void splice(const_iterator, list &&, const_iterator, const_iterator);
-        void splice(difference_type, list &, const_iterator, size_type);
-        void splice(const_iterator, list &, const_iterator, size_type);
-        void splice(difference_type, list &&, const_iterator, size_type);
-        void splice(const_iterator, list &&, const_iterator, size_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &, difference_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &, difference_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&, difference_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&, difference_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &, difference_type, size_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &, difference_type, size_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&, difference_type, size_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&, difference_type, size_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &, const_iterator, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &, const_iterator, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&, const_iterator, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&, const_iterator, const_iterator);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &, const_iterator, size_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &, const_iterator, size_type);
-        template <typename AllocatorRHS>
-        void splice(difference_type, list<value_type, AllocatorRHS> &&, const_iterator, size_type);
-        template <typename AllocatorRHS>
-        void splice(const_iterator, list<value_type, AllocatorRHS> &&, const_iterator, size_type);
+        void splice(difference_type, list &) noexcept;
+        void splice(difference_type, list &&) noexcept;
+        void splice(const_iterator, list &) noexcept;
+        void splice(const_iterator, list &&) noexcept;
+        void splice(difference_type, list &, difference_type) noexcept;
+        void splice(difference_type, list &&, difference_type) noexcept;
+        void splice(const_iterator, list &, difference_type) noexcept;
+        void splice(const_iterator, list &&, difference_type) noexcept;
+        void splice(difference_type, list &, const_iterator) noexcept;
+        void splice(difference_type, list &&, const_iterator) noexcept;
+        void splice(const_iterator, list &, const_iterator) noexcept;
+        void splice(const_iterator, list &&, const_iterator) noexcept;
+        void splice(difference_type, list &, difference_type, size_type) noexcept;
+        void splice(difference_type, list &&, difference_type, size_type) noexcept;
+        void splice(const_iterator, list &, difference_type, size_type) noexcept;
+        void splice(const_iterator, list &&, difference_type, size_type) noexcept;
+        void splice(difference_type, list &, const_iterator, size_type) noexcept;
+        void splice(difference_type, list &&, const_iterator, size_type) noexcept;
+        void splice(const_iterator, list &, const_iterator, size_type) noexcept;
+        void splice(const_iterator, list &&, const_iterator, size_type) noexcept;
+        void splice(difference_type, list &, const_iterator, const_iterator) noexcept;
+        void splice(difference_type, list &&, const_iterator, const_iterator) noexcept;
+        void splice(const_iterator, list &, const_iterator, const_iterator) noexcept;
+        void splice(const_iterator, list &&, const_iterator, const_iterator) noexcept;
         void remove(const_reference) noexcept(has_nothrow_equal_to_operator<value_type>::value);
         template <typename Predicate>
         void remove_if(Predicate) noexcept(has_nothrow_function_call_operator<value_type>::value);
         void unique() noexcept(has_nothrow_equal_to_operator<value_type>::value);
         template <typename BinaryPredicate>
-        void unique(BinaryPredicate) noexcept(has_nothrow_function_call_operator<value_type>::value);
+        void unique(BinaryPredicate) noexcept(has_nothrow_function_call_operator<value_type, value_type>::value);
         void merge(list &);
         void merge(list &&);
         template <typename AllocatorRHS>
@@ -1047,7 +999,7 @@ namespace data_structure {
             list::destroy(ds::address_of(pos.node->value));
         }
         alloc_traits::operator delete(pos.node);
-        return return_node;
+        return iterator(return_node);
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
@@ -1155,11 +1107,21 @@ namespace data_structure {
         if(this->empty()) {
             return;
         }
-        this->erase(--this->cend());
+        auto end {this->cend()};
+        this->erase(--end);
     }
     template <typename T, typename Allocator>
     inline void list<T, Allocator>::resize(size_type size, const_reference value) {
-        this->assign(size, value);
+        size_type this_size {0};
+        auto cursor {this->tail->next};
+        while(cursor not_eq this->tail) {
+            cursor = cursor->next;
+            ++this_size;
+        }
+        if(size <= this_size) {
+            return;
+        }
+        this->insert(const_iterator(cursor), value, size - this_size);
     }
     template <typename T, typename Allocator>
     inline void list<T, Allocator>::swap(list &rhs) noexcept {
@@ -1180,11 +1142,486 @@ namespace data_structure {
 }
 
 namespace data_structure {
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(difference_type pos, list &rhs) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = rhs.tail->next;
+        cursor->next->previous = cursor;
+        rhs.tail->next = rhs.tail->previous = rhs.tail;
+        while(cursor->next not_eq rhs.tail) {
+            cursor = cursor->next;
+        }
+        backup->previous = cursor;
+        cursor->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(difference_type pos, list &&rhs) noexcept {
+        this->splice(pos, rhs);
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(const_iterator pos, list &rhs) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+        }
+        rhs.tail->next->previous = pos.node->previous;
+        pos.node->previous->next = rhs.tail->next;
+        pos.node->previous = rhs.tail->previous;
+        rhs.tail->previous->next = pos.node;
+        rhs.tail->next = rhs.tail;
+        rhs.tail->previous = rhs.tail;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(const_iterator pos, list &&rhs) noexcept {
+        this->splice(pos, rhs);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(difference_type pos, list &rhs, difference_type rhs_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        auto splice_node {rhs.tail->next};
+        while(rhs_pos--) {
+            splice_node = splice_node->next;
+        }
+        rhs.tail->previous = splice_node->previous;
+        splice_node->previous->next = rhs.tail;
+        splice_node->previous = cursor;
+        auto backup {cursor->next};
+        cursor->next = splice_node;
+        while(splice_node->next not_eq rhs.tail) {
+            splice_node = splice_node->next;
+        }
+        backup->previous = splice_node;
+        splice_node->next = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(difference_type pos, list &&rhs, difference_type rhs_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(const_iterator pos, list &rhs, difference_type rhs_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto splice_node {rhs.tail->next};
+        while(rhs_pos--) {
+            splice_node = splice_node->next;
+        }
+        splice_node->previous->next = rhs.tail;
+        rhs.tail->previous = splice_node->previous;
+        splice_node->previous = pos.node->previous;
+        pos.node->previous->next = splice_node;
+        while(splice_node->next not_eq rhs.tail) {
+            splice_node = splice_node->next;
+        }
+        splice_node->next = pos.node;
+        pos.node->previous = splice_node;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(const_iterator pos, list &&rhs, difference_type rhs_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(difference_type pos, list &rhs, const_iterator rhs_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        rhs_pos.node->previous->next = rhs.tail;
+        rhs.tail->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous = cursor;
+        auto backup {cursor->next};
+        cursor->next = rhs_pos.node;
+        while(rhs_pos.node->next not_eq rhs.tail) {
+            ++rhs_pos;
+        }
+        rhs_pos.node->next = backup;
+        backup->previous = rhs_pos.node;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(difference_type pos, list &&rhs, const_iterator rhs_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(const_iterator pos, list &rhs, const_iterator rhs_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        rhs.tail->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous->next = rhs.tail;
+        rhs_pos.node->previous = pos.node->previous;
+        pos.node->previous->next = rhs_pos.node;
+        while(rhs_pos.node->next not_eq rhs.tail) {
+            ++rhs_pos;
+        }
+        pos.node->previous = rhs_pos.node;
+        rhs_pos.node->next = pos.node;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(const_iterator pos, list &&rhs, const_iterator rhs_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            difference_type pos, list &rhs, difference_type rhs_pos, size_type size) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        auto splice_node {rhs.tail->next};
+        while(rhs_pos--) {
+            splice_node = splice_node->next;
+        }
+        auto last_node {splice_node};
+        while(size-- and last_node->next not_eq rhs.tail) {
+            last_node = last_node->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = splice_node;
+        last_node->previous->next = backup;
+        backup->previous = last_node->previous;
+        splice_node->previous->next = last_node;
+        last_node->previous = splice_node->previous;
+        splice_node->previous = cursor;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            difference_type pos, list &&rhs, difference_type rhs_pos, size_type size) noexcept {
+        this->splice(pos, rhs, rhs_pos, size);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            const_iterator pos, list &rhs, difference_type rhs_pos, size_type size) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto splice_node {rhs.tail->next};
+        while(rhs_pos--) {
+            splice_node = splice_node->next;
+        }
+        auto last_node {splice_node};
+        while(size-- and last_node->next not_eq rhs.tail) {
+            last_node = last_node->next;
+        }
+        auto backup {pos.node->previous};
+        backup->next = splice_node;
+        last_node->previous->next = pos.node;
+        pos.node->previous = last_node->previous;
+        splice_node->previous->next = last_node;
+        last_node->previous = splice_node->previous;
+        splice_node->previous = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            const_iterator pos, list &&rhs, difference_type rhs_pos, size_type size) noexcept {
+        this->splice(pos, rhs, rhs_pos, size);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            difference_type pos, list &rhs, const_iterator rhs_pos, size_type size) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        auto last_node {rhs_pos.node};
+        while(size-- and last_node->next not_eq rhs.tail) {
+            last_node = last_node->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = rhs_pos.node;
+        last_node->previous->next = backup;
+        backup->previous = last_node->previous;
+        rhs_pos.node->previous->next = last_node;
+        last_node->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous = cursor;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            difference_type pos, list &&rhs, const_iterator rhs_pos, size_type size) noexcept {
+        this->splice(pos, rhs, rhs_pos, size);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            const_iterator pos, list &rhs, const_iterator rhs_pos, size_type size) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto last_node {rhs_pos.node};
+        while(size-- and last_node->next not_eq rhs.tail) {
+            last_node = last_node->next;
+        }
+        auto backup {pos.node->previous};
+        backup->next = rhs_pos.node;
+        last_node->previous->next = pos.node;
+        pos.node->previous = last_node->previous;
+        rhs_pos.node->previous->next = last_node;
+        last_node->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous = pos.node;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            const_iterator pos, list &&rhs, const_iterator rhs_pos, size_type size) noexcept {
+        this->splice(pos, rhs, rhs_pos, size);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            difference_type pos, list &rhs, const_iterator rhs_pos, const_iterator last_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        while(--pos > 0) {
+            cursor = cursor->next;
+        }
+        auto backup {cursor->next};
+        cursor->next = rhs_pos.node;
+        last_pos.node->previous->next = backup;
+        backup->previous = last_pos.node->previous;
+        rhs_pos.node->previous->next = last_pos.node;
+        last_pos.node->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous = backup;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            difference_type pos, list &&rhs, const_iterator rhs_pos, const_iterator last_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos, last_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::splice(
+            const_iterator pos, list &rhs, const_iterator rhs_pos, const_iterator last_pos) noexcept {
+        if(rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            this->swap(rhs);
+            return;
+        }
+        auto backup {pos.node->previous};
+        backup->next = rhs_pos.node;
+        last_pos.node->previous->next = pos.node;
+        pos.node->previous = last_pos.node->previous;
+        rhs_pos.node->previous->next = last_pos.node;
+        last_pos.node->previous = rhs_pos.node->previous;
+        rhs_pos.node->previous = pos.node;
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::splice(
+            const_iterator pos, list &&rhs, const_iterator rhs_pos, const_iterator last_pos) noexcept {
+        this->splice(pos, rhs, rhs_pos, last_pos);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::remove(const_reference value)
+            noexcept(has_nothrow_equal_to_operator<value_type>::value) {
+        auto first {this->cbegin()};
+        const auto last {this->cend()};
+        while(first not_eq last) {
+            auto backup {first++};
+            if(*backup == value) {
+                this->erase(backup);
+            }
+        }
+    }
+    template <typename T, typename Allocator>
+    template <typename Predicate>
+    void list<T, Allocator>::remove_if(Predicate p)
+            noexcept(has_nothrow_function_call_operator<value_type>::value) {
+        auto first {this->cbegin()};
+        const auto last {this->cend()};
+        while(first not_eq last) {
+            auto backup {first++};
+            if(p(*backup)) {
+                this->erase(backup);
+            }
+        }
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::unique() noexcept(has_nothrow_equal_to_operator<value_type>::value) {
+        this->unique(equal_to<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename BinaryPredicate>
+    void list<T, Allocator>::unique(BinaryPredicate p)
+            noexcept(has_nothrow_function_call_operator<value_type, value_type>::value) {
+        for(auto cursor {this->tail->next}; cursor not_eq this->tail;) {
+            auto next {cursor->next};
+            for(; next not_eq this->tail and p(next->value, cursor->value); next = next->next);
+            this->erase(cursor->next, next);
+            cursor = next;
+        }
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::sort() {
+        this->sort(less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    void list<T, Allocator>::sort(Compare cmp) {
+        if(this->tail->next == this->tail or this->tail->next->next == this->tail) {
+            return;
+        }
+        if(this->tail->next->next->next == this->tail) {
+            if(cmp(this->tail->next->next->value, this->tail->next->value)) {
+                ds::swap(this->tail->next, this->tail->previous);
+                ds::swap(this->tail->next->next, this->tail->next->previous);
+                ds::swap(this->tail->previous->next, this->tail->previous->previous);
+            }
+            return;
+        }
+        //TODO
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::merge(list &rhs) {
+        this->merge(rhs, less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    inline void list<T, Allocator>::merge(list &&rhs) {
+        this->merge(rhs, less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    void list<T, Allocator>::merge(list &rhs, Compare cmp) {
+        if(this == &rhs or rhs.empty()) {
+            return;
+        }
+        if(this->empty()) {
+            rhs.sort();
+            this->swap(rhs);
+            return;
+        }
+        auto cursor {this->tail->next};
+        auto rhs_cursor {rhs.tail->next};
+        do {
+            if(cmp(rhs_cursor->value, cursor->value)) {
+                auto next {rhs_cursor};
+                for(; next->next not_eq rhs.tail and cmp(next->next->value, cursor->value); next = next->next);
+                rhs_cursor->previous = cursor->previous;
+                cursor->previous->next = rhs_cursor;
+                rhs_cursor = next->next;
+                next->next = cursor;
+                cursor->previous = next;
+            }
+            cursor = cursor->next;
+        }while(cursor not_eq this->tail and rhs_cursor not_eq rhs.tail);
+        if(rhs_cursor not_eq rhs.tail) {
+            this->tail->previous->next = rhs_cursor;
+            rhs_cursor->previous = this->tail->previous;
+        }
+        while(rhs_cursor->next not_eq rhs.tail) {
+            rhs_cursor = rhs_cursor->next;
+        }
+        rhs_cursor->next = this->tail;
+        this->tail->previous = rhs_cursor;
+        rhs.tail->next = rhs.tail;
+        rhs.tail->previous = rhs.tail;
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare>
+    inline void list<T, Allocator>::merge(list &&rhs, Compare cmp) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(rhs, cmp);
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void list<T, Allocator>::merge(list<value_type, AllocatorRHS> &rhs) {
+        this->merge(*reinterpret_cast<list *>(&rhs), less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename AllocatorRHS>
+    inline void list<T, Allocator>::merge(list<value_type, AllocatorRHS> &&rhs) {
+        this->merge(*reinterpret_cast<list *>(&rhs), less<value_type>());
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare, typename AllocatorRHS>
+    inline void list<T, Allocator>::merge(list<value_type, AllocatorRHS> &rhs, Compare cmp) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(*reinterpret_cast<list *>(&rhs), cmp);
+    }
+    template <typename T, typename Allocator>
+    template <typename Compare, typename AllocatorRHS>
+    inline void list<T, Allocator>::merge(list<value_type, AllocatorRHS> &&rhs, Compare cmp) {
+        this->merge<typename add_lvalue_reference<Compare>::type>(*reinterpret_cast<list *>(&rhs), cmp);
+    }
+    template <typename T, typename Allocator>
+    void list<T, Allocator>::reverse() noexcept {
+        if(this->tail->next == this->tail or this->tail->next->next == this->tail) {
+            return;
+        }
+        auto cursor {this->tail->next};
+        do {
+            ds::swap(cursor->next, cursor->previous);
+            cursor = cursor->previous;
+        }while(cursor not_eq this->tail);
+        ds::swap(this->tail->next, this->tail->previous);
+    }
+}
+
+namespace data_structure {
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
     inline void swap(list<T, AllocatorLHS> &lhs, list<T, AllocatorRHS> &rhs) noexcept {
         lhs.swap(rhs);
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     bool operator==(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         auto lhs_cursor {lhs.cbegin()};
         auto rhs_cursor {rhs.cbegin()};
@@ -1196,10 +1633,12 @@ namespace data_structure {
         return not(static_cast<bool>(lhs_cursor) or static_cast<bool>(rhs_cursor));
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     inline bool operator!=(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         return not(lhs == rhs);
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     bool operator<(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         auto lhs_cursor {lhs.cbegin()};
         auto rhs_cursor {rhs.cbegin()};
@@ -1211,14 +1650,17 @@ namespace data_structure {
         return not(static_cast<bool>(lhs_cursor));
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     inline bool operator<=(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         return not(rhs > lhs);
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     inline bool operator>(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         return rhs < lhs;
     }
     template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    [[nodiscard]]
     inline bool operator>=(const list<T, AllocatorLHS> &lhs, const list<T, AllocatorRHS> &rhs) {
         return not(lhs < rhs);
     }
