@@ -35,7 +35,7 @@ namespace data_structure {
         reference_wrapper &operator=(const reference_wrapper &) noexcept = default;
         reference_wrapper &operator=(reference_wrapper &&) noexcept = delete;
         operator type &() const noexcept {
-            return *pointer;
+            return *this->pointer;
         }
         template <typename ...Args>
         typename invoke_result<type &, Args...>::type operator()(Args &&...args) const {
@@ -43,7 +43,7 @@ namespace data_structure {
         }
     public:
         type &get() const noexcept {
-            return *pointer;
+            return *this->pointer;
         }
     };
 }
@@ -60,92 +60,86 @@ namespace data_structure {
 namespace data_structure {
     template <typename LHS = void, typename RHS = LHS>
     struct less : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-                noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) < forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs < rhs)) {
+            return lhs < rhs;
         }
     };
     template <>
     struct less<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-                noexcept(noexcept(forward<LHS>(lhs) < forward<RHS>(rhs))) {
-            return __DS::forward<LHS>(lhs) < __DS::forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) < ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) < ds::forward<RHS>(rhs);
         }
     };
     template <typename LHS = void, typename RHS = LHS>
     struct less_equal : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-                noexcept(noexcept(forward<LHS>(lhs) <= forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) <= forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs <= rhs)) {
+            return lhs <= rhs;
         }
     };
     template <>
     struct less_equal<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-                noexcept(noexcept(forward<LHS>(lhs) <= forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) <= forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) <= ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) <= ds::forward<RHS>(rhs);
         }
     };
     template <typename LHS = void, typename RHS = LHS>
     struct greater : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) > forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) > forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs > rhs)) {
+            return lhs > rhs;
         }
     };
     template <>
     struct greater<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) > forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) > forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) > ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) > ds::forward<RHS>(rhs);
         }
     };
     template <typename LHS = void, typename RHS = LHS>
     struct greater_equal : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) >= forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) >= forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs >= rhs)) {
+            return lhs >= rhs;
         }
     };
     template <>
     struct greater_equal<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) >= forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) >= forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) >= ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) >= ds::forward<RHS>(rhs);
         }
     };
     template <typename LHS = void, typename RHS = LHS>
     struct equal_to : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) == forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) == forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs == rhs)) {
+            return lhs == rhs;
         }
     };
     template <>
     struct equal_to<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) == forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) == forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) == ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) == ds::forward<RHS>(rhs);
         }
     };
     template <typename LHS = void, typename RHS = LHS>
     struct not_equal_to : binary_function<LHS, RHS, bool> {
-        constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) != forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) != forward<RHS>(rhs);
+        constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs != rhs)) {
+            return lhs != rhs;
         }
     };
     template <>
     struct not_equal_to<void, void> {
         template <typename LHS, typename RHS = LHS>
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
-        noexcept(noexcept(forward<LHS>(lhs) != forward<RHS>(rhs))) {
-            return forward<LHS>(lhs) != forward<RHS>(rhs);
+                noexcept(noexcept(ds::forward<LHS>(lhs) != ds::forward<RHS>(rhs))) {
+            return ds::forward<LHS>(lhs) != ds::forward<RHS>(rhs);
         }
     };
 }
