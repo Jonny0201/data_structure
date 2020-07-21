@@ -134,7 +134,7 @@ namespace data_structure::__data_structure_auxiliary {
         [[nodiscard]]
         constexpr size_type max_size() const noexcept;
         [[nodiscard]]
-        size_type remain() const noexcept;
+        size_type surplus() const noexcept;
         void reserve(size_type);
         void shrink_to_fit();
         [[nodiscard]]
@@ -668,7 +668,7 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::size_type
-    vector_base<T, Allocator>::remain() const noexcept {
+    vector_base<T, Allocator>::surplus() const noexcept {
         return this->last - this->cursor;
     }
     template <typename T, typename Allocator>
@@ -871,7 +871,7 @@ namespace data_structure::__data_structure_auxiliary {
         }else if(pos > old_size) {
             return iterator(this->cursor);
         }
-        if(size > this->remain()) {
+        if(size > this->surplus()) {
             this->reallocate(size);
         }
         auto construct_cursor {this->cursor + (size - 1)};
@@ -1075,7 +1075,7 @@ namespace data_structure::__data_structure_auxiliary {
             return iterator(this->cursor);
         }
         const auto old_size {this->size()};
-        if(size > this->remain()) {
+        if(size > this->surplus()) {
             this->reallocate(size);
         }
         if(pos == old_size) {
@@ -1259,7 +1259,7 @@ namespace data_structure::__data_structure_auxiliary {
     bool operator<(const vector_base<T, AllocatorLHS> &lhs, const vector_base<T, AllocatorRHS> &rhs)
             noexcept(has_nothrow_less_operator<T>::value) {
         auto lhs_cursor {lhs.cbegin()};
-        auto rhs_cursor {rhs.cbegin};
+        auto rhs_cursor {rhs.cbegin()};
         if(lhs.size() < rhs.size()) {
             const auto lhs_end_pos {lhs.cend()};
             while(lhs_cursor not_eq lhs_end_pos) {
@@ -1709,7 +1709,7 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(value_type ch, size_type size) {
-        if(size > this->remain()) {
+        if(size > this->surplus()) {
             this->reallocate(size);
         }
         while(size--) {
@@ -1719,7 +1719,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(const_pointer str, difference_type start_pos, size_type size) {
         const auto begin {str + start_pos};
-        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->remain()) {
+        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->surplus()) {
             this->reallocate(size);
         }
         while(size--) {
@@ -1729,7 +1729,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(const vector_char &str, difference_type start_pos, size_type size) {
         const auto begin {str.cbegin() + start_pos};
-        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->remain()) {
+        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->surplus()) {
             this->reallocate(size);
         }
         while(size--) {
