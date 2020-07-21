@@ -34,5 +34,6 @@
 #include "string.hpp"
 #include "static_forward_list.hpp"
 #include "utility.hpp"
+#include "stack.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
