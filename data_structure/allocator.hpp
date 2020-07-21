@@ -92,8 +92,8 @@ namespace data_structure {
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             return new (p) value_type(ds::forward<Args>(args)...);
         }
-        //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
+        [[deprecated]]
         static pointer construct(pointer begin, const_pointer end, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             auto cursor {begin};
@@ -184,8 +184,8 @@ namespace data_structure {
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             return new (p) value_type(ds::forward<Args>(args)...);
         }
-        //DO NOT USE THIS FUNCTION!
         template <typename ...Args>
+        [[deprecated]]
         static pointer construct(pointer begin, const_pointer end, Args &&...args)
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             auto cursor {begin};
@@ -194,13 +194,12 @@ namespace data_structure {
             }
             return begin;
         }
-        static constexpr void destroy(pointer p) noexcept(is_nothrow_destructible<value_type>::value) {
+        static constexpr void destroy(pointer p) noexcept {
             if constexpr(not is_trivially_destructible<value_type>::value) {
                 p->~value_type();
             }
         }
-        static constexpr void destroy(pointer begin, const_pointer end)
-                noexcept(is_nothrow_destructible<value_type>::value) {
+        static constexpr void destroy(pointer begin, const_pointer end) noexcept {
             if constexpr(not is_trivially_destructible<value_type>::value) {
                 while(begin not_eq end) {
                     begin++->~value_type();
