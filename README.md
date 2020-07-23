@@ -32,6 +32,7 @@ Jonny
 - priority_queue (Adaptor)
 - list
 - static_forward_list (Adaptor)
+- stack (Adaptor)
 
 ### Algorithms ###
 
@@ -49,34 +50,29 @@ Jonny
 
 ## TODOs ##
 Tentatively
+- circular_forward_list
+- uncircular_list
 - static_list
 - matrix
-- square_matrix
-- diagonal_matrix
-- antidiagonal_matrix
-- tridiagonal_matrix
-- lower_triangular_matrix
-- upper_triangular_matrix
-- symmetric_matrix
-- toeplitz_matrix
-- square_band_matrix
-- spare_matrix
-- stack (Adaptor)
+- string
+- heap_string
+- generalized_list
 - queue (Adaptor)
 - deque
 - dictionary (Adaptor)
 - skip_list
 - tree (irregular_skip_list)
 - binary_tree
-- leftist_tree
-- winner_tree (Adaptor)
-- loser_tree (Adaptor)
-- binary_search_tree (Adaptor)
-- avl_tree (Adaptor)
-- red_black_tree (Adaptor)
-- splay_tree (Adaptor)
-- b_tree (Adaptor)
-- graph
+- leftist_tree (height-biased)
+- huffman_tree (weight-biased)
+- winner_tree
+- loser_tree
+- binary_search_tree
+- avl_tree
+- red_black_tree (rb_tree)
+- splay_tree
+- b_tree
+- graph [matrix, list, array]
 
 ## Release Note ##
 
