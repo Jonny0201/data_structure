@@ -17,10 +17,10 @@
 #ifndef DATA_STRUCTURE_STACK_HPP
 #define DATA_STRUCTURE_STACK_HPP
 
-#include "vector.hpp"
+#include "deque.hpp"
 
 namespace data_structure {
-    template <typename T, typename Container = vector<T>, bool Bidirectional = false>
+    template <typename T, typename Container = deque<T>, bool Bidirectional = false>
     class stack final {
         template <typename Type, typename ContainerType>
         friend bool operator==(const stack<Type, ContainerType, false> &lhs,
@@ -374,7 +374,8 @@ namespace data_structure {
         void reallocate(size_type size, const stack &rhs) {
             auto new_first {this->allocate(size)};
             auto new_cursor {new_first};
-            stack<T, T *, true>::construct_at_head(new_first, new_cursor, rhs.first, rhs.cursor);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer &>(
+                    new_first, {}, new_cursor, rhs.first, rhs.cursor);
             if constexpr(is_trivially_destructible<value_type>::value) {
                 alloc_traits::destroy(this->first, this->cursor);
             }
@@ -388,7 +389,8 @@ namespace data_structure {
                 last {this->first + static_cast<difference_type>(this->base_size)} {}
         stack(const stack &rhs) : first {this->allocate(rhs.capacity())}, cursor {this->first},
                 last {this->first + rhs.capacity()} {
-            stack<T, T *, true>::construct_at_head(this->first, this->cursor, rhs.first, rhs.cursor);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer &>(
+                    this->first, {}, this->cursor, rhs.first, rhs.cursor);
         }
         stack(stack &&rhs) noexcept : first {rhs.first}, cursor {rhs.cursor}, last {rhs.last} {
             rhs.first = rhs.cursor = rhs.last = nullptr;
@@ -409,6 +411,7 @@ namespace data_structure {
             if(&rhs == this) {
                 return *this;
             }
+            this->~stack();
             this->first = rhs.first;
             this->cursor = rhs.cursor;
             this->last = rhs.last;
@@ -479,7 +482,7 @@ namespace data_structure {
         lhs.swap(rhs);
     }
     template <typename T>
-    inline bool operator==(const stack<T, T *, false> &lhs, const stack<T, T *, false> &rhs) {
+    bool operator==(const stack<T, T *, false> &lhs, const stack<T, T *, false> &rhs) {
         if(lhs.size() not_eq rhs.size()) {
             return false;
         }
@@ -497,7 +500,7 @@ namespace data_structure {
         return not(lhs == rhs);
     }
     template <typename T>
-    inline bool operator<(const stack<T, T *, false> &lhs, const stack<T, T *, false> &rhs) {
+    bool operator<(const stack<T, T *, false> &lhs, const stack<T, T *, false> &rhs) {
         auto lhs_cursor {lhs.first}, rhs_cursor {rhs.first};
         const auto lhs_end {lhs.cursor}, rhs_end {rhs.cursor};
         for(; rhs_cursor not_eq rhs_end; ++lhs_cursor, static_cast<void>(++rhs_cursor)) {
@@ -539,7 +542,6 @@ namespace data_structure {
         friend bool operator>(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
         template <typename Type>
         friend bool operator>=(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
-        friend class stack<T, T *>;
     public:
         using container_type = T *;
         using size_type = typename container_traits<container_type>::size_type;
@@ -556,42 +558,14 @@ namespace data_structure {
     private:
         constexpr static inline size_type base_size {4};
     private:
+        pointer first;
+        pointer cursor_front;
+        pointer cursor_back;
+        pointer last;
+    private:
         [[nodiscard]]
         static pointer allocate(size_type size = stack::base_size) {
             return reinterpret_cast<pointer>(alloc_traits::operator new(size * sizeof(value_type)));
-        }
-        static void construct_at_head(const_pointer first, pointer &cursor,
-                pointer rhs_begin, pointer rhs_end) {
-            if constexpr(is_nothrow_move_constructible<value_type>::value or
-                         (not is_move_constructible<value_type>::value and
-                          is_nothrow_copy_constructible<value_type>::value)) {
-                cursor = ds::copy(rhs_begin, rhs_end, cursor);
-            }else {
-                try {
-                    cursor = ds::copy(rhs_begin, rhs_end, cursor);
-                }catch(...) {
-                    alloc_traits::destroy(first, cursor);
-                    alloc_traits::operator delete(first);
-                    throw;
-                }
-            }
-        }
-        static void construct_at_back(const_pointer first, const_pointer end_front, pointer begin,
-                pointer last, pointer rhs_begin, pointer rhs_end) {
-            if constexpr(is_nothrow_move_constructible<value_type>::value or
-                         (not is_move_constructible<value_type>::value and
-                          is_nothrow_copy_constructible<value_type>::value)) {
-                ds::copy(rhs_begin, rhs_end, begin);
-            }else {
-                try {
-                    ds::copy(rhs_begin, rhs_end, begin);
-                }catch(...) {
-                    alloc_traits::destroy(first, end_front);
-                    alloc_traits::destroy(begin, last);
-                    alloc_traits::operator delete(first);
-                    throw;
-                }
-            }
         }
     private:
         void full() {
@@ -604,9 +578,10 @@ namespace data_structure {
             auto new_cursor_front {new_first};
             auto new_last {new_first + static_cast<difference_type>(size)};
             auto new_cursor_back {new_last - static_cast<difference_type>(rhs.size_back())};
-            this->construct_at_head(new_first, new_cursor_front, rhs.first, rhs.cursor_front);
-            this->construct_at_back(new_first, new_cursor_front, new_cursor_back,
-                    new_last, rhs.cursor_back + 1, rhs.last);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer &>(
+                    new_first, {}, new_cursor_front, rhs.first, rhs.cursor_front);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer, true>(
+                    new_first, new_cursor_front, new_cursor_back, rhs.cursor_back, rhs.last);
             if constexpr(not is_trivially_destructible<value_type>::value) {
                 alloc_traits::destroy(this->first, this->cursor_front);
                 alloc_traits::destroy(this->cursor_back + 1, this->last);
@@ -617,11 +592,6 @@ namespace data_structure {
             this->cursor_back = new_cursor_back - 1;
             this->last = new_last;
         }
-    private:
-        pointer first;
-        pointer cursor_front;
-        pointer cursor_back;
-        pointer last;
     public:
         stack() : first {this->allocate()}, cursor_front {this->first},
                 cursor_back {this->first + static_cast<difference_type>(this->base_size - 1)},
@@ -629,9 +599,10 @@ namespace data_structure {
         stack(const stack &rhs) : first {this->allocate(rhs.capacity())}, cursor_front {this->first},
                 cursor_back {this->first + static_cast<difference_type>(rhs.capacity() - rhs.size_back())},
                 last {this->first + static_cast<difference_type>(rhs.capacity())} {
-            this->construct_at_head(this->first, this->cursor_front, rhs.first, rhs.cursor_front);
-            this->construct_at_back(this->first, this->cursor_front,
-                    this->cursor_back, this->last, rhs.cursor_back + 1, rhs.last);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer &>(
+                    this->first, {}, this->cursor, rhs.first, rhs.cursor_front);
+            __dsa::construct_ranges<alloc_traits, value_type, pointer, true>(
+                    this->first, this->cursor_front, this->cursor_back, rhs.cursor_back, rhs.last);
             --this->cursor_back;
         }
         stack(stack &&rhs) noexcept : first {rhs.first}, cursor_front {rhs.cursor_front},
@@ -657,6 +628,7 @@ namespace data_structure {
             if(&rhs == this) {
                 return *this;
             }
+            this->~stack();
             this->first = rhs.first;
             this->cursor_front = rhs.cursor_front;
             this->cursor_back = rhs.cursor_back;
@@ -821,6 +793,40 @@ namespace data_structure {
     template <typename T>
     bool operator!=(const stack<T, T *, true> &lhs, const stack<T, T *, true> &rhs) {
         return not(lhs == rhs);
+    }
+    template <typename T>
+    bool operator<(const stack<T, T *, true> &lhs, const stack<T, T *, true> &rhs) {
+        auto lhs_cursor {lhs.first}, rhs_cursor {rhs.first};
+        for(; rhs_cursor not_eq rhs.cursor_front; ++lhs_cursor, static_cast<void>(++rhs_cursor)) {
+            if(lhs_cursor == lhs.cursor_front or *lhs_cursor < *rhs_cursor) {
+                break;
+            }
+            if(*rhs_cursor < *lhs_cursor) {
+                return false;
+            }
+        }
+        lhs_cursor = lhs.last - 1, static_cast<void>(rhs_cursor = rhs.last - 1);
+        for(; rhs_cursor not_eq rhs.cursor_back; --lhs_cursor, static_cast<void>(--rhs_cursor)) {
+            if(lhs_cursor == lhs.cursor_back or *lhs_cursor < *rhs_cursor) {
+                return true;
+            }
+            if(*rhs_cursor < *lhs_cursor) {
+                return false;
+            }
+        }
+        return false;
+    }
+    template <typename T>
+    inline bool operator<=(const stack<T, T *, true> &lhs, const stack<T, T *, true> &rhs) {
+        return not(rhs < lhs);
+    }
+    template <typename T>
+    inline bool operator>(const stack<T, T *, true> &lhs, const stack<T, T *, true> &rhs) {
+        return rhs < lhs;
+    }
+    template <typename T>
+    inline bool operator>=(const stack<T, T *, true> &lhs, const stack<T, T *, true> &rhs) {
+        return not(lhs < rhs);
     }
 }
 
