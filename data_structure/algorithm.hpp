@@ -63,6 +63,63 @@ namespace data_structure {
         return a < b ? a : b;
     }
 
+    template <typename OutputIterator, typename InputIterator>
+    OutputIterator copy(InputIterator begin, InputIterator end, OutputIterator result) {
+        for(; begin not_eq end; ++begin, static_cast<void>(++result)) {
+            *result = *begin;
+        }
+        return result;
+    }
+    template <bool Overlapping = false, typename T, typename U>
+    inline typename enable_if<is_trivially_copy_assignable<U>::value and
+            is_same<typename remove_reference<T>::type, U>::value, U *>::type
+    copy(T *begin, T *end, U *result) noexcept {
+        const auto size {static_cast<size_t>(end - begin)};
+        if(size > 0) {
+            if constexpr(Overlapping) {
+                ds::memory_move(result, begin, size * sizeof(U));
+            }else {
+                ds::memory_copy(result, begin, size * sizeof(U));
+            }
+        }
+        return result + size;
+    }
+    template <bool Overlapping = false, typename T, typename U>
+    inline typename enable_if<is_trivially_copy_assignable<U>::value and
+            is_same<typename remove_reference<T>::type, U>::value, wrap_iterator<U *>>::type
+    copy(wrap_iterator<T *> begin, wrap_iterator<T *> end, wrap_iterator<U *> result) noexcept {
+        return wrap_iterator<U *>(copy<Overlapping>(begin.base(), end.base(), result.base()));
+    }
+    template <typename ForwardIterator, typename InputIterator>
+    ForwardIterator uninitialized_copy(InputIterator begin, InputIterator end, ForwardIterator result) {
+        using value_type = typename iterator_traits<ForwardIterator>::value_type;
+        auto backup {result};
+        try {
+            for(; begin not_eq end; ++result) {
+                ::new (ds::address_of(*result)) value_type(*begin++);
+            }
+        }catch(...) {
+            if constexpr(not is_trivially_destructible<value_type>::value) {
+                for(; backup not_eq result; ++backup) {
+                    backup->~value_type();
+                }
+            }
+            throw;
+        }
+        return backup;
+    }
+    template <typename T, typename U>
+    inline typename enable_if<is_trivially_copy_assignable<U>::value and
+            is_same<typename remove_reference<T>::type, U>::value, U *>::type
+    uninitialized_copy(T *begin, T *end, U *result) noexcept {
+        return ds::copy(begin, end, result);
+    }
+    template <typename T, typename U>
+    inline typename enable_if<is_trivially_copy_assignable<U>::value and
+               is_same<typename remove_reference<T>::type, U>::value, U *>::type
+    uninitialized_copy(wrap_iterator<T *> begin, wrap_iterator<T *> end, wrap_iterator<U *> result) noexcept {
+        return ds::copy(begin, end, result);
+    }
     template <typename T, typename OutputIterator, typename SizeType>
     OutputIterator fill_n(OutputIterator first, SizeType size, const T &value) {
         while(size > 0) {
@@ -385,6 +442,47 @@ namespace data_structure {
             ++begin;
         }
         return slow;
+    }
+}
+
+namespace data_structure::__data_structure_auxiliary {
+    template <typename AllocTraits, typename ValueType, typename PointerRef,
+            bool Bidirectional = false, bool CircularQueue = false, typename Pointer>
+    static void construct_ranges(Pointer first, Pointer end_front, PointerRef cursor,
+            Pointer rhs_begin, Pointer rhs_end) {
+        static_assert(is_same<typename remove_reference<PointerRef>::type, Pointer>::value,
+                "The template argument Pointer is different from pointer");
+        if constexpr(is_trivially_copy_assignable<ValueType>::value) {
+            ds::copy<Pointer>(rhs_begin, rhs_end, cursor);
+        }else {
+            if constexpr(is_nothrow_move_constructible<ValueType>::value or (
+                    is_nothrow_copy_constructible<ValueType>::value and
+                    not is_move_constructible<ValueType>::value)) {
+                for(auto rhs_cursor {rhs_begin}; rhs_cursor not_eq rhs_end;) {
+                    AllocTraits::construct(cursor++, ds::move(*rhs_cursor++));
+                }
+            }else {
+                const auto backup {cursor};
+                try {
+                    for(; rhs_begin not_eq rhs_end; ++cursor) {
+                        AllocTraits::construct(cursor, *rhs_begin++);
+                    }
+                }catch(...) {
+                    if constexpr(Bidirectional) {
+                        AllocTraits::destroy(first, end_front);
+                        AllocTraits::destroy(backup, cursor);
+                    }else {
+                        AllocTraits::destroy(first, cursor);
+                    }
+                    if constexpr(CircularQueue) {
+                        AllocTraits::operator delete(first - 1);
+                    }else {
+                        AllocTraits::operator delete(first);
+                    }
+                    throw;
+                }
+            }
+        }
     }
 }
 
