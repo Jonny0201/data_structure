@@ -18,7 +18,7 @@ Appreciative only.
 
 ## Compiler Support ##
 
-Apple clang version 11.0.3 (clang-1103.0.32.62) with compile flag `-std=c++2a -fchar8_t`
+- Apple clang version 11.0.3 (clang-1103.0.32.62) with compile flag `-std=c++2a -fchar8_t`
 
 ## Contributors ##
 
