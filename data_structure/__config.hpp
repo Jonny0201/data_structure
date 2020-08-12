@@ -28,36 +28,6 @@ __DATA_STRUCTURE_START(data_structure macro)
 #define __DS data_structure
 __DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(configure for C++ 2a)
-#if __has_keyword(consteval)
-#define _DATA_STRUCTURE_HAS_CONSTEVAL
-#endif
-
-#if __has_keyword(constinit)
-#define _DATA_STRUCTURE_HAS_CONSTINIT
-#endif
-
-#if __has_keyword(char8_t)
-#define _DATA_STRUCTURE_HAS_CHAR8_T
-#endif
-
-#if __has_keyword(concept) && __has_keyword(requires)
-#define _DATA_STRUCTURE_HAS_CONCEPT
-#endif
-
-#if __has_keyword(co_await) && __has_keyword(co_return) && __has_keyword(co_yield)
-#define _DATA_STRUCTURE_HAS_COROUTINE
-#endif
-
-#if __has_keyword(reflexpr)
-#define _DATA_STRUCTURE_HAS_REFLECTION
-#endif
-
-#if __has_keyword(module) && __has_keyword(import)
-#define _DATA_STRUCTURE_HAS_MODULE
-#endif
-__DATA_STRUCTURE_END
-
 __DATA_STRUCTURE_START(namespace creation)
 namespace data_structure {
     template <typename T>
@@ -104,6 +74,9 @@ namespace data_structure {
     inline void *memory_reallocate(void *ptr, size_t size) noexcept {
         return std::realloc(ptr, size);
     }
+    const auto memory_initialize {[](void *start, size_t size) noexcept -> void * {
+        return __builtin_memset(start, 0, size);
+    }};
 }
 __DATA_STRUCTURE_END
 
