@@ -21,113 +21,108 @@
 #include "memory.hpp"
 #include "meta.hpp"
 
+__DATA_STRUCTURE_START(allocator for C++ standard)
 namespace data_structure {
     template <typename T>
-    class allocator final {
+    class allocator {
     public:
         using size_type = size_t;
         using difference_type = ptrdiff_t;
         using value_type = T;
-        using reference = typename add_lvalue_reference<value_type>::type;
-        using const_reference = typename add_const_reference<value_type>::type;
-        using rvalue_reference = typename add_rvalue_reference<value_type>::type;
-        using pointer = typename add_pointer<value_type>::type;
-        using const_pointer = typename add_const_pointer<value_type>::type;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<value_type>;
         using void_pointer = void *;
         using const_void_pointer = const void *;
-    private:
-        constexpr void destroy(pointer, true_type) noexcept {}
-        void destroy(pointer p, false_type) noexcept(is_nothrow_destructible<value_type>::value) {
-            p->~value_type();
-        }
-        constexpr void destroy(pointer, pointer, true_type) noexcept {}
-        void destroy(pointer begin, pointer end, false_type)
-        noexcept(is_nothrow_destructible<value_type>::value) {
-            for(auto cursor {begin}; cursor not_eq end; ++cursor) {
-                cursor->~value_type();
-            }
-        }
     public:
         constexpr allocator() noexcept = default;
         constexpr allocator(const allocator &) noexcept = default;
-        template <typename U>
-        explicit constexpr allocator(const allocator<U> &) noexcept {}
         constexpr allocator(allocator &&) noexcept = default;
         template <typename U>
-        explicit constexpr allocator(allocator<U> &&) noexcept {}
+        constexpr explicit allocator(const allocator<U> &) noexcept {}
+        template <typename U>
+        constexpr explicit allocator(allocator<U> &&) noexcept {}
         ~allocator() noexcept = default;
     public:
-        allocator &operator=(const allocator &) noexcept = default;
+        constexpr allocator &operator=(const allocator &) noexcept = default;
+        constexpr allocator &operator=(allocator &&) noexcept = default;
         template <typename U>
-        allocator &operator=(const allocator<U> &) const noexcept {
+        constexpr allocator &operator=(const allocator<U> &) const noexcept {
             return *this;
         }
-        allocator &operator=(allocator &&) noexcept = default;
         template <typename U>
-        allocator &operator=(allocator<U> &&) const noexcept {
+        constexpr allocator &operator=(allocator<U> &&) const noexcept {
             return *this;
         }
     public:
-        void *operator new (decltype(sizeof 0) n) {
+        void *operator new(size_t n) {
             return ::operator new (n);
         }
-        void *operator new (decltype(sizeof 0) n, dynamic) {
-            return ::operator new (n, std::nothrow);
+        void *operator new(size_t n, dynamic) noexcept {
+            return ::operator new(n, std::nothrow);
         }
-        void operator delete (void *p) noexcept {
-            ::operator delete (p);
+        void operator delete(void *p) noexcept {
+            ::operator delete(p, std::nothrow);
         }
     public:
         static pointer allocate(size_type n) {
-            return reinterpret_cast<pointer>(allocator::operator new (n));
+            return reinterpret_cast<pointer>(allocator::operator new(n));
         }
         static pointer allocate(size_type n, dynamic) noexcept {
-            return reinterpret_cast<pointer>(allocator::operator new (n, dynamic()));
+            return reinterpret_cast<pointer>(allocator::operator new(n, dynamic()));
         }
-        static void deallocate(pointer p, size_type n) noexcept {
-            allocator::operator delete (p);
+        static void deallocate(pointer p, size_type) noexcept {
+            allocator::operator delete(p);
         }
         template <typename ...Args>
         static pointer construct(pointer p, Args &&...args)
-                noexcept(is_nothrow_constructible<value_type, Args...>::value) {
-            return new (p) value_type(ds::forward<Args>(args)...);
+                noexcept(is_nothrow_constructible_v<value_type, Args...>) {
+            return ::new (p) value_type(ds::forward<Args>(args)...);
         }
         template <typename ...Args>
         [[deprecated]]
         static pointer construct(pointer begin, const_pointer end, Args &&...args)
-                noexcept(is_nothrow_constructible<value_type, Args...>::value) {
+                noexcept(is_nothrow_constructible_v<value_type, Args...>) {
             auto cursor {begin};
             while(cursor not_eq end) {
-                new (cursor++) value_type(forward<Args>(args)...);        //origin of causing undefined behavior
+                ::new (cursor++) value_type(forward<Args>(args)...);
             }
             return begin;
         }
-        constexpr static void destroy(pointer p) noexcept(is_nothrow_destructible<value_type>::value) {
-            allocator::destroy(p, typename conditional<
-                    is_trivially_destructible<value_type>::value, true_type, false_type>::result());
+        static constexpr void destroy(pointer p) noexcept(is_nothrow_destructible_v<value_type>) {
+            if constexpr(not is_trivially_destructible_v<value_type>) {
+                p->~value_type();
+            }
         }
-        constexpr static void destroy(pointer begin, const_pointer end)
-                noexcept(is_nothrow_destructible<value_type>::value) {
-            allocator::destroy(begin, end, typename conditional<
-                    is_trivially_destructible<value_type>::value, true_type, false_type>::result());
+        static constexpr void destroy(pointer begin, const_pointer end)
+                noexcept(is_nothrow_destructible_v<value_type>) {
+            if constexpr(not is_trivially_destructible_v<value_type>) {
+                while(begin not_eq end) {
+                    ++begin->~value_type();
+                }
+            }
         }
     };
 }
+__DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(stateless allocator of data structure library)
 namespace data_structure {
     template <typename T>
-    class allocator<type_holder<T>> final : private __memory_pool<> {
+    class allocator<type_holder<T>> final : private memory_pool<> {
     private:
-        using __base = __memory_pool;
+        using base = memory_pool;
     public:
-        using size_type = typename __base::size_type;
-        using difference_type = typename __base::difference_type;
+        using size_type = typename base::size_type;
+        using difference_type = typename base::difference_type;
         using value_type = T;
-        using reference = typename add_lvalue_reference<value_type>::type;
-        using const_reference = typename add_const_reference<value_type>::type;
-        using rvalue_reference = typename add_rvalue_reference<value_type>::type;
-        using pointer = typename add_pointer<value_type>::type;
-        using const_pointer = typename add_const_pointer<value_type>::type;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<value_type>;
         using void_pointer = void *;
         using const_void_pointer = const void *;
     public:
@@ -140,44 +135,27 @@ namespace data_structure {
         explicit constexpr allocator(allocator<U> &&) noexcept {}
         ~allocator() noexcept = default;
     public:
-        allocator &operator=(const allocator &) noexcept = default;
+        constexpr allocator &operator=(const allocator &) noexcept = default;
         template <typename U>
-        allocator &operator=(const allocator<U> &) const noexcept {
+        constexpr allocator &operator=(const allocator<type_holder<U>> &) const noexcept {
             return *this;
         }
-        allocator &operator=(allocator &&) noexcept = default;
+        constexpr allocator &operator=(allocator &&) noexcept = default;
         template <typename U>
-        allocator &operator=(allocator<U> &&) const noexcept {
+        constexpr allocator &operator=(allocator<type_holder<U>> &&) const noexcept {
             return *this;
         }
-    public:
-        void *operator new (size_type size) {
-            return __base::operator new (size);
-        }
-        void *operator new (size_type size, dynamic) noexcept {
-            return __base::operator new (size, std::nothrow);
-        }
-        void operator delete (void *p) noexcept {
-            __base::operator delete (p);
-        }
-        void operator delete (void *p, dynamic) noexcept {
-            __base::operator delete (p, std::nothrow);
-        }
-        void operator delete (void *p, size_type) noexcept {
-            __base::operator delete (p);
-        }
-        void operator delete(void *p, size_type, dynamic) noexcept {
-            __base::operator delete (p, std::nothrow);
-        }
+        using base::operator new;
+        using base::operator delete;
     public:
         static pointer allocate(size_type n) {
-            return reinterpret_cast<pointer>(__base::allocate(n));
+            return reinterpret_cast<pointer>(base::allocate(n));
         }
         static pointer allocate(size_type n, dynamic) noexcept {
-            return reinterpret_cast<pointer>(__base::allocate(n, dynamic()));
+            return reinterpret_cast<pointer>(base::allocate(n, dynamic()));
         }
         static void deallocate(pointer p, size_type n) noexcept {
-            __base::deallocate(p, n);
+            base::deallocate(p, n);
         }
         template <typename ...Args>
         static pointer construct(pointer p, Args &&...args)
@@ -190,17 +168,17 @@ namespace data_structure {
                 noexcept(is_nothrow_constructible<value_type, Args...>::value) {
             auto cursor {begin};
             while(cursor not_eq end) {
-                new (cursor++) value_type(forward<Args>(args)...);        //origin of causing undefined behavior
+                new (cursor++) value_type(forward<Args>(args)...);
             }
             return begin;
         }
         static constexpr void destroy(pointer p) noexcept {
-            if constexpr(not is_trivially_destructible<value_type>::value) {
+            if constexpr(not is_trivially_destructible_v<value_type>) {
                 p->~value_type();
             }
         }
         static constexpr void destroy(pointer begin, const_pointer end) noexcept {
-            if constexpr(not is_trivially_destructible<value_type>::value) {
+            if constexpr(not is_trivially_destructible_v<value_type>) {
                 while(begin not_eq end) {
                     begin++->~value_type();
                 }
@@ -208,5 +186,100 @@ namespace data_structure {
         }
     };
 }
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(allocator traits)
+namespace data_structure {
+    template <typename Allocator>
+    struct allocator_traits {
+    public:
+        using allocator_type = Allocator;
+        using size_type = typename allocator_type::size_type;
+        using difference_type = typename allocator_type::difference_type;
+        using value_type = typename allocator_type::value_type;
+        using reference = typename allocator_type::reference;
+        using const_reference = typename allocator_type::const_reference;
+        using rvalue_reference = typename allocator_type::rvalue_reference;
+        using pointer = typename allocator_type::pointer;
+        using const_pointer = typename allocator_type::const_pointer;
+        using void_pointer = typename allocator_type::void_pointer;
+        using const_void_pointer = typename allocator_type::const_void_pointer;
+    public:
+        static void *operator new(size_t n) noexcept(has_nothrow_new_operator_v<allocator_type>) {
+            return allocator_type::operator new(n);
+        }
+        static void operator delete(void *p) noexcept(has_nothrow_delete_operator_v<allocator_type>) {
+            return allocator_type::operator delete(p);
+        }
+        template <typename ...Args>
+        static void *operator new(size_t n, Args &&...args)
+                noexcept(noexcept(allocator_type::operator new (n, forward<Args>(args)...))) {
+            return allocator_type::operator new(n, forward<Args>(args)...);
+        }
+        template <typename ...Args>
+        static void operator delete(void *p, Args &&...args)
+                noexcept(noexcept(allocator_type::operator delete(p, forward<Args>(args)...))) {
+            return allocator_type::operator delete(p, forward<Args>(args)...);
+        }
+    public:
+        static constexpr pointer allocate(allocator_type &allocator, size_type n)
+                noexcept(noexcept(allocator.allocate(n))) {
+            return allocator.allocate(n);
+        }
+        static constexpr pointer allocate(size_type n) noexcept(noexcept(allocator_type::allocate(n))) {
+            return allocator_type::allocate(n);
+        }
+        static constexpr void deallocate(allocator_type &allocator, pointer begin, size_type n)
+                noexcept(noexcept(allocator.deallocate(begin, n))) {
+            allocator.deallocate(begin, n);
+        }
+        static constexpr void deallocate(pointer begin, size_type n)
+                noexcept(noexcept(allocator_type::deallocate(begin, n))) {
+            allocator_type::deallocate(begin, n);
+        }
+        static constexpr void construct(allocator_type &allocator, pointer obj, const_reference value)
+                noexcept(noexcept(allocator.construct(obj, value))) {
+            allocator.construct(obj, value);
+        }
+        static constexpr void construct(pointer obj, const_reference value)
+                noexcept(noexcept(allocator_type::construct(obj, value))) {
+            allocator_type::construct(obj, value);
+        }
+        static constexpr void construct(allocator_type &allocator, pointer obj, rvalue_reference value)
+                noexcept(noexcept(allocator.construct(obj, ds::move(value)))) {
+            allocator.construct(obj, ds::move(value));
+        }
+        static constexpr void construct(pointer obj, rvalue_reference value)
+                noexcept(noexcept(allocator_type::construct(obj, ds::move(value)))) {
+            allocator_type::construct(obj, ds::move(value));
+        }
+        static constexpr void construct(allocator_type &allocator, pointer obj)
+                noexcept(noexcept(allocator.construct(obj))) {
+            allocator.construct(obj);
+        }
+        static constexpr void construct(pointer obj) noexcept(noexcept(allocator_type::construct(obj))) {
+            allocator_type::construct(obj);
+        }
+        static constexpr void destroy(allocator_type &allocator, pointer obj)
+                noexcept(noexcept(allocator.destroy(obj))) {
+            allocator.destroy(obj);
+        }
+        static constexpr void destroy(pointer obj) noexcept(noexcept(allocator_type::destroy(obj))) {
+            allocator_type::destroy(obj);
+        }
+        static constexpr void destroy(allocator_type &allocator, pointer begin, pointer end)
+                noexcept(noexcept(allocator.destroy(begin, end))) {
+            allocator.destroy(begin, end);
+        }
+        static constexpr void destroy(pointer begin, pointer end)
+                noexcept(noexcept(allocator_type::destroy(begin, end))) {
+            allocator_type::destroy(begin, end);
+        }
+    };
+
+    /* TODO : refactor it by modules in C++ 20 */
+    #define allocator_traits_t(type, trait_name) typename ds::allocator_traits<type>::trait_name
+}
+__DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_ALLOCATOR_HPP
