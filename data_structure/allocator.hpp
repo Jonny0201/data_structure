@@ -152,7 +152,7 @@ namespace data_structure {
             return reinterpret_cast<pointer>(base::allocate(n));
         }
         static pointer allocate(size_type n, dynamic) noexcept {
-            return reinterpret_cast<pointer>(base::allocate(n, dynamic()));
+            return reinterpret_cast<pointer>(base::allocate<true>(n));
         }
         static void deallocate(pointer p, size_type n) noexcept {
             base::deallocate(p, n);
