@@ -17,6 +17,7 @@
 #ifndef DATA_STRUCTURE_DATA_STRUCTURE_HPP
 #define DATA_STRUCTURE_DATA_STRUCTURE_HPP
 
+#include "__config.hpp"
 #include "type_traits.hpp"
 #include "iterator.hpp"
 #include "allocator.hpp"
@@ -25,7 +26,6 @@
 #include "vector.hpp"
 #include "meta.hpp"
 #include "algorithm.hpp"
-#include "__config.hpp"
 #include "forward_list.hpp"
 #include "list.hpp"
 #include "array.hpp"
@@ -36,5 +36,6 @@
 #include "utility.hpp"
 #include "stack.hpp"
 #include "queue.hpp"
+#include "deque.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
