@@ -137,9 +137,9 @@ __DATA_STRUCTURE_END
 __DATA_STRUCTURE_START(detail)
 #define __DATA_STRUCTURE_TEST_ADDITION(template_parameters, operation, disable_type, name) \
     template <template_parameters> \
-    constexpr operation test_##name(int) noexcept; \
+    static constexpr operation test_##name(int) noexcept; \
     template <template_parameters> \
-    constexpr disable_type test_##name(...) noexcept
+    static constexpr disable_type test_##name(...) noexcept
 namespace data_structure::__data_structure_auxiliary {
     __DATA_STRUCTURE_TEST_ADDITION(typename T, T &, T, lvalue_reference);
     __DATA_STRUCTURE_TEST_ADDITION(typename T, T &&, T, rvalue_reference);
@@ -200,13 +200,13 @@ namespace data_structure::__data_structure_auxiliary {
     struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
 
     template <typename T>
-    true_type test_convertible(T) noexcept;
-    false_type test_convertible(...) noexcept;
+    static constexpr true_type test_convertible(T) noexcept;
+    static constexpr false_type test_convertible(...) noexcept;
 
     template <typename T>
-    void test_noexcept(T) noexcept;
+    static constexpr void test_noexcept(T) noexcept;
     template <typename T>
-    bool_constant<noexcept(test_noexcept<T>())> test_nothrow_convertible() noexcept;
+    static constexpr bool_constant<noexcept(test_noexcept<T>())> test_nothrow_convertible() noexcept;
 
     template <typename, typename = void>
     struct is_invocable_auxiliary : false_type {};
@@ -218,9 +218,9 @@ namespace data_structure::__data_structure_auxiliary {
 }
 #define __DATA_STRUCTURE_TEST_OPERATION(name, expression, ...) \
     template <__VA_ARGS__> \
-    constexpr select_second_t<decltype(expression), true_type> test_##name(int) noexcept; \
+    static constexpr select_second_t<decltype(expression), true_type> test_##name(int) noexcept; \
     template <__VA_ARGS__> \
-    constexpr false_type test_##name(...) noexcept
+    static constexpr false_type test_##name(...) noexcept
 namespace data_structure {
     namespace __data_structure_auxiliary {
         template <typename, typename T>
@@ -231,13 +231,13 @@ namespace data_structure {
         using select_second_t = typename select_second<T, U>::type;
 
         template <typename T>
-        T &&declval_auxiliary(int) noexcept;
+        static constexpr T &&declval_auxiliary(int) noexcept;
         template <typename T>
-        T declval_auxiliary(...) noexcept;
+        static constexpr T declval_auxiliary(...) noexcept;
     }
 
     template <typename T>
-    decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
+    constexpr decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
 
     namespace __data_structure_auxiliary {
         __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T &>().~T(), typename T);
@@ -494,7 +494,7 @@ namespace data_structure {
 
     template <typename T>
     struct add_const_reference {
-        using type = add_pointer_t<add_const_t<T>>;
+        using type = add_lvalue_reference_t<add_const_t<T>>;
     };
     template <typename T>
     using add_const_reference_t = typename add_const_reference<T>::type;
@@ -1794,53 +1794,46 @@ namespace data_structure {
         has_nothrow_member_access_by_pointer_dereference_operator<T>::value};
 
     template <typename T, typename ...Args>
-    struct has_new_operator_operator : decltype(__dsa::test_new_operator<T, Args...>(0)) {};
+    struct has_new_operator : decltype(__dsa::test_new_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_new_operator_operator_v {has_new_operator_operator<T, Args...>::value};
+    constexpr inline auto has_new_operator_v {has_new_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_new_operator_operator : decltype(__dsa::test_nothrow_new_operator<T, Args...>(0)) {};
+    struct has_nothrow_new_operator : decltype(__dsa::test_nothrow_new_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_nothrow_new_operator_operator_v {
-        has_nothrow_new_operator_operator<T, Args...>::value};
+    constexpr inline auto has_nothrow_new_operator_v {has_nothrow_new_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_new_array_operator_operator : decltype(__dsa::test_new_array_operator<T, Args...>(0)) {};
+    struct has_new_array_operator : decltype(__dsa::test_new_array_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_new_array_operator_operator_v {
-        has_new_array_operator_operator<T, Args...>::value};
+    constexpr inline auto has_new_array_operator_v {has_new_array_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_new_array_operator_operator :
-            decltype(__dsa::test_nothrow_new_array_operator<T, Args...>(0)) {};
+    struct has_nothrow_new_array_operator : decltype(__dsa::test_nothrow_new_array_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_nothrow_new_array_operator_operator_v {
-        has_nothrow_new_array_operator_operator<T, Args...>::value};
+    constexpr inline auto has_nothrow_new_array_operator_v {has_nothrow_new_array_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_delete_operator_operator : decltype(__dsa::test_delete_operator<T, Args...>(0)) {};
+    struct has_delete_operator : decltype(__dsa::test_delete_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_delete_operator_operator_v {has_delete_operator_operator<T, Args...>::value};
+    constexpr inline auto has_delete_operator_v {has_delete_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_delete_operator_operator :
-            decltype(__dsa::test_nothrow_delete_operator<T, Args...>(0)) {};
+    struct has_nothrow_delete_operator : decltype(__dsa::test_nothrow_delete_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_nothrow_delete_operator_operator_v {
-        has_nothrow_delete_operator_operator<T, Args...>::value};
+    constexpr inline auto has_nothrow_delete_operator_v {has_nothrow_delete_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_delete_array_operator_operator : decltype(__dsa::test_delete_array_operator<T, Args...>(0)) {};
+    struct has_delete_array_operator : decltype(__dsa::test_delete_array_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_delete_array_operator_operator_v {
-        has_delete_array_operator_operator<T, Args...>::value};
+    constexpr inline auto has_delete_array_operator_v {has_delete_array_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_delete_array_operator_operator :
+    struct has_nothrow_delete_array_operator :
             decltype(__dsa::test_nothrow_delete_array_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
-    constexpr inline auto has_nothrow_delete_array_operator_operator_v {
-        has_nothrow_delete_array_operator_operator<T, Args...>::value};
+    constexpr inline auto has_nothrow_delete_array_operator_v {
+        has_nothrow_delete_array_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
     struct has_function_call_operator : decltype(__dsa::test_function_call<T, Args...>(0)) {};
@@ -2002,44 +1995,45 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename U>
     struct unwrap<T, reference_wrapper<U>> : type_identity<reference_wrapper<U>> {};
     template <typename Fp, typename T, typename ...Args>
-    constexpr decltype((declval<T>().*declval<Fp>())(declval<Args>()...)) test_member_function(int) noexcept;
+    static constexpr decltype((declval<T>().*declval<Fp>())(declval<Args>()...))
+    test_member_function(int) noexcept;
     template <typename ...>
-    constexpr invoke_failure_tag test_member_function(...) noexcept;
+    static constexpr invoke_failure_tag test_member_function(...) noexcept;
     template <typename Fp, typename T, typename ...Args>
-    consteval inline bool is_nothrow_member_function() noexcept {
+    static consteval inline bool is_nothrow_member_function() noexcept {
         return noexcept((declval<T>().*declval<Fp>())(declval<Args>()...));
     }
     template <typename Fp, typename Ptr, typename ...Args>
-    constexpr decltype((declval<Ptr>()->*declval<Fp>())(declval<Args>()...))
+    static constexpr decltype((declval<Ptr>()->*declval<Fp>())(declval<Args>()...))
     test_member_function_deref(int) noexcept;
     template <typename ...>
-    constexpr invoke_failure_tag test_member_function_deref(...) noexcept;
+    static constexpr invoke_failure_tag test_member_function_deref(...) noexcept;
     template <typename Fp, typename Ptr, typename ...Args>
-    consteval inline bool is_nothrow_member_function_deref() noexcept {
+    static consteval inline bool is_nothrow_member_function_deref() noexcept {
         return noexcept((declval<Ptr>()->*declval<Fp>())(declval<Args>()...));
     }
     template <typename ObjP, typename T>
-    constexpr decltype(declval<T>().*declval<ObjP>()) test_member_object(int) noexcept;
+    static constexpr decltype(declval<T>().*declval<ObjP>()) test_member_object(int) noexcept;
     template <typename, typename>
-    constexpr invoke_failure_tag test_member_object(...) noexcept;
+    static constexpr invoke_failure_tag test_member_object(...) noexcept;
     template <typename ObjP, typename T>
-    consteval inline bool is_nothrow_member_object() noexcept {
+    static consteval inline bool is_nothrow_member_object() noexcept {
         return noexcept(declval<T>().*declval<ObjP>());
     }
     template <typename ObjP, typename Ptr>
-    constexpr decltype(declval<Ptr>->*declval<ObjP>()) test_member_object_deref(int) noexcept;
+    static constexpr decltype(declval<Ptr>->*declval<ObjP>()) test_member_object_deref(int) noexcept;
     template <typename, typename>
-    constexpr invoke_failure_tag test_member_object_deref(...) noexcept;
+    static constexpr invoke_failure_tag test_member_object_deref(...) noexcept;
     template <typename ObjP, typename Ptr>
-    consteval inline bool is_nothrow_member_object_deref() noexcept {
+    static consteval inline bool is_nothrow_member_object_deref() noexcept {
         return noexcept(declval<Ptr>()->*declval<ObjP>());
     }
     template <typename F, typename ...Args>
-    constexpr decltype(declval<F>()(declval<Args>()...)) test_function(int) noexcept;
+    static constexpr decltype(declval<F>()(declval<Args>()...)) test_function(int) noexcept;
     template <typename ...>
-    constexpr invoke_failure_tag test_function(...) noexcept;
+    static constexpr invoke_failure_tag test_function(...) noexcept;
     template <typename F, typename ...Args>
-    consteval inline bool is_nothrow_function() noexcept {
+    static consteval inline bool is_nothrow_function() noexcept {
         return noexcept(declval<F>()(declval<Args>()...));
     }
     template <typename, typename>
