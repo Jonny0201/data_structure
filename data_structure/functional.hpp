@@ -17,8 +17,653 @@
 #ifndef DATA_STRUCTURE_FUNCTIONAL_HPP
 #define DATA_STRUCTURE_FUNCTIONAL_HPP
 
-#include "type_traits.hpp"
+#include "utility.hpp"
 #include "memory.hpp"
+
+namespace data_structure {
+    template <typename T>
+    struct function_traits;
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...)> {
+        using returning_type = R;
+        using class_type = void;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...)> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile &> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile &&> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = false_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) noexcept> {
+        using returning_type = R;
+        using class_type = void;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = false_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile & noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = true_type;
+        using has_rvalue_reference_qualifer = false_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) volatile && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args...) const volatile && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = false_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = false_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) volatile && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = false_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = false_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename R, typename ...Args>
+    struct function_traits<R (Args..., ...) const volatile && noexcept> {
+        using returning_type = R;
+        using parameter_list = type_container<Args...>;
+        using is_c_style_variable_parameter = true_type;
+        using is_nothrow = true_type;
+        using has_const_qualifier = true_type;
+        using has_volatile_qualifier = true_type;
+        using has_cv_qualifer = true_type;
+        using has_lvalue_reference_qualifer = false_type;
+        using has_rvalue_reference_qualifer = true_type;
+        using has_reference_qualifier = true_type;
+    };
+    template <typename T, typename Class>
+    struct function_traits<T Class::*> : function_traits<T> {};
+    template <typename R, typename ...Args>
+    struct function_traits<R (*)(Args...)> : function_traits<R (Args...)> {};
+    template <typename R, typename ...Args>
+    struct function_traits<R (*)(Args..., ...)> : function_traits<R (Args..., ...)> {};
+    template <typename R, typename ...Args>
+    struct function_traits<R (*)(Args...) noexcept> : function_traits<R (Args...) noexcept> {};
+    template <typename R, typename ...Args>
+    struct function_traits<R (*)(Args..., ...) noexcept> : function_traits<R (Args..., ...) noexcept> {};
+
+    /* TODO : refactor it by modules in C++ 20 */
+    #define function_traits_t(type, trait_name) typename ds::function_traits<type>::trait_name
+    #define function_traits_v(type, trait_name) ds::function_traits<type>::trait_name()()
+}
 
 namespace data_structure {
     template <typename T>
@@ -28,7 +673,7 @@ namespace data_structure {
     private:
         type *pointer;
     public:
-        constexpr reference_wrapper(type &ref) noexcept : pointer {address_of(ref)} {}
+        constexpr reference_wrapper(type &ref) noexcept : pointer {ds::address_of(ref)} {}
         reference_wrapper(const reference_wrapper &rhs) noexcept = default;
         reference_wrapper(reference_wrapper &&) noexcept = delete;
     public:
@@ -38,7 +683,7 @@ namespace data_structure {
             return *this->pointer;
         }
         template <typename ...Args>
-        typename invoke_result<type &, Args...>::type operator()(Args &&...args) const {
+        invoke_result_t<type &, Args...> operator()(Args &&...args) const {
             return this->get()(forward<Args>(args)...);
         }
     public:
