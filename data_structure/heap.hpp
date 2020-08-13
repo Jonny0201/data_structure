@@ -17,23 +17,17 @@
 #ifndef DATA_STRUCTURE_HEAP_HPP
 #define DATA_STRUCTURE_HEAP_HPP
 
-#include "type_traits.hpp"
 #include "iterator.hpp"
-#include "functional.hpp"
+#include "utility.hpp"
 
 namespace data_structure {
     template <typename Iterator>
-    typename iterator_traits<Iterator>::difference_type distance(typename enable_if<
-            is_input_iterator<Iterator>::value and not is_random_access_iterator<Iterator>::value,
-            Iterator>::type begin, Iterator end);
+    inline iterator_traits_t(Iterator, difference_type)
+    distance(enable_if<not is_random_access_iterator_v<Iterator>, Iterator>, Iterator);
     template <typename Iterator>
-    typename iterator_traits<Iterator>::difference_type distance(
-            typename enable_if<is_random_access_iterator<Iterator>::value, Iterator>::type begin,
-            Iterator end);
-    ptrdiff_t distance(void *begin, void *end) noexcept;
-}
-
-namespace data_structure {
+    inline iterator_traits_t(Iterator, difference_type)
+    distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator>, Iterator)
+            noexcept(has_nothrow_minus_operator_v<Iterator>);
     template <typename RandomAccessIterator>
     inline void make_heap(RandomAccessIterator begin, RandomAccessIterator end)
             noexcept(is_nothrow_swappable<typename iterator_traits<RandomAccessIterator>::value_type>::value){
@@ -51,9 +45,9 @@ namespace data_structure {
             if(cmp(begin[child], begin[parent])) {
                 continue;
             }
-            auto value {move(begin[parent])};
+            auto value {ds::move(begin[parent])};
             do {
-                begin[parent] = move(begin[child]);
+                begin[parent] = ds::move(begin[child]);
                 parent = child;
                 if(++(child *= 2); child >= distance) {
                     break;
@@ -63,7 +57,7 @@ namespace data_structure {
                     ++child;
                 }
             }while(cmp(value, begin[child]));
-            begin[parent] = move(value);
+            begin[parent] = ds::move(value);
         }
     }
     template <typename RandomAccessIterator>
@@ -80,16 +74,16 @@ namespace data_structure {
         if(cmp(begin[child], begin[parent])) {
             return;
         }
-        auto value {move(begin[child])};
+        auto value {ds::move(begin[child])};
         do {
-            begin[child] = move(begin[parent]);
+            begin[child] = ds::move(begin[parent]);
             if(not parent) {
                 break;
             }
             child = parent;
             --parent /= 2;
         }while(cmp(begin[parent], value));
-        begin[parent] = move(value);
+        begin[parent] = ds::move(value);
     }
     template <typename RandomAccessIterator>
     inline void pop_heap(RandomAccessIterator begin, RandomAccessIterator end) {
@@ -107,21 +101,21 @@ namespace data_structure {
                 break;
         }
         --distance;
-        auto value {move(*--end)};
+        auto value {ds::move(*--end)};
         typename iterator_traits<RandomAccessIterator>::difference_type parent {0}, child {1};
         if(const auto right_child {child + 1};
                 right_child < distance and cmp(begin[child], begin[right_child])) {
             ++child;
         }
         while(true) {
-            begin[parent] = move(begin[child]);
+            begin[parent] = ds::move(begin[child]);
             parent = child;
             ++(child *= 2);
             if(child >= distance) {
                 break;
             }
         }
-        begin[parent] = move(value);
+        begin[parent] = ds::move(value);
     }
 }
 
