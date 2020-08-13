@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019] [Jonny Charlotte]
+    * Copyright © [2019 - 2020] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -23,24 +23,22 @@
 namespace data_structure {
     template <typename T>
     constexpr inline T *address_of(T &arg) noexcept {
-        return reinterpret_cast<T *>(
-                &const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
+        return reinterpret_cast<T *>(&const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
     }
 }
 
 namespace data_structure {
     template <size_t Align = 8, size_t MaxBytes = 128>
-    class __memory_pool {
+    class memory_pool {
     private:
-        enum {
-            align = Align,
-            max_bytes = MaxBytes,
-            free_list_extent = max_bytes / align
-        };
         union free_list_node {
             free_list_node *free_list_link;
             char client_data[0];        //client_data[1] for compatibility
         };
+    private:
+        constexpr static auto align {Align};
+        constexpr static auto max_bytes {Align};
+        constexpr static auto free_list_extent {max_bytes / align};
     public:
         using size_type = size_t;
         using difference_type = ptrdiff_t;
@@ -59,49 +57,49 @@ namespace data_structure {
         static size_type chunk_counter;
 #endif
     private:
-        constexpr static size_type round_up(size_type bytes) noexcept {
+        static constexpr size_type round_up(size_type bytes) noexcept {
             return (bytes + align - 1) & ~(align - 1);
         }
-        constexpr static size_type free_list_index(size_type bytes) noexcept {
+        static constexpr size_type free_list_index(size_type bytes) noexcept {
             return (bytes + align - 1) / align - 1;
         }
     private:
         static void *refill(size_type);
-        static void *refill(size_type, dynamic) noexcept;
         static char *chunk_alloc(size_type, size_type &);
-        static char *chunk_alloc(size_type, size_type &, dynamic) noexcept;
     protected:
-        void *operator new (size_type size) {
+        void *operator new(size_t size) {
             return ::operator new (size);
         }
-        void *operator new (size_type size, dynamic) noexcept {
+        void *operator new(size_t size, dynamic) noexcept {
             return ::operator new (size, std::nothrow);
         }
-        void operator delete (void *p) noexcept {
-            ::operator delete (p);
+        void operator delete(void *p) noexcept {
+            ::operator delete(p, std::nothrow);
         }
-        void operator delete (void *p, dynamic) noexcept {
-            ::operator delete (p, std::nothrow);
+        void operator delete(void *p, dynamic) noexcept {
+            ::operator delete(p, std::nothrow);
         }
-        void operator delete (void *p, size_type) noexcept {
-            ::operator delete (p);
+        void operator delete(void *p, size_type) noexcept {
+            ::operator delete(p, std::nothrow);
         }
         void operator delete(void *p, size_type, dynamic) noexcept {
-            ::operator delete (p, std::nothrow);
+            ::operator delete(p, std::nothrow);
         }
     public:
+        template <bool NoThrow = false>
         static void *allocate(size_type);
-        static void *allocate(size_type, dynamic) noexcept;
         static void deallocate(void *, size_type) noexcept;
-        //static void *reallocate(void *, size_type, size_type);
-        //static void *reallocate(void *, size_type, size_type, dynamic) noexcept;
+        /* TODO */
+        template <bool NoThrow = false>
+        static void *reallocate(void *, size_type, size_type) noexcept(NoThrow);
     public:
-        constexpr __memory_pool() noexcept = default;
-        constexpr __memory_pool(const __memory_pool &) noexcept = default;
-        constexpr __memory_pool(__memory_pool &&) noexcept = default;
+        constexpr memory_pool() noexcept = default;
+        constexpr memory_pool(const memory_pool &) noexcept = default;
+        constexpr memory_pool(memory_pool &&) noexcept = default;
+        ~memory_pool() noexcept = default;
     public:
-        __memory_pool &operator=(const __memory_pool &) noexcept = default;
-        __memory_pool &operator=(__memory_pool &&) noexcept = default;
+        constexpr memory_pool &operator=(const memory_pool &) noexcept = default;
+        constexpr memory_pool &operator=(memory_pool &&) noexcept = default;
         explicit constexpr operator bool() const noexcept {
             return this->start;
         }
@@ -111,22 +109,27 @@ namespace data_structure {
 #endif
     };
     template <size_t Align, size_t MaxBytes>
-    typename __memory_pool<Align, MaxBytes>::free_list_node *volatile
-    __memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
+    typename memory_pool<Align, MaxBytes>::free_list_node *volatile
+    memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
     template <size_t Align, size_t MaxBytes>
-    char *__memory_pool<Align, MaxBytes>::start {nullptr};
+    char *memory_pool<Align, MaxBytes>::start {nullptr};
     template <size_t Align, size_t MaxBytes>
-    char *__memory_pool<Align, MaxBytes>::end {nullptr};
+    char *memory_pool<Align, MaxBytes>::end {nullptr};
     template <size_t Align, size_t MaxBytes>
-    typename __memory_pool<Align, MaxBytes>::size_type
-    __memory_pool<Align, MaxBytes>::chunk_size {0};
+    typename memory_pool<Align, MaxBytes>::size_type
+    memory_pool<Align, MaxBytes>::chunk_size {0};
 }
 
 namespace data_structure {
     template <size_t Align, size_t MaxBytes>
-    void *__memory_pool<Align, MaxBytes>::allocate(size_type size) {
+    template <bool NoThrow>
+    void *memory_pool<Align, MaxBytes>::allocate(size_type size) {
         if(size > max_bytes) {
-            return operator new (size);
+            if constexpr(NoThrow) {
+                return memory_pool::operator new(size, {});
+            }else {
+                return memory_pool::operator new(size);
+            }
         }
         auto first {*(free_list + free_list_index(size))};
         if(not first) {
@@ -137,22 +140,9 @@ namespace data_structure {
         return result_node;
     }
     template <size_t Align, size_t MaxBytes>
-    void *__memory_pool<Align, MaxBytes>::allocate(size_type size, dynamic) noexcept {
+    void memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
         if(size > max_bytes) {
-            return operator new (size, {});
-        }
-        auto first {*(free_list + free_list_index(size))};
-        if(not first) {
-            return refill(round_up(size), {});
-        }
-        auto result_node {first};
-        first = result_node->free_list_link;
-        return result_node;
-    }
-    template <size_t Align, size_t MaxBytes>
-    void __memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
-        if(size > max_bytes) {
-            operator delete (p, size);
+            memory_pool::operator delete (p, size);
             return;
         }
         auto first {*(free_list + free_list_index(size))};
@@ -161,7 +151,7 @@ namespace data_structure {
         first = return_node;
     }
     template <size_t Align, size_t MaxBytes>
-    void *__memory_pool<Align, MaxBytes>::refill(size_type size) {
+    void *memory_pool<Align, MaxBytes>::refill(size_type size) {
         size_type nodes {16};
         auto chunk {chunk_alloc(size, nodes)};
         if(nodes == 1) {
@@ -170,9 +160,7 @@ namespace data_structure {
         auto current_node {reinterpret_cast<free_list_node *>(chunk + size)};
         *(free_list + free_list_index(size)) = current_node;
         while(--nodes > 1) {
-            auto next_node {
-                reinterpret_cast<free_list_node *>(reinterpret_cast<char *>(current_node) + size)
-            };
+            auto next_node {reinterpret_cast<free_list_node *>(reinterpret_cast<char *>(current_node) + size)};
             current_node->free_list_link = next_node;
             current_node = next_node;
         }
@@ -180,26 +168,7 @@ namespace data_structure {
         return chunk;
     }
     template <size_t Align, size_t MaxBytes>
-    void *__memory_pool<Align, MaxBytes>::refill(size_type size, dynamic) noexcept {
-        size_type nodes {16};
-        auto chunk {chunk_alloc(size, nodes, {})};
-        if(nodes == 1) {
-            return chunk;
-        }
-        auto current_node {reinterpret_cast<free_list_node *>(chunk + size)};
-        *(free_list + free_list_index(size)) = current_node;
-        while(--nodes > 2) {
-            auto next_node {
-                    reinterpret_cast<free_list_node *>(reinterpret_cast<char *>(current_node) + size)
-            };
-            current_node->free_list_link = next_node;
-            current_node = next_node;
-        }
-        current_node->free_list_link = nullptr;
-        return chunk;
-    }
-    template <size_t Align, size_t MaxBytes>
-    char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
+    char *memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
         auto total_bytes {size * nodes};
         auto bytes_left {static_cast<size_type>(end - start)};
         if(bytes_left >= total_bytes) {
@@ -219,14 +188,8 @@ namespace data_structure {
             new_first->free_list_link = first;
             first = new_first;
         }
-        start = reinterpret_cast<char *>(operator new (max_bytes, {}));
+        start = reinterpret_cast<char *>(memory_pool::operator new(max_bytes, {}));
         if(not start) {
-            start = reinterpret_cast<char *>(operator new (bytes_to_get, {}));
-            if(start) {
-                chunk_size += bytes_to_get;
-                end = start + chunk_size;
-                return chunk_alloc(size, nodes);
-            }
             for(auto i {size}; i <= max_bytes; i += align) {
                 auto first {*(free_list + free_list_index(i))};
                 if(first) {
@@ -236,49 +199,12 @@ namespace data_structure {
                     return chunk_alloc(size, nodes);
                 }
             }
-        }
-        chunk_size += bytes_to_get;
-        end = start + bytes_to_get;
-        return chunk_alloc(size, nodes);
-    }
-    template <size_t Align, size_t MaxBytes>
-    char *__memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes, dynamic)
-            noexcept {
-        auto total_bytes {size * nodes};
-        auto bytes_left {static_cast<size_type>(end - start)};
-        if(bytes_left >= total_bytes) {
-            auto result {start};
-            start += total_bytes;
-            return result;
-        }else if(bytes_left >= size) {
-            nodes = bytes_left / size;
-            auto result {start};
-            start += nodes * size;
-            return result;
-        }
-        auto bytes_to_get {2 * total_bytes + round_up(chunk_size >> 4)};
-        if(bytes_left > 0) {
-            auto first {*(free_list + free_list_index(bytes_left))};
-            auto new_first {reinterpret_cast<free_list_node *>(start)};
-            new_first->free_list_link = first;
-            first = new_first;
-        }
-        start = reinterpret_cast<char *>(operator new (max_bytes, {}));
-        if(not start) {
-            start = reinterpret_cast<char *>(operator new (bytes_to_get, {}));
+            end = nullptr;
+            start = reinterpret_cast<char *>(memory_pool::operator new(bytes_to_get));
             if(start) {
                 chunk_size += bytes_to_get;
                 end = start + chunk_size;
                 return chunk_alloc(size, nodes);
-            }
-            for(auto i {size}; i <= max_bytes; i += align) {
-                auto first {*(free_list + free_list_index(i))};
-                if(first) {
-                    start = reinterpret_cast<char *>(first);
-                    first = first->free_list_link;
-                    end = start + i;
-                    return chunk_alloc(size, nodes);
-                }
             }
         }
         chunk_size += bytes_to_get;
