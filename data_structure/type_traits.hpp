@@ -239,9 +239,15 @@ namespace data_structure {
     template <typename T>
     constexpr decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
 
+    template <typename> struct is_nothrow_move_constructible;
+    template <typename> struct is_nothrow_move_assignable;
+    template <typename T>
+    void swap(T &lhs, T &rhs) noexcept(is_nothrow_move_constructible<T>::value and
+            is_nothrow_move_assignable<T>::value);
+
     namespace __data_structure_auxiliary {
         __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T &>().~T(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(swappable, swap(declval<LHS>(), declval<RHS>()),
+        __DATA_STRUCTURE_TEST_OPERATION(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
                 typename LHS, typename RHS);
         __DATA_STRUCTURE_TEST_OPERATION(complete, sizeof(T) > 0, typename T);
         __DATA_STRUCTURE_TEST_OPERATION(list_constructible, T {declval<Args>()...},
@@ -343,7 +349,7 @@ namespace data_structure {
 
         __DATA_STRUCTURE_TEST_OPERATION(nothrow_destructible, noexcept(declval<T &>().~T()), typename T);
         __DATA_STRUCTURE_TEST_OPERATION(nothrow_swappable,
-                noexcept(swap(declval<LHS>(), declval<RHS>()) and swap(declval<RHS>(), declval<LHS>())),
+                noexcept(ds::swap(declval<LHS>(), declval<RHS>()) and ds::swap(declval<RHS>(), declval<LHS>())),
                 typename LHS, typename RHS);
         __DATA_STRUCTURE_TEST_OPERATION(nothrow_list_constructible, noexcept(T {declval<Args>()...}),
                 typename T, typename ...Args);
@@ -1244,7 +1250,7 @@ namespace data_structure {
     constexpr inline auto is_nothrow_destructible_v {is_nothrow_destructible<T>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct is_nothrow_swappable_with : conditional_t<is_swappable_v<LHS, RHS>,
+    struct is_nothrow_swappable_with : conditional_t<is_swappable_with_v<LHS, RHS>,
             decltype(__dsa::test_nothrow_swappable<LHS, RHS>(0)), false_type> {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto is_nothrow_swappable_with_v {is_nothrow_swappable_with<LHS, RHS>::value};
@@ -1304,6 +1310,12 @@ namespace data_structure {
             is_trivially_destructible_v<T> and is_empty_v<T>, true_type, false_type> {};
     template <typename T>
     constexpr inline auto is_stateless_v {is_stateless<T>::value};
+
+    template <typename Base, typename Derived>
+    struct is_virtual_base_of : bool_constant<is_base_of_v<Base, Derived> and
+            is_castable_v<Derived,  Base> and not is_castable_v<Base, Derived>> {};
+    template <typename Base, typename Derived>
+    constexpr inline auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
 }
 __DATA_STRUCTURE_END
 
@@ -1910,6 +1922,11 @@ namespace data_structure {
     };
     template <typename Original, typename To>
     using copy_const_reference_t = typename copy_const_reference<Original, To>::type;
+
+    template <typename Original, typename To>
+    struct copy_cvref {
+        using type = copy_cv_t<Original, copy_reference_t<Original, To>>;
+    };
 }
 __DATA_STRUCTURE_END
 
@@ -2093,6 +2110,173 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename F, typename ...Args>
     struct result_of_nothrow_auxiliary<false, false, F, Args...> :
             bool_constant<is_nothrow_function<F, Args...>()> {};
+
+    struct aligned_storage_double_helper {
+        long double _1;
+    };
+    struct aligned_storage_double4_helper {
+        double _1[4];
+    };
+    using aligned_storage_helper_types = type_container<unsigned char, unsigned short, unsigned int,
+            unsigned long, unsigned long long, double, long double, aligned_storage_double_helper,
+            aligned_storage_double4_helper, int *>;
+    template <size_t Align>
+    struct alignas(Align) overaligned {};
+    template <typename, size_t>
+    struct aligned_storage_find_suitable_type;
+    template <size_t Align, typename T, typename ...Args>
+    struct aligned_storage_find_suitable_type<type_container<T, Args...>, Align> {
+        using type = conditional_t<Align == alignof(T), T,
+                typename aligned_storage_find_suitable_type<type_container<Args...>, Align>::type>;
+    };
+    template <size_t Align>
+    struct aligned_storage_find_suitable_type<type_container<>, Align> {
+        using type = overaligned<Align>;
+    };
+    template <size_t Length, size_t Align1, size_t Align2>
+    struct aligned_storage_selector {
+    private:
+        constexpr static auto min {Align1 < Align2 ? Align1 : Align2};
+        constexpr static auto max {Align1 < Align2 ? Align2 : Align1};
+    public:
+        constexpr static auto value {Length < max ? min : max};
+    };
+    template <typename> struct alignment_of;
+    template <typename, size_t>
+    struct aligned_storage_find_max_align;
+    template <size_t Length, typename T>
+    struct aligned_storage_find_max_align<type_container<T>, Length> : alignment_of<T> {};
+    template <size_t Length, typename T, typename ...Args>
+    struct aligned_storage_find_max_align<type_container<T, Args...>, Length> : constant<size_t,
+            aligned_storage_selector<Length, alignof(T),
+                    aligned_storage_find_max_align<type_container<Args...>, Length>::value>::value> {};
+
+    template <typename, typename ...>
+    struct aligned_union_find_max_align;
+    template <typename T>
+    struct aligned_union_find_max_align<T> : alignment_of<T> {};
+    template <typename T, typename U>
+    struct aligned_union_find_max_align<T, U> :
+            conditional<alignof(T) < alignof(U), alignment_of<U>, alignment_of<T>> {};
+    template <typename T, typename U, typename ...Args>
+    struct aligned_union_find_max_align<T, U, Args...> : conditional_t<alignof(T) < alignof(U),
+            aligned_union_find_max_align<U, Args...>, aligned_union_find_max_align<T, Args...>> {};
+    template <size_t, size_t ...>
+    struct aligned_union_find_max_number;
+    template <size_t N>
+    struct aligned_union_find_max_number<N> : constant<size_t, N> {};
+    template <size_t N, size_t M>
+    struct aligned_union_find_max_number<N, M> :
+            conditional_t<N < M, constant<size_t, M>, constant<size_t, M>> {};
+    template <size_t N, size_t M, size_t ...Numbers>
+    struct aligned_union_find_max_number<N, M, Numbers...> :
+            aligned_union_find_max_number<aligned_union_find_max_number<N, M>::value, Numbers...> {};
+
+    union type_with_alignment_max_alignment {
+        char _1;
+        short _2;
+        int _3;
+        long _4;
+        long long _5;
+        __int128_t _6;
+        float _7;
+        double _8;
+        long double _9;
+    };
+    using type_with_alignment_helper_types = type_container<
+            char, short, int, long, long long, double, long double>;
+    template <typename, size_t>
+    struct type_with_alignment_find_suitable_type;
+    template <size_t Align>
+    struct type_with_alignment_find_suitable_type<type_container<>, Align> {
+        using type = type_with_alignment_max_alignment;
+    };
+    template <size_t Align, typename T, typename ...Args>
+    struct type_with_alignment_find_suitable_type<type_container<T, Args...>, Align> {
+        using type = conditional_t<Align < alignof(T), T,
+                typename type_with_alignment_find_suitable_type<type_container<Args...>, Align>::type>;
+    };
+
+    template <typename T, typename U>
+    using common_ref_auxiliary = decltype(make_true<T, U> ? declval<T (&)()>()() : declval<U (&)()>()());
+    template <typename T, typename U, typename = void>
+    struct common_ref_impl {};
+    template <typename T, typename U>
+    using common_ref = typename common_ref_impl<T, U>::type;
+    template <typename T, typename U>
+    struct common_ref_impl<T &, U &, void_t<common_ref_auxiliary<
+            add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>>> {
+        using type = common_ref_auxiliary<
+                add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>;
+    };
+    template <typename T, typename U>
+    using common_ref_make_rvalue_ref = add_rvalue_reference_t<remove_reference_t<common_ref<T &, U &>>>;
+    template <typename T, typename U>
+    struct common_ref_impl<T &&, U &&, enable_if_t<is_convertible_v<T &&, common_ref_make_rvalue_ref<T, U>>
+            and is_convertible_v<U &&, common_ref_make_rvalue_ref<T, U>>>> {
+        using type = common_ref_make_rvalue_ref<T, U>;
+    };
+    template <typename T, typename U>
+    using common_ref_for_const_ref = common_ref<const T &, U &>;
+    template <typename T, typename U>
+    struct common_ref_impl<T &&, U &, enable_if_t<is_convertible_v<T &&, common_ref_for_const_ref<T, U>>>> {
+        using type = common_ref_for_const_ref<T, U>;
+    };
+    template <typename T, typename U>
+    struct common_ref_impl<T &, U &&> : common_ref_impl<U &&, T &> {};
+    template <typename T, typename U, template <typename> typename TQual, template <typename> typename UQual>
+    struct basic_common_reference {};
+    template <typename T>
+    struct copy_ref_for_class_template {
+        template <typename U>
+        using type = copy_cv_t<T, U>;
+    };
+    template <typename T>
+    struct copy_ref_for_class_template<T &> {
+        template <typename U>
+        using type = add_lvalue_reference_t<copy_cv_t<T, U>>;
+    };
+    template <typename T>
+    struct copy_ref_for_class_template<T &&> {
+        template <typename U>
+        using type = add_rvalue_reference_t<copy_cv_t<T, U>>;
+    };
+    template <typename T, typename U>
+    using basic_common_ref = typename basic_common_reference<remove_cvref_t<T>, remove_cvref_t<U>,
+            copy_ref_for_class_template<T>::template type, copy_ref_for_class_template<U>::template type>::type;
+    template <typename T, typename U, int Bullet = 1, typename = void>
+    struct common_reference_auxiliary : common_reference_auxiliary<T, U, Bullet + 1> {};
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T &, U &, 1, void_t<common_ref<T &, U &>>> {
+        using type = common_ref<T &, U &>;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T &&, U &&, 1, void_t<common_ref<T &, U &>>> {
+        using type = common_ref<T &&, U &&>;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T &, U &&, 1, void_t<common_ref<T &, U &&>>> {
+        using type = common_ref<T &, U &&>;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T &&, U &, 1, void_t<common_ref<T &&, U &>>> {
+        using type = common_ref<T &&, U &>;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T, U, 2, void_t<basic_common_ref<T, U>>> {
+        using type = basic_common_ref<T, U>;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T, U, 3, void_t<common_ref_auxiliary<T, U>>> {
+        using type = common_ref_auxiliary<T, U>;
+    };
+    template <typename ...> struct common_type;
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T, U, 4, void_t<typename common_type<T, U>::type>> {
+        using type = typename common_type<T, U>::type;
+    };
+    template <typename T, typename U>
+    struct common_reference_auxiliary<T, U, 5, void> {};
 }
 __DATA_STRUCTURE_END
 
@@ -2155,6 +2339,19 @@ namespace data_structure {
     template <typename T, typename U, typename V, typename ...Ts>
     struct common_type<T, U, V, Ts...> : common_type<common_type_t<T, U>, V, Ts...> {};
 
+    template <typename ...>
+    struct common_reference {};
+    template <typename ...Ts>
+    using common_reference_t = typename common_reference<Ts...>::type;
+    template <typename T>
+    struct common_reference<T> {
+        using type = T;
+    };
+    template <typename T, typename U>
+    struct common_reference<T, U> : __dsa::common_reference_auxiliary<T, U> {};
+    template <typename T, typename U, typename ...Ts>
+    struct common_reference<T, U, Ts...> : common_reference<common_reference_t<T, U>, Ts...> {};
+
     template <typename T>
     struct integral_promotion {
         using type = copy_cv_t<T, typename __dsa::integral_promotion_auxiliary<remove_cv_t<T>>::type>;
@@ -2207,6 +2404,38 @@ namespace data_structure {
     struct result_of<F (Args...)> : invoke_result<F, Args...> {};
     template <typename F, typename ...Args>
     using result_of_t = typename result_of<F, Args...>::type;
+
+    template <size_t Length, size_t Align =
+            __dsa::aligned_storage_find_max_align<__dsa::aligned_storage_helper_types, Length>::value>
+    struct aligned_storage {
+    private:
+        using aligner = typename __dsa::aligned_storage_find_suitable_type<
+                __dsa::aligned_storage_helper_types, Align>::type;
+    public:
+        union type {
+             aligner align;
+             unsigned char data[(Length + Align - 1) / Align * Align];
+        };
+    };
+    template <size_t Length, size_t Align =
+            __dsa::aligned_storage_find_max_align<__dsa::aligned_storage_helper_types, Length>::value>
+    using aligned_storage_t = typename aligned_storage<Length, Align>::type;
+
+    template <size_t Length, typename ...Ts>
+    struct aligned_union {
+        struct type {
+            alignas(__dsa::aligned_union_find_max_align<Ts...>::value)
+            char data[__dsa::aligned_union_find_max_number<Length, sizeof...(Ts)>::value];
+        };
+    };
+    template <size_t Length, typename ...Ts>
+    using aligned_union_t = typename aligned_union<Length, Ts...>::type;
+
+    template <size_t Align>
+    struct type_with_alignment :
+            __dsa::type_with_alignment_find_suitable_type<__dsa::type_with_alignment_helper_types, Align> {};
+    template <size_t Align>
+    using type_with_alignment_t = typename type_with_alignment<Align>::type;
 }
 __DATA_STRUCTURE_END
 
