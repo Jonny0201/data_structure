@@ -37,6 +37,8 @@ Jonny
 - list
 - static_forward_list (Adaptor)
 - stack (Adaptor)
+- queue (Adaptor)
+- deque
 
 ### Algorithms ###
 
@@ -53,19 +55,26 @@ Jonny
 - quick_sort
 
 ## TODOs ##
-Tentatively
+
+### Array ###
+- bits
+- matrix
+- static_matrix
+- string
+- generalized_list
+
+### List ###
 - circular_forward_list
 - uncircular_list
 - static_list
-- matrix
-- string
-- heap_string
-- generalized_list
-- queue (Adaptor)
-- deque
-- dictionary (Adaptor)
 - skip_list
-- tree (irregular_skip_list)
+
+### Hash ###
+- hash_vector
+- hash_list
+
+### Tree ###
+- tree
 - binary_tree
 - leftist_tree (height-biased)
 - huffman_tree (weight-biased)
@@ -76,7 +85,12 @@ Tentatively
 - red_black_tree (rb_tree)
 - splay_tree
 - b_tree
+
+### Graph ###
 - graph [matrix, list, array]
+
+### Other ###
+- dictionary (Adaptor)
 
 ## Release Note ##
 
