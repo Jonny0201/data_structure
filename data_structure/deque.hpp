@@ -38,8 +38,8 @@ namespace data_structure {
         using rvalue_reference = allocator_traits_t(allocator_type, rvalue_reference);
         using pointer = allocator_traits_t(allocator_type, pointer);
         using const_pointer = allocator_traits_t(allocator_type, const_pointer);
-        using iterator = deque_iterator<value_type, map_pointer, deque::buffer_size, false>;
-        using const_iterator = deque_iterator<value_type, map_pointer, deque::buffer_size, true>;
+        using iterator = __dsa::deque_iterator<value_type, map_pointer, deque::buffer_size, false>;
+        using const_iterator = __dsa::deque_iterator<value_type, map_pointer, deque::buffer_size, true>;
         using reverse_iterator = reverse_iterator<iterator>;
         using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     private:
