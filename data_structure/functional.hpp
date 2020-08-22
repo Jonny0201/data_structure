@@ -36,6 +36,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...)> {
@@ -49,6 +50,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const> {
@@ -62,6 +64,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile> {
@@ -75,6 +78,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile> {
@@ -88,6 +92,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const> {
@@ -101,6 +106,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile> {
@@ -114,6 +120,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile> {
@@ -127,6 +134,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) &> {
@@ -140,6 +148,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const &> {
@@ -153,6 +162,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile &> {
@@ -166,6 +176,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile &> {
@@ -179,6 +190,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) &> {
@@ -192,6 +204,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const &> {
@@ -205,6 +218,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile &> {
@@ -218,6 +232,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile &> {
@@ -231,6 +246,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) &&> {
@@ -244,6 +260,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const &&> {
@@ -257,6 +274,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile &&> {
@@ -270,6 +288,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile &&> {
@@ -283,6 +302,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) &&> {
@@ -296,6 +316,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const &&> {
@@ -309,6 +330,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile &&> {
@@ -322,6 +344,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile &&> {
@@ -335,6 +358,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) noexcept> {
@@ -349,6 +373,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) noexcept> {
@@ -362,6 +387,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const noexcept> {
@@ -375,6 +401,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile noexcept> {
@@ -388,6 +415,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile noexcept> {
@@ -401,6 +429,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const noexcept> {
@@ -414,6 +443,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile noexcept> {
@@ -427,6 +457,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile noexcept> {
@@ -440,6 +471,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = false_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) & noexcept> {
@@ -453,6 +485,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const & noexcept> {
@@ -466,6 +499,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile & noexcept> {
@@ -479,6 +513,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile & noexcept> {
@@ -492,6 +527,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) & noexcept> {
@@ -505,6 +541,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const & noexcept> {
@@ -518,6 +555,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile & noexcept> {
@@ -531,6 +569,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile & noexcept> {
@@ -544,6 +583,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = true_type;
         using has_rvalue_reference_qualifer = false_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) && noexcept> {
@@ -557,6 +597,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const && noexcept> {
@@ -570,6 +611,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) volatile && noexcept> {
@@ -583,6 +625,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args...) const volatile && noexcept> {
@@ -596,6 +639,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) && noexcept> {
@@ -609,6 +653,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const && noexcept> {
@@ -622,6 +667,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) volatile && noexcept> {
@@ -635,6 +681,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename R, typename ...Args>
     struct function_traits<R (Args..., ...) const volatile && noexcept> {
@@ -648,6 +695,7 @@ namespace data_structure {
         using has_lvalue_reference_qualifer = false_type;
         using has_rvalue_reference_qualifer = true_type;
         using has_reference_qualifier = true_type;
+        constexpr static auto parameter_count {sizeof...(Args)};
     };
     template <typename T, typename Class>
     struct function_traits<T Class::*> : function_traits<T> {};
