@@ -24,14 +24,22 @@ namespace data_structure {
     constexpr inline typename remove_reference<T>::type &&move(T &&value) noexcept {
         return static_cast<typename remove_reference<T>::type &&>(value);
     }
+    template <bool Conditional, typename T>
+    constexpr inline conditional_t<Conditional, typename remove_reference<T>::type &&, const T &>
+    move_if(T &value) noexcept {
+        return ds::move(value);
+    }
     template <typename T>
     constexpr inline T &&forward(typename remove_reference<T>::type &value) noexcept {
         return static_cast<T &&>(value);
     }
     template <typename T>
     constexpr inline T &&forward(typename remove_reference<T>::type &&value) noexcept {
-        static_assert(is_lvalue_reference<T>::value, "Cannot forward an rvalue as an lvalue!");
+        static_assert(is_lvalue_reference_v<T>, "Cannot forward an rvalue as an lvalue!");
         return static_cast<T &&>(value);
+    }
+    constexpr inline bool is_constant_evaluated() noexcept {
+        return __builtin_is_constant_evaluated();
     }
 }
 
