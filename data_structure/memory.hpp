@@ -142,7 +142,7 @@ namespace data_structure {
     template <size_t Align, size_t MaxBytes>
     void memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
         if(size > max_bytes) {
-            memory_pool::operator delete (p, size);
+            memory_pool::operator delete(p, size);
             return;
         }
         auto first {*(free_list + free_list_index(size))};
@@ -188,7 +188,7 @@ namespace data_structure {
             new_first->free_list_link = first;
             first = new_first;
         }
-        start = reinterpret_cast<char *>(memory_pool::operator new(max_bytes, {}));
+        start = reinterpret_cast<char *>(memory_pool::operator new(bytes_to_get, {}));
         if(not start) {
             for(auto i {size}; i <= max_bytes; i += align) {
                 auto first {*(free_list + free_list_index(i))};
