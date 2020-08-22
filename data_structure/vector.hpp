@@ -27,21 +27,21 @@ namespace data_structure::__data_structure_auxiliary {
     class vector_base {
     public:
         using allocator_type = Allocator;
-        using size_type = typename allocator_traits<allocator_type>::size_type;
-        using difference_type = typename allocator_traits<allocator_type>::difference_type;
+        using size_type = allocator_traits_t(allocator_type, size_type);
+        using difference_type = allocator_traits_t(allocator_type, difference_type);
         using value_type = T;
-        using reference = typename allocator_traits<allocator_type>::reference;
-        using const_reference = typename allocator_traits<allocator_type>::const_reference;
-        using rvalue_reference = typename allocator_traits<allocator_type>::rvalue_reference;
-        using pointer = typename allocator_traits<allocator_type>::pointer;
-        using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
+        using reference = allocator_traits_t(allocator_type, reference);
+        using const_reference = allocator_traits_t(allocator_type, const_reference);
+        using rvalue_reference = allocator_traits_t(allocator_type, rvalue_reference);
+        using pointer = allocator_traits_t(allocator_type, pointer);
+        using const_pointer = allocator_traits_t(allocator_type, const_pointer);
         using iterator = wrap_iterator<pointer>;
         using const_iterator = wrap_iterator<const_pointer>;
-        using reverse_iterator = ds::reverse_iterator<iterator>;
+        using reverse_iterator = reverse_iterator<iterator>;
         using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     private:
         using alloc_traits = allocator_traits<allocator_type>;
-        static_assert(is_same<value_type, typename alloc_traits::value_type>::value,
+        static_assert(is_same_v<value_type, typename alloc_traits::value_type>,
                 "The Allocator::value_type must be the same as template argument NodeType!");
     protected:
         pointer first;
@@ -134,7 +134,7 @@ namespace data_structure::__data_structure_auxiliary {
         [[nodiscard]]
         constexpr size_type max_size() const noexcept;
         [[nodiscard]]
-        size_type surplus() const noexcept;
+        size_type spare() const noexcept;
         void reserve(size_type);
         void shrink_to_fit();
         [[nodiscard]]
@@ -668,7 +668,7 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::size_type
-    vector_base<T, Allocator>::surplus() const noexcept {
+    vector_base<T, Allocator>::spare() const noexcept {
         return this->last - this->cursor;
     }
     template <typename T, typename Allocator>
@@ -871,7 +871,7 @@ namespace data_structure::__data_structure_auxiliary {
         }else if(pos > old_size) {
             return iterator(this->cursor);
         }
-        if(size > this->surplus()) {
+        if(size > this->spare()) {
             this->reallocate(size);
         }
         auto construct_cursor {this->cursor + (size - 1)};
@@ -1075,7 +1075,7 @@ namespace data_structure::__data_structure_auxiliary {
             return iterator(this->cursor);
         }
         const auto old_size {this->size()};
-        if(size > this->surplus()) {
+        if(size > this->spare()) {
             this->reallocate(size);
         }
         if(pos == old_size) {
@@ -1300,7 +1300,7 @@ namespace data_structure::__data_structure_auxiliary {
 namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator = allocator<type_holder<T>>>
     class vector_char : public vector_base<T, Allocator> {
-        static_assert(is_char_type<T>::value, "The first template parameter must be character type!");
+        static_assert(is_character_v<T>, "The first template parameter must be character type!");
     private:
         using base = vector_base<T, Allocator>;
         using alloc_traits = allocator_traits<typename base::allocator_type>;
@@ -1709,7 +1709,7 @@ namespace data_structure::__data_structure_auxiliary {
     }
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(value_type ch, size_type size) {
-        if(size > this->surplus()) {
+        if(size > this->spare()) {
             this->reallocate(size);
         }
         while(size--) {
@@ -1719,7 +1719,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(const_pointer str, difference_type start_pos, size_type size) {
         const auto begin {str + start_pos};
-        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->surplus()) {
+        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->spare()) {
             this->reallocate(size);
         }
         while(size--) {
@@ -1729,7 +1729,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     void vector_char<T, Allocator>::append(const vector_char &str, difference_type start_pos, size_type size) {
         const auto begin {str.cbegin() + start_pos};
-        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->surplus()) {
+        if((size == vector_char::no_position ? ds::string_length(str) : size) > this->spare()) {
             this->reallocate(size);
         }
         while(size--) {
@@ -2267,13 +2267,11 @@ namespace data_structure {
         using __dsa::vector_char<char32_t, Allocator>::vector_char;
     };
 
-#ifdef _DATA_STRUCTURE_HAS_CHAR8_T
     template <typename Allocator>
     class vector<char8_t, Allocator> final : public __dsa::vector_char<char8_t, Allocator> {
     public:
         using __dsa::vector_char<char8_t, Allocator>::vector_char;
     };
-#endif
 }
 
 #endif //DATA_STRUCTURE_VECTOR_HPP
