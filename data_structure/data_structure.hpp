@@ -37,5 +37,6 @@
 #include "stack.hpp"
 #include "queue.hpp"
 #include "deque.hpp"
+#include "skip_list.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP
