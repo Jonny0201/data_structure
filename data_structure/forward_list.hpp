@@ -25,22 +25,20 @@ namespace data_structure {
     class forward_list final {
     public:
         using allocator_type = Allocator;
-        using size_type = typename allocator_traits<allocator_type>::size_type;
-        using difference_type = typename allocator_traits<allocator_type>::difference_type;
+        using size_type = allocator_traits_t(allocator_type, size_type);
+        using difference_type = allocator_traits_t(allocator_type, difference_type);
         using value_type = T;
-        using reference = typename allocator_traits<allocator_type>::reference;
-        using const_reference = typename allocator_traits<allocator_type>::const_reference;
-        using rvalue_reference = typename allocator_traits<allocator_type>::rvalue_reference;
-        using pointer = typename allocator_traits<allocator_type>::pointer;
-        using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
-        using iterator = forward_list_iterator<__dsa::forward_list_node<value_type>, false>;
-        using const_iterator = forward_list_iterator<__dsa::forward_list_node<value_type>, true>;
+        using reference = allocator_traits_t(allocator_type, reference);
+        using const_reference = allocator_traits_t(allocator_type, const_reference);
+        using rvalue_reference = allocator_traits_t(allocator_type, rvalue_reference);
+        using pointer = allocator_traits_t(allocator_type, pointer);
+        using const_pointer = allocator_traits_t(allocator_type, const_pointer);
+        using iterator = __dsa::forward_list_iterator<value_type, false>;
+        using const_iterator = __dsa::forward_list_iterator<value_type, true>;
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         using node_value_type = __dsa::forward_list_node<value_type>;
         using node_type = typename add_pointer<node_value_type>::type;
-        static_assert(is_same<typename __dsa::node_type_traits<node_value_type>::value_type,
-                value_type>::value, "The forward_list holds different value_type!");
     private:
          node_type head;
     private:
@@ -86,9 +84,9 @@ namespace data_structure {
         forward_list(const forward_list &);
         forward_list(forward_list &&) noexcept;
         template <typename AllocatorRHS>
-        forward_list(const forward_list<value_type, AllocatorRHS> &);
+        explicit forward_list(const forward_list<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
-        forward_list(forward_list<value_type, AllocatorRHS> &&) noexcept;
+        explicit forward_list(forward_list<value_type, AllocatorRHS> &&) noexcept;
         ~forward_list() noexcept;
     public:
         forward_list &operator=(const forward_list &);
@@ -745,7 +743,7 @@ namespace data_structure {
         auto before_cursor {this->before_begin()};
         auto cursor {this->begin()};
         const auto end {this->end()};
-        while(cursor not_eq end and size) {
+        while(cursor not_eq end and size > 0) {
             *cursor++ = value;
             --size;
             ++before_cursor;
@@ -1104,14 +1102,12 @@ namespace data_structure {
             alloc_traits::operator delete(backup);
         }
         begin.node->next = end.node;
-        return end;
+        return iterator(end.node);
     }
     template <typename T, typename Allocator>
     inline typename forward_list<T, Allocator>::iterator
     forward_list<T, Allocator>::erase_after(const_iterator it) noexcept {
-        auto next {it};
-        ++next;
-        return forward_list::erase_after(it, next);
+        return forward_list::erase_after(it, 1);
     }
     template <typename T, typename Allocator>
     template <typename ...Args>
