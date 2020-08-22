@@ -26,31 +26,19 @@ namespace data_structure {
         friend bool operator==(const stack<Type, ContainerType, false> &lhs,
                 const stack<Type, ContainerType, false> &rhs);
         template <typename Type, typename ContainerType>
-        friend bool operator!=(const stack<Type, ContainerType, false> &lhs,
-                const stack<Type, ContainerType, false> &rhs);
-        template <typename Type, typename ContainerType>
         friend bool operator<(const stack<Type, ContainerType, false> &lhs,
-                const stack<Type, ContainerType, false> &rhs);
-        template <typename Type, typename ContainerType>
-        friend bool operator<=(const stack<Type, ContainerType, false> &lhs,
-                const stack<Type, ContainerType, false> &rhs);
-        template <typename Type, typename ContainerType>
-        friend bool operator>(const stack<Type, ContainerType, false> &lhs,
-                const stack<Type, ContainerType, false> &rhs);
-        template <typename Type, typename ContainerType>
-        friend bool operator>=(const stack<Type, ContainerType, false> &lhs,
                 const stack<Type, ContainerType, false> &rhs);
     public:
         using container_type = Container;
-        using size_type = typename container_traits<container_type>::size_type;
-        using difference_type = typename container_traits<container_type>::difference_type;
+        using size_type = typename container_type::size_type;
+        using difference_type = typename container_type::difference_type;
         using value_type = T;
-        using reference = typename container_traits<container_type>::reference;
-        using const_reference = typename container_traits<container_type>::const_reference;
-        using rvalue_reference = typename container_traits<container_type>::rvalue_reference;
-        using pointer = typename container_traits<container_type>::pointer;
-        using const_pointer = typename container_traits<container_type>::const_pointer;
-        static_assert(is_same<value_type, typename container_traits<container_type>::value_type>::value,
+        using reference = typename container_type::reference;
+        using const_reference = typename container_type::const_reference;
+        using rvalue_reference = typename container_type::rvalue_reference;
+        using pointer = typename container_type::pointer;
+        using const_pointer = typename container_type::const_pointer;
+        static_assert(is_same<value_type, typename container_type::value_type>::value,
                 "The stack holds different value_type!");
     private:
         container_type c;
@@ -146,28 +134,22 @@ namespace data_structure {
     template <typename T, typename Container>
     class stack<T, Container, true> final {
         template <typename Type, typename ContainerType>
-        friend bool operator==(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
+        friend bool operator==(const stack<Type, ContainerType, true> &,
+                const stack<Type, ContainerType, true> &);
         template <typename Type, typename ContainerType>
-        friend bool operator!=(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
-        template <typename Type, typename ContainerType>
-        friend bool operator<(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
-        template <typename Type, typename ContainerType>
-        friend bool operator<=(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
-        template <typename Type, typename ContainerType>
-        friend bool operator>(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
-        template <typename Type, typename ContainerType>
-        friend bool operator>=(const stack<Type, ContainerType, true> &, const stack<Type, ContainerType, true> &);
+        friend bool operator<(const stack<Type, ContainerType, true> &,
+                const stack<Type, ContainerType, true> &);
     public:
         using container_type = Container;
-        using size_type = typename container_traits<container_type>::size_type;
-        using difference_type = typename container_traits<container_type>::difference_type;
+        using size_type = typename container_type::size_type;
+        using difference_type = typename container_type::difference_type;
         using value_type = T;
-        using reference = typename container_traits<container_type>::reference;
-        using const_reference = typename container_traits<container_type>::const_reference;
-        using rvalue_reference = typename container_traits<container_type>::rvalue_reference;
-        using pointer = typename container_traits<container_type>::pointer;
-        using const_pointer = typename container_traits<container_type>::const_pointer;
-        static_assert(is_same<value_type, typename container_traits<container_type>::value_type>::value,
+        using reference = typename container_type::reference;
+        using const_reference = typename container_type::const_reference;
+        using rvalue_reference = typename container_type::rvalue_reference;
+        using pointer = typename container_type::pointer;
+        using const_pointer = typename container_type::const_pointer;
+        static_assert(is_same<value_type, typename container_type::value_type>::value,
                       "The stack holds different value_type!");
     private:
         container_type front;
@@ -332,25 +314,17 @@ namespace data_structure {
         template <typename Type>
         friend bool operator==(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
         template <typename Type>
-        friend bool operator!=(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
-        template <typename Type>
         friend bool operator<(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
-        template <typename Type>
-        friend bool operator<=(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
-        template <typename Type>
-        friend bool operator>(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
-        template <typename Type>
-        friend bool operator>=(const stack<Type, Type *, false> &, const stack<Type, Type *, false> &);
     public:
         using container_type = T *;
-        using size_type = typename container_traits<container_type>::size_type;
-        using difference_type = typename container_traits<container_type>::difference_type;
+        using size_type = typename container_type::size_type;
+        using difference_type = typename container_type::difference_type;
         using value_type = T;
-        using reference = typename container_traits<container_type>::reference;
-        using const_reference = typename container_traits<container_type>::const_reference;
-        using rvalue_reference = typename container_traits<container_type>::rvalue_reference;
-        using pointer = typename container_traits<container_type>::pointer;
-        using const_pointer = typename container_traits<container_type>::const_pointer;
+        using reference = typename container_type::reference;
+        using const_reference = typename container_type::const_reference;
+        using rvalue_reference = typename container_type::rvalue_reference;
+        using pointer = typename container_type::pointer;
+        using const_pointer = typename container_type::const_pointer;
     private:
         using allocator_type = allocator<type_holder<T>>;
         using alloc_traits = allocator_traits<allocator_type>;
@@ -376,7 +350,7 @@ namespace data_structure {
             auto new_cursor {new_first};
             __dsa::construct_ranges<alloc_traits, value_type, pointer &>(
                     new_first, {}, new_cursor, rhs.first, rhs.cursor);
-            if constexpr(is_trivially_destructible<value_type>::value) {
+            if constexpr(not is_trivially_destructible<value_type>::value) {
                 alloc_traits::destroy(this->first, this->cursor);
             }
             alloc_traits::operator delete(this->first);
@@ -440,7 +414,7 @@ namespace data_structure {
             return this->last - this->first;
         }
         [[nodiscard]]
-        size_type surplus() const noexcept {
+        size_type spare() const noexcept {
             return this->last - this->cursor;
         }
         [[nodiscard]]
@@ -533,25 +507,17 @@ namespace data_structure {
         template <typename Type>
         friend bool operator==(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
         template <typename Type>
-        friend bool operator!=(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
-        template <typename Type>
         friend bool operator<(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
-        template <typename Type>
-        friend bool operator<=(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
-        template <typename Type>
-        friend bool operator>(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
-        template <typename Type>
-        friend bool operator>=(const stack<Type, Type *, true> &, const stack<Type, Type *, true> &);
     public:
         using container_type = T *;
-        using size_type = typename container_traits<container_type>::size_type;
-        using difference_type = typename container_traits<container_type>::difference_type;
+        using size_type = typename container_type::size_type;
+        using difference_type = typename container_type::difference_type;
         using value_type = T;
-        using reference = typename container_traits<container_type>::reference;
-        using const_reference = typename container_traits<container_type>::const_reference;
-        using rvalue_reference = typename container_traits<container_type>::rvalue_reference;
-        using pointer = typename container_traits<container_type>::pointer;
-        using const_pointer = typename container_traits<container_type>::const_pointer;
+        using reference = typename container_type::reference;
+        using const_reference = typename container_type::const_reference;
+        using rvalue_reference = typename container_type::rvalue_reference;
+        using pointer = typename container_type::pointer;
+        using const_pointer = typename container_type::const_pointer;
     private:
         using allocator_type = allocator<type_holder<T>>;
         using alloc_traits = allocator_traits<allocator_type>;
@@ -681,7 +647,7 @@ namespace data_structure {
             return this->last - this->first;
         }
         [[nodiscard]]
-        size_type surplus() const noexcept {
+        size_type spare() const noexcept {
             return this->cursor_back - this->cursor_front - 1;
         }
         [[nodiscard]]
