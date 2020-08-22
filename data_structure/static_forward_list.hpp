@@ -17,13 +17,13 @@
 #ifndef DATA_STRUCTURE_STATIC_FORWARD_LIST_HPP
 #define DATA_STRUCTURE_STATIC_FORWARD_LIST_HPP
 
-#include "vector.hpp"
+#include "deque.hpp"
 
 namespace data_structure {
-    template <typename T, typename Container = vector<__dsa::static_forward_list_node<T, ptrdiff_t>>>
+    template <typename T, typename Container = deque<__dsa::static_forward_list_node<T>>>
     class static_forward_list final {
     private:
-        using node_value_type = __dsa::static_forward_list_node<T, ptrdiff_t>;
+        using node_value_type = __dsa::static_forward_list_node<T>;
     public:
         using container_type = Container;
         using allocator_type = typename container_type::allocator_type;
@@ -35,8 +35,8 @@ namespace data_structure {
         using rvalue_reference = typename add_rvalue_reference<value_type>::type;
         using pointer = typename add_pointer<value_type>::type;
         using const_pointer = typename add_const_pointer<value_type>::type;
-        using iterator = static_forward_list_iterator<node_value_type, container_type, false>;
-        using const_iterator = static_forward_list_iterator<node_value_type, container_type, true>;
+        using iterator = __dsa::static_forward_list_iterator<value_type, container_type, false>;
+        using const_iterator = __dsa::static_forward_list_iterator<value_type, container_type, true>;
     private:
         difference_type head;
         container_type c;
