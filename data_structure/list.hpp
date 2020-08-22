@@ -17,7 +17,6 @@
 #ifndef DATA_STRUCTURE_LIST_HPP
 #define DATA_STRUCTURE_LIST_HPP
 
-#include "type_traits.hpp"
 #include "allocator.hpp"
 #include "iterator.hpp"
 
@@ -26,24 +25,22 @@ namespace data_structure {
     class list final {
     public:
         using allocator_type = Allocator;
-        using size_type = typename allocator_traits<allocator_type>::size_type;
-        using difference_type = typename allocator_traits<allocator_type>::difference_type;
+        using size_type = allocator_traits_t(allocator_type, size_type);
+        using difference_type = allocator_traits_t(allocator_type, difference_type);
         using value_type = T;
-        using reference = typename allocator_traits<allocator_type>::reference;
-        using const_reference = typename allocator_traits<allocator_type>::const_reference;
-        using rvalue_reference = typename allocator_traits<allocator_type>::rvalue_reference;
-        using pointer = typename allocator_traits<allocator_type>::pointer;
-        using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
-        using iterator = list_iterator<__dsa::list_node<value_type>, false>;
-        using const_iterator = list_iterator<__dsa::list_node<value_type>, true>;
+        using reference = allocator_traits_t(allocator_type, reference);
+        using const_reference = allocator_traits_t(allocator_type, const_reference);
+        using rvalue_reference = allocator_traits_t(allocator_type, rvalue_reference);
+        using pointer = allocator_traits_t(allocator_type, pointer);
+        using const_pointer = allocator_traits_t(allocator_type, const_pointer);
+        using iterator = __dsa::list_iterator<value_type, false>;
+        using const_iterator = __dsa::list_iterator<value_type, true>;
         using reverse_iterator = ds::reverse_iterator<iterator>;
         using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         using node_value_type = __dsa::list_node<value_type>;
         using node_type = typename add_pointer<node_value_type>::type;
-        static_assert(is_same<typename __dsa::node_type_traits<node_value_type>::value_type,
-                value_type>::value, "The list holds different value_type!");
     private:
         node_type tail;
     private:
@@ -83,9 +80,9 @@ namespace data_structure {
         list(const list &);
         list(list &&) noexcept;
         template <typename AllocatorRHS>
-        list(const list<value_type, AllocatorRHS> &);
+        explicit list(const list<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
-        list(list<value_type, AllocatorRHS> &&) noexcept;
+        explicit list(list<value_type, AllocatorRHS> &&) noexcept;
         ~list() noexcept;
     public:
         list &operator=(const list &);
