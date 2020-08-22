@@ -28,8 +28,7 @@ namespace data_structure {
     distance(enable_if<not is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end) {
         iterator_traits_t(Iterator, difference_type) difference {0};
         while(begin not_eq end) {
-            ++begin;
-            ++difference;
+            ++begin, static_cast<void>(++difference);
         }
         return difference;
     }
@@ -38,6 +37,15 @@ namespace data_structure {
     distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end)
             noexcept(has_nothrow_minus_operator_v<Iterator>) {
         return end - begin;
+    }
+    template <typename T, bool IsConstLHS, bool IsConstRHS>
+    inline typename iterator_traits<__dsa::skip_list_iterator<T, IsConstLHS>>::difference_type
+    distance(__dsa::skip_list_iterator<T, IsConstLHS> begin, __dsa::skip_list_iterator<T, IsConstRHS> end) {
+        typename iterator_traits<__dsa::skip_list_iterator<T, IsConstLHS>>::difference_type difference {0};
+        while(begin.iter not_eq end.iter) {
+            ++difference, static_cast<void>(begin.iter = begin.iter->next[0]);
+        }
+        return difference;
     }
     inline ptrdiff_t distance(void *begin, void *end) noexcept {
         return reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin);
@@ -212,11 +220,8 @@ __DATA_STRUCTURE_END
 __DATA_STRUCTURE_START(swap)
 namespace data_structure {
     template <typename T>
-    inline enable_if_t<has_swap_member_function_v<T>, void> swap(T &lhs, T &rhs) noexcept {
-        lhs.swap(rhs);
-    }
-    template <typename T>
-    inline enable_if_t<not has_swap_member_function_v<T>, void> swap(T &lhs, T &rhs) noexcept {
+    inline void swap(T &lhs, T &rhs) noexcept(is_nothrow_move_constructible<T>::value and
+            is_nothrow_move_assignable<T>::value) {
         auto tmp {ds::move(lhs)};
         lhs = ds::move(rhs);
         rhs = ds::move(tmp);
