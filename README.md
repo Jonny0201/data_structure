@@ -39,6 +39,7 @@ Jonny
 - stack (Adaptor)
 - queue (Adaptor)
 - deque
+- skip_list
 
 ### Algorithms ###
 
@@ -67,7 +68,6 @@ Jonny
 - circular_forward_list
 - uncircular_list
 - static_list
-- skip_list
 
 ### Hash ###
 - hash_vector
