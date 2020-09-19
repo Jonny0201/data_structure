@@ -151,6 +151,9 @@ namespace data_structure {
         void emplace_front(Args &&...);
         void pop_front();
     };
+    
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    void swap(tree<T, AllocatorLHS> &, tree<T, AllocatorRHS> &) noexcept;
 }
 
 namespace data_structure {
@@ -765,6 +768,13 @@ namespace data_structure {
     inline void tree<T, Allocator>::pop_front() {
         auto erase_node {this->cbegin()};
         this->erase(++erase_node);
+    }
+}
+
+namespace data_structure {
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    inline void swap(tree<T, AllocatorLHS> &lhs, tree<T, AllocatorRHS> &rhs) noexcept {
+        lhs.swap(rhs);
     }
 }
 
