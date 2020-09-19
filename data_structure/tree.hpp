@@ -151,7 +151,7 @@ namespace data_structure {
         void emplace_front(Args &&...);
         void pop_front();
     };
-    
+
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
     void swap(tree<T, AllocatorLHS> &, tree<T, AllocatorRHS> &) noexcept;
 }
@@ -506,7 +506,8 @@ namespace data_structure {
         if(not parent) {
             return this->end();
         }
-        const auto new_size {parent.node->next_size + size};
+        const auto old_size {parent.node->next_size};
+        const auto new_size {old_size + size};
         auto next {this->next_allocate(new_size)};
         if(pos == -1) {
             ds::memory_copy(next, parent.node->next, sizeof(node_type) * parent.node->next_size);
@@ -536,7 +537,11 @@ namespace data_structure {
                     throw;
                 }
             }
-            next[pos + i] = new_node;
+            if(pos == -1) {
+                next[old_size + i] = new_node;
+            }else {
+                next[pos + i] = new_node;
+            }
             new_node->previous = parent.node;
             new_node->next = nullptr;
             new_node->next_size = 0;
@@ -544,7 +549,7 @@ namespace data_structure {
         alloc_traits::operator delete(parent.node->next);
         parent.node->next = next;
         parent.node->next_size = new_size;
-        return iterator(next[pos]);
+        return pos == -1 ? iterator(parent.node->next[old_size]) : iterator(parent.node->next[pos]);
     }
     template <typename T, typename Allocator>
     inline typename tree<T, Allocator>::iterator tree<T, Allocator>::insert_under(
@@ -561,7 +566,7 @@ namespace data_structure {
         const auto old_size {parent.node->next_size};
         if constexpr(is_forward_iterator_v<Iterator>) {
             const auto size {ds::distance(begin, end)};
-            const auto new_size {parent.node->next_size + size};
+            const auto new_size {old_size + size};
             auto next {this->next_allocate(new_size)};
             if(pos == -1) {
                 ds::memory_copy(next, parent.node->next, sizeof(node_type) * parent.node->next_size);
@@ -592,7 +597,7 @@ namespace data_structure {
                     }
                 }
                 if(pos == -1) {
-                    next[parent.node->next_size + i] = new_node;
+                    next[old_size + i] = new_node;
                 }else {
                     next[pos + i] = new_node;
                 }
@@ -608,10 +613,7 @@ namespace data_structure {
                 this->emplace_under(parent, pos, ds::move(*begin++));
             }
         }
-        if(pos == -1) {
-            return iterator(parent.node->next[old_size]);
-        }
-        return iterator(parent.node->next[pos]);
+        return pos == -1 ? iterator(parent.node->next[old_size]) : iterator(parent.node->next[pos]);
     }
     template <typename T, typename Allocator>
     inline typename tree<T, Allocator>::iterator tree<T, Allocator>::insert_under(const_iterator parent,
