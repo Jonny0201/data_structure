@@ -521,7 +521,7 @@ namespace data_structure {
     /* public functions */
     template <typename T, typename Allocator>
     inline deque<T, Allocator>::deque() : map_size {1}, map {this->create_map()},
-            first {*this->map, this->map}, last {this->first + 1} {}
+            first {*this->map, this->map}, last {this->first} {}
     template <typename T, typename Allocator>
     inline deque<T, Allocator>::deque(size_type size) : map_size {this->map_size_calculator(size)},
             map {this->create_map()}, first {*this->map, this->map},
@@ -1049,7 +1049,7 @@ namespace data_structure {
             return;
         }
         if(not is_trivially_destructible_v<value_type>) {
-            alloc_traits::destory(this->first.iter);
+            alloc_traits::destroy(this->first.iter);
         }
         ++this->first;
     }
