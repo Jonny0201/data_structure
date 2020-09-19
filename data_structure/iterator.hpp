@@ -27,6 +27,7 @@ namespace data_structure {
     template <typename, typename> class static_forward_list;
     template <typename, typename> class deque;
     template <typename, typename, typename, typename, typename> class skip_list;
+    template <typename, typename> class tree;
 
     namespace __data_structure_auxiliary {
         template <typename, bool> class forward_list_iterator;
@@ -34,6 +35,7 @@ namespace data_structure {
         template <typename, typename, bool> class static_forward_list_iterator;
         template <typename, typename, size_t, bool> class deque_iterator;
         template <typename, bool> class skip_list_iterator;
+        template <typename, bool> class tree_iterator;
     }
 
     template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
@@ -73,11 +75,17 @@ namespace data_structure {
     bool operator>=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
             const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
     template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator==(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
+    bool operator==(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
             const __dsa::skip_list_iterator<T,IsConstRHS> &rhs) noexcept;
     template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator!=(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
+    bool operator!=(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
             const __dsa::skip_list_iterator<T, IsConstRHS> &rhs) noexcept;
+    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
+    bool operator==(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
+            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept;
+    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
+    bool operator!=(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
+            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept;
 }
 __DATA_STRUCTURE_END
 
@@ -1269,6 +1277,179 @@ namespace data_structure::__data_structure_auxiliary {
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(special iterator, tree_iterator)
+namespace data_structure::__data_structure_auxiliary {
+    template <typename T>
+    struct tree_node {
+        T value;
+        tree_node **next;
+        size_t next_size;
+        tree_node *previous;
+    };
+    template <typename T, bool IsConst = false>
+    class tree_iterator final {
+        template <typename, typename> friend class tree;
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
+                const tree_iterator<Type, IsConstRHS> &) noexcept;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<value_type>;
+        using iterator_category = bidirectional_iterator_tag;
+    private:
+        using node_type = tree_node<T> *;
+    private:
+        node_type node;
+    private:
+        [[nodiscard]]
+        size_t locate() const noexcept {
+            const auto previous {this->node->previous};
+            for(auto i {0}; i < previous->next_size; ++i) {
+                if(previous->next[i] == this->node) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+    public:
+        constexpr tree_iterator() noexcept = default;
+        explicit constexpr tree_iterator(node_type node) noexcept : node {node} {}
+        constexpr tree_iterator(const tree_iterator &) noexcept = default;
+        constexpr tree_iterator(tree_iterator &&) noexcept = default;
+        ~tree_iterator() noexcept = default;
+    public:
+        constexpr tree_iterator &operator=(const tree_iterator &) noexcept = default;
+        constexpr tree_iterator &operator=(tree_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        tree_iterator &operator++() & noexcept {
+            this->node = this->node->next[0];
+            return *this;
+        }
+        tree_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        tree_iterator &operator--() & noexcept {
+            this->node = this->node->previous;
+            return *this;
+        }
+        tree_iterator operator--(int) & noexcept {
+            auto tmp {*this};
+            --*this;
+            return tmp;
+        }
+        tree_iterator &operator+() & noexcept {
+            this->node = this->node->previous->next[this->locate() + 1];
+            return *this;
+        }
+        tree_iterator &operator-() & noexcept {
+            this->node = this->node->previous->next[this->locate() - 1];
+            return *this;
+        }
+        operator tree_iterator<value_type, true>() const noexcept {
+            return tree_iterator<value_type, true>(this->node);
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    };
+    template <typename T>
+    class tree_iterator<T, true> final {
+        template <typename, typename> friend class tree;
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
+                const tree_iterator<Type, IsConstRHS> &) noexcept;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_const_reference_t<value_type>;
+        using const_reference = reference;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_const_pointer_t<value_type>;
+        using const_pointer = pointer;
+        using iterator_category = bidirectional_iterator_tag;
+    private:
+        using node_type = tree_node<T> *;
+    private:
+        node_type node;
+    private:
+        [[nodiscard]]
+        size_t locate() const noexcept {
+            const auto previous {this->node->previous};
+            for(auto i {0}; i < previous->next_size; ++i) {
+                if(previous->next[i] == this->node) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+    public:
+        constexpr tree_iterator() noexcept = default;
+        explicit constexpr tree_iterator(node_type node) noexcept : node {node} {}
+        constexpr tree_iterator(const tree_iterator &) noexcept = default;
+        constexpr tree_iterator(tree_iterator &&) noexcept = default;
+        ~tree_iterator() noexcept = default;
+    public:
+        constexpr tree_iterator &operator=(const tree_iterator &) noexcept = default;
+        constexpr tree_iterator &operator=(tree_iterator &&) noexcept = default;
+        const_reference operator*() const noexcept {
+            return this->node->value;
+        }
+        const_pointer operator->() const noexcept {
+            return ds::address_of(**this);
+        }
+        tree_iterator &operator++() & noexcept {
+            this->node = this->node->next[0];
+            return *this;
+        }
+        tree_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        tree_iterator &operator--() & noexcept {
+            this->node = this->node->previous;
+            return *this;
+        }
+        tree_iterator operator--(int) & noexcept {
+            auto tmp {*this};
+            --*this;
+            return tmp;
+        }
+        tree_iterator &operator+() & noexcept {
+            return this->next(1);
+        }
+        tree_iterator &operator-() & noexcept {
+            return this->next(-1);
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    public:
+        tree_iterator &next(difference_type n) & noexcept {
+            this->node = this->node->previous->next[this->locate() + n];
+            return *this;
+        }
+        tree_iterator &previous(difference_type n) & noexcept {
+            return this->previous(-n);
+        }
+    };
+}
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(iterator comparison)
 namespace data_structure {
     template <typename T, bool IsConstLHS, bool IsConstRHS>
@@ -1342,8 +1523,20 @@ namespace data_structure {
             const __dsa::skip_list_iterator<T, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
+    template <typename T, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
+            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename T, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
+            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
 }
 __DATA_STRUCTURE_END
+
+
 
 #undef __DATA_STRUCTURE_ITERATOR_CHECKER_IMPL
 
