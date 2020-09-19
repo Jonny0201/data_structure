@@ -1288,7 +1288,7 @@ namespace data_structure::__data_structure_auxiliary {
     };
     template <typename T, bool IsConst = false>
     class tree_iterator final {
-        template <typename, typename> friend class tree;
+        template <typename, typename> friend class ds::tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
                 const tree_iterator<Type, IsConstRHS> &) noexcept;
@@ -1367,7 +1367,7 @@ namespace data_structure::__data_structure_auxiliary {
     };
     template <typename T>
     class tree_iterator<T, true> final {
-        template <typename, typename> friend class tree;
+        template <typename, typename> friend class ds::tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
                 const tree_iterator<Type, IsConstRHS> &) noexcept;
