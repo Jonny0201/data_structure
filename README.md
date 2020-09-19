@@ -40,6 +40,7 @@ Jonny
 - queue (Adaptor)
 - deque
 - skip_list
+- tree
 
 ### Algorithms ###
 
@@ -74,7 +75,6 @@ Jonny
 - hash_list
 
 ### Tree ###
-- tree
 - binary_tree
 - leftist_tree (height-biased)
 - huffman_tree (weight-biased)
