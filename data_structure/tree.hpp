@@ -36,7 +36,7 @@ namespace data_structure {
         using const_iterator = __dsa::tree_iterator<value_type, true>;
         using reverse_iterator = void;
         using const_reverse_iterator = add_const_t<void>;
-        static_assert(not is_same_v<value_type, allocator_traits_t(allocator_type, value_type)>,
+        static_assert(is_same_v<value_type, allocator_traits_t(allocator_type, value_type)>,
                 "The tree holds different value_type!");
     private:
         using alloc_traits = allocator_traits<allocator_type>;
@@ -51,7 +51,6 @@ namespace data_structure {
     private:
         [[nodiscard]]
         static node_type allocate();
-        static void erase_one_node(node_type) noexcept;
         [[nodiscard]]
         static node_type *next_allocate(size_type);
         static void handle_exception(node_type *, size_type, size_type) noexcept;
@@ -161,12 +160,6 @@ namespace data_structure {
         return reinterpret_cast<node_type>(alloc_traits::operator new(sizeof(node_value_type)));
     }
     template <typename T, typename Allocator>
-    inline void tree<T, Allocator>::erase_one_node(node_type node) noexcept {
-        alloc_traits::destroy(ds::address_of(node->value));
-        alloc_traits::operator delete(node->next);
-        alloc_traits::operator delete(node);
-    }
-    template <typename T, typename Allocator>
     inline void tree<T, Allocator>::constructor_setting()
             noexcept(is_nothrow_default_constructible_v<value_type>) {
         alloc_traits::construct(ds::address_of(this->root->value));
@@ -181,7 +174,7 @@ namespace data_structure {
     inline void tree<T, Allocator>::handle_exception(node_type *node,
             size_type start, size_type size) noexcept {
         for(auto i {start}; size > 0; ++i, static_cast<void>(--size)) {
-            alloc_traits::destroy(node[i]->value);
+            alloc_traits::destroy(ds::address_of(node[i]->value));
             alloc_traits::operator delete(node[i]);
         }
     }
@@ -258,7 +251,7 @@ namespace data_structure {
         if(root->next) {
             for(auto i {0}; i < root->next_size; ++i) {
                 if(const auto next_level {tree::level_auxiliary(root->next[i], level + 1)};
-                        next_level > level) {
+                        next_level > r) {
                     r = next_level;
                 }
             }
@@ -270,7 +263,8 @@ namespace data_structure {
     inline void tree<T, Allocator>::constructor_setting(Value &&value)
             noexcept(is_nothrow_constructible_v<value_type, Value>) {
         alloc_traits::construct(ds::address_of(this->root->value), ds::forward<Value>(value));
-        this->root->next = this->root->previous = nullptr;
+        this->root->next = nullptr;
+        this->root->previous = nullptr;
         this->root->next_size = 0;
     }
     template <typename T, typename Allocator>
@@ -345,7 +339,7 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     inline tree<T, Allocator>::~tree() noexcept {
-        this->erase(this->cbegin());
+        this->erase_auxiliary(this->root);
     }
     template <typename T, typename Allocator>
     tree<T, Allocator> &tree<T, Allocator>::operator=(const tree &rhs) {
@@ -355,7 +349,7 @@ namespace data_structure {
         this->erase_under(this->cbegin(), 0, this->root->next_size);
         this->root->value = rhs.root->value;
         alloc_traits::operator delete(this->root->next);
-        this->copy_to_this(rhs.root);
+        this->copy_to_this(rhs.root, this->root);
         return *this;
     }
     template <typename T, typename Allocator>
@@ -561,6 +555,7 @@ namespace data_structure {
         if(not parent) {
             return this->end();
         }
+        const auto old_size {parent.node->next_size};
         if constexpr(is_forward_iterator_v<Iterator>) {
             const auto size {ds::distance(begin, end)};
             const auto new_size {parent.node->next_size + size};
@@ -593,7 +588,11 @@ namespace data_structure {
                         throw;
                     }
                 }
-                next[pos + i] = new_node;
+                if(pos == -1) {
+                    next[parent.node->next_size + i] = new_node;
+                }else {
+                    next[pos + i] = new_node;
+                }
                 new_node->previous = parent.node;
                 new_node->next = nullptr;
                 new_node->next_size = 0;
@@ -606,7 +605,10 @@ namespace data_structure {
                 this->emplace_under(parent, pos, ds::move(*begin++));
             }
         }
-        return parent.node->next[pos];
+        if(pos == -1) {
+            return iterator(parent.node->next[old_size]);
+        }
+        return iterator(parent.node->next[pos]);
     }
     template <typename T, typename Allocator>
     inline typename tree<T, Allocator>::iterator tree<T, Allocator>::insert_under(const_iterator parent,
@@ -674,18 +676,21 @@ namespace data_structure {
             }
             alloc_traits::operator delete(parent.node->next);
             parent.node->next = next;
+            parent.node->next_size = pos;
             return this->end();
         }
-        auto next {this->next_allocate(parent.node->next_size - size)};
+        const auto new_size {parent.node->next_size - size};
+        auto next {this->next_allocate(new_size)};
         ds::memory_copy(next, parent.node->next, sizeof(node_type) * pos);
-        const ptrdiff_t disconnexion_start {pos + size};
+        const auto disconnexion_start {static_cast<ptrdiff_t>(pos + size)};
         ds::memory_copy(next + pos, parent.node->next + disconnexion_start,
-                sizeof(node_type) * parent.node->next_size - disconnexion_start);
+                sizeof(node_type) * (parent.node->next_size - disconnexion_start));
         for(auto i {pos}; size > 0; --size) {
-            this->erase_auxiliary(parent.node->next[i]);
+            this->erase_auxiliary(parent.node->next[i++]);
         }
         alloc_traits::operator delete(parent.node->next);
         parent.node->next = next;
+        parent.node->next_size = new_size;
         return iterator(next[pos]);
     }
     template <typename T, typename Allocator>
