@@ -263,26 +263,31 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(sort)
 namespace data_structure {
-    template <typename RandomAccessIterator, typename Compare>
+    namespace __data_structure_auxiliary {
+        struct quick_sort_selector {
+            constexpr void operator()(dynamic, dynamic, dynamic) const noexcept {}
+        };
+    }
+    template <typename Compare, typename Selector, typename RandomAccessIterator>
     void quick_sort(RandomAccessIterator, RandomAccessIterator,
             iterator_traits_t(RandomAccessIterator, difference_type),
             iterator_traits_t(RandomAccessIterator, difference_type),
-            Compare &, void (*)(RandomAccessIterator, RandomAccessIterator, Compare));
-    template <typename RandomAccessIterator, typename Compare>
-    inline void quick_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare,
-            void (*selector)(RandomAccessIterator, RandomAccessIterator, Compare) =
-                    [](RandomAccessIterator, RandomAccessIterator, Compare) noexcept -> void {}) {
+            Compare &, Selector &);
+    template <typename Compare = less<>, typename Selector = __dsa::quick_sort_selector,
+            typename RandomAccessIterator>
+    inline void quick_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare = {},
+            Selector selector = {}) {
         auto size {ds::distance(begin, end)};
         if(size <= 1) {
             return;
         }
         ds::quick_sort(begin, end, 0, size - 1, compare, selector);
     }
-    template <typename RandomAccessIterator, typename Compare>
+    template <typename Compare, typename Selector, typename RandomAccessIterator>
     void quick_sort(RandomAccessIterator begin, RandomAccessIterator end,
             iterator_traits_t(RandomAccessIterator, difference_type) left,
             iterator_traits_t(RandomAccessIterator, difference_type) right,
-            Compare &compare, void (*selector)(RandomAccessIterator, RandomAccessIterator, Compare)) {
+            Compare &compare, Selector &selector) {
         if(left >= right) {
             return;
         }
@@ -315,12 +320,6 @@ namespace data_structure {
             ds::quick_sort(begin, end, right_cursor + 1, right, compare, selector);
             return;
         }
-    }
-    template <typename RandomAccessIterator>
-    inline void quick_sort(RandomAccessIterator begin, RandomAccessIterator end,
-            void (*selector)(RandomAccessIterator, RandomAccessIterator, less<>) =
-                    [](RandomAccessIterator, RandomAccessIterator, less<>) noexcept -> void {}) {
-        ds::quick_sort(begin, end, less<> {}, selector);
     }
 }
 __DATA_STRUCTURE_END
