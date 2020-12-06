@@ -55,6 +55,7 @@ Jonny
 - push_heap
 - pop_heap
 - quick_sort
+- merge_sort
 
 ## TODOs ##
 
