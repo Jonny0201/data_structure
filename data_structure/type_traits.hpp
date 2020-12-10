@@ -103,13 +103,6 @@ namespace data_structure {
     template <typename ...>
     constexpr inline auto make_false {false};
 
-    template <typename T>
-    struct underlying {
-        using type = __underlying_type(T);
-    };
-    template <typename T>
-    using underlying_t = typename underlying<T>::type;
-
     template <typename ...Args>
     struct type_container;
     template <>
@@ -128,7 +121,7 @@ namespace data_structure {
         using remaining = type_container<Args...>;
     };
 
-    template <void () = []() {}>
+    template <void () = [] {}>
     struct unique_type {};
     using unique_type_t = unique_type<>;
 }
@@ -221,6 +214,11 @@ namespace data_structure::__data_structure_auxiliary {
     static constexpr select_second_t<decltype(expression), true_type> test_##name(int) noexcept; \
     template <__VA_ARGS__> \
     static constexpr false_type test_##name(...) noexcept
+#define __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(name, expression, ...) \
+    template <__VA_ARGS__> \
+    static constexpr bool_constant<noexcept(expression)> test_nothrow_##name(int) noexcept; \
+    template <__VA_ARGS__> \
+    static constexpr false_type test_##name_nothrow(...) noexcept
 namespace data_structure {
     namespace __data_structure_auxiliary {
         template <typename, typename T>
@@ -246,7 +244,7 @@ namespace data_structure {
             is_nothrow_move_assignable<T>::value);
 
     namespace __data_structure_auxiliary {
-        __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T &>().~T(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T >().~T(), typename T);
         __DATA_STRUCTURE_TEST_OPERATION(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
                 typename LHS, typename RHS);
         __DATA_STRUCTURE_TEST_OPERATION(complete, sizeof(T) > 0, typename T);
@@ -347,112 +345,105 @@ namespace data_structure {
                 typename T, typename ...Args);
         __DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>(), declval<Arg>()), typename T, typename Arg);
 
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_destructible, noexcept(declval<T &>().~T()), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_swappable,
-                noexcept(ds::swap(declval<LHS>(), declval<RHS>()) and ds::swap(declval<RHS>(), declval<LHS>())),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_list_constructible, noexcept(T {declval<Args>()...}),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(test_nothrow_convertible,
-                noexcept(test_convertible(declval<T>())), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_static_castable, noexcept(static_cast<To>(declval<From>())),
-                typename From, typename To);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_dynamic_castable, noexcept(dynamic_cast<To>(declval<From>())),
-                typename From, typename To);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_const_castable, noexcept(const_cast<To>(declval<From>())),
-                typename From, typename To);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_reinterpret_castable,
-                noexcept(reinterpret_cast<To>(declval<From>())),typename From, typename To);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_castable, noexcept((To)declval<From>()),
-                typename From, typename To);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_swap_memfun,
-                noexcept(declval<T &>().swap(declval<T &>())), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_address_of, &declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_and, declval<LHS>() bitand declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_or, declval<LHS>() | declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_or_assignment, declval<LHS>() or_eq declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_xor, declval<LHS>() xor declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_bit_xor_assignment, declval<LHS>() xor_eq declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_complement, compl declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_dereference, *declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_divide, declval<LHS>() / declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_divide_assignment, declval<LHS>() /= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_equal_to, declval<LHS>() == declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_greater, declval<LHS>() > declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_greater_equal_to, declval<LHS>() >= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_left_shift, declval<LHS>() << declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_left_shift_assignment, declval<LHS>() <<= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_right_shift, declval<LHS>() >> declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_right_shift_assignment, declval<LHS>() >>= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_less, declval<LHS>() < declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_less_equal_to, declval<LHS>() <= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_logical_and, declval<LHS>() and declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_logical_or, declval<LHS>() or declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_logical_not, not declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_unary_minus, -declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_minus, declval<LHS>() - declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_minus_assignment, declval<LHS>() -= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_modules, declval<LHS>() % declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_modules_assignment, declval<LHS>() %= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_multiply, declval<LHS>() * declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_multiply_assignment, declval<LHS>() *= declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_three_way, declval<LHS>() <=> declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_not_equal_to, declval<LHS>() not_eq declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_plus, declval<LHS>() + declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_unary_plus, +declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_plus_assignment, declval<LHS>() += declval<RHS>(),
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_subscript, declval<LHS>()[declval<RHS>()],
-                typename LHS, typename RHS);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_pre_increment, ++declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_post_increment, declval<T>()++, typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_pre_decrement, --declval<T>(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_post_decrement, declval<T>()--, typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_member_access_by_pointer,
-                declval<T>().operator->(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_member_access_by_pointer_dereference,
-                declval<T>().operator->*(), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_new_operator, T::operator new(declval<Args>()...),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_new_array_operator, T::operator new[](declval<Args>()...),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_delete_operator, T::operator delete(declval<Args>()...),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_delete_array_operator, T::operator delete[](declval<Args>()...),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_function_call, declval<T>()(declval<Args>()...),
-                typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(nothrow_comma, (declval<T>(), declval<Arg>()),
-                typename T, typename Arg);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(destructible, declval<T &>().~T(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(list_constructible, T {declval<Args>()...},
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(static_castable, static_cast<To>(declval<From>()),
+                                                typename From, typename To);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(dynamic_castable, dynamic_cast<To>(declval<From>()),
+                                                typename From, typename To);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(const_castable, const_cast<To>(declval<From>()),
+                                                typename From, typename To);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(reinterpret_castable, reinterpret_cast<To>(declval<From>()),
+                                                typename From, typename To);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(castable, (To)declval<From>(), typename From, typename To);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(address_of, &declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and, declval<LHS>() bitand declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_or, declval<LHS>() | declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_or_assignment, declval<LHS>() or_eq declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_xor, declval<LHS>() xor declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_xor_assignment, declval<LHS>() xor_eq declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(complement, compl declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(dereference, *declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(divide, declval<LHS>() / declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(divide_assignment, declval<LHS>() /= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(equal_to, declval<LHS>() == declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(greater, declval<LHS>() > declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(greater_equal_to, declval<LHS>() >= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(left_shift, declval<LHS>() << declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(left_shift_assignment, declval<LHS>() <<= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(right_shift, declval<LHS>() >> declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(right_shift_assignment, declval<LHS>() >>= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(less, declval<LHS>() < declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(less_equal_to, declval<LHS>() <= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_and, declval<LHS>() and declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_or, declval<LHS>() or declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_not, not declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(unary_minus, -declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(minus, declval<LHS>() - declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(minus_assignment, declval<LHS>() -= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(modules, declval<LHS>() % declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(modules_assignment, declval<LHS>() %= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(multiply, declval<LHS>() * declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(multiply_assignment, declval<LHS>() *= declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(three_way, declval<LHS>() <=> declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(not_equal_to, declval<LHS>() not_eq declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(plus, declval<LHS>() + declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(unary_plus, +declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(plus_assignment, declval<LHS>() += declval<RHS>(),
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(subscript, declval<LHS>()[declval<RHS>()],
+                                                typename LHS, typename RHS);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(pre_increment, ++declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(post_increment, declval<T>()++, typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(pre_decrement, --declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(post_decrement, declval<T>()--, typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(member_access_by_pointer, declval<T>().operator->(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(member_access_by_pointer_dereference,
+                                                declval<T>().operator->*(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(new_operator, T::operator new(declval<Args>()...),
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(new_array_operator, T::operator new[](declval<Args>()...),
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(delete_operator, T::operator delete(declval<Args>()...),
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(delete_array_operator, T::operator delete[](declval<Args>()...),
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(function_call, declval<T>()(declval<Args>()...),
+                                                typename T, typename ...Args);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(comma, (declval<T>(), declval<Arg>()), typename T, typename Arg);
     }
 }
 __DATA_STRUCTURE_END
@@ -492,22 +483,16 @@ namespace data_structure {
     template <typename T>
     using add_volatile_t = typename add_volatile<T>::type;
     template <typename T>
-    struct add_cv {
-        using type = add_const_t<add_volatile_t<T>>;
-    };
+    struct add_cv : add_const<add_volatile_t<T>> {};
     template <typename T>
     using add_cv_t = typename add_cv<T>::type;
 
     template <typename T>
-    struct add_const_reference {
-        using type = add_lvalue_reference_t<add_const_t<T>>;
-    };
+    struct add_const_reference : add_lvalue_reference<add_const_t<T>> {};
     template <typename T>
     using add_const_reference_t = typename add_const_reference<T>::type;
     template <typename T>
-    struct add_const_pointer {
-        using type = add_pointer_t<add_const_t<T>>;
-    };
+    struct add_const_pointer : add_pointer<add_const_t<T>> {};
     template <typename T>
     using add_const_pointer_t = typename add_const_pointer<T>::type;
 }
@@ -600,7 +585,7 @@ namespace data_structure {
     using remove_cv_t = typename remove_cv<T>::type;
 
     template <typename T>
-    struct remove_const_reference : remove_const<remove_reference<T>> {};
+    struct remove_const_reference : remove_const<remove_reference_t<T>> {};
     template <typename T>
     using remove_const_reference_t = typename remove_const_reference<T>::type;
 
@@ -638,72 +623,6 @@ namespace data_structure {
     struct remove_extents<T [N]> {
         using type = remove_extents_t<T>;
     };
-}
-__DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(sign transformation)
-namespace data_structure {
-    template <typename T>
-    struct make_signed {
-        using type = T;
-    };
-    template <>
-    struct make_signed<unsigned char> {
-        using type = signed char;
-    };
-    template <>
-    struct make_signed<unsigned short> {
-        using type = signed short;
-    };
-    template <>
-    struct make_signed<unsigned int> {
-        using type = signed int;
-    };
-    template <>
-    struct make_signed<unsigned long> {
-        using type = signed long;
-    };
-    template <>
-    struct make_signed<unsigned long long> {
-        using type = signed long long;
-    };
-    template <>
-    struct make_signed<__uint128_t> {
-        using type = __int128_t;
-    };
-    template <typename T>
-    using make_signed_t = typename make_signed<T>::type;
-
-    template <typename T>
-    struct make_unsigned {
-        using type = T;
-    };
-    template <>
-    struct make_signed<char> {
-        using type = unsigned char;
-    };
-    template <>
-    struct make_signed<short> {
-        using type = unsigned short;
-    };
-    template <>
-    struct make_signed<int> {
-        using type = unsigned int;
-    };
-    template <>
-    struct make_signed<long> {
-        using type = unsigned long;
-    };
-    template <>
-    struct make_signed<long long> {
-        using type = unsigned long long;
-    };
-    template <>
-    struct make_signed<__int128_t> {
-        using type = __uint128_t;
-    };
-    template <typename T>
-    using make_unsigned_t = typename make_unsigned<T>::type;
 }
 __DATA_STRUCTURE_END
 
@@ -1132,7 +1051,7 @@ namespace data_structure {
     constexpr inline auto is_list_constructible_v {is_list_constructible<T, Args...>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct is_assignable : bool_constant<__is_nothrow_assignable(LHS, RHS)> {};
+    struct is_assignable : bool_constant<__is_assignable(LHS, RHS)> {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto is_assignable_v {is_assignable<LHS, RHS>::value};
 
@@ -1147,8 +1066,11 @@ namespace data_structure {
     constexpr inline auto is_move_assignable_v {is_move_assignable<T>::value};
 
     template <typename T>
-    struct is_destructible : conditional_t<is_reference_v<T>, false_type,
-            conditional_t<is_function_v<T>, true_type, decltype(__dsa::test_destructible<T>(0))>> {};
+    struct is_destructible : conditional_t<
+            not is_function_v<T> and not is_unbounded_array_v<T> and not is_same_v<void, T>,
+            conditional_t<is_reference_v<T>, true_type, conditional_t<
+                    is_complete_v<T>, decltype(__dsa::test_destructible<remove_extents_t<T>>(0)), false_type>
+            >, false_type> {};
     template <typename T>
     constexpr inline auto is_destructible_v {is_destructible<T>::value};
 
@@ -1932,19 +1854,39 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other auxliary)
 namespace data_structure::__data_structure_auxiliary {
-    using signed_integral = type_container<char, short, int, long, long long, __int128_t>;
+    using signed_integral = type_container<signed char, signed short, signed int, signed long,
+            signed long long, __int128_t>;
     using unsigned_integral = type_container<unsigned char, unsigned short, unsigned int,
             unsigned long, unsigned long long, __uint128_t>;
     using floating_point = type_container<float, double, long double>;
     using character = type_container<char8_t, char16_t, char32_t>;
+
+    template <typename T, typename Result, typename Container>
+    struct make_signed_or_unsigned_auxiliary {
+    private:
+        using next_type = typename Container::type;
+        using remaining_type = typename Container::remaining;
+    public:
+        using type = conditional_t<sizeof(T) == sizeof(Result), Result,
+                conditional_t<(sizeof(T) > sizeof(Result)) and sizeof(T) <= sizeof(next_type), next_type,
+                        typename make_signed_or_unsigned_auxiliary<T, next_type, remaining_type>::type>>;
+    };
+    template <typename T, typename Result>
+    struct make_signed_or_unsigned_auxiliary<T, Result, type_container<>> {
+        using type = Result;
+    };
+
+    template <typename, typename>
+    struct promotion_index;
+    template <typename T, typename Container>
+    using promotion_index_t = typename promotion_index<T, Container>::type;
     template <typename T, typename Container>
     struct promotion_index {
     private:
         using next_type = typename Container::remaining;
         using this_type = typename Container::type;
     public:
-        using type = conditional_t<is_same_v<T, this_type>,
-                Container, typename promotion_index<T, next_type>::type>;
+        using type = conditional_t<is_same_v<T, this_type>, Container, promotion_index_t<T, next_type>>;
     };
     template <typename T>
     struct promotion_index<T, type_container<>> {
@@ -2324,6 +2266,13 @@ namespace data_structure {
     template <typename T>
     using decay_t = typename decay<T>::type;
 
+    template <typename T>
+    struct underlying_type {
+        using type = __underlying_type(T);
+    };
+    template <typename T>
+    using underlying_t = typename underlying_type<T>::type;
+
     template <typename ...>
     struct common_type {};
     template <typename ...Ts>
@@ -2351,6 +2300,21 @@ namespace data_structure {
     struct common_reference<T, U> : __dsa::common_reference_auxiliary<T, U> {};
     template <typename T, typename U, typename ...Ts>
     struct common_reference<T, U, Ts...> : common_reference<common_reference_t<T, U>, Ts...> {};
+
+    template <typename T>
+    struct make_signed {
+        using type = copy_cv_t<T, typename __dsa::make_signed_or_unsigned_auxiliary<remove_cv_t<T>,
+                signed char, typename __dsa::signed_integral::remaining>::type>;
+    };
+    template <typename T>
+    using make_signed_t = typename make_signed<T>::type;
+    template <typename T>
+    struct make_unsigned {
+        using type = copy_cv_t<T, typename __dsa::make_signed_or_unsigned_auxiliary<remove_cv_t<T>,
+                unsigned char, typename __dsa::unsigned_integral::remaining>::type>;
+    };
+    template <typename T>
+    using make_unsigned_t = typename make_unsigned<T>::type;
 
     template <typename T>
     struct integral_promotion {
