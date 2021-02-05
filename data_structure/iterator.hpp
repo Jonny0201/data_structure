@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -28,64 +28,6 @@ namespace data_structure {
     template <typename, typename> class deque;
     template <typename, typename, typename, typename, typename> class skip_list;
     template <typename, typename> class tree;
-
-    namespace __data_structure_auxiliary {
-        template <typename, bool> class forward_list_iterator;
-        template <typename, bool> class list_iterator;
-        template <typename, typename, bool> class static_forward_list_iterator;
-        template <typename, typename, size_t, bool> class deque_iterator;
-        template <typename, bool> class skip_list_iterator;
-        template <typename, bool> class tree_iterator;
-    }
-
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator==(const __dsa::forward_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::forward_list_iterator<T, IsConstRHS> &rhs) noexcept;
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator!=(const __dsa::forward_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::forward_list_iterator<T, IsConstRHS> &rhs) noexcept;
-    template <typename NodeType, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator==(const __dsa::list_iterator<NodeType, IsConstLHS> &lhs,
-            const __dsa::list_iterator<NodeType, IsConstRHS> &rhs) noexcept;
-    template <typename NodeType, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator!=(const __dsa::list_iterator<NodeType, IsConstLHS> &lhs,
-            const __dsa::list_iterator<NodeType, IsConstRHS> &rhs) noexcept;
-    template <typename T, typename Container, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator==(const __dsa::static_forward_list_iterator<T, Container, IsConstLHS> &lhs,
-            const __dsa::static_forward_list_iterator<T, Container, IsConstRHS> &rhs) noexcept;
-    template <typename T, typename Container, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    inline bool operator!=(const __dsa::static_forward_list_iterator<T, Container, IsConstLHS> &lhs,
-            const __dsa::static_forward_list_iterator<T, Container, IsConstRHS> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator==(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator!=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator<(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator<=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator>(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator>=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept;
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    bool operator==(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::skip_list_iterator<T,IsConstRHS> &rhs) noexcept;
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    bool operator!=(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::skip_list_iterator<T, IsConstRHS> &rhs) noexcept;
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    bool operator==(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
-            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept;
-    template <typename T, bool IsConstLHS, bool IsConstRHS = IsConstLHS>
-    bool operator!=(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
-            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept;
 }
 __DATA_STRUCTURE_END
 
@@ -97,6 +39,7 @@ namespace data_structure {
     struct forward_iterator_tag : input_iterator_tag {};
     struct bidirectional_iterator_tag : forward_iterator_tag {};
     struct random_access_iterator_tag : bidirectional_iterator_tag {};
+    struct contiguous_iterator_tag : random_access_iterator_tag {};
 }
 __DATA_STRUCTURE_END
 
@@ -505,7 +448,7 @@ namespace data_structure::__data_structure_auxiliary {
     class forward_list_iterator final {
         template <typename, typename> friend class ds::forward_list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const forward_list_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const forward_list_iterator<Type, IsConstLHS> &,
                 const forward_list_iterator<Type, IsConstRHS> &) noexcept;
     private:
         using node_type = forward_list_node<T> *;
@@ -556,8 +499,8 @@ namespace data_structure::__data_structure_auxiliary {
     class forward_list_iterator<T, true> final {
         template <typename, typename> friend class ds::forward_list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const forward_list_iterator<Type, IsConstLHS> &,
-                const forward_list_iterator<Type, IsConstRHS> &) noexcept;
+        friend bool operator==(const forward_list_iterator<Type, IsConstLHS> &lhs,
+                const forward_list_iterator<Type, IsConstRHS> &rhs) noexcept;
     private:
         using node_type = forward_list_node<T> *;
     public:
@@ -600,6 +543,16 @@ namespace data_structure::__data_structure_auxiliary {
             return this->node;
         }
     };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const forward_list_iterator<Type, IsConstLHS> &lhs,
+            const forward_list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const forward_list_iterator<Type, IsConstLHS> &lhs,
+            const forward_list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -615,7 +568,7 @@ namespace data_structure::__data_structure_auxiliary {
     class list_iterator final {
         template <typename, typename> friend class ds::list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const list_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const list_iterator<Type, IsConstLHS> &,
                 const list_iterator<Type, IsConstRHS> &) noexcept;
     private:
         using node_type = list_node<T> *;
@@ -676,7 +629,7 @@ namespace data_structure::__data_structure_auxiliary {
         template <typename, typename>
         friend class ds::list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const list_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const list_iterator<Type, IsConstLHS> &,
                 const list_iterator<Type, IsConstRHS> &) noexcept;
     private:
         using node_type = list_node<T> *;
@@ -729,6 +682,16 @@ namespace data_structure::__data_structure_auxiliary {
             return this->node;
         }
     };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const list_iterator<Type, IsConstLHS> &lhs,
+            const list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const list_iterator<Type, IsConstLHS> &lhs,
+            const list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -761,7 +724,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Container, bool IsConst = false>
     class static_forward_list_iterator final {
         template <typename Type, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &,
+        friend bool operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &,
                 const static_forward_list_iterator<Type, ContainerTp, IsConstRHS> &) noexcept;
         template <typename, typename> friend class ds::static_forward_list;
     private:
@@ -822,7 +785,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Container>
     class static_forward_list_iterator<T, Container, true> final {
         template <typename Type, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &,
+        friend bool operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &,
                 const static_forward_list_iterator<Type, ContainerTp, IsConstRHS> &) noexcept;
         template <typename, typename> friend class ds::static_forward_list;
     private:
@@ -874,6 +837,17 @@ namespace data_structure::__data_structure_auxiliary {
             return this->node == static_forward_list_node<value_type>::empty;
         }
     };
+    template <typename Type, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &lhs,
+            const static_forward_list_iterator<Type, ContainerTp, IsConstRHS> &rhs) noexcept {
+        return lhs.head == rhs.head and lhs.node == rhs.node and
+                ds::address_of(lhs.c) == ds::address_of(rhs.c);
+    }
+    template <typename Type, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &lhs,
+            const static_forward_list_iterator<Type, ContainerTp, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -882,10 +856,10 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename MapPointer, size_t BufferSize = 64, bool IsConst = false>
     class deque_iterator final {
         template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
-        friend bool ds::operator==(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+        friend bool operator==(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
                 const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept;
         template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
-        friend bool ds::operator<(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+        friend bool operator<(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
                 const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept;
         template <typename, typename> friend class ds::deque;
     public:
@@ -1011,10 +985,10 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename MapPointer, size_t BufferSize>
     class deque_iterator<T, MapPointer, BufferSize, true> final {
         template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
-        friend bool ds::operator==(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+        friend bool operator==(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
                 const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept;
         template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
-        friend bool ds::operator<(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+        friend bool operator<(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
                 const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept;
         template <typename, typename> friend class ds::deque;
     public:
@@ -1134,6 +1108,36 @@ namespace data_structure::__data_structure_auxiliary {
             return *this->map;
         }
     };
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator==(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return lhs.iter == rhs.iter and lhs.map == rhs.map;
+    }
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator!=(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator<(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return lhs.map == rhs.map ? lhs.iter - rhs.iter < 0 : lhs.map - rhs.map < 0;
+    }
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator<=(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return not(rhs < lhs);
+    }
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator>(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return rhs < lhs;
+    }
+    template <typename Type, typename MapPointerT, size_t Buffer, bool Const>
+    inline bool operator>=(const deque_iterator<Type, MapPointerT, Buffer, Const> &lhs,
+            const deque_iterator<Type, MapPointerT, Buffer, Const> &rhs) noexcept {
+        return not(lhs < rhs);
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -1150,7 +1154,7 @@ namespace data_structure::__data_structure_auxiliary {
     class skip_list_iterator final {
         template <typename, typename, typename, typename, typename> friend class ds::skip_list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const skip_list_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const skip_list_iterator<Type, IsConstLHS> &,
                 const skip_list_iterator<Type, IsConstRHS> &) noexcept;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend typename iterator_traits<skip_list_iterator<Type, IsConstLHS>>::difference_type
@@ -1214,8 +1218,9 @@ namespace data_structure::__data_structure_auxiliary {
     class skip_list_iterator<T, true> final {
         template <typename, typename, typename, typename, typename> friend class ds::skip_list;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const skip_list_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const skip_list_iterator<Type, IsConstLHS> &,
                 const skip_list_iterator<Type, IsConstRHS> &) noexcept;
+        //TODO
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend typename iterator_traits<skip_list_iterator<Type, IsConstLHS>>::difference_type
         distance(skip_list_iterator<Type, IsConstLHS>, skip_list_iterator<Type, IsConstRHS>);
@@ -1274,6 +1279,16 @@ namespace data_structure::__data_structure_auxiliary {
             return this->node;
         }
     };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const skip_list_iterator<Type, IsConstLHS> &lhs,
+            const skip_list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.iter == rhs.iter;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const skip_list_iterator<Type, IsConstLHS> &lhs,
+            const skip_list_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -1290,7 +1305,7 @@ namespace data_structure::__data_structure_auxiliary {
     class tree_iterator final {
         template <typename, typename> friend class ds::tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const tree_iterator<Type, IsConstLHS> &,
                 const tree_iterator<Type, IsConstRHS> &) noexcept;
     public:
         using size_type = size_t;
@@ -1369,7 +1384,7 @@ namespace data_structure::__data_structure_auxiliary {
     class tree_iterator<T, true> final {
         template <typename, typename> friend class ds::tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
-        friend bool ds::operator==(const tree_iterator<Type, IsConstLHS> &,
+        friend bool operator==(const tree_iterator<Type, IsConstLHS> &,
                 const tree_iterator<Type, IsConstRHS> &) noexcept;
     public:
         using size_type = size_t;
@@ -1447,97 +1462,17 @@ namespace data_structure::__data_structure_auxiliary {
             return this->previous(-n);
         }
     };
-}
-__DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(iterator comparison)
-namespace data_structure {
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator==(const __dsa::forward_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const tree_iterator<Type, IsConstLHS> &lhs,
+            const tree_iterator<Type, IsConstRHS> &rhs) noexcept {
         return lhs.node == rhs.node;
     }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator!=(const __dsa::forward_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
-        return not(lhs == rhs);
-    }
-    template <typename NodeType, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator==(const __dsa::list_iterator<NodeType, IsConstLHS> &lhs,
-            const __dsa::list_iterator<NodeType, IsConstRHS> &rhs) noexcept {
-        return lhs.node == rhs.node;
-    }
-    template <typename NodeType, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator!=(const __dsa::list_iterator<NodeType, IsConstLHS> &lhs,
-            const __dsa::list_iterator<NodeType, IsConstRHS> &rhs) noexcept {
-        return not(lhs == rhs);
-    }
-    template <typename T, typename Container, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator==(const __dsa::static_forward_list_iterator<T, Container, IsConstLHS> &lhs,
-            const __dsa::static_forward_list_iterator<T, Container, IsConstRHS> &rhs) noexcept {
-        return lhs.head == rhs.head and lhs.node == rhs.node and
-                ds::address_of(lhs.c) == ds::address_of(rhs.c);
-    }
-    template <typename T, typename Container, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator!=(const __dsa::static_forward_list_iterator<T, Container, IsConstLHS> &lhs,
-            const __dsa::static_forward_list_iterator<T, Container, IsConstRHS> &rhs) noexcept {
-        return not(lhs == rhs);
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator==(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return lhs.iter == rhs.iter and lhs.map == rhs.map;
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator!=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return not(lhs == rhs);
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator<(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return lhs.map == rhs.map ? lhs.iter - rhs.iter < 0 : lhs.map - rhs.map < 0;
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator<=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return not(rhs < lhs);
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator>(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return lhs < rhs;
-    }
-    template <typename T, typename MapPointer, size_t BufferSize, bool IsConst>
-    bool operator>=(const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &lhs,
-            const __dsa::deque_iterator<T, MapPointer, BufferSize, IsConst> &rhs) noexcept {
-        return not(lhs < rhs);
-    }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator==(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::skip_list_iterator<T,IsConstRHS> &rhs) noexcept {
-        return lhs.iter == rhs.iter;
-    }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator!=(const __dsa::skip_list_iterator<T, IsConstLHS> &lhs,
-            const __dsa::skip_list_iterator<T, IsConstRHS> &rhs) noexcept {
-        return not(lhs == rhs);
-    }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator==(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
-            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept {
-        return lhs.node == rhs.node;
-    }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline bool operator!=(const __dsa::tree_iterator<T, IsConstLHS> &lhs,
-            const __dsa::tree_iterator<T, IsConstRHS> &rhs) noexcept {
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const tree_iterator<Type, IsConstLHS> &lhs,
+            const tree_iterator<Type, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
 }
 __DATA_STRUCTURE_END
-
-
-
-#undef __DATA_STRUCTURE_ITERATOR_CHECKER_IMPL
 
 #endif //DATA_STRUCTURE_ITERATOR_HPP
