@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -205,10 +205,10 @@ namespace data_structure {
         using void_pointer = typename allocator_type::void_pointer;
         using const_void_pointer = typename allocator_type::const_void_pointer;
     public:
-        static void *operator new(size_t n) noexcept(has_nothrow_new_operator_v<allocator_type>) {
+        static void *operator new(size_t n) noexcept(has_nothrow_new_operator_v<allocator_type, size_t>) {
             return allocator_type::operator new(n);
         }
-        static void operator delete(void *p) noexcept(has_nothrow_delete_operator_v<allocator_type>) {
+        static void operator delete(void *p) noexcept(has_nothrow_delete_operator_v<allocator_type, void *>) {
             return allocator_type::operator delete(p);
         }
         template <typename ...Args>
