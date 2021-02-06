@@ -144,70 +144,75 @@ namespace data_structure::__data_structure_auxiliary {
 #define __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(name, type, ...) \
     template <__VA_ARGS__> \
     struct name##_auxiliary<type> : true_type {}
-namespace data_structure::__data_structure_auxiliary {
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_integral);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, bool);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned char);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char8_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char16_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char32_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, wchar_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, short);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned short);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, int);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned int);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long long);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long long);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __int128_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __uint128_t);
-
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_floating_point);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, float);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, double);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, long double);
-
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_character);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, unsigned char);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char8_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char16_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char32_t);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, wchar_t);
-
-    template <typename T>
-    struct is_signed_auxiliary : bool_constant<static_cast<T>(-1) < static_cast<T>(0)> {};
-
-    template <typename T>
-    struct is_unsigned_auxiliary : bool_constant<static_cast<T>(0) < static_cast<T>(-1)> {};
-
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_pointer);
-    __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_pointer, T *, typename T);
-
-    template <typename> struct is_function;
+namespace data_structure {
     template <typename>
-    struct is_member_function_pointer_auxiliary : false_type {};
-    template <typename F, typename Class>
-    struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
+    struct is_function;
+    namespace __data_structure_auxiliary {
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_integral);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, bool);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned char);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char8_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char16_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char32_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, wchar_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, short);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned short);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, int);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned int);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long long);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long long);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __int128_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __uint128_t);
 
-    template <typename T>
-    static constexpr true_type test_convertible(T) noexcept;
-    static constexpr false_type test_convertible(...) noexcept;
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_floating_point);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, float);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, double);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, long double);
 
-    template <typename T>
-    static constexpr void test_noexcept(T) noexcept;
-    template <typename T>
-    static constexpr bool_constant<noexcept(test_noexcept<T>())> test_nothrow_convertible() noexcept;
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_character);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, unsigned char);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char8_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char16_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char32_t);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, wchar_t);
 
-    template <typename, typename = void>
-    struct is_invocable_auxiliary : false_type {};
-    template <typename Result>
-    struct is_invocable_auxiliary<Result, void_t<typename Result::type>> : true_type {};
+        template <typename T>
+        struct is_signed_auxiliary : bool_constant<static_cast<T>(-1) < static_cast<T>(0)> {};
 
-    template <bool, bool, typename ...>
-    struct result_of_nothrow_auxiliary : false_type {};
+        template <typename T>
+        struct is_unsigned_auxiliary : bool_constant<static_cast<T>(0) < static_cast<T>(-1)> {};
+
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_pointer);
+        __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_pointer, T *, typename T);
+
+        template <typename>
+        struct is_member_function_pointer_auxiliary : false_type {};
+        template <typename F, typename Class>
+        struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
+
+        template <typename T>
+        static constexpr true_type test_convertible(T) noexcept;
+
+        static constexpr false_type test_convertible(...) noexcept;
+
+        template <typename T>
+        static constexpr void test_noexcept(T) noexcept;
+
+        template <typename T>
+        static constexpr bool_constant<noexcept(test_noexcept<T>())> test_nothrow_convertible() noexcept;
+
+        template <typename, typename = void>
+        struct is_invocable_auxiliary : false_type {};
+        template <typename Result>
+        struct is_invocable_auxiliary<Result, void_t<typename Result::type>> : true_type {};
+
+        template <bool, bool, typename ...>
+        struct result_of_nothrow_auxiliary : false_type {};
+    }
 }
 #define __DATA_STRUCTURE_TEST_OPERATION(name, expression, ...) \
     template <__VA_ARGS__> \
@@ -836,21 +841,21 @@ namespace data_structure {
     constexpr inline auto is_pointer_v {is_pointer<T>::value};
 
     template <typename T>
-    struct is_member_function_pointer : __dsa::is_member_function_pointer_auxiliary<remove_cv_t<T>> {};
-    template <typename T>
-    constexpr inline auto is_member_function_pointer_v {is_member_function_pointer<T>::value};
-
-    template <typename T>
-    struct is_member_object_pointer : bool_constant<is_pointer_v<T> and not is_member_function_pointer_v<T>> {};
-    template <typename T>
-    constexpr inline auto is_member_object_pointer_v {is_member_object_pointer<T>::value};
-
-    template <typename T>
     struct is_member_pointer : false_type {};
     template <typename T, typename Class>
     struct is_member_pointer<T Class::*> : true_type {};
     template <typename T>
     constexpr inline auto is_member_pointer_v {is_member_pointer<T>::value};
+
+    template <typename T>
+    struct is_member_function_pointer : __dsa::is_member_function_pointer_auxiliary<remove_cv_t<T>> {};
+    template <typename T>
+    constexpr inline auto is_member_function_pointer_v {is_member_function_pointer<T>::value};
+
+    template <typename T>
+    struct is_member_object_pointer : bool_constant<is_member_pointer_v<T> and not is_member_function_pointer_v<T>> {};
+    template <typename T>
+    constexpr inline auto is_member_object_pointer_v {is_member_object_pointer<T>::value};
 
     template <typename T>
     struct is_function_pointer : bool_constant<is_pointer_v<T> and
@@ -1853,372 +1858,374 @@ namespace data_structure {
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other auxliary)
-namespace data_structure::__data_structure_auxiliary {
-    using signed_integral = type_container<signed char, signed short, signed int, signed long,
-            signed long long, __int128_t>;
-    using unsigned_integral = type_container<unsigned char, unsigned short, unsigned int,
-            unsigned long, unsigned long long, __uint128_t>;
-    using floating_point = type_container<float, double, long double>;
-    using character = type_container<char8_t, char16_t, char32_t>;
-
-    template <typename T, typename Result, typename Container>
-    struct make_signed_or_unsigned_auxiliary {
-    private:
-        using next_type = typename Container::type;
-        using remaining_type = typename Container::remaining;
-    public:
-        using type = conditional_t<sizeof(T) == sizeof(Result), Result,
-                conditional_t<(sizeof(T) > sizeof(Result)) and sizeof(T) <= sizeof(next_type), next_type,
-                        typename make_signed_or_unsigned_auxiliary<T, next_type, remaining_type>::type>>;
-    };
-    template <typename T, typename Result>
-    struct make_signed_or_unsigned_auxiliary<T, Result, type_container<>> {
-        using type = Result;
-    };
-
-    template <typename, typename>
-    struct promotion_index;
-    template <typename T, typename Container>
-    using promotion_index_t = typename promotion_index<T, Container>::type;
-    template <typename T, typename Container>
-    struct promotion_index {
-    private:
-        using next_type = typename Container::remaining;
-        using this_type = typename Container::type;
-    public:
-        using type = conditional_t<is_same_v<T, this_type>, Container, promotion_index_t<T, next_type>>;
-    };
-    template <typename T>
-    struct promotion_index<T, type_container<>> {
-        using type = type_container<>;
-    };
-
-    template <typename T, typename = void>
-    struct integral_promotion_auxiliary {
-        static_assert(is_integral_v<T>, "This trait requires an integral type!");
-    };
-    template <typename T>
-    struct integral_promotion_auxiliary<T, enable_if_t<is_signed_v<T>>> {
-        using type = conditional_t<
-                is_same_v<typename promotion_index<T, signed_integral>::type::type, __int128_t>,
-                __int128_t, typename promotion_index<T, signed_integral>::type::remaining::type>;
-    };
-    template <typename T>
-    struct integral_promotion_auxiliary<T, enable_if_t<is_unsigned_v<T>>> {
-        using type = conditional_t<
-                is_same_v<typename promotion_index<T, unsigned_integral>::type::type, __uint128_t>,
-                __uint128_t, typename promotion_index<T, unsigned_integral>::type::remaining::type>;
-    };
-
-    template <typename T, typename = void>
-    struct floating_point_promotion_auxiliary {
-        static_assert(is_floating_point_v<T>, "The trait requires a floating point type!");
-    };
-    template <typename T>
-    struct floating_point_promotion_auxiliary<T, enable_if_t<is_floating_point_v<T>>> {
-        using type = conditional_t<
-                is_same_v<typename promotion_index<T, floating_point>::type::type, long double>,
-                long double, typename promotion_index<T, floating_point>::type::remaining::type>;
-    };
-
-    template <typename T, typename = void>
-    struct character_promotion_auxiliary {
-        static_assert(is_character_v<T>, "The trait requires a character type!");
-    };
-    template <typename T>
-    struct character_promotion_auxiliary<T, enable_if_t<is_character_v<T>>> {
-        using type = conditional_t<
-                is_same_v<typename promotion_index<T, character>::type::type, char32_t>,
-                char32_t, typename promotion_index<T, character>::type::remaining::type>;
-    };
-
-    template <typename T, typename = void>
-    struct arithmetic_promotion_auxiliary {
-        static_assert(is_integral_v<T> or is_floating_point_v<T>,
-                "The trait requires a character type or an integral type!");
-    };
-    template <typename T>
-    struct arithmetic_promotion_auxiliary<T, enable_if_t<is_integral_v<T>>> :
-            copy_cv<T, typename __dsa::integral_promotion_auxiliary<remove_cv_t<T>>::type> {};
-    template <typename T>
-    struct arithmetic_promotion_auxiliary<T, enable_if_t<is_floating_point_v<T>>> :
-            copy_cv<T, typename __dsa::floating_point_promotion_auxiliary<remove_cv_t<T>>::type> {};
-
+namespace data_structure {
     template <typename> struct decay;
-    template <typename T>
-    using decay_t = typename decay<T>::type;
-    template <typename> struct reference_wrapper;
-    struct invoke_failure_tag {};
-    template <typename T, typename = decay_t<T>>
-    struct unwrap : type_identity<T> {};
-    template <typename T, typename U>
-    struct unwrap<T, reference_wrapper<U>> : type_identity<reference_wrapper<U>> {};
-    template <typename Fp, typename T, typename ...Args>
-    static constexpr decltype((declval<T>().*declval<Fp>())(declval<Args>()...))
-    test_member_function(int) noexcept;
-    template <typename ...>
-    static constexpr invoke_failure_tag test_member_function(...) noexcept;
-    template <typename Fp, typename T, typename ...Args>
-    static consteval inline bool is_nothrow_member_function() noexcept {
-        return noexcept((declval<T>().*declval<Fp>())(declval<Args>()...));
-    }
-    template <typename Fp, typename Ptr, typename ...Args>
-    static constexpr decltype((declval<Ptr>()->*declval<Fp>())(declval<Args>()...))
-    test_member_function_deref(int) noexcept;
-    template <typename ...>
-    static constexpr invoke_failure_tag test_member_function_deref(...) noexcept;
-    template <typename Fp, typename Ptr, typename ...Args>
-    static consteval inline bool is_nothrow_member_function_deref() noexcept {
-        return noexcept((declval<Ptr>()->*declval<Fp>())(declval<Args>()...));
-    }
-    template <typename ObjP, typename T>
-    static constexpr decltype(declval<T>().*declval<ObjP>()) test_member_object(int) noexcept;
-    template <typename, typename>
-    static constexpr invoke_failure_tag test_member_object(...) noexcept;
-    template <typename ObjP, typename T>
-    static consteval inline bool is_nothrow_member_object() noexcept {
-        return noexcept(declval<T>().*declval<ObjP>());
-    }
-    template <typename ObjP, typename Ptr>
-    static constexpr decltype(declval<Ptr>->*declval<ObjP>()) test_member_object_deref(int) noexcept;
-    template <typename, typename>
-    static constexpr invoke_failure_tag test_member_object_deref(...) noexcept;
-    template <typename ObjP, typename Ptr>
-    static consteval inline bool is_nothrow_member_object_deref() noexcept {
-        return noexcept(declval<Ptr>()->*declval<ObjP>());
-    }
-    template <typename F, typename ...Args>
-    static constexpr decltype(declval<F>()(declval<Args>()...)) test_function(int) noexcept;
-    template <typename ...>
-    static constexpr invoke_failure_tag test_function(...) noexcept;
-    template <typename F, typename ...Args>
-    static consteval inline bool is_nothrow_function() noexcept {
-        return noexcept(declval<F>()(declval<Args>()...));
-    }
-    template <typename, typename>
-    struct result_of_member_object;
-    template <typename PreT, typename Class, typename T>
-    struct result_of_member_object<PreT Class::*, T> {
-        using type = conditional_t<
-                is_same_v<remove_cvref_t<T>, Class> or is_base_of_v<Class, remove_cvref_t<T>>,
-                decltype(test_member_object<PreT Class::*, T>(0)),
-                decltype(test_member_object_deref<PreT Class::*, T>(0))>;
-    };
-    template <typename, typename>
-    struct result_of_nothrow_member_object;
-    template <typename PreT, typename Class, typename T>
-    struct result_of_nothrow_member_object<PreT Class::*, T> :
-            conditional_t<is_same_v<remove_cvref_t<T>, Class> or is_base_of_v<Class, remove_cvref_t<T>>,
-            bool_constant<is_nothrow_member_object<PreT Class::*, T>()>,
-            bool_constant<is_nothrow_member_object_deref<PreT Class::*, T>()>> {};
-    template <typename ...>
-    struct result_of_member_function;
-    template <typename PreT, typename Class, typename Fp, typename ...Args>
-    struct result_of_member_function<PreT Class::*, Fp, Args...> {
-        using type = conditional_t<
-                is_same_v<remove_cvref_t<Fp>, Class> or is_base_of_v<Class, remove_cvref_t<Fp>>,
-                decltype(test_member_function<PreT Class::*, Fp, Args...>(0)),
-                decltype(test_member_function_deref<PreT Class::*, Fp, Args...>(0))>;
-    };
-    template <typename ...>
-    struct result_of_nothrow_member_function;
-    template <typename PreT, typename Class, typename Fp, typename ...Args>
-    struct result_of_nothrow_member_function<PreT Class::*, Fp, Args...> :
-            conditional_t<is_same_v<remove_cvref_t<Fp>, Class> or is_base_of_v<Class, remove_cvref_t<Fp>>,
-            bool_constant<is_nothrow_member_function<PreT Class::*, Fp, Args...>()>,
-            bool_constant<is_nothrow_member_function_deref<PreT Class::*, Fp, Args...>()>> {};
-    template <bool, bool, typename, typename ...>
-    struct result_of_auxiliary : invoke_failure_tag {};
-    template <typename MenPtr, typename T>
-    struct result_of_auxiliary<true, false, MenPtr, T> : conditional_t<is_same_v<invoke_failure_tag,
-                    typename result_of_member_object<decay_t<MenPtr>, typename unwrap<T>::type>::type>,
-            invoke_failure_tag, result_of_member_object<decay_t<MenPtr>, typename unwrap<T>::type>> {};
-    template <typename MenPtr, typename T, typename ...Args>
-    struct result_of_auxiliary<false, true, MenPtr, T, Args...> :
-            conditional_t<is_same_v<invoke_failure_tag, typename result_of_member_function<
-                    decay_t<MenPtr>, typename unwrap<T>::type, Args...>::type>,
-            invoke_failure_tag,
-            result_of_member_function<decay_t<MenPtr>, typename unwrap<T>::type, Args...>> {};
-    template <typename F, typename ...Args>
-    struct result_of_auxiliary<false, false, F, Args...> : conditional_t<is_same_v<invoke_failure_tag,
-            decltype(test_function<F, Args...>(0))>, invoke_failure_tag,
-            type_identity<decltype(test_function<F, Args...>(0))>> {};
-    template <typename MemPtr, typename T>
-    struct result_of_nothrow_auxiliary<true, false, MemPtr, T> :
-            result_of_nothrow_member_object<decay_t<MemPtr>, typename unwrap<T>::type> {};
-    template <typename MemPtr, typename T, typename ...Args>
-    struct result_of_nothrow_auxiliary<false, true, MemPtr, T, Args...> :
-            result_of_nothrow_member_function<decay_t<MemPtr>, typename unwrap<T>::type> {};
-    template <typename F, typename ...Args>
-    struct result_of_nothrow_auxiliary<false, false, F, Args...> :
-            bool_constant<is_nothrow_function<F, Args...>()> {};
-
-    struct aligned_storage_double_helper {
-        long double _1;
-    };
-    struct aligned_storage_double4_helper {
-        double _1[4];
-    };
-    using aligned_storage_helper_types = type_container<unsigned char, unsigned short, unsigned int,
-            unsigned long, unsigned long long, double, long double, aligned_storage_double_helper,
-            aligned_storage_double4_helper, int *>;
-    template <size_t Align>
-    struct alignas(Align) overaligned {};
-    template <typename, size_t>
-    struct aligned_storage_find_suitable_type;
-    template <size_t Align, typename T, typename ...Args>
-    struct aligned_storage_find_suitable_type<type_container<T, Args...>, Align> {
-        using type = conditional_t<Align == alignof(T), T,
-                typename aligned_storage_find_suitable_type<type_container<Args...>, Align>::type>;
-    };
-    template <size_t Align>
-    struct aligned_storage_find_suitable_type<type_container<>, Align> {
-        using type = overaligned<Align>;
-    };
-    template <size_t Length, size_t Align1, size_t Align2>
-    struct aligned_storage_selector {
-    private:
-        constexpr static auto min {Align1 < Align2 ? Align1 : Align2};
-        constexpr static auto max {Align1 < Align2 ? Align2 : Align1};
-    public:
-        constexpr static auto value {Length < max ? min : max};
-    };
-    template <typename> struct alignment_of;
-    template <typename, size_t>
-    struct aligned_storage_find_max_align;
-    template <size_t Length, typename T>
-    struct aligned_storage_find_max_align<type_container<T>, Length> : alignment_of<T> {};
-    template <size_t Length, typename T, typename ...Args>
-    struct aligned_storage_find_max_align<type_container<T, Args...>, Length> : constant<size_t,
-            aligned_storage_selector<Length, alignof(T),
-                    aligned_storage_find_max_align<type_container<Args...>, Length>::value>::value> {};
-
-    template <typename, typename ...>
-    struct aligned_union_find_max_align;
-    template <typename T>
-    struct aligned_union_find_max_align<T> : alignment_of<T> {};
-    template <typename T, typename U>
-    struct aligned_union_find_max_align<T, U> :
-            conditional<alignof(T) < alignof(U), alignment_of<U>, alignment_of<T>> {};
-    template <typename T, typename U, typename ...Args>
-    struct aligned_union_find_max_align<T, U, Args...> : conditional_t<alignof(T) < alignof(U),
-            aligned_union_find_max_align<U, Args...>, aligned_union_find_max_align<T, Args...>> {};
-    template <size_t, size_t ...>
-    struct aligned_union_find_max_number;
-    template <size_t N>
-    struct aligned_union_find_max_number<N> : constant<size_t, N> {};
-    template <size_t N, size_t M>
-    struct aligned_union_find_max_number<N, M> :
-            conditional_t<N < M, constant<size_t, M>, constant<size_t, M>> {};
-    template <size_t N, size_t M, size_t ...Numbers>
-    struct aligned_union_find_max_number<N, M, Numbers...> :
-            aligned_union_find_max_number<aligned_union_find_max_number<N, M>::value, Numbers...> {};
-
-    union type_with_alignment_max_alignment {
-        char _1;
-        short _2;
-        int _3;
-        long _4;
-        long long _5;
-        __int128_t _6;
-        float _7;
-        double _8;
-        long double _9;
-    };
-    using type_with_alignment_helper_types = type_container<
-            char, short, int, long, long long, double, long double>;
-    template <typename, size_t>
-    struct type_with_alignment_find_suitable_type;
-    template <size_t Align>
-    struct type_with_alignment_find_suitable_type<type_container<>, Align> {
-        using type = type_with_alignment_max_alignment;
-    };
-    template <size_t Align, typename T, typename ...Args>
-    struct type_with_alignment_find_suitable_type<type_container<T, Args...>, Align> {
-        using type = conditional_t<Align < alignof(T), T,
-                typename type_with_alignment_find_suitable_type<type_container<Args...>, Align>::type>;
-    };
-
-    template <typename T, typename U>
-    using common_ref_auxiliary = decltype(make_true<T, U> ? declval<T (&)()>()() : declval<U (&)()>()());
-    template <typename T, typename U, typename = void>
-    struct common_ref_impl {};
-    template <typename T, typename U>
-    using common_ref = typename common_ref_impl<T, U>::type;
-    template <typename T, typename U>
-    struct common_ref_impl<T &, U &, void_t<common_ref_auxiliary<
-            add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>>> {
-        using type = common_ref_auxiliary<
-                add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>;
-    };
-    template <typename T, typename U>
-    using common_ref_make_rvalue_ref = add_rvalue_reference_t<remove_reference_t<common_ref<T &, U &>>>;
-    template <typename T, typename U>
-    struct common_ref_impl<T &&, U &&, enable_if_t<is_convertible_v<T &&, common_ref_make_rvalue_ref<T, U>>
-            and is_convertible_v<U &&, common_ref_make_rvalue_ref<T, U>>>> {
-        using type = common_ref_make_rvalue_ref<T, U>;
-    };
-    template <typename T, typename U>
-    using common_ref_for_const_ref = common_ref<const T &, U &>;
-    template <typename T, typename U>
-    struct common_ref_impl<T &&, U &, enable_if_t<is_convertible_v<T &&, common_ref_for_const_ref<T, U>>>> {
-        using type = common_ref_for_const_ref<T, U>;
-    };
-    template <typename T, typename U>
-    struct common_ref_impl<T &, U &&> : common_ref_impl<U &&, T &> {};
-    template <typename T, typename U, template <typename> typename TQual, template <typename> typename UQual>
-    struct basic_common_reference {};
-    template <typename T>
-    struct copy_ref_for_class_template {
-        template <typename U>
-        using type = copy_cv_t<T, U>;
-    };
-    template <typename T>
-    struct copy_ref_for_class_template<T &> {
-        template <typename U>
-        using type = add_lvalue_reference_t<copy_cv_t<T, U>>;
-    };
-    template <typename T>
-    struct copy_ref_for_class_template<T &&> {
-        template <typename U>
-        using type = add_rvalue_reference_t<copy_cv_t<T, U>>;
-    };
-    template <typename T, typename U>
-    using basic_common_ref = typename basic_common_reference<remove_cvref_t<T>, remove_cvref_t<U>,
-            copy_ref_for_class_template<T>::template type, copy_ref_for_class_template<U>::template type>::type;
-    template <typename T, typename U, int Bullet = 1, typename = void>
-    struct common_reference_auxiliary : common_reference_auxiliary<T, U, Bullet + 1> {};
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T &, U &, 1, void_t<common_ref<T &, U &>>> {
-        using type = common_ref<T &, U &>;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T &&, U &&, 1, void_t<common_ref<T &, U &>>> {
-        using type = common_ref<T &&, U &&>;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T &, U &&, 1, void_t<common_ref<T &, U &&>>> {
-        using type = common_ref<T &, U &&>;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T &&, U &, 1, void_t<common_ref<T &&, U &>>> {
-        using type = common_ref<T &&, U &>;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T, U, 2, void_t<basic_common_ref<T, U>>> {
-        using type = basic_common_ref<T, U>;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T, U, 3, void_t<common_ref_auxiliary<T, U>>> {
-        using type = common_ref_auxiliary<T, U>;
-    };
     template <typename ...> struct common_type;
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T, U, 4, void_t<typename common_type<T, U>::type>> {
-        using type = typename common_type<T, U>::type;
-    };
-    template <typename T, typename U>
-    struct common_reference_auxiliary<T, U, 5, void> {};
+    template <typename> struct alignment_of;
+    namespace __data_structure_auxiliary {
+        using signed_integral = type_container<signed char, signed short, signed int, signed long,
+        signed long long, __int128_t>;
+        using unsigned_integral = type_container<unsigned char, unsigned short, unsigned int,
+        unsigned long, unsigned long long, __uint128_t>;
+        using floating_point = type_container<float, double, long double>;
+        using character = type_container<char8_t, char16_t, char32_t>;
+
+        template <typename T, typename Result, typename Container>
+        struct make_signed_or_unsigned_auxiliary {
+        private:
+            using next_type = typename Container::type;
+            using remaining_type = typename Container::remaining;
+        public:
+            using type = conditional_t<sizeof(T) == sizeof(Result), Result,
+                    conditional_t<(sizeof(T) > sizeof(Result)) and sizeof(T) <= sizeof(next_type), next_type,
+                    typename make_signed_or_unsigned_auxiliary<T, next_type, remaining_type>::type>>;
+        };
+        template <typename T, typename Result>
+        struct make_signed_or_unsigned_auxiliary<T, Result, type_container<>> {
+            using type = Result;
+        };
+
+        template <typename, typename>
+        struct promotion_index;
+        template <typename T, typename Container>
+        using promotion_index_t = typename promotion_index<T, Container>::type;
+        template <typename T, typename Container>
+        struct promotion_index {
+        private:
+            using next_type = typename Container::remaining;
+            using this_type = typename Container::type;
+        public:
+            using type = conditional_t<is_same_v<T, this_type>, Container, promotion_index_t<T, next_type>>;
+        };
+        template <typename T>
+        struct promotion_index<T, type_container<>> {
+            using type = type_container<>;
+        };
+
+        template <typename T, typename = void>
+        struct integral_promotion_auxiliary {
+            static_assert(is_integral_v<T>, "This trait requires an integral type!");
+        };
+        template <typename T>
+        struct integral_promotion_auxiliary<T, enable_if_t<is_signed_v<T>>> {
+            using type = conditional_t<
+                    is_same_v<typename promotion_index<T, signed_integral>::type::type, __int128_t>,
+                    __int128_t, typename promotion_index<T, signed_integral>::type::remaining::type>;
+        };
+        template <typename T>
+        struct integral_promotion_auxiliary<T, enable_if_t<is_unsigned_v<T>>> {
+            using type = conditional_t<
+                    is_same_v<typename promotion_index<T, unsigned_integral>::type::type, __uint128_t>,
+                    __uint128_t, typename promotion_index<T, unsigned_integral>::type::remaining::type>;
+        };
+
+        template <typename T, typename = void>
+        struct floating_point_promotion_auxiliary {
+            static_assert(is_floating_point_v<T>, "The trait requires a floating point type!");
+        };
+        template <typename T>
+        struct floating_point_promotion_auxiliary<T, enable_if_t<is_floating_point_v<T>>> {
+            using type = conditional_t<
+                    is_same_v<typename promotion_index<T, floating_point>::type::type, long double>,
+                    long double, typename promotion_index<T, floating_point>::type::remaining::type>;
+        };
+
+        template <typename T, typename = void>
+        struct character_promotion_auxiliary {
+            static_assert(is_character_v<T>, "The trait requires a character type!");
+        };
+        template <typename T>
+        struct character_promotion_auxiliary<T, enable_if_t<is_character_v<T>>> {
+            using type = conditional_t<
+                    is_same_v<typename promotion_index<T, character>::type::type, char32_t>,
+                    char32_t, typename promotion_index<T, character>::type::remaining::type>;
+        };
+
+        template <typename T, typename = void>
+        struct arithmetic_promotion_auxiliary {
+            static_assert(is_integral_v<T> or is_floating_point_v<T>,
+                    "The trait requires a character type or an integral type!");
+        };
+        template <typename T>
+        struct arithmetic_promotion_auxiliary<T, enable_if_t<is_integral_v<T>>> :
+                copy_cv<T, typename __dsa::integral_promotion_auxiliary<remove_cv_t<T>>::type> {};
+        template <typename T>
+        struct arithmetic_promotion_auxiliary<T, enable_if_t<is_floating_point_v<T>>> :
+                copy_cv<T, typename __dsa::floating_point_promotion_auxiliary<remove_cv_t<T>>::type> {};
+
+        template <typename T>
+        using decay_t = typename decay<T>::type;
+        template <typename> struct reference_wrapper;
+        struct invoke_failure_tag {};
+        template <typename T, typename = decay_t<T>>
+                struct unwrap : type_identity<T> {};
+        template <typename T, typename U>
+        struct unwrap<T, reference_wrapper<U>> : type_identity<reference_wrapper<U>> {};
+        template <typename Fp, typename T, typename ...Args>
+        static constexpr decltype((declval<T>().*declval<Fp>())(declval<Args>()...))
+        test_member_function(int) noexcept;
+        template <typename ...>
+        static constexpr invoke_failure_tag test_member_function(...) noexcept;
+        template <typename Fp, typename T, typename ...Args>
+        static consteval inline bool is_nothrow_member_function() noexcept {
+            return noexcept((declval<T>().*declval<Fp>())(declval<Args>()...));
+        }
+        template <typename Fp, typename Ptr, typename ...Args>
+        static constexpr decltype((declval<Ptr>()->*declval<Fp>())(declval<Args>()...))
+        test_member_function_deref(int) noexcept;
+        template <typename ...>
+        static constexpr invoke_failure_tag test_member_function_deref(...) noexcept;
+        template <typename Fp, typename Ptr, typename ...Args>
+        static consteval inline bool is_nothrow_member_function_deref() noexcept {
+            return noexcept((declval<Ptr>()->*declval<Fp>())(declval<Args>()...));
+        }
+        template <typename Op, typename T>
+        static constexpr decltype(declval<T>().*declval<Op>()) test_member_object(int) noexcept;
+        template <typename, typename>
+        static constexpr invoke_failure_tag test_member_object(...) noexcept;
+        template <typename Op, typename T>
+        static consteval inline bool is_nothrow_member_object() noexcept {
+            return noexcept(declval<T>().*declval<Op>());
+        }
+        template <typename Op, typename T>
+        static constexpr decltype(declval<T>()->*declval<Op>()) test_member_object_deref(int) noexcept;
+        template <typename, typename>
+        static constexpr invoke_failure_tag test_member_object_deref(...) noexcept;
+        template <typename Op, typename T>
+        static consteval inline bool is_nothrow_member_object_deref() noexcept {
+            return noexcept(declval<T>()->*declval<Op>());
+        }
+        template <typename F, typename ...Args>
+        static constexpr decltype(declval<F>()(declval<Args>()...)) test_function(int) noexcept;
+        template <typename ...>
+        static constexpr invoke_failure_tag test_function(...) noexcept;
+        template <typename F, typename ...Args>
+        static consteval inline bool is_nothrow_function() noexcept {
+            return noexcept(declval<F>()(declval<Args>()...));
+        }
+        template <typename, typename>
+        struct result_of_member_object;
+        template <typename PreT, typename Class, typename T>
+        struct result_of_member_object<PreT Class::*, T> {
+            using type = conditional_t<
+                    is_same_v<remove_cvref_t<T>, Class> or is_base_of_v<Class, remove_cvref_t<T>>,
+                    decltype(test_member_object<PreT Class::*, T>(0)),
+                    decltype(test_member_object_deref<PreT Class::*, T>(0))>;
+        };
+        template <typename, typename>
+        struct result_of_nothrow_member_object;
+        template <typename PreT, typename Class, typename T>
+        struct result_of_nothrow_member_object<PreT Class::*, T> :
+                conditional_t<is_same_v<remove_cvref_t<T>, Class> or is_base_of_v<Class, remove_cvref_t<T>>,
+                bool_constant<is_nothrow_member_object<PreT Class::*, T>()>,
+                bool_constant<is_nothrow_member_object_deref<PreT Class::*, T>()>> {};
+        template <typename ...>
+        struct result_of_member_function;
+        template <typename PreT, typename Class, typename Fp, typename ...Args>
+        struct result_of_member_function<PreT Class::*, Fp, Args...> {
+            using type = conditional_t<
+                    is_same_v<remove_cvref_t<Fp>, Class> or is_base_of_v<Class, remove_cvref_t<Fp>>,
+                    decltype(test_member_function<PreT Class::*, Fp, Args...>(0)),
+                    decltype(test_member_function_deref<PreT Class::*, Fp, Args...>(0))>;
+        };
+        template <typename ...>
+        struct result_of_nothrow_member_function;
+        template <typename PreT, typename Class, typename Fp, typename ...Args>
+        struct result_of_nothrow_member_function<PreT Class::*, Fp, Args...> :
+                conditional_t<is_same_v<remove_cvref_t<Fp>, Class> or is_base_of_v<Class, remove_cvref_t<Fp>>,
+                bool_constant<is_nothrow_member_function<PreT Class::*, Fp, Args...>()>,
+                bool_constant<is_nothrow_member_function_deref<PreT Class::*, Fp, Args...>()>> {};
+        template <bool, bool, typename, typename ...>
+        struct result_of_auxiliary : invoke_failure_tag {};
+        template <typename MenPtr, typename T>
+        struct result_of_auxiliary<true, false, MenPtr, T> : conditional_t<is_same_v<invoke_failure_tag,
+                typename result_of_member_object<decay_t<MenPtr>, typename unwrap<T>::type>::type>,
+                invoke_failure_tag, result_of_member_object<decay_t<MenPtr>, typename unwrap<T>::type>> {};
+        template <typename MenPtr, typename T, typename ...Args>
+        struct result_of_auxiliary<false, true, MenPtr, T, Args...> :
+                conditional_t<is_same_v<invoke_failure_tag, typename result_of_member_function<
+                decay_t<MenPtr>, typename unwrap<T>::type, Args...>::type>,
+                invoke_failure_tag,
+                result_of_member_function<decay_t<MenPtr>, typename unwrap<T>::type, Args...>> {};
+        template <typename F, typename ...Args>
+        struct result_of_auxiliary<false, false, F, Args...> : conditional_t<is_same_v<invoke_failure_tag,
+                decltype(test_function<F, Args...>(0))>, invoke_failure_tag,
+                type_identity<decltype(test_function<F, Args...>(0))>> {};
+        template <typename MemPtr, typename T>
+        struct result_of_nothrow_auxiliary<true, false, MemPtr, T> :
+                result_of_nothrow_member_object<decay_t<MemPtr>, typename unwrap<T>::type> {};
+        template <typename MemPtr, typename T, typename ...Args>
+        struct result_of_nothrow_auxiliary<false, true, MemPtr, T, Args...> :
+                result_of_nothrow_member_function<decay_t<MemPtr>, typename unwrap<T>::type> {};
+        template <typename F, typename ...Args>
+        struct result_of_nothrow_auxiliary<false, false, F, Args...> :
+                bool_constant<is_nothrow_function<F, Args...>()> {};
+
+        struct aligned_storage_double_helper {
+            long double _1;
+        };
+        struct aligned_storage_double4_helper {
+            double _1[4];
+        };
+        using aligned_storage_helper_types = type_container<unsigned char, unsigned short, unsigned int,
+                unsigned long, unsigned long long, double, long double, aligned_storage_double_helper,
+                aligned_storage_double4_helper, int *>;
+        template <size_t Align>
+        struct alignas(Align) overaligned {};
+        template <typename, size_t>
+        struct aligned_storage_find_suitable_type;
+        template <size_t Align, typename T, typename ...Args>
+        struct aligned_storage_find_suitable_type<type_container<T, Args...>, Align> {
+            using type = conditional_t<Align == alignof(T), T,
+                    typename aligned_storage_find_suitable_type<type_container<Args...>, Align>::type>;
+        };
+        template <size_t Align>
+        struct aligned_storage_find_suitable_type<type_container<>, Align> {
+            using type = overaligned<Align>;
+        };
+        template <size_t Length, size_t Align1, size_t Align2>
+        struct aligned_storage_selector {
+        private:
+            constexpr static auto min {Align1 < Align2 ? Align1 : Align2};
+            constexpr static auto max {Align1 < Align2 ? Align2 : Align1};
+        public:
+            constexpr static auto value {Length < max ? min : max};
+        };
+        template <typename, size_t>
+        struct aligned_storage_find_max_align;
+        template <size_t Length, typename T>
+        struct aligned_storage_find_max_align<type_container<T>, Length> : alignment_of<T> {};
+        template <size_t Length, typename T, typename ...Args>
+        struct aligned_storage_find_max_align<type_container<T, Args...>, Length> : constant<size_t,
+                aligned_storage_selector<Length, alignof(T),
+                aligned_storage_find_max_align<type_container<Args...>, Length>::value>::value> {};
+
+        template <typename, typename ...>
+        struct aligned_union_find_max_align;
+        template <typename T>
+        struct aligned_union_find_max_align<T> : alignment_of<T> {};
+        template <typename T, typename U>
+        struct aligned_union_find_max_align<T, U> :
+                conditional<alignof(T) < alignof(U), alignment_of<U>, alignment_of<T>> {};
+        template <typename T, typename U, typename ...Args>
+        struct aligned_union_find_max_align<T, U, Args...> : conditional_t<alignof(T) < alignof(U),
+                aligned_union_find_max_align<U, Args...>, aligned_union_find_max_align<T, Args...>> {};
+        template <size_t, size_t ...>
+        struct aligned_union_find_max_number;
+        template <size_t N>
+        struct aligned_union_find_max_number<N> : constant<size_t, N> {};
+        template <size_t N, size_t M>
+        struct aligned_union_find_max_number<N, M> :
+                conditional_t<N < M, constant<size_t, M>, constant<size_t, M>> {};
+        template <size_t N, size_t M, size_t ...Numbers>
+        struct aligned_union_find_max_number<N, M, Numbers...> :
+                aligned_union_find_max_number<aligned_union_find_max_number<N, M>::value, Numbers...> {};
+
+        union type_with_alignment_max_alignment {
+            char _1;
+            short _2;
+            int _3;
+            long _4;
+            long long _5;
+            __int128_t _6;
+            float _7;
+            double _8;
+            long double _9;
+        };
+        using type_with_alignment_helper_types = type_container<
+                char, short, int, long, long long, double, long double>;
+        template <typename, size_t>
+        struct type_with_alignment_find_suitable_type;
+        template <size_t Align>
+        struct type_with_alignment_find_suitable_type<type_container<>, Align> {
+            using type = type_with_alignment_max_alignment;
+        };
+        template <size_t Align, typename T, typename ...Args>
+        struct type_with_alignment_find_suitable_type<type_container<T, Args...>, Align> {
+            using type = conditional_t<Align < alignof(T), T,
+            typename type_with_alignment_find_suitable_type<type_container<Args...>, Align>::type>;
+        };
+
+        template <typename T, typename U>
+        using common_ref_auxiliary = decltype(make_true<T, U> ? declval<T (&)()>()() : declval<U (&)()>()());
+        template <typename T, typename U, typename = void>
+        struct common_ref_impl {};
+        template <typename T, typename U>
+        using common_ref = typename common_ref_impl<T, U>::type;
+        template <typename T, typename U>
+        struct common_ref_impl<T &, U &, void_t<common_ref_auxiliary<
+                add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>>> {
+            using type = common_ref_auxiliary<
+                    add_lvalue_reference_t<copy_cv_t<T, U>>, add_lvalue_reference_t<copy_cv_t<U, T>>>;
+        };
+        template <typename T, typename U>
+        using common_ref_make_rvalue_ref = add_rvalue_reference_t<remove_reference_t<common_ref<T &, U &>>>;
+        template <typename T, typename U>
+        struct common_ref_impl<T &&, U &&, enable_if_t<is_convertible_v<T &&, common_ref_make_rvalue_ref<T, U>>
+                and is_convertible_v<U &&, common_ref_make_rvalue_ref<T, U>>>> {
+            using type = common_ref_make_rvalue_ref<T, U>;
+        };
+        template <typename T, typename U>
+        using common_ref_for_const_ref = common_ref<const T &, U &>;
+        template <typename T, typename U>
+        struct common_ref_impl<T &&, U &, enable_if_t<is_convertible_v<T &&, common_ref_for_const_ref<T, U>>>> {
+            using type = common_ref_for_const_ref<T, U>;
+        };
+        template <typename T, typename U>
+        struct common_ref_impl<T &, U &&> : common_ref_impl<U &&, T &> {};
+        template <typename T, typename U, template <typename> typename TQual, template <typename> typename UQual>
+        struct basic_common_reference {};
+        template <typename T>
+        struct copy_ref_for_class_template {
+            template <typename U>
+            using type = copy_cv_t<T, U>;
+        };
+        template <typename T>
+        struct copy_ref_for_class_template<T &> {
+            template <typename U>
+            using type = add_lvalue_reference_t<copy_cv_t<T, U>>;
+        };
+        template <typename T>
+        struct copy_ref_for_class_template<T &&> {
+            template <typename U>
+            using type = add_rvalue_reference_t<copy_cv_t<T, U>>;
+        };
+        template <typename T, typename U>
+        using basic_common_ref = typename basic_common_reference<remove_cvref_t<T>, remove_cvref_t<U>,
+                copy_ref_for_class_template<T>::template type, copy_ref_for_class_template<U>::template type>::type;
+        template <typename T, typename U, int Bullet = 1, typename = void>
+        struct common_reference_auxiliary : common_reference_auxiliary<T, U, Bullet + 1> {};
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T &, U &, 1, void_t<common_ref<T &, U &>>> {
+            using type = common_ref<T &, U &>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T &&, U &&, 1, void_t<common_ref<T &, U &>>> {
+            using type = common_ref<T &&, U &&>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T &, U &&, 1, void_t<common_ref<T &, U &&>>> {
+            using type = common_ref<T &, U &&>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T &&, U &, 1, void_t<common_ref<T &&, U &>>> {
+            using type = common_ref<T &&, U &>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T, U, 2, void_t<basic_common_ref<T, U>>> {
+            using type = basic_common_ref<T, U>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T, U, 3, void_t<common_ref_auxiliary<T, U>>> {
+            using type = common_ref_auxiliary<T, U>;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T, U, 4, void_t<typename common_type<T, U>::type>> {
+            using type = typename common_type<T, U>::type;
+        };
+        template <typename T, typename U>
+        struct common_reference_auxiliary<T, U, 5, void> {};
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -2271,7 +2278,7 @@ namespace data_structure {
         using type = __underlying_type(T);
     };
     template <typename T>
-    using underlying_t = typename underlying_type<T>::type;
+    using underlying_type_t = typename underlying_type<T>::type;
 
     template <typename ...>
     struct common_type {};
@@ -2409,6 +2416,7 @@ __DATA_STRUCTURE_START(undefine useless macros)
 #undef __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION
 #undef __DATA_STRUCTURE_TEST_OPERATION
 #undef __DATA_STRUCTURE_HAS_NESTED_TYPE_IMPL
+#undef __DATA_STRUCTURE_TEST_OPERATION_NOTHROW
 __DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_TYPE_TRAITS_HPP
