@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -576,7 +576,7 @@ namespace data_structure {
         auto first {skip_list::allocate()};
         first->max_level = 0;
         try {
-            skip_list::next_allocate(first, 1);
+            skip_list::next_allocate(first, 0);
         }catch(...) {
             alloc_traits::operator delete(first);
             throw;
@@ -735,18 +735,20 @@ namespace data_structure {
     }
     template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
     void skip_list<T, Allocator, Compare, Random, Probability>::copy_from_rhs(node_type begin) {
-        this->head.node()->max_level = begin->max_level;
-        begin = begin->next[0];
+        alloc_traits::operator delete(this->head.node()->next);
+        this->next_allocate(this->head.node(), this->head.node()->max_level = begin->max_level);
         auto cursor {this->head.node()};
+        begin = begin->next[0];
         while(begin) {
             cursor->next[0] = allocate();
             try {
-                this->next_allocate(cursor, cursor->max_level = begin->max_level);
+                this->next_allocate(cursor->next[0], cursor->next[0]->max_level = begin->max_level);
             }catch(...) {
                 alloc_traits::operator delete(cursor->next[0]);
+                cursor->next[0] = nullptr;
                 throw;
             }
-            alloc_traits::construct(ds::address_of(cursor->value), begin->value);
+            alloc_traits::construct(ds::address_of(cursor->next[0]->value), begin->value);
             cursor = cursor->next[0];
             begin = begin->next[0];
         }
@@ -757,7 +759,7 @@ namespace data_structure {
     inline void skip_list<T, Allocator, Compare, Random, Probability>::erase_one_node(node_type node) noexcept {
         auto erase_node {node->next[0]};
         for(auto i {erase_node->max_level}; i > 0; --i) {
-            for(auto cursor {this->head.node()}; cursor->next[i]; cursor = cursor->next[i]) {
+            for(auto cursor {this->head.node()};; cursor = cursor->next[i]) {
                 if(cursor->next[i] == erase_node) {
                     cursor->next[i] = erase_node->next[i];
                     break;
@@ -775,7 +777,7 @@ namespace data_structure {
         if(this->head.node()->next[max_level] and this->head.random()() < this->head.probability()()) {
             auto new_max_level {max_level + 1};
             auto new_next {reinterpret_cast<node_type *>(alloc_traits::operator new(
-                    (new_max_level + 1) * sizeof(node_type *)))};
+                    (new_max_level + 1) * sizeof(node_type)))};
             for(auto i {0}; i < new_max_level; ++i) {
                 new_next[i] = this->head.node()->next[i];
             }
@@ -815,7 +817,7 @@ namespace data_structure {
     /* public functions */
     template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
     inline skip_list<T, Allocator, Compare, Random, Probability>::skip_list() :
-            head(this->default_construct(0)) {}
+            head(this->default_construct()) {}
     template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
     inline skip_list<T, Allocator, Compare, Random, Probability>::skip_list(size_type size) :
             head(size not_eq 0 ? this->allocate_n(size) : this->default_construct()) {}
@@ -1005,7 +1007,9 @@ namespace data_structure {
                 }
             }
         }
-        this->free_from(cursor);
+        if(cursor not_eq this->head.node()) {
+            this->free_from(cursor);
+        }
         if(begin not_eq end) {
             this->insert(begin, end);
         }
@@ -1319,9 +1323,12 @@ namespace data_structure {
     typename skip_list<T, Allocator, Compare, Random, Probability>::size_type
     skip_list<T, Allocator, Compare, Random, Probability>::remove(const ValueType &value)
             noexcept(has_nothrow_equal_to_operator_v<value_type, ValueType>) {
+        if(value < *this->cbegin()) {
+            return 0;
+        }
         size_type size {0};
         bool removed {};
-        for(auto cursor {this->head.node()}; cursor;) {
+        for(auto cursor {this->head.node()};;) {
             if(cursor->next[0]->value == value) {
                 this->erase_one_node(cursor);
                 ++size;
@@ -1333,6 +1340,9 @@ namespace data_structure {
                     break;
                 }
                 cursor = cursor->next[0];
+            }
+            if(not cursor->next[0]) {
+                break;
             }
         }
         return size;
