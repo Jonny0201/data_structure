@@ -1390,6 +1390,9 @@ namespace data_structure {
         auto level {cursor->max_level};
         while(true) {
             if(not cursor->next[level]) {
+                if(level == 0) {
+                    return this->end();
+                }
                 --level;
                 continue;
             }
