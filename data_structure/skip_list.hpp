@@ -324,8 +324,8 @@ namespace data_structure::__data_structure_auxiliary {
         NodeType n;
     public:
         constexpr skip_list_compress_with_node_type() = default;
-        skip_list_compress_with_node_type(NodeType n) : skip_list_compress<Compare, Random, Probability>(),
-                n {n} {}
+        explicit skip_list_compress_with_node_type(NodeType n) :
+                skip_list_compress<Compare, Random, Probability>(), n {n} {}
         skip_list_compress_with_node_type(NodeType n, Compare c) :
                 skip_list_compress<Compare, Random, Probability>(ds::move(c)), n {ds::move(n)} {}
         skip_list_compress_with_node_type(NodeType n, Random r) :
@@ -398,7 +398,7 @@ namespace data_structure {
         void free_from(node_type) noexcept;
         void copy_from_rhs(node_type);
         void erase_one_node(node_type) noexcept;
-        void try_increment_max_level();
+        void try_increase_max_level();
         [[nodiscard]]
         iterator hint(const_reference, size_t)
                 noexcept(has_nothrow_function_call_operator_v<value_compare, value_type, value_type>);
@@ -484,6 +484,8 @@ namespace data_structure {
         bool empty() const noexcept;
         [[nodiscard]]
         size_type size() const noexcept;
+        [[nodiscard]]
+        size_type max_level() const noexcept;
         [[nodiscard]]
         static consteval size_type max_size() noexcept;
         void clear() noexcept;
@@ -772,7 +774,7 @@ namespace data_structure {
         alloc_traits::operator delete(erase_node);
     }
     template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
-    void skip_list<T, Allocator, Compare, Random, Probability>::try_increment_max_level() {
+    void skip_list<T, Allocator, Compare, Random, Probability>::try_increase_max_level() {
         auto &max_level {this->head.node()->max_level};
         if(this->head.node()->next[max_level] and this->head.random()() < this->head.probability()()) {
             auto new_max_level {max_level + 1};
@@ -1117,6 +1119,11 @@ namespace data_structure {
         return size;
     }
     template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
+    inline typename skip_list<T, Allocator, Compare, Random, Probability>::size_type
+    skip_list<T, Allocator, Compare, Random, Probability>::max_level() const noexcept {
+        return this->head.node()->max_level;
+    }
+    template <typename T, typename Allocator, typename Compare, typename Random, typename Probability>
     inline consteval typename skip_list<T, Allocator, Compare, Random, Probability>::size_type
     skip_list<T, Allocator, Compare, Random, Probability>::max_size() noexcept {
         return std::numeric_limits<size_type>::max() / sizeof(node_value_type);
@@ -1238,7 +1245,7 @@ namespace data_structure {
             }
         }
         try {
-            this->try_increment_max_level();
+            this->try_increase_max_level();
             this->next_allocate(new_node,
                     new_node->max_level = this->generate_level(this->head.node()->max_level));
         }catch(...) {
