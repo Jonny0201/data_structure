@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -37,15 +37,6 @@ namespace data_structure {
     distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end)
             noexcept(has_nothrow_minus_operator_v<Iterator>) {
         return end - begin;
-    }
-    template <typename T, bool IsConstLHS, bool IsConstRHS>
-    inline typename iterator_traits<__dsa::skip_list_iterator<T, IsConstLHS>>::difference_type
-    distance(__dsa::skip_list_iterator<T, IsConstLHS> begin, __dsa::skip_list_iterator<T, IsConstRHS> end) {
-        typename iterator_traits<__dsa::skip_list_iterator<T, IsConstLHS>>::difference_type difference {0};
-        while(begin.iter not_eq end.iter) {
-            ++difference, static_cast<void>(begin.iter = begin.iter->next[0]);
-        }
-        return difference;
     }
     inline ptrdiff_t distance(void *begin, void *end) noexcept {
         return reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin);
