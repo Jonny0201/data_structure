@@ -1475,4 +1475,127 @@ namespace data_structure::__data_structure_auxiliary {
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(special iterator, hash_table iterator)
+namespace data_structure::__data_structure_auxiliary {
+    template <typename T>
+    using hash_table_node = forward_list_node<T>;
+    template <typename T, bool IsConst = false>
+    class hash_table_iterator final {
+    private:
+        using node_type = hash_table_node<T> *;
+        using bucket_type = hash_table_node<T> **;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+        bucket_type bucket;
+    public:
+        constexpr hash_table_iterator() noexcept = default;
+        constexpr hash_table_iterator(node_type node, bucket_type bucket) noexcept : node {node}, bucket {bucket} {}
+        constexpr hash_table_iterator(const hash_table_iterator &) noexcept = default;
+        constexpr hash_table_iterator(hash_table_iterator &&) noexcept = default;
+        ~hash_table_iterator() noexcept = default;
+    public:
+        constexpr hash_table_iterator &operator=(const hash_table_iterator &) noexcept = default;
+        constexpr hash_table_iterator &operator=(hash_table_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        hash_table_iterator &operator++() & noexcept {
+            if(not(this->node = this->node->next)) {
+                this->node = *(++this->bucket);
+            }
+            return *this;
+        }
+        hash_table_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return *this;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+        explicit operator hash_table_iterator<T, true>() const noexcept {
+            return hash_table_iterator<T, true>(node, bucket);
+        }
+    };
+    template <typename T>
+    class hash_table_iterator<T, true> final {
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const hash_table_iterator<Type, IsConstLHS> &lhs,
+                const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept;
+    private:
+        using node_type = hash_table_node<T> *;
+        using bucket_type = hash_table_node<T> **;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_const_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_const_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+        bucket_type bucket;
+    public:
+        constexpr hash_table_iterator() noexcept = default;
+        constexpr hash_table_iterator(node_type node, bucket_type bucket) noexcept : node {node}, bucket {bucket} {}
+        constexpr hash_table_iterator(const hash_table_iterator &) noexcept = default;
+        constexpr hash_table_iterator(hash_table_iterator &&) noexcept = default;
+        ~hash_table_iterator() noexcept = default;
+    public:
+        constexpr hash_table_iterator &operator=(const hash_table_iterator &) noexcept = default;
+        constexpr hash_table_iterator &operator=(hash_table_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        hash_table_iterator &operator++() & noexcept {
+            if(this->node not_eq nullptr) {
+                if(not(this->node = this->node->next)) {
+                    this->node = *(++this->bucket);
+                }
+            }else {
+                this->node = *(++this->bucket);
+            }
+            return *this;
+        }
+        hash_table_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return *this;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const hash_table_iterator<Type, IsConstLHS> &lhs,
+            const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const hash_table_iterator<Type, IsConstLHS> &lhs,
+            const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+}
+__DATA_STRUCTURE_END
+
 #endif //DATA_STRUCTURE_ITERATOR_HPP
