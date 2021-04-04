@@ -35,7 +35,7 @@ namespace data_structure {
         using pointer = typename container_type::pointer;
         using const_pointer = typename container_type::const_pointer;
         static_assert(is_same<value_type, T>::value,
-                "The Container::value_type must be the same as template argument BucketType!");
+                "The Container::value_type must be the same as template argument value_type!");
     private:
         using compare_ref = typename add_lvalue_reference<value_compare>::type;
     private:

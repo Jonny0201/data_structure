@@ -197,20 +197,20 @@ namespace data_structure {
     public:
         consteval void operator[](difference_type n) noexcept {
             static_assert(not is_complete_v<T>,
-                    "Cannot call array<BucketType, 0>::operator[] on a zero-sized array!");
+                    "Cannot call array<value_type, 0>::operator[] on a zero-sized array!");
         }
         consteval void operator[](difference_type n) const noexcept {
             static_assert(not is_complete_v<T>,
-                    "Cannot call array<BucketType, 0>::operator[] on a zero-sized array!");
+                    "Cannot call array<value_type, 0>::operator[] on a zero-sized array!");
         }
     public:
         consteval void fill(const_reference value) noexcept {
             static_assert(not is_const_v<value_type>,
-                    "Cannot fill array<BucketType, 0> held constant value_type!");
+                    "Cannot fill array<value_type, 0> held constant value_type!");
         }
         consteval void swap(array &rhs) noexcept(is_nothrow_swappable<value_type>::value) {
             static_assert(not is_const_v<value_type>,
-                    "Cannot swap array<BucketType, 0> held constant value_type!");
+                    "Cannot swap array<value_type, 0> held constant value_type!");
         }
         [[nodiscard]]
         constexpr iterator begin() noexcept {

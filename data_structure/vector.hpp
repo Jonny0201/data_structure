@@ -42,7 +42,7 @@ namespace data_structure::__data_structure_auxiliary {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same_v<value_type, typename alloc_traits::value_type>,
-                "The Allocator::value_type must be the same as template argument BucketType!");
+                "The Allocator::value_type must be the same as template argument value_type!");
     protected:
         pointer first;
         pointer last;
