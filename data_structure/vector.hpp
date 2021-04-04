@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ namespace data_structure::__data_structure_auxiliary {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same_v<value_type, typename alloc_traits::value_type>,
-                "The Allocator::value_type must be the same as template argument NodeType!");
+                "The Allocator::value_type must be the same as template argument BucketType!");
     protected:
         pointer first;
         pointer last;

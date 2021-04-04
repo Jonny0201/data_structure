@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ namespace data_structure {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         using node_value_type = __dsa::forward_list_node<value_type>;
-        using node_type = typename add_pointer<node_value_type>::type;
+        using node_type = node_value_type *;
     private:
          node_type head;
     private:

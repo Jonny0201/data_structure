@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include <memory>
 #include <initializer_list>
 #include <limits>
+#include <random>
 
 #define __DATA_STRUCTURE_START(x, ...)
 #define __DATA_STRUCTURE_END

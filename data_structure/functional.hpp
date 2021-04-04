@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -742,17 +742,8 @@ namespace data_structure {
 }
 
 namespace data_structure {
-    template <typename Arg1, typename Arg2, typename Result>
-    struct binary_function {
-        using first_argument_type = Arg1;
-        using second_argument_type = Arg2;
-        using result_type = Result;
-    };
-}
-
-namespace data_structure {
     template <typename LHS = void, typename RHS = LHS>
-    struct less : binary_function<LHS, RHS, bool> {
+    struct less {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs < rhs)) {
             return lhs < rhs;
         }
@@ -766,7 +757,7 @@ namespace data_structure {
         }
     };
     template <typename LHS = void, typename RHS = LHS>
-    struct less_equal : binary_function<LHS, RHS, bool> {
+    struct less_equal {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs <= rhs)) {
             return lhs <= rhs;
         }
@@ -780,7 +771,7 @@ namespace data_structure {
         }
     };
     template <typename LHS = void, typename RHS = LHS>
-    struct greater : binary_function<LHS, RHS, bool> {
+    struct greater {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs > rhs)) {
             return lhs > rhs;
         }
@@ -794,7 +785,7 @@ namespace data_structure {
         }
     };
     template <typename LHS = void, typename RHS = LHS>
-    struct greater_equal : binary_function<LHS, RHS, bool> {
+    struct greater_equal {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs >= rhs)) {
             return lhs >= rhs;
         }
@@ -808,7 +799,7 @@ namespace data_structure {
         }
     };
     template <typename LHS = void, typename RHS = LHS>
-    struct equal_to : binary_function<LHS, RHS, bool> {
+    struct equal_to {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs == rhs)) {
             return lhs == rhs;
         }
@@ -822,7 +813,7 @@ namespace data_structure {
         }
     };
     template <typename LHS = void, typename RHS = LHS>
-    struct not_equal_to : binary_function<LHS, RHS, bool> {
+    struct not_equal_to {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs != rhs)) {
             return lhs != rhs;
         }

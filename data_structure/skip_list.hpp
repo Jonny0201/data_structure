@@ -377,7 +377,7 @@ namespace data_structure {
         using node_type = node_value_type *;
     private:
         __dsa::skip_list_compress_with_node_type<node_type, value_compare,
-                random_number_generator , probability_generator> head;
+                random_number_generator, probability_generator> head;
     private:
         [[nodiscard]]
         static node_type allocate();

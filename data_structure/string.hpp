@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ namespace data_structure {
         return static_cast<typename iterator_traits<RandomAccessIterator>::size_type>(end - str);
     }
     template <typename T>
-    inline typename enable_if<is_char_type<T>::value, T>::type is_upper(T ch) noexcept {
+    inline typename enable_if<is_character<T>::value, T>::type is_upper(T ch) noexcept {
         return ch >= 'A' and ch <= 'Z';
     }
     template <typename T>
-    inline typename enable_if<is_char_type<T>::value, T>::type is_lower(T ch) noexcept {
+    inline typename enable_if<is_character<T>::value, T>::type is_lower(T ch) noexcept {
         return ch >= 'a' and ch <= 'z';
     }
     template <typename T>
@@ -73,9 +73,7 @@ namespace data_structure::__data_structure_auxiliary {
         constexpr char_t(unsigned ch_ui) noexcept : ch {static_cast<char16_t>(ch_ui & 0xFFFF)} {}
         constexpr char_t(wchar_t wch) noexcept : ch {wchar_cast(wch)} {}
         constexpr char_t(char32_t u32ch) noexcept : ch {static_cast<char16_t>(u32ch & 0xFFFF)} {}
-#ifdef _DATA_STRUCTURE_HAS_CHAR8_T
         constexpr char_t(char8_t u8ch) noexcept : ch {static_cast<char16_t>(u8ch)} {}
-#endif
         constexpr char_t(const char_t &) noexcept = default;
         constexpr char_t(char_t &&) noexcept = default;
         ~char_t() noexcept = default;

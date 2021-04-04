@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -127,8 +127,7 @@ namespace data_structure {
         void swap(tree<value_type, AllocatorRHS> &) noexcept;
         void clear() noexcept;
         template <typename UnaryPredicate>
-        void traversal(UnaryPredicate, tree::order = tree::order::level)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
+        void traversal(UnaryPredicate, tree::order = tree::order::level);
         iterator insert_under(const_iterator, const_reference, size_type = 1, difference_type = -1);
         iterator insert_under(const_iterator, rvalue_reference, difference_type = -1);
         template <typename Iterator>
@@ -484,8 +483,7 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     template <typename UnaryPredicate>
-    inline void tree<T, Allocator>::traversal(UnaryPredicate pred, tree::order order)
-            noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>) {
+    inline void tree<T, Allocator>::traversal(UnaryPredicate pred, tree::order order) {
         switch(order) {
             case tree::order::pre:
                 this->pre_traversal<add_lvalue_reference_t<UnaryPredicate>>(pred, this->root);

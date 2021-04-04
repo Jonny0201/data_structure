@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -39,5 +39,7 @@
 #include "deque.hpp"
 #include "skip_list.hpp"
 #include "tree.hpp"
+#include "hash.hpp"
+#include "hash_table.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP

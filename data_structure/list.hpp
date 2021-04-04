@@ -40,7 +40,7 @@ namespace data_structure {
     private:
         using alloc_traits = allocator_traits<allocator_type>;
         using node_value_type = __dsa::list_node<value_type>;
-        using node_type = typename add_pointer<node_value_type>::type;
+        using node_type = node_value_type *;
     private:
         node_type tail;
     private:

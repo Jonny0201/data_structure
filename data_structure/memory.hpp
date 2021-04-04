@@ -44,8 +44,6 @@ namespace data_structure {
         using difference_type = ptrdiff_t;
         using pointer = void *;
         using const_pointer = const void *;
-        using volatile_pointer = volatile void *;
-        using cv_pointer = const volatile void *;
     private:
         static free_list_node *volatile free_list[free_list_extent];
         static char *start;

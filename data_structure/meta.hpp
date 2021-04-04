@@ -75,30 +75,30 @@ namespace data_structure {
 
 namespace data_structure {
     template <typename BooleanExpression>
-    struct negation : conditional_t<BooleanExpression::value, false_type, true_type> {};
+    struct negation : bool_constant<not BooleanExpression::value> {};
     template <typename BooleanExpression>
     constexpr inline auto negation_v {negation<BooleanExpression>::value};
 
-    template <typename, typename ...>
-    struct conjunction : false_type {};
+    template <typename ...>
+    struct conjunction : true_type {};
     template <typename BooleanExpression>
     struct conjunction<BooleanExpression> : BooleanExpression {};
     template <typename BooleanExpressionLHS, typename BooleanExpressionRHS>
     struct conjunction<BooleanExpressionLHS, BooleanExpressionRHS> :
-            conditional_t<BooleanExpressionLHS::value and BooleanExpressionRHS::value, true_type, false_type> {};
+            bool_constant<BooleanExpressionLHS::value and BooleanExpressionRHS::value> {};
     template <typename BooleanExpressionLHS, typename BooleanExpressionRHS, typename ...BooleanExpressions>
     struct conjunction<BooleanExpressionLHS, BooleanExpressionRHS, BooleanExpressions...> :
             conjunction<conjunction<BooleanExpressionLHS, BooleanExpressionRHS>, BooleanExpressions...> {};
     template <typename BooleanExpression, typename ...Expressions>
     constexpr inline auto conjunction_v {conjunction<BooleanExpression, Expressions...>::value};
 
-    template <typename, typename ...>
+    template <typename ...>
     struct disjunction : false_type {};
     template <typename BooleanExpression>
     struct disjunction<BooleanExpression> : BooleanExpression {};
     template <typename BooleanExpressionLHS, typename BooleanExpressionRHS>
     struct disjunction<BooleanExpressionLHS, BooleanExpressionRHS> :
-            conditional_t<BooleanExpressionLHS::value or BooleanExpressionRHS::value, true_type, false_type> {};
+            bool_constant<BooleanExpressionLHS::value or BooleanExpressionRHS::value> {};
     template <typename BooleanExpressionLHS, typename BooleanExpressionRHS, typename ...BooleanExpressions>
     struct disjunction<BooleanExpressionLHS, BooleanExpressionRHS, BooleanExpressions...> :
             disjunction<disjunction<BooleanExpressionLHS, BooleanExpressionRHS>, BooleanExpressions...> {};
@@ -135,36 +135,38 @@ namespace data_structure {
     };
     template <typename T, size_t N = 0>
     using choose_argument_t = typename choose_argument<T, N>::type;
+}
 
+namespace data_structure::meta {
     template <typename, typename ...>
-    struct find_max;
+    struct max;
     template <typename T, typename ...Args>
-    using find_max_t = typename find_max<T, Args...>::type;
+    using max_t = typename max<T, Args...>::type;
     template <typename T>
-    struct find_max<T> {
+    struct max<T> {
         using type = T;
     };
     template <typename T, typename U>
-    struct find_max<T, U> {
+    struct max<T, U> {
         using type = conditional_t<T::value < U::value, U, T>;
     };
     template <typename T, typename U, typename ...Args>
-    struct find_max<T, U, Args...> : find_max<find_max_t<T, U>, Args...> {};
+    struct max<T, U, Args...> : max<max_t<T, U>, Args...> {};
 
     template <typename, typename ...>
-    struct find_min;
+    struct min;
     template <typename T, typename ...Args>
-    using find_min_t = typename find_min<T, Args...>::type;
+    using min_t = typename min<T, Args...>::type;
     template <typename T>
-    struct find_min<T> {
+    struct min<T> {
         using type = T;
     };
     template <typename T, typename U>
-    struct find_min<T, U> {
+    struct min<T, U> {
         using type = conditional_t<T::value < U::value, T, U>;
     };
     template <typename T, typename U, typename ...Args>
-    struct find_min<T, U, Args...> : find_min<find_min_t<T, U>, Args...> {};
+    struct min<T, U, Args...> : min<min_t<T, U>, Args...> {};
 }
 
 #endif //DATA_STRUCTURE_META_HPP

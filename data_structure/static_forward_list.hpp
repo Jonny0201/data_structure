@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -143,14 +143,6 @@ namespace data_structure {
         template <typename ...Args>
         void emplace_front(Args &&...);
         void pop_front() noexcept;
-        void print() noexcept {
-#include <iostream>
-            using std::cout;
-            using std::endl;
-            for(const auto &c : this->c) {
-                cout << c.value << " " << c.next << endl;
-            }
-        }
     };
     template <typename T, typename Container>
     void swap(static_forward_list<T, Container> &, static_forward_list<T, Container> &) noexcept;

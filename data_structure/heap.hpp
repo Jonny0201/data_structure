@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #define DATA_STRUCTURE_HEAP_HPP
 
 #include "iterator.hpp"
-#include "utility.hpp"
+#include "functional.hpp"
 
 namespace data_structure {
     template <typename Iterator>
@@ -31,7 +31,7 @@ namespace data_structure {
     template <typename RandomAccessIterator>
     inline void make_heap(RandomAccessIterator begin, RandomAccessIterator end)
             noexcept(is_nothrow_swappable<typename iterator_traits<RandomAccessIterator>::value_type>::value){
-        ds::make_heap(begin, end, ds::less());
+        ds::make_heap(begin, end, ds::less<>());
     }
     template <typename RandomAccessIterator, typename Compare>
     void make_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare cmp) {
@@ -62,7 +62,7 @@ namespace data_structure {
     }
     template <typename RandomAccessIterator>
     inline void push_heap(RandomAccessIterator begin, RandomAccessIterator end) {
-        push_heap(begin, end, ds::less());
+        push_heap(begin, end, ds::less<>());
     }
     template <typename RandomAccessIterator, typename Compare>
     void push_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare cmp) {
@@ -87,7 +87,7 @@ namespace data_structure {
     }
     template <typename RandomAccessIterator>
     inline void pop_heap(RandomAccessIterator begin, RandomAccessIterator end) {
-        ds::pop_heap(begin, end, ds::less());
+        ds::pop_heap(begin, end, ds::less<>());
     }
     template <typename RandomAccessIterator, typename Compare>
     void pop_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare cmp) {

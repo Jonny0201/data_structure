@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2020] [Jonny Charlotte]
+    * Copyright © [2019 - 2021] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ namespace data_structure {
         using pointer = typename container_type::pointer;
         using const_pointer = typename container_type::const_pointer;
         static_assert(is_same<value_type, T>::value,
-                "The Container::value_type must be the same as template argument NodeType!");
+                "The Container::value_type must be the same as template argument BucketType!");
     private:
         using compare_ref = typename add_lvalue_reference<value_compare>::type;
     private:
