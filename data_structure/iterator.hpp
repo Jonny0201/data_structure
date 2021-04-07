@@ -1478,7 +1478,9 @@ __DATA_STRUCTURE_END
 __DATA_STRUCTURE_START(special iterator, hash_table iterator)
 namespace data_structure::__data_structure_auxiliary {
     template <typename T>
-    using hash_table_node = forward_list_node<T>;
+    struct hash_table_node : forward_list_node<T> {
+        size_t hash;
+    };
     template <typename T, bool IsConst = false>
     class hash_table_iterator final {
     private:
@@ -1528,6 +1530,11 @@ namespace data_structure::__data_structure_auxiliary {
         }
         explicit operator hash_table_iterator<T, true>() const noexcept {
             return hash_table_iterator<T, true>(node, bucket);
+        }
+    public:
+        [[nodiscard]]
+        size_t hash() const noexcept {
+            return this->node->hash;
         }
     };
     template <typename T>
@@ -1583,6 +1590,11 @@ namespace data_structure::__data_structure_auxiliary {
         }
         explicit operator bool() const noexcept {
             return this->node;
+        }
+    public:
+        [[nodiscard]]
+        size_t hash() const noexcept {
+            return this->node->hash;
         }
     };
     template <typename Type, bool IsConstLHS, bool IsConstRHS>
