@@ -1122,13 +1122,13 @@ namespace data_structure {
         struct hash_auxiliary {
             [[nodiscard]]
             constexpr size_t operator()(T v) const noexcept {
-                size_t result, last;
+                size_t result {}, last {};
                 auto cursor {reinterpret_cast<const size_t *>(&v)};
                 ds::memory_copy(&result, cursor++, sizeof(size_t));
                 constexpr auto step {sizeof(T) / sizeof(size_t)};
                 constexpr auto step_size {sizeof(size_t)};
                 constexpr auto surplus {sizeof(T) - step * step_size};
-                for(auto i {0}; i < step; ++i) {
+                for(auto i {1}; i < step; ++i) {
                     result xor_eq *cursor++;
                 }
                 ds::memory_copy(&last, cursor, surplus);
@@ -1146,6 +1146,445 @@ namespace data_structure {
     }
     template <typename T>
     struct hash : __dsa::hash_auxiliary<T> {};
+}
+
+namespace data_structure {
+    size_t next_prime(size_t n) noexcept {
+        constexpr unsigned small_primes[] = {
+                0, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+                67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137,
+                139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211
+        };
+        constexpr unsigned indices[] = {
+                1, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
+                79, 83, 89, 97, 101, 103, 107, 109, 113, 121, 127, 131, 137, 139, 143,
+                149, 151, 157, 163, 167, 169, 173, 179, 181, 187, 191, 193, 197, 199, 209
+        };
+        constexpr size_t L = 210;
+        constexpr size_t N = sizeof small_primes / sizeof small_primes[0];
+        if(n <= small_primes[N - 1]) {
+            return *ds::lower_bound(small_primes, small_primes + N, n);
+        }
+        if constexpr(sizeof(size_t) * 8 == 32) {
+            if(n > 0xFFFFFFFB) {
+                return 0xFFFFFFFBu;
+            }
+        }else if constexpr(sizeof(size_t) * 8 == 64) {
+            if(n > 0xFFFFFFFFFFFFFFC5ull) {
+                return 0xFFFFFFFFFFFFFFC5ull;
+            }
+        }
+        constexpr size_t M = sizeof indices / sizeof indices[0];
+        auto k0 {n / L};
+        auto in {static_cast<size_t>(ds::lower_bound(indices, indices + M, n - k0 * L) - indices)};
+        n = L * k0 + indices[in];
+        while(true) {
+            for(size_t j = 5; j < N - 1; ++j) {
+                const size_t p {small_primes[j]};
+                const size_t q {n / p};
+                if(q < p) {
+                    return n;
+                }
+                if(n == q * p) {
+                    goto next;
+                }
+            }
+            {
+                size_t i {211};
+                while(true) {
+                    size_t q {n / i};
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 10;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 8;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 8;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 6;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 4;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 10;
+                    q = n / i;
+                    if(q < i) {
+                        return n;
+                    }
+                    if(n == q * i) {
+                        break;
+                    }
+                    i += 2;
+                }
+            }
+            next : if(++in == M) {
+                ++k0;
+                in = 0;
+            }
+            n = L * k0 + indices[in];
+        }
+    }
 }
 
 #endif //DATA_STRUCTURE_HASH_HPP
