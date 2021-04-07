@@ -25,7 +25,7 @@ __DATA_STRUCTURE_START(iterator)
 namespace data_structure {
     template <typename Iterator>
     inline iterator_traits_t(Iterator, difference_type)
-    distance(enable_if<not is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end) {
+    distance(enable_if_t<not is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end) {
         iterator_traits_t(Iterator, difference_type) difference {0};
         while(begin not_eq end) {
             ++begin, static_cast<void>(++difference);
@@ -248,20 +248,37 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(search)
 namespace data_structure {
-    template <typename ForwardIterator, typename T>
-    ForwardIterator binary_search(ForwardIterator begin, ForwardIterator end, const T &value) {
-        const auto return_iterator {end};
-        while(begin < end) {
-            auto middle {ds::advance(begin, ds::distance(begin, end) / 2)};
-            if(*middle == value) {
+    template <typename Equal = equal_to<>, typename Less = less<>, typename ForwardIterator, typename T>
+    ForwardIterator binary_search(ForwardIterator begin, ForwardIterator end,
+            const T &value, Equal equal = {}, Less less = {}) {
+        auto size {ds::distance(begin, end)};
+        const auto backup {end};
+        while(size > 0) {
+            auto middle {ds::advance(begin, size /= 2)};
+            if(equal(*middle, value)) {
                 return middle;
-            }else if(*middle < value) {
-                begin = middle + 1;
+            }else if(less(*middle, value)) {
+                begin = ++middle;
             }else {
                 end = middle;
             }
         }
-        return return_iterator;
+        return backup;
+    }
+    template <typename Compare = less<>, typename ForwardIterator, typename T>
+    ForwardIterator lower_bound(ForwardIterator begin, ForwardIterator end, const T &value, Compare cmp = {}) {
+        auto size {ds::distance(begin, end)};
+        while(size > 0) {
+            auto step {size / 2};
+            auto middle {ds::advance(begin, step)};
+            if(cmp(*middle, value)) {
+                begin = ++middle;
+                size -= ++step;
+            }else {
+                size = step;
+            }
+        }
+        return begin;
     }
 }
 __DATA_STRUCTURE_END
