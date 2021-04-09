@@ -1484,6 +1484,9 @@ namespace data_structure::__data_structure_auxiliary {
     };
     template <typename T, bool IsConst = false>
     class hash_table_iterator final {
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const hash_table_iterator<Type, IsConstLHS> &lhs,
+                const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept;
     private:
         using node_type = hash_table_node<T> *;
         using bucket_type = hash_table_node<T> **;
@@ -1537,8 +1540,9 @@ namespace data_structure::__data_structure_auxiliary {
         explicit operator bool() const noexcept {
             return this->node;
         }
-        explicit operator hash_table_iterator<T, true>() const noexcept {
-            return hash_table_iterator<T, true>(this->node, this->bucket, this->bucket_count);
+        operator hash_table_iterator<T, true>() const noexcept {
+            auto r {const_cast<hash_table_iterator *>(this)};
+            return hash_table_iterator<T, true>(r->node, r->bucket, r->bucket_start, r->bucket_count);
         }
     public:
         [[nodiscard]]
@@ -1619,6 +1623,123 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename Type, bool IsConstLHS, bool IsConstRHS>
     inline bool operator!=(const hash_table_iterator<Type, IsConstLHS> &lhs,
             const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+    template <typename T, bool = false>
+    class hash_table_local_iterator final {
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const hash_table_local_iterator<Type, IsConstLHS> &lhs,
+                const hash_table_local_iterator<Type, IsConstRHS> &rhs) noexcept;
+    private:
+        using node_type = hash_table_node<T> *;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr hash_table_local_iterator() noexcept = default;
+        explicit constexpr hash_table_local_iterator(node_type node) noexcept : node {node} {}
+        constexpr hash_table_local_iterator(const hash_table_local_iterator &) noexcept = default;
+        constexpr hash_table_local_iterator(hash_table_local_iterator &&) noexcept = default;
+        ~hash_table_local_iterator() noexcept = default;
+    public:
+        constexpr hash_table_local_iterator &operator=(const hash_table_local_iterator &) noexcept = default;
+        constexpr hash_table_local_iterator &operator=(hash_table_local_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        hash_table_local_iterator &operator++() & noexcept {
+            this->node = this->node->next;
+            return *this;
+        }
+        hash_table_local_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return *this;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+        operator hash_table_local_iterator<value_type, true>() const noexcept {
+            return hash_table_local_iterator<value_type, true>(const_cast<hash_table_local_iterator *>(this)->node);
+        }
+    public:
+        [[nodiscard]]
+        size_t hash() const noexcept {
+            return this->node->hash;
+        }
+    };
+    template <typename T>
+    class hash_table_local_iterator<T, true> final {
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const hash_table_local_iterator<Type, IsConstLHS> &lhs,
+                const hash_table_local_iterator<Type, IsConstRHS> &rhs) noexcept;
+    private:
+        using node_type = hash_table_node<T> *;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_const_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_const_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = forward_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr hash_table_local_iterator() noexcept = default;
+        explicit constexpr hash_table_local_iterator(node_type node) noexcept : node {node} {}
+        constexpr hash_table_local_iterator(const hash_table_local_iterator &) noexcept = default;
+        constexpr hash_table_local_iterator(hash_table_local_iterator &&) noexcept = default;
+        ~hash_table_local_iterator() noexcept = default;
+    public:
+        constexpr hash_table_local_iterator &operator=(const hash_table_local_iterator &) noexcept = default;
+        constexpr hash_table_local_iterator &operator=(hash_table_local_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return this->node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        hash_table_local_iterator &operator++() & noexcept {
+            this->node = this->node->next;
+            return *this;
+        }
+        hash_table_local_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return *this;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    public:
+        [[nodiscard]]
+        size_t hash() const noexcept {
+            return this->node->hash;
+        }
+    };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator==(const hash_table_local_iterator<Type, IsConstLHS> &lhs,
+            const hash_table_local_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    inline bool operator!=(const hash_table_local_iterator<Type, IsConstLHS> &lhs,
+            const hash_table_local_iterator<Type, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
 }
