@@ -27,6 +27,7 @@ namespace data_structure {
     template <typename, typename> class static_forward_list;
     template <typename, typename> class deque;
     template <typename, typename, typename, typename, typename> class skip_list;
+    template <typename, typename, typename> class hash_table;
     template <typename, typename> class tree;
 }
 __DATA_STRUCTURE_END
@@ -1499,9 +1500,13 @@ namespace data_structure::__data_structure_auxiliary {
     private:
         node_type node;
         bucket_type bucket;
+        bucket_type bucket_start;
+        size_t bucket_count;
     public:
         constexpr hash_table_iterator() noexcept = default;
-        constexpr hash_table_iterator(node_type node, bucket_type bucket) noexcept : node {node}, bucket {bucket} {}
+        constexpr hash_table_iterator(node_type node, bucket_type bucket,
+                bucket_type bucket_start, size_t bucket_count) noexcept :
+                node {node}, bucket {bucket}, bucket_start {bucket_start}, bucket_count {bucket_count} {}
         constexpr hash_table_iterator(const hash_table_iterator &) noexcept = default;
         constexpr hash_table_iterator(hash_table_iterator &&) noexcept = default;
         ~hash_table_iterator() noexcept = default;
@@ -1516,7 +1521,11 @@ namespace data_structure::__data_structure_auxiliary {
         }
         hash_table_iterator &operator++() & noexcept {
             if(not(this->node = this->node->next)) {
-                this->node = *(++this->bucket);
+                while(this->bucket - this->bucket_start not_eq this->bucket_count) {
+                    if((this->node = *(++this->bucket))) {
+                        break;
+                    }
+                }
             }
             return *this;
         }
@@ -1529,7 +1538,7 @@ namespace data_structure::__data_structure_auxiliary {
             return this->node;
         }
         explicit operator hash_table_iterator<T, true>() const noexcept {
-            return hash_table_iterator<T, true>(node, bucket);
+            return hash_table_iterator<T, true>(this->node, this->bucket, this->bucket_count);
         }
     public:
         [[nodiscard]]
@@ -1539,6 +1548,7 @@ namespace data_structure::__data_structure_auxiliary {
     };
     template <typename T>
     class hash_table_iterator<T, true> final {
+        template <typename, typename, typename> friend class ds::hash_table;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool operator==(const hash_table_iterator<Type, IsConstLHS> &lhs,
                 const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept;
@@ -1558,9 +1568,13 @@ namespace data_structure::__data_structure_auxiliary {
     private:
         node_type node;
         bucket_type bucket;
+        bucket_type bucket_start;
+        size_t bucket_count;
     public:
         constexpr hash_table_iterator() noexcept = default;
-        constexpr hash_table_iterator(node_type node, bucket_type bucket) noexcept : node {node}, bucket {bucket} {}
+        constexpr hash_table_iterator(node_type node, bucket_type bucket,
+                bucket_type bucket_start, size_t bucket_count) noexcept :
+                node {node}, bucket {bucket}, bucket_start {bucket_start}, bucket_count {bucket_count} {}
         constexpr hash_table_iterator(const hash_table_iterator &) noexcept = default;
         constexpr hash_table_iterator(hash_table_iterator &&) noexcept = default;
         ~hash_table_iterator() noexcept = default;
@@ -1574,12 +1588,12 @@ namespace data_structure::__data_structure_auxiliary {
             return ds::address_of(**this);
         }
         hash_table_iterator &operator++() & noexcept {
-            if(this->node not_eq nullptr) {
-                if(not(this->node = this->node->next)) {
-                    this->node = *(++this->bucket);
+            if(not(this->node = this->node->next)) {
+                while(this->bucket - this->bucket_start not_eq this->bucket_count) {
+                    if((this->node = *(++this->bucket))) {
+                        break;
+                    }
                 }
-            }else {
-                this->node = *(++this->bucket);
             }
             return *this;
         }
