@@ -41,6 +41,7 @@ Jonny
 - deque
 - skip_list
 - tree
+- hash_table
 
 ### Algorithms ###
 
@@ -72,8 +73,7 @@ Jonny
 - static_list
 
 ### Hash ###
-- hash_vector
-- hash_list
+- hash_array
 
 ### Tree ###
 - binary_tree
