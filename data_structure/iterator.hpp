@@ -1479,7 +1479,9 @@ __DATA_STRUCTURE_END
 __DATA_STRUCTURE_START(special iterator, hash_table iterator)
 namespace data_structure::__data_structure_auxiliary {
     template <typename T>
-    struct hash_table_node : forward_list_node<T> {
+    struct hash_table_node {
+        T value;
+        hash_table_node *next;
         size_t hash;
     };
     template <typename T, bool IsConst = false>
@@ -1535,7 +1537,7 @@ namespace data_structure::__data_structure_auxiliary {
         hash_table_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
-            return *this;
+            return tmp;
         }
         explicit operator bool() const noexcept {
             return this->node;
@@ -1593,8 +1595,12 @@ namespace data_structure::__data_structure_auxiliary {
         }
         hash_table_iterator &operator++() & noexcept {
             if(not(this->node = this->node->next)) {
-                while(this->bucket - this->bucket_start not_eq this->bucket_count) {
-                    if((this->node = *(++this->bucket))) {
+                while(true) {
+                    ++this->bucket;
+                    if(this->bucket - this->bucket_start == this->bucket_count) {
+                        break;
+                    }
+                    if((this->node = *this->bucket)) {
                         break;
                     }
                 }
@@ -1604,7 +1610,7 @@ namespace data_structure::__data_structure_auxiliary {
         hash_table_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
-            return *this;
+            return tmp;
         }
         explicit operator bool() const noexcept {
             return this->node;
@@ -1666,7 +1672,7 @@ namespace data_structure::__data_structure_auxiliary {
         hash_table_local_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
-            return *this;
+            return tmp;
         }
         explicit operator bool() const noexcept {
             return this->node;
@@ -1721,7 +1727,7 @@ namespace data_structure::__data_structure_auxiliary {
         hash_table_local_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
-            return *this;
+            return tmp;
         }
         explicit operator bool() const noexcept {
             return this->node;
