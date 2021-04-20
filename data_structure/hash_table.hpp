@@ -202,10 +202,10 @@ namespace data_structure {
                 noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>);
         template <typename Equal = equal_to<value_type, value_type>>
         const_iterator find(const_reference, Equal = {}) const
-                noexcept(has_nothrow_equal_to_operator_v<Equal, value_type, value_type>);
+                noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>);
         template <typename Equal = equal_to<value_type, value_type>>
         bool contains(const_reference, Equal = {}) const
-                noexcept(has_nothrow_equal_to_operator_v<Equal, value_type, value_type>);
+                noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>);
     public:
         hasher hash_function() const noexcept;
     };
@@ -306,11 +306,11 @@ namespace data_structure {
     void hash_table<T, Hash, Allocator>::rehash(bucket_type bucket, size_type bucket_size) noexcept {
         ds::memory_initialize(bucket, bucket_size * sizeof(bucket_type));
         for(auto i {0}; i < this->size_of_bucket; ++i) {
-            if(auto cursor {*this->bucket.bucket()[i]}; cursor) {
+            if(auto cursor {this->bucket.bucket()[i]}; cursor) {
                 do {
                     auto backup {cursor};
                     cursor = cursor->next;
-                    auto constrained {this->constrain_hash(cursor->hash, bucket_size)};
+                    auto constrained {this->constrain_hash(backup->hash, bucket_size)};
                     backup->next = bucket[constrained];
                     bucket[constrained] = backup;
                 }while(cursor);
@@ -320,7 +320,7 @@ namespace data_structure {
     template <typename T, typename Hash, typename Allocator>
     void hash_table<T, Hash, Allocator>::clear_bucket() noexcept {
         for(auto i {0}; i < this->size_of_bucket; ++i) {
-            if(auto cursor {*this->bucket.bucket()[i]}; cursor) {
+            if(auto cursor {this->bucket.bucket()[i]}; cursor) {
                 do {
                     auto backup {cursor};
                     cursor = cursor->next;
@@ -566,7 +566,7 @@ namespace data_structure {
         }
         auto bucket {this->bucket_allocate(n)};
         this->rehash(bucket, n);
-        this->clear();
+        alloc_traits::operator delete(this->bucket.bucket());
         this->bucket.bucket() = bucket;
         this->size_of_bucket = n;
     }
@@ -603,10 +603,10 @@ namespace data_structure {
         for(auto cursor {new_node};; cursor = cursor->next) {
             cursor->hash = hash;
             if constexpr(is_nothrow_copy_constructible_v<value_type>) {
-                alloc_traits::construct(ds::address_of(new_node->value), value);
+                alloc_traits::construct(ds::address_of(cursor->value), value);
             }else {
                 try {
-                    alloc_traits::construct(ds::address_of(new_node->value), value);
+                    alloc_traits::construct(ds::address_of(cursor->value), value);
                 }catch(...) {
                     alloc_traits::operator delete(cursor);
                     for(auto i {new_node}; i->next not_eq cursor;) {
@@ -617,6 +617,10 @@ namespace data_structure {
                     }
                     throw;
                 }
+            }
+            if(--size == 0) {
+                last = cursor;
+                break;
             }
             try {
                 cursor->next = this->node_allocate();
@@ -631,10 +635,6 @@ namespace data_structure {
                     }
                 }
                 throw;
-            }
-            if(--size == 0) {
-                last = cursor;
-                break;
             }
         }
         auto constrained {this->constrain_hash(hash, this->size_of_bucket)};
@@ -681,7 +681,7 @@ namespace data_structure {
             }
         }
         new_node->hash = this->bucket.hash()(new_node->value);
-        auto constrained {this->constrain_hash(new_node->hash)};
+        auto constrained {this->constrain_hash(new_node->hash, this->size_of_bucket)};
         new_node->next = this->bucket.bucket()[constrained];
         this->bucket.bucket()[constrained] = new_node;
         return iterator(new_node, this->bucket.bucket() + constrained, this->bucket.bucket(), this->size_of_bucket);
@@ -740,13 +740,13 @@ namespace data_structure {
     }
     template <typename T, typename Hash, typename Allocator>
     template <typename Equal>
-    typename hash_table<T, Hash, Alloctaor>::iterator
+    typename hash_table<T, Hash, Allocator>::iterator
     hash_table<T, Hash, Allocator>::remove(const_reference value, size_type size, Equal equal)
             noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>) {
         if(size == 0) {
             return this->end();
         }
-        auto constrained {this->constrain_hash(this->bucket.hash()(value))};
+        auto constrained {this->constrain_hash(this->bucket.hash()(value), this->size_of_bucket)};
         auto bucket {this->bucket.bucket() + constrained};
         auto cursor {*bucket};
         while(equal(cursor->value, value)) {
@@ -755,14 +755,14 @@ namespace data_structure {
             alloc_traits::operator delete(cursor);
             cursor = *bucket;
             if(--size == 0 or cursor == nullptr) {
-                return iterator(cursor, bucket, this->bucket, this->size_of_bucket);
+                return iterator(cursor, bucket, this->bucket.bucket(), this->size_of_bucket);
             }
         }
         while(cursor->next) {
             if(equal(cursor->next->value, value)) {
                 auto backup {cursor->next};
                 cursor->next = backup->next;
-                alloc_traits::destroy(backup->value);
+                alloc_traits::destroy(ds::address_of(backup->value));
                 alloc_traits::operator delete(backup);
                 if(--size == 0) {
                     break;
@@ -771,13 +771,14 @@ namespace data_structure {
                 cursor = cursor->next;
             }
         }
-        return iterator(cursor, bucket, this->bucket, this->size_of_bucket);
+        return iterator(cursor, bucket, this->bucket.bucket(), this->size_of_bucket);
     }
     template <typename T, typename Hash, typename Allocator>
     template <typename Equal>
-    typename hash_table<T, Hash, Allocator>::size_type hash_table<T, Hash, Allocator>::count(
-            const_reference value, Equal equal) const noexcept(has_nothrow_equal_to_operator_v<value_type>) {
-        auto constrained {this->constrain_hash(this->bucket.hash()(value))};
+    typename hash_table<T, Hash, Allocator>::size_type
+    hash_table<T, Hash, Allocator>::count(const_reference value, Equal equal) const
+            noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>) {
+        auto constrained {this->constrain_hash(this->bucket.hash()(value), this->size_of_bucket)};
         size_type size {};
         for(auto cursor {this->bucket.bucket()[constrained]}; cursor; cursor = cursor->next) {
             if(equal(cursor->value, value)) {
@@ -790,7 +791,7 @@ namespace data_structure {
     template <typename Equal>
     typename hash_table<T, Hash, Allocator>::iterator hash_table<T, Hash, Allocator>::find(const_reference value,
             Equal equal) noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>) {
-        auto constrained {this->constrain_hash(this->bucket.hash()(value))};
+        auto constrained {this->constrain_hash(this->bucket.hash()(value), this->size_of_bucket)};
         for(auto cursor {this->bucket.bucket()[constrained]}; cursor; cursor = cursor->next) {
             if(equal(cursor->value), value) {
                 return iterator(cursor, this->bucket.bucket() + constrained,
@@ -808,11 +809,11 @@ namespace data_structure {
     }
     template <typename T, typename Hash, typename Allocator>
     template <typename Equal>
-    bool hash_table<T, Hash, Allocator>::contains(const_reference, Equal) const
+    bool hash_table<T, Hash, Allocator>::contains(const_reference value, Equal equal) const
             noexcept(has_nothrow_function_call_operator_v<Equal, value_type, value_type>) {
-        auto constrained {this->constrain_hash(this->bucket.hash()(value))};
+        auto constrained {this->constrain_hash(this->bucket.hash()(value), this->size_of_bucket)};
         for(auto cursor {this->bucket.bucket()[constrained]}; cursor; cursor = cursor->next) {
-            if(equal(cursor->value), value) {
+            if(equal(cursor->value, value)) {
                 return true;
             }
         }
