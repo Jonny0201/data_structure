@@ -99,7 +99,7 @@ namespace data_structure {
         using bucket_type = node_type *;
         using alloc_traits = allocator_traits<allocator_type>;
         static_assert(is_same_v<value_type, typename alloc_traits::value_type>,
-                "The Allocator::value_type must be the same as template argument BucketType!");
+                "The Allocator::value_type must be the same as template argument value_type!");
     private:
         __dsa::hash_table_compress_with_bucket_type<bucket_type, hasher> bucket;
         size_type size_of_bucket;
