@@ -19,7 +19,6 @@
 
 #include "utility.hpp"
 #include "memory.hpp"
-#include "meta.hpp"
 
 __DATA_STRUCTURE_START(allocator for C++ standard)
 namespace data_structure {
