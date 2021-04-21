@@ -29,6 +29,7 @@ namespace data_structure {
     template <typename, typename, typename, typename, typename> class skip_list;
     template <typename, typename, typename> class hash_table;
     template <typename, typename> class tree;
+    template <typename, typename> class binary_tree;
 }
 __DATA_STRUCTURE_END
 
@@ -1631,6 +1632,7 @@ namespace data_structure::__data_structure_auxiliary {
             const hash_table_iterator<Type, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
+
     template <typename T, bool = false>
     class hash_table_local_iterator final {
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
@@ -1746,6 +1748,133 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename Type, bool IsConstLHS, bool IsConstRHS>
     inline bool operator!=(const hash_table_local_iterator<Type, IsConstLHS> &lhs,
             const hash_table_local_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+}
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(special iterator, binary tree iterator)
+namespace data_structure::__data_structure_auxiliary {
+    template <typename T>
+    struct binary_tree_node {
+        T value;
+        binary_tree_node *left_child;
+        binary_tree_node *right_child;
+        binary_tree_node *parent;
+    };
+    template <typename T, bool IsConst = false>
+    class binary_tree_iterator {
+        template <typename, typename> friend class ds::binary_tree;
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
+                const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
+    private:
+        using node_type = binary_tree_node<T> *;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = bidirectional_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr binary_tree_iterator() noexcept = default;
+        explicit constexpr binary_tree_iterator(node_type node) noexcept : node {node} {}
+        constexpr binary_tree_iterator(const binary_tree_iterator &) noexcept = default;
+        constexpr binary_tree_iterator(binary_tree_iterator &&) noexcept = default;
+        ~binary_tree_iterator() noexcept = default;
+    public:
+        constexpr binary_tree_iterator &operator=(const binary_tree_iterator &) noexcept = default;
+        constexpr binary_tree_iterator &operator=(binary_tree_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        binary_tree_iterator &operator++() & noexcept;
+        binary_tree_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        binary_tree_iterator &operator--() & noexcept;
+        binary_tree_iterator operator--(int) & noexcept {
+            auto tmp {*this};
+            --*this;
+            return tmp;
+        }
+        operator binary_tree_iterator<value_type, true>() const noexcept {
+            return binary_tree_iterator<value_type, true>(const_cast<binary_tree_iterator *>(this)->node);
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    };
+    template <typename T>
+    class binary_tree_iterator<T, true> {
+        template <typename, typename> friend class ds::binary_tree;
+        template <typename Type, bool IsConstLHS, bool IsConstRHS>
+        friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
+                const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
+    private:
+        using node_type = binary_tree_node<T> *;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_const_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_const_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<T>;
+        using iterator_category = bidirectional_iterator_tag;
+    private:
+        node_type node;
+    public:
+        constexpr binary_tree_iterator() noexcept = default;
+        explicit constexpr binary_tree_iterator(node_type node) noexcept : node {node} {}
+        constexpr binary_tree_iterator(const binary_tree_iterator &) noexcept = default;
+        constexpr binary_tree_iterator(binary_tree_iterator &&) noexcept = default;
+        ~binary_tree_iterator() noexcept = default;
+    public:
+        constexpr binary_tree_iterator &operator=(const binary_tree_iterator &) noexcept = default;
+        constexpr binary_tree_iterator &operator=(binary_tree_iterator &&) noexcept = default;
+        reference operator*() noexcept {
+            return node->value;
+        }
+        pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        binary_tree_iterator &operator++() & noexcept;
+        binary_tree_iterator operator++(int) & noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        binary_tree_iterator &operator--() & noexcept;
+        binary_tree_iterator operator--(int) & noexcept {
+            auto tmp {*this};
+            --*this;
+            return tmp;
+        }
+        explicit operator bool() const noexcept {
+            return this->node;
+        }
+    };
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
+            const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept {
+        return lhs.node == rhs.node;
+    }
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    bool operator!=(const binary_tree_iterator<Type, IsConstLHS> &lhs,
+            const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
     }
 }
