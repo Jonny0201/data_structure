@@ -76,9 +76,9 @@ namespace data_structure::__data_structure_auxiliary {
         vector_base(const vector_base &);
         vector_base(vector_base &&) noexcept;
         template <typename AllocatorRHS>
-        vector_base(const vector_base<value_type, AllocatorRHS> &);
+        explicit vector_base(const vector_base<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
-        vector_base(vector_base<value_type, AllocatorRHS> &&) noexcept;
+        explicit vector_base(vector_base<value_type, AllocatorRHS> &&) noexcept;
         ~vector_base() noexcept;
     public:
         vector_base &operator=(const vector_base &);
@@ -2241,6 +2241,12 @@ namespace data_structure {
     class vector<char, Allocator> final : public __dsa::vector_char<char, Allocator> {
     public:
         using __dsa::vector_char<char, Allocator>::vector_char;
+    };
+
+    template <typename Allocator>
+    class vector<signed char, Allocator> final : public __dsa::vector_char<signed char, Allocator> {
+    public:
+        using __dsa::vector_char<signed char, Allocator>::vector_char;
     };
 
     template <typename Allocator>
