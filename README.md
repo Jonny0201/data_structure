@@ -18,7 +18,7 @@ Appreciative only.
 
 ## Compiler Support ##
 
-- Apple clang version 12.0.0 (clang-1200.0.32.29) with compile flag `-std=c++2a -fchar8_t`
+- Apple clang version 12.0.5 (clang-1205.0.22.9) with compile flag `-std=c++20`
 
 ## Contributors ##
 
@@ -27,6 +27,7 @@ Jonny
 ## Finished ##
 
 - type_traits.hpp
+- concepts.hpp
 
 ### Structures ###
 
@@ -42,6 +43,7 @@ Jonny
 - skip_list
 - tree
 - hash_table
+- binary_tree
 
 ### Algorithms ###
 
@@ -76,7 +78,6 @@ Jonny
 - hash_array
 
 ### Tree ###
-- binary_tree
 - leftist_tree (height-biased)
 - huffman_tree (weight-biased)
 - winner_tree
