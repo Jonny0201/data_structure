@@ -1162,12 +1162,14 @@ namespace data_structure {
     constexpr inline auto is_nothrow_assignable_v {is_nothrow_assignable<LHS, RHS>::value};
 
     template <typename T>
-    struct is_nothrow_copy_assignable : is_nothrow_assignable<T, add_const_reference_t<T>> {};
+    struct is_nothrow_copy_assignable :
+            is_nothrow_assignable<add_lvalue_reference_t<T>, add_const_reference_t<T>> {};
     template <typename T>
     constexpr inline auto is_nothrow_copy_assignable_v {is_nothrow_copy_assignable<T>::value};
 
     template <typename T>
-    struct is_nothrow_move_assignable : is_nothrow_assignable<T, add_rvalue_reference_t<T>> {};
+    struct is_nothrow_move_assignable :
+            is_nothrow_assignable<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>> {};
     template <typename T>
     constexpr inline auto is_nothrow_move_assignable_v {is_nothrow_move_assignable<T>::value};
 
