@@ -1797,13 +1797,45 @@ namespace data_structure::__data_structure_auxiliary {
         pointer operator->() noexcept {
             return ds::address_of(**this);
         }
-        binary_tree_iterator &operator++() & noexcept;
+        binary_tree_iterator &operator++() & noexcept {
+            if(this->node->right_child) {
+                this->node = this->node->right_child;
+                while(this->node->left_child) {
+                    this->node = this->node->left_child;
+                }
+            }else {
+                while(this->node->parent->left_child not_eq this->node) {
+                    this->node = this->node->parent;
+                    if(not this->node->parent) {
+                        break;
+                    }
+                }
+                this->node = this->node->parent;
+            }
+            return *this;
+        }
         binary_tree_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
             return tmp;
         }
-        binary_tree_iterator &operator--() & noexcept;
+        binary_tree_iterator &operator--() & noexcept {
+            if(this->node->left_child) {
+                this->node = this->node->left_child;
+                while(this->node->right_child) {
+                    this->node = this->node->right_child;
+                }
+            }else {
+                while(this->node->parent->right_child not_eq this->node) {
+                    this->node = this->node->parent;
+                    if(not this->node->parent) {
+                        break;
+                    }
+                }
+                this->node = this->node->parent;
+            }
+            return *this;
+        }
         binary_tree_iterator operator--(int) & noexcept {
             auto tmp {*this};
             --*this;
@@ -1814,6 +1846,22 @@ namespace data_structure::__data_structure_auxiliary {
         }
         explicit operator bool() const noexcept {
             return this->node;
+        }
+    public:
+        binary_tree_iterator left_child() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->left_child;
+            return tmp;
+        }
+        binary_tree_iterator right_child() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->right_child;
+            return tmp;
+        }
+        binary_tree_iterator parent() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->parent;
+            return tmp;
         }
     };
     template <typename T>
@@ -1851,13 +1899,45 @@ namespace data_structure::__data_structure_auxiliary {
         pointer operator->() noexcept {
             return ds::address_of(**this);
         }
-        binary_tree_iterator &operator++() & noexcept;
+        binary_tree_iterator &operator++() & noexcept {
+            if(this->node->right_child) {
+                this->node = this->node->right_child;
+                while(this->node->left_child) {
+                    this->node = this->node->left_child;
+                }
+            }else {
+                while(this->node->parent->left_child not_eq this->node) {
+                    this->node = this->node->parent;
+                    if(not this->node->parent) {
+                        break;
+                    }
+                }
+                this->node = this->node->parent;
+            }
+            return *this;
+        }
         binary_tree_iterator operator++(int) & noexcept {
             auto tmp {*this};
             ++*this;
             return tmp;
         }
-        binary_tree_iterator &operator--() & noexcept;
+        binary_tree_iterator &operator--() & noexcept {
+            if(this->node->left_child) {
+                this->node = this->node->left_child;
+                while(this->node->right_child) {
+                    this->node = this->node->right_child;
+                }
+            }else {
+                while(this->node->parent->right_child not_eq this->node) {
+                    this->node = this->node->parent;
+                    if(not this->node->parent) {
+                        break;
+                    }
+                }
+                this->node = this->node->parent;
+            }
+            return *this;
+        }
         binary_tree_iterator operator--(int) & noexcept {
             auto tmp {*this};
             --*this;
@@ -1865,6 +1945,22 @@ namespace data_structure::__data_structure_auxiliary {
         }
         explicit operator bool() const noexcept {
             return this->node;
+        }
+    public:
+        binary_tree_iterator left_child() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->left_child;
+            return tmp;
+        }
+        binary_tree_iterator right_child() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->right_child;
+            return tmp;
+        }
+        binary_tree_iterator parent() const noexcept {
+            auto tmp {*this};
+            tmp.node = tmp.node->parent;
+            return tmp;
         }
     };
     template <typename Type, bool IsConstLHS, bool IsConstRHS>
