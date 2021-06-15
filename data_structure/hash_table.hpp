@@ -28,7 +28,7 @@ namespace data_structure::__data_structure_auxiliary {
     public:
         constexpr hash_table_compress_auxiliary() = default;
         explicit hash_table_compress_auxiliary(Hash h)
-        noexcept(is_nothrow_copy_constructible_v<Hash> or is_nothrow_move_constructible_v<Hash>) :
+                noexcept(is_nothrow_copy_constructible_v<Hash> or is_nothrow_move_constructible_v<Hash>) :
                 h {ds::move_if<is_nothrow_move_constructible_v<Hash>>(h)} {}
     public:
         Hash &hash() noexcept {
@@ -118,7 +118,7 @@ namespace data_structure {
     public:
         constexpr hash_table() noexcept(is_nothrow_default_constructible_v<hasher>);
         explicit constexpr hash_table(hasher)
-        noexcept(is_nothrow_copy_constructible_v<hasher> or is_nothrow_move_constructible_v<hasher>);
+                noexcept(is_nothrow_copy_constructible_v<hasher> or is_nothrow_move_constructible_v<hasher>);
         hash_table(const hash_table &);
         hash_table(hash_table &&) noexcept;
         template <typename AllocatorRHS>
@@ -214,11 +214,11 @@ namespace data_structure {
     template <typename T, typename Hash, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
     [[nodiscard]]
     bool operator==(const hash_table<T, Hash, AllocatorLHS> &, const hash_table<T, Hash, AllocatorLHS> &)
-    noexcept(has_nothrow_equal_to_operator_v<T>);
+            noexcept(has_nothrow_equal_to_operator_v<T>);
     template <typename T, typename Hash, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
     [[nodiscard]]
     bool operator!=(const hash_table<T, Hash, AllocatorLHS> &, const hash_table<T, Hash, AllocatorLHS> &)
-    noexcept(has_nothrow_equal_to_operator_v<T>);
+            noexcept(has_nothrow_equal_to_operator_v<T>);
 }
 
 namespace data_structure {
@@ -235,7 +235,8 @@ namespace data_structure {
     }
     template <typename T, typename Hash, typename Allocator>
     inline constexpr size_t hash_table<T, Hash, Allocator>::next_hash_power_2(size_t n) noexcept {
-        return n < 2 ? n : (static_cast<size_t>(1) << (std::numeric_limits<size_t>::digits - __builtin_clzl(n - 1)));
+        return n < 2 ? n : (static_cast<size_t>(1) <<
+                (std::numeric_limits<size_t>::digits - __builtin_clzl(n - 1)));
     }
     template <typename T, typename Hash, typename Allocator>
     inline typename hash_table<T, Hash, Allocator>::bucket_type
@@ -344,11 +345,11 @@ namespace data_structure {
     /* public functions */
     template <typename T, typename Hash, typename Allocator>
     constexpr inline hash_table<T, Hash, Allocator>::hash_table()
-    noexcept(is_nothrow_default_constructible_v<hasher>) :
+            noexcept(is_nothrow_default_constructible_v<hasher>) :
             bucket(nullptr), size_of_bucket {0}, factor {1.0} {}
     template <typename T, typename Hash, typename Allocator>
     constexpr inline hash_table<T, Hash, Allocator>::hash_table(hasher hash)
-    noexcept(is_nothrow_copy_constructible_v<hasher> or is_nothrow_move_constructible_v<hasher>) :
+            noexcept(is_nothrow_copy_constructible_v<hasher> or is_nothrow_move_constructible_v<hasher>) :
             bucket(nullptr, ds::move_if<is_nothrow_move_constructible_v<hasher>>(hash)),
             size_of_bucket {0}, factor {1.0} {}
     template <typename T, typename Hash, typename Allocator>
@@ -426,7 +427,7 @@ namespace data_structure {
     template <typename T, typename Hash, typename Allocator>
     inline typename hash_table<T, Hash, Allocator>::size_type
     hash_table<T, Hash, Allocator>::operator[](const_reference value)
-    noexcept(has_nothrow_equal_to_operator_v<value_type>) {
+            noexcept(has_nothrow_equal_to_operator_v<value_type>) {
         auto pos {this->constrain_hash(this->bucket.hash()(value), this->size_of_bucket)};
         for(auto cursor {this->bucket.bucket()[pos]}; cursor; cursor = cursor->next) {
             if(value == cursor->value) {
@@ -684,7 +685,8 @@ namespace data_structure {
         auto constrained {this->constrain_hash(new_node->hash, this->size_of_bucket)};
         new_node->next = this->bucket.bucket()[constrained];
         this->bucket.bucket()[constrained] = new_node;
-        return iterator(new_node, this->bucket.bucket() + constrained, this->bucket.bucket(), this->size_of_bucket);
+        return iterator(new_node, this->bucket.bucket() + constrained,
+                this->bucket.bucket(), this->size_of_bucket);
     }
     template <typename T, typename Hash, typename Allocator>
     typename hash_table<T, Hash, Allocator>::iterator
@@ -823,6 +825,35 @@ namespace data_structure {
     inline typename hash_table<T, Hash, Allocator>::hasher
     hash_table<T, Hash, Allocator>::hash_function() const noexcept {
         return this->bucket.hash();
+    }
+}
+
+namespace data_structure {
+    template <typename T, typename Hash, typename AllocatorLHS, typename AllocatorRHS>
+    inline void swap(hash_table<T, Hash, AllocatorLHS> &lhs, hash_table<T, Hash, AllocatorLHS> &rhs) noexcept {
+        lhs.swap(rhs);
+    }
+    template <typename T, typename Hash, typename AllocatorLHS, typename AllocatorRHS>
+    bool operator==(const hash_table<T, Hash, AllocatorLHS> &lhs, const hash_table<T, Hash, AllocatorLHS> &rhs)
+            noexcept(has_nothrow_equal_to_operator_v<T>) {
+        if(lhs.size() not_eq rhs.size()) {
+            return false;
+        }
+        auto lhs_end {lhs.cend()};
+        for(auto lhs_cursor {lhs.cbegin()}, rhs_cursor {rhs.cbegin()};; ++lhs_cursor, ++rhs_cursor) {
+            if(lhs_cursor == lhs_end) {
+                break;
+            }
+            if(*lhs_cursor not_eq *rhs_cursor) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T, typename Hash, typename AllocatorLHS, typename AllocatorRHS>
+    inline bool operator!=(const hash_table<T, Hash, AllocatorLHS> &lhs,
+            const hash_table<T, Hash, AllocatorLHS> &rhs) noexcept(has_nothrow_equal_to_operator_v<T>) {
+        return not(lhs == rhs);
     }
 }
 
