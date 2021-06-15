@@ -57,24 +57,25 @@ namespace data_structure {
         static void deallocate_from(node_type) noexcept;
         [[nodiscard]]
         static size_type level_auxiliary(node_type) noexcept;
-        template <typename UnaryPredict>
-        static void pre_traversal(UnaryPredict, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>);
-        template <typename UnaryPredict>
-        static void in_traversal(UnaryPredict, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>);
-        template <typename UnaryPredict>
-        static void post_traversal(UnaryPredict, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>);
-        template <typename UnaryPredict>
-        static void level_traversal(UnaryPredict, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>);
-    private:
-        node_type copy_from_rhs(node_type);
+        template <typename UnaryPrediction>
+        static void pre_traversal(UnaryPrediction, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        template <typename UnaryPrediction>
+        static void in_traversal(UnaryPrediction, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        template <typename UnaryPrediction>
+        static void post_traversal(UnaryPrediction, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        template <typename UnaryPrediction>
+        static void level_traversal(UnaryPrediction, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        static size_type size_auxiliary(node_type) noexcept;
+        static node_type copy_from_rhs(node_type);
     public:
         constexpr binary_tree() noexcept = default;
         explicit binary_tree(const_reference);
         explicit binary_tree(rvalue_reference);
+        explicit binary_tree(const_iterator);
         binary_tree(const binary_tree &);
         binary_tree(binary_tree &&) noexcept;
         template <typename AllocatorRHS>
@@ -96,11 +97,17 @@ namespace data_structure {
         [[nodiscard]]
         const_iterator begin() const noexcept;
         [[nodiscard]]
+        iterator tbegin() noexcept;
+        [[nodiscard]]
+        const_iterator tbegin() const noexcept;
+        [[nodiscard]]
         constexpr iterator end() noexcept;
         [[nodiscard]]
         constexpr const_iterator end() const noexcept;
         [[nodiscard]]
         const_iterator cbegin() const noexcept;
+        [[nodiscard]]
+        const_iterator ctbegin() const noexcept;
         [[nodiscard]]
         constexpr const_iterator cend() const noexcept;
         [[nodiscard]]
@@ -108,17 +115,27 @@ namespace data_structure {
         [[nodiscard]]
         const_reverse_iterator rbegin() const noexcept;
         [[nodiscard]]
+        reverse_iterator rtbegin() noexcept;
+        [[nodiscard]]
+        const_reverse_iterator rtbegin() const noexcept;
+        [[nodiscard]]
         constexpr reverse_iterator rend() noexcept;
         [[nodiscard]]
         constexpr const_reverse_iterator rend() const noexcept;
         [[nodiscard]]
         const_reverse_iterator crbegin() const noexcept;
         [[nodiscard]]
+        const_reverse_iterator crtbegin() const noexcept;
+        [[nodiscard]]
         constexpr const_reverse_iterator crend() const noexcept;
         [[nodiscard]]
         size_type size() const noexcept;
         [[nodiscard]]
+        static size_type size(const_iterator) noexcept;
+        [[nodiscard]]
         size_type level() const noexcept;
+        [[nodiscard]]
+        static size_type level(const_iterator) noexcept;
         [[nodiscard]]
         constexpr bool empty() const noexcept;
         [[nodiscard]]
@@ -130,9 +147,14 @@ namespace data_structure {
         void swap(binary_tree &) noexcept;
         template <typename AllocatorRHS>
         void swap(binary_tree<value_type, AllocatorRHS> &) noexcept;
+        static void swap_children(const_iterator) noexcept;
         void clear() noexcept;
-        template <typename UnaryPredict>
-        void traversal(UnaryPredict, binary_tree::order = binary_tree::order::in);
+        template <typename UnaryPrediction>
+        void traversal(UnaryPrediction, binary_tree::order = binary_tree::order::in)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        template <typename UnaryPrediction>
+        static void traversal(const_iterator, UnaryPrediction, binary_tree::order = binary_tree::order::in)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
         iterator insert_under(const_iterator, const_reference, binary_tree::direction);
         iterator insert_under(const_iterator, rvalue_reference, binary_tree::direction);
         iterator insert_under(const_iterator, const binary_tree &,
@@ -190,39 +212,39 @@ namespace data_structure {
         return level;
     }
     template <typename T, typename Allocator>
-    template <typename UnaryPredict>
-    void binary_tree<T, Allocator>::pre_traversal(UnaryPredict pred, node_type root)
-            noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>) {
+    template <typename UnaryPrediction>
+    void binary_tree<T, Allocator>::pre_traversal(UnaryPrediction pred, node_type root)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
         if(root) {
             pred(root->value);
-            binary_tree::pre_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->left_child);
-            binary_tree::pre_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->right_child);
+            binary_tree::pre_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->left_child);
+            binary_tree::pre_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->right_child);
         }
     }
     template <typename T, typename Allocator>
-    template <typename UnaryPredict>
-    void binary_tree<T, Allocator>::in_traversal(UnaryPredict pred, node_type root)
-            noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>) {
+    template <typename UnaryPrediction>
+    void binary_tree<T, Allocator>::in_traversal(UnaryPrediction pred, node_type root)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
         if(root) {
-            binary_tree::in_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->left_child);
+            binary_tree::in_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->left_child);
             pred(root->value);
-            binary_tree::in_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->right_child);
+            binary_tree::in_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->right_child);
         }
     }
     template <typename T, typename Allocator>
-    template <typename UnaryPredict>
-    void binary_tree<T, Allocator>::post_traversal(UnaryPredict pred, node_type root)
-            noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>) {
+    template <typename UnaryPrediction>
+    void binary_tree<T, Allocator>::post_traversal(UnaryPrediction pred, node_type root)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
         if(root) {
-            binary_tree::post_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->left_child);
-            binary_tree::post_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, root->right_child);
+            binary_tree::post_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->left_child);
+            binary_tree::post_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, root->right_child);
             pred(root->value);
         }
     }
     template <typename T, typename Allocator>
-    template <typename UnaryPredict>
-    void binary_tree<T, Allocator>::level_traversal(UnaryPredict pred, node_type root)
-            noexcept(has_nothrow_function_call_operator_v<UnaryPredict, reference>) {
+    template <typename UnaryPrediction>
+    void binary_tree<T, Allocator>::level_traversal(UnaryPrediction pred, node_type root)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
         if(root) {
             queue<node_type> q;
             q.push(root);
@@ -240,12 +262,17 @@ namespace data_structure {
         }
     }
     template <typename T, typename Allocator>
+    typename binary_tree<T, Allocator>::size_type
+    binary_tree<T, Allocator>::size_auxiliary(node_type start) noexcept {
+        return start ? size_auxiliary(start->left_child) + size_auxiliary(start->right_child) + 1 : 0;
+    }
+    template <typename T, typename Allocator>
     typename binary_tree<T, Allocator>::node_type
     binary_tree<T, Allocator>::copy_from_rhs(node_type rhs) {
         if(not rhs) {
             return nullptr;
         }
-        auto new_node {this->node_allocate()};
+        auto new_node {binary_tree::node_allocate()};
         if constexpr(is_nothrow_copy_constructible_v<value_type>) {
             alloc_traits::construct(ds::address_of(new_node->value), rhs->value);
         }else {
@@ -301,8 +328,16 @@ namespace data_structure {
         this->root->left_child = this->root->right_child = this->root->parent = nullptr;
     }
     template <typename T, typename Allocator>
+    binary_tree<T, Allocator>::binary_tree(const_iterator pos) : root {this->copy_from_rhs(pos.node)} {
+        if(this->root) {
+            this->root->parent = nullptr;
+        }
+    }
+    template <typename T, typename Allocator>
     binary_tree<T, Allocator>::binary_tree(const binary_tree &rhs) : root {this->copy_from_rhs(rhs.root)} {
-        this->root->parent = nullptr;
+        if(this->root) {
+            this->root->parent = nullptr;
+        }
     }
     template <typename T, typename Allocator>
     binary_tree<T, Allocator>::binary_tree(binary_tree &&rhs) noexcept : root {rhs.root} {
@@ -324,7 +359,9 @@ namespace data_structure {
     binary_tree<T, Allocator> &binary_tree<T, Allocator>::operator=(const binary_tree &rhs) {
         if(&rhs not_eq this) {
             auto new_root {copy_from_rhs(rhs.root)};
-            new_root->parent = nullptr;
+            if(new_root) {
+                new_root->parent = nullptr;
+            }
             this->~binary_tree();
             this->root = new_root;
         }
@@ -344,7 +381,9 @@ namespace data_structure {
     binary_tree<T, Allocator> &binary_tree<T, Allocator>::operator=(
             const binary_tree<value_type, AllocatorRHS> &rhs) {
         auto new_root {this->copy_from_rhs(reinterpret_cast<binary_tree *>(&rhs)->root)};
-        new_root->parent = nullptr;
+        if(new_root) {
+            new_root->parent = nullptr;
+        }
         this->~binary_tree();
         this->root = new_root;
         return *this;
@@ -378,6 +417,14 @@ namespace data_structure {
         return const_cast<binary_tree *>(this)->begin();
     }
     template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::iterator binary_tree<T, Allocator>::tbegin() noexcept {
+        return iterator(this->root);
+    }
+    template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::const_iterator binary_tree<T, Allocator>::tbegin() const noexcept {
+        return const_iterator(this->root);
+    }
+    template <typename T, typename Allocator>
     inline constexpr typename binary_tree<T, Allocator>::iterator binary_tree<T, Allocator>::end() noexcept {
         return {};
     }
@@ -389,6 +436,10 @@ namespace data_structure {
     template <typename T, typename Allocator>
     inline typename binary_tree<T, Allocator>::const_iterator binary_tree<T, Allocator>::cbegin() const noexcept {
         return this->begin();
+    }
+    template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::const_iterator binary_tree<T, Allocator>::ctbegin() const noexcept {
+        return this->tbegin();
     }
     template <typename T, typename Allocator>
     inline constexpr typename binary_tree<T, Allocator>::const_iterator
@@ -409,6 +460,15 @@ namespace data_structure {
         return const_cast<binary_tree *>(this)->rbegin();
     }
     template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::reverse_iterator binary_tree<T, Allocator>::rtbegin() noexcept {
+        return reverse_iterator(iterator(this->root));
+    }
+    template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::const_reverse_iterator
+    binary_tree<T, Allocator>::rtbegin() const noexcept {
+        return reverse_iterator(const_iterator(this->root));
+    }
+    template <typename T, typename Allocator>
     inline constexpr typename binary_tree<T, Allocator>::reverse_iterator
     binary_tree<T, Allocator>::rend() noexcept {
         return {};
@@ -424,6 +484,11 @@ namespace data_structure {
         return this->rbegin();
     }
     template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::const_reverse_iterator
+    binary_tree<T, Allocator>::crtbegin() const noexcept {
+        return this->rtbegin();
+    }
+    template <typename T, typename Allocator>
     inline constexpr typename binary_tree<T, Allocator>::const_reverse_iterator
     binary_tree<T, Allocator>::crend() const noexcept {
         return {};
@@ -435,8 +500,18 @@ namespace data_structure {
         return size;
     }
     template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::size_type
+    binary_tree<T, Allocator>::size(const_iterator start) noexcept {
+        return binary_tree::size_auxiliary(start.node);
+    }
+    template <typename T, typename Allocator>
     inline typename binary_tree<T, Allocator>::size_type binary_tree<T, Allocator>::level() const noexcept {
         return this->level_auxiliary(this->root);
+    }
+    template <typename T, typename Allocator>
+    inline typename binary_tree<T, Allocator>::size_type
+    binary_tree<T, Allocator>::level(const_iterator start) noexcept {
+        return binary_tree::level_auxiliary(start.node);
     }
     template <typename T, typename Allocator>
     inline constexpr bool binary_tree<T, Allocator>::empty() const noexcept {
@@ -468,25 +543,53 @@ namespace data_structure {
         this->swap(*reinterpret_cast<binary_tree *>(rhs));
     }
     template <typename T, typename Allocator>
+    inline void binary_tree<T, Allocator>::swap_children(const_iterator pos) noexcept {
+        if(pos) {
+            ds::swap(pos.node->left_child, pos.node->right_child);
+        }
+    }
+    template <typename T, typename Allocator>
     inline void binary_tree<T, Allocator>::clear() noexcept {
         this->deallocate_from(this->root);
         this->root = nullptr;
     }
     template <typename T, typename Allocator>
-    template <typename UnaryPredict>
-    inline void binary_tree<T, Allocator>::traversal(UnaryPredict pred, binary_tree::order order) {
+    template <typename UnaryPrediction>
+    inline void binary_tree<T, Allocator>::traversal(UnaryPrediction pred, binary_tree::order order)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
         switch(order) {
             case binary_tree::order::pre :
-                this->pre_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, this->root);
+                this->pre_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, this->root);
                 break;
             case binary_tree::order::in :
-                this->in_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, this->root);
+                this->in_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, this->root);
                 break;
             case binary_tree::order::post :
-                this->post_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, this->root);
+                this->post_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, this->root);
                 break;
             case binary_tree::order::level :
-                this->level_traversal<add_lvalue_reference_t<UnaryPredict>>(pred, this->root);
+                this->level_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, this->root);
+                break;
+            default :
+                break;
+        }
+    }
+    template <typename T, typename Allocator>
+    template <typename UnaryPrediction>
+    inline void binary_tree<T, Allocator>::traversal(const_iterator start, UnaryPrediction pred,
+            binary_tree::order order) noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
+        switch(order) {
+            case binary_tree::order::pre :
+                binary_tree::pre_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, start.node);
+                break;
+            case binary_tree::order::in :
+                binary_tree::in_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, start.node);
+                break;
+            case binary_tree::order::post :
+                binary_tree::post_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, start.node);
+                break;
+            case binary_tree::order::level :
+                binary_tree::level_traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, start.node);
                 break;
             default :
                 break;
@@ -513,14 +616,18 @@ namespace data_structure {
                 return pos;
             }
             pos.node->left_child = this->copy_from_rhs(rhs.root);
-            pos.node->left_child->parent = nullptr;
+            if(pos.node->left_child) {
+                pos.node->left_child->parent = nullptr;
+            }
             return iterator(pos.node->left_child);
         }
         if(pos.node->right_child) {
             return pos;
         }
         pos.node->right_child = this->copy_from_rhs(rhs.root);
-        pos.node->right_child->parent = nullptr;
+        if(pos.node->right_child) {
+            pos.node->right_child->parent = nullptr;
+        }
         return iterator(pos.node->right_child);
     }
     template <typename T, typename Allocator>
