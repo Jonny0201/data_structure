@@ -34,16 +34,17 @@ Jonny
 - vector
 - forward_list
 - array
-- priority_queue (Adaptor)
+- priority_queue (adaptor)
 - list
-- static_forward_list (Adaptor)
-- stack (Adaptor)
-- queue (Adaptor)
+- static_forward_list (adaptor)
+- stack (adaptor)
+- queue (adaptor)
 - deque
 - skip_list
 - tree
 - hash_table
 - binary_tree
+- leftist_tree (adaptor)
 
 ### Algorithms ###
 
@@ -78,8 +79,7 @@ Jonny
 - hash_array
 
 ### Tree ###
-- leftist_tree (height-biased)
-- huffman_tree (weight-biased)
+- huffman_tree
 - winner_tree
 - loser_tree
 - binary_search_tree
