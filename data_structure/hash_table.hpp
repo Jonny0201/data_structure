@@ -39,7 +39,7 @@ namespace data_structure::__data_structure_auxiliary {
         }
     };
     template <typename Hash>
-    struct hash_table_compress_auxiliary<Hash, true> : public Hash {
+    struct hash_table_compress_auxiliary<Hash, true> : Hash {
     public:
         constexpr hash_table_compress_auxiliary() = default;
         explicit hash_table_compress_auxiliary(Hash) noexcept : Hash() {}
@@ -60,10 +60,10 @@ namespace data_structure::__data_structure_auxiliary {
     public:
         constexpr hash_table_compress_with_bucket_type() = default;
         explicit hash_table_compress_with_bucket_type(BucketType b)
-        noexcept(is_nothrow_default_constructible_v<hash_table_compress<Hash>>) :
+                noexcept(is_nothrow_default_constructible_v<hash_table_compress<Hash>>) :
                 hash_table_compress<Hash>(), b {ds::move(b)} {}
         hash_table_compress_with_bucket_type(BucketType b, Hash h)
-        noexcept(is_nothrow_copy_constructible_v<Hash> or is_nothrow_move_constructible_v<Hash>) :
+                noexcept(is_nothrow_copy_constructible_v<Hash> or is_nothrow_move_constructible_v<Hash>) :
                 hash_table_compress<Hash>(ds::move_if<is_nothrow_move_constructible_v<Hash>>(h)), b {ds::move(b)} {}
     public:
         BucketType &bucket() noexcept {
@@ -76,7 +76,7 @@ namespace data_structure::__data_structure_auxiliary {
 }
 
 namespace data_structure {
-    template <typename T, typename Hash = hash<T>, typename Allocator = allocator<ds::type_holder<T>>>
+    template <typename T, typename Hash = hash<T>, typename Allocator = allocator<type_holder<T>>>
     class hash_table final {
     public:
         using allocator_type = Allocator;
