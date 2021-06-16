@@ -1,8 +1,8 @@
 # data_structure #
 
-![](https://img.shields.io/badge/Build-Pending-Yellow.svg)
-![](https://img.shields.io/badge/Contributors-1-BrightGreen.svg)
-![](https://img.shields.io/badge/License-Apache%202.0-green.svg)
+![](https://img.shields.io/badge/Build-Pending-yellow)
+![](https://img.shields.io/badge/Contributors-1-blue)
+![](https://img.shields.io/badge/License-Apache%202.0-brightgreen)
 
 In computer science, a data structure is a data organization, management, and storage format that enables efficient access and modification. More precisely, a data structure is a collection of data values, the relationships among them, and the functions or operations that can be applied to the data.
 
