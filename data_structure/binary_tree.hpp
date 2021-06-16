@@ -69,7 +69,9 @@ namespace data_structure {
         template <typename UnaryPrediction>
         static void level_traversal(UnaryPrediction, node_type)
                 noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        [[nodiscard]]
         static size_type size_auxiliary(node_type) noexcept;
+        [[nodiscard]]
         static node_type copy_from_rhs(node_type);
     public:
         constexpr binary_tree() noexcept = default;
@@ -173,6 +175,14 @@ namespace data_structure {
     public:
         static bool rotate(const_iterator, binary_tree::direction) noexcept;
     };
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    void swap(binary_tree<T, AllocatorLHS> &, binary_tree<T, AllocatorRHS> &) noexcept;
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    bool operator==(const binary_tree<T, AllocatorLHS> &, const binary_tree<T, AllocatorRHS> &)
+            noexcept(has_nothrow_equal_to_operator_v<T>);
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
+    bool operator!=(const binary_tree<T, AllocatorLHS> &, const binary_tree<T, AllocatorRHS> &)
+            noexcept(has_nothrow_equal_to_operator_v<T>);
 }
 
 namespace data_structure {
@@ -815,6 +825,35 @@ namespace data_structure {
             pos.node->parent = parent_node;
         }
         return true;
+    }
+}
+
+namespace data_structure {
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    inline void swap(binary_tree<T, AllocatorLHS> &lhs, binary_tree<T, AllocatorRHS> &rhs) noexcept {
+        lhs.swap(rhs);
+    }
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    bool operator==(const binary_tree<T, AllocatorLHS> &lhs, const binary_tree<T, AllocatorRHS> &rhs)
+            noexcept(has_nothrow_equal_to_operator_v<T>) {
+        if(lhs.size() not_eq rhs.size()) {
+            return false;
+        }
+        auto lhs_end {lhs.cend()};
+        for(auto lhs_cursor {lhs.cbegin()}, rhs_cursor {rhs.cbegin()};; ++lhs_cursor, ++rhs_cursor) {
+            if(lhs_cursor == lhs_end) {
+                break;
+            }
+            if(*lhs_cursor not_eq *rhs_cursor) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T, typename AllocatorLHS, typename AllocatorRHS>
+    inline bool operator!=(const binary_tree<T, AllocatorLHS> &lhs, const binary_tree<T, AllocatorRHS> &rhs)
+            noexcept(has_nothrow_equal_to_operator_v<T>) {
+        return not(lhs == rhs);
     }
 }
 
