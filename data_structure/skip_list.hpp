@@ -352,9 +352,9 @@ namespace data_structure::__data_structure_auxiliary {
 }
 
 namespace data_structure {
-    template <typename T, typename Allocator = allocator<type_holder<T>>,
-            typename Compare = less<>, typename Random = __dsa::skip_list_random_number_generator,
-            typename Probability = __dsa::skip_list_probability_generator>
+    template <typename T, typename Compare = less<>, typename Random = __dsa::skip_list_random_number_generator,
+            typename Probability = __dsa::skip_list_probability_generator,
+            typename Allocator = allocator<type_holder<T>>>
     class skip_list {
     public:
         using allocator_type = Allocator;

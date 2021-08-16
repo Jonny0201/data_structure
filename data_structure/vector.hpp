@@ -19,7 +19,6 @@
 
 #include "allocator.hpp"
 #include "iterator.hpp"
-#include "algorithm.hpp"
 #include "string.hpp"
 
 namespace data_structure::__data_structure_auxiliary {
@@ -88,9 +87,9 @@ namespace data_structure::__data_structure_auxiliary {
         vector_base &operator=(const vector_base<value_type, AllocatorRHS> &);
         template <typename AllocatorRHS>
         vector_base &operator=(vector_base<value_type, AllocatorRHS> &&) noexcept;
-        reference operator[](difference_type) noexcept(has_nothrow_dereference_operator<pointer>::value);
+        reference operator[](difference_type) noexcept(has_nothrow_dereference_operator_v<pointer>);
         const_reference operator[](difference_type) const
-                noexcept(has_nothrow_dereference_operator<pointer>::value);
+                noexcept(has_nothrow_dereference_operator_v<pointer>);
     public:
         void assign(size_type, const_reference = {});
         template <typename InputIterator>
@@ -486,13 +485,13 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::reference
     vector_base<T, Allocator>::operator[](difference_type n)
-            noexcept(has_nothrow_dereference_operator<pointer>::value) {
+            noexcept(has_nothrow_dereference_operator_v<pointer>) {
         return *(this->first + n);
     }
     template <typename T, typename Allocator>
     inline typename vector_base<T, Allocator>::const_reference
     vector_base<T, Allocator>::operator[](difference_type n) const
-            noexcept(has_nothrow_dereference_operator<pointer>::value) {
+            noexcept(has_nothrow_dereference_operator_v<pointer>) {
         return *(this->first + n);
     }
     template <typename T, typename Allocator>

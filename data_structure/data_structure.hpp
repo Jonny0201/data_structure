@@ -42,5 +42,6 @@
 #include "hash.hpp"
 #include "hash_table.hpp"
 #include "binary_tree.hpp"
+#include "leftist_tree.hpp"
 
 #endif //DATA_STRUCTURE_DATA_STRUCTURE_HPP

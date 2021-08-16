@@ -109,7 +109,7 @@ namespace data_structure {
             this->c.pop_front();
         }
         void swap(queue &rhs) noexcept {
-            this->c.swap(rhs.c);
+            this->c.swap(rhs.t);
         }
     };
 

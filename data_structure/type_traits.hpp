@@ -223,7 +223,7 @@ namespace data_structure {
     template <__VA_ARGS__> \
     static constexpr bool_constant<noexcept(expression)> test_nothrow_##name(int) noexcept; \
     template <__VA_ARGS__> \
-    static constexpr false_type test_##name_nothrow(...) noexcept
+    static constexpr false_type test_nothrow_##name(...) noexcept
 namespace data_structure {
     namespace __data_structure_auxiliary {
         template <typename, typename T>
@@ -265,7 +265,7 @@ namespace data_structure {
                 typename From, typename To);
         __DATA_STRUCTURE_TEST_OPERATION(castable, (To)declval<From>(), typename From, typename To);
         __DATA_STRUCTURE_TEST_OPERATION(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION(address_of, &declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION(address_of, declval<T>().operator&(), typename T);
         __DATA_STRUCTURE_TEST_OPERATION(bit_and, declval<LHS>() bitand declval<RHS>(),
                 typename LHS, typename RHS);
         __DATA_STRUCTURE_TEST_OPERATION(bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
@@ -348,7 +348,7 @@ namespace data_structure {
                 typename T, typename ...Args);
         __DATA_STRUCTURE_TEST_OPERATION(function_call, declval<T>()(declval<Args>()...),
                 typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>(), declval<Arg>()), typename T, typename Arg);
+        __DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>().operator,(declval<Arg>())), typename T, typename Arg);
 
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(destructible, declval<T &>().~T(), typename T);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
@@ -365,7 +365,7 @@ namespace data_structure {
                 typename From, typename To);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(castable, (To)declval<From>(), typename From, typename To);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
-        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(address_of, &declval<T>(), typename T);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(address_of, declval<T>().operator&(), typename T);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and, declval<LHS>() bitand declval<RHS>(),
                 typename LHS, typename RHS);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
@@ -448,7 +448,8 @@ namespace data_structure {
                 typename T, typename ...Args);
         __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(function_call, declval<T>()(declval<Args>()...),
                 typename T, typename ...Args);
-        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(comma, (declval<T>(), declval<Arg>()), typename T, typename Arg);
+        __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(comma, (declval<T>().operator,(declval<Arg>())),
+                typename T, typename Arg);
     }
 }
 __DATA_STRUCTURE_END
@@ -893,7 +894,7 @@ namespace data_structure {
     template <typename T>
     constexpr inline auto is_const_reference_v {is_const_reference<T>::value};
 
-    template <typename T>
+    template <typename>
     struct is_type : true_type {};
     template <typename T>
     constexpr inline auto is_type_v {is_type<T>::value};
@@ -1242,7 +1243,7 @@ namespace data_structure {
 
     template <typename Base, typename Derived>
     struct is_virtual_base_of : bool_constant<is_base_of_v<Base, Derived> and
-            is_castable_v<Derived,  Base> and not is_castable_v<Base, Derived>> {};
+            is_castable_v<Derived, Base> and not is_castable_v<Base, Derived>> {};
     template <typename Base, typename Derived>
     constexpr inline auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
 }

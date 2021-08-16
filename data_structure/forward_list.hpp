@@ -1672,9 +1672,9 @@ namespace data_structure {
         this->unique(equal_to<value_type>());
     }
     template <typename T, typename Allocator>
-    template <typename BinaryPredict>
-    void forward_list<T, Allocator>::unique(BinaryPredict p)
-            noexcept(has_nothrow_function_call_operator<BinaryPredict, value_type, value_type>::value) {
+    template <typename BinaryPrediction>
+    void forward_list<T, Allocator>::unique(BinaryPrediction p)
+            noexcept(has_nothrow_function_call_operator<BinaryPrediction, value_type, value_type>::value) {
         for(auto cursor {this->head->next}; cursor;) {
             auto next {cursor->next};
             for(; next and p(next->value, cursor->value); next = next->next);

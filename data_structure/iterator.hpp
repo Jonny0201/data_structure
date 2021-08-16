@@ -149,6 +149,66 @@ namespace data_structure {
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(iterator functions)
+namespace data_structure {
+    template <typename Iterator>
+    inline iterator_traits_t(Iterator, difference_type)
+    distance(enable_if_t<not is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end) {
+        iterator_traits_t(Iterator, difference_type) difference {0};
+        while(begin not_eq end) {
+            ++begin, static_cast<void>(++difference);
+        }
+        return difference;
+    }
+    template <typename Iterator>
+    inline iterator_traits_t(Iterator, difference_type)
+    distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end)
+    noexcept(has_nothrow_minus_operator_v<Iterator>) {
+        return end - begin;
+    }
+    inline ptrdiff_t distance(void *begin, void *end) noexcept {
+        return reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin);
+    }
+    template <typename Iterator>
+    inline enable_if_t<not is_random_access_iterator_v<Iterator>, Iterator>
+    advance(Iterator begin, iterator_traits_t(Iterator, difference_type) step = 1) {
+        if(step > 0) {
+            while(step > 0) {
+                ++begin, static_cast<void>(--step);
+            }
+        }else if(step < 0) {
+            while(step < 0) {
+                --begin, static_cast<void>(++step);
+            }
+        }
+        return begin;
+    }
+    template <typename RandomAccessIterator>
+    inline enable_if_t<is_random_access_iterator_v<RandomAccessIterator>, RandomAccessIterator>
+    advance(RandomAccessIterator begin, iterator_traits_t(RandomAccessIterator, difference_type) step = 1)
+    noexcept(has_nothrow_plus_operator_v<iterator_traits_t(RandomAccessIterator, difference_type)>) {
+        return begin + step;
+    }
+    inline void *advance(void *ptr, ptrdiff_t step = 1) noexcept {
+        return reinterpret_cast<char *>(ptr) + step;
+    }
+    template <typename Iterator>
+    inline Iterator next(Iterator it) noexcept(has_nothrow_pre_increment_operator_v<Iterator>) {
+        return ++it;
+    }
+    inline void *next(void *ptr) noexcept {
+        return reinterpret_cast<char *>(ptr) + 1;
+    }
+    template <typename Iterator>
+    inline Iterator previous(Iterator it) noexcept(has_nothrow_pre_decrement_operator_v<Iterator>) {
+        return --it;
+    }
+    inline void *previous(void *ptr) noexcept {
+        return reinterpret_cast<char *>(ptr) - 1;
+    }
+}
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(wrap_iterator)
 namespace data_structure {
     template <typename Iterator>
@@ -1765,6 +1825,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T, bool IsConst = false>
     class binary_tree_iterator {
         template <typename, typename> friend class ds::binary_tree;
+        template <typename, typename> friend class ds::leftist_tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
                 const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
@@ -1778,7 +1839,7 @@ namespace data_structure::__data_structure_auxiliary {
         using const_reference = add_const_reference_t<value_type>;
         using rvalue_reference = add_rvalue_reference_t<value_type>;
         using pointer = add_pointer_t<value_type>;
-        using const_pointer = add_const_pointer_t<T>;
+        using const_pointer = add_const_pointer_t<value_type>;
         using iterator_category = bidirectional_iterator_tag;
     private:
         node_type node;
@@ -1792,7 +1853,7 @@ namespace data_structure::__data_structure_auxiliary {
         constexpr binary_tree_iterator &operator=(const binary_tree_iterator &) noexcept = default;
         constexpr binary_tree_iterator &operator=(binary_tree_iterator &&) noexcept = default;
         reference operator*() noexcept {
-            return node->value;
+            return this->node->value;
         }
         pointer operator->() noexcept {
             return ds::address_of(**this);
@@ -1867,6 +1928,7 @@ namespace data_structure::__data_structure_auxiliary {
     template <typename T>
     class binary_tree_iterator<T, true> {
         template <typename, typename> friend class ds::binary_tree;
+        template <typename, typename> friend class ds::leftist_tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
                 const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
@@ -1880,7 +1942,7 @@ namespace data_structure::__data_structure_auxiliary {
         using const_reference = add_const_reference_t<value_type>;
         using rvalue_reference = add_rvalue_reference_t<value_type>;
         using pointer = add_const_pointer_t<value_type>;
-        using const_pointer = add_const_pointer_t<T>;
+        using const_pointer = add_const_pointer_t<value_type>;
         using iterator_category = bidirectional_iterator_tag;
     private:
         node_type node;
@@ -1894,7 +1956,7 @@ namespace data_structure::__data_structure_auxiliary {
         constexpr binary_tree_iterator &operator=(const binary_tree_iterator &) noexcept = default;
         constexpr binary_tree_iterator &operator=(binary_tree_iterator &&) noexcept = default;
         reference operator*() noexcept {
-            return node->value;
+            return this->node->value;
         }
         pointer operator->() noexcept {
             return ds::address_of(**this);

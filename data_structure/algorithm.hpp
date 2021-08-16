@@ -21,66 +21,6 @@
 #include "iterator.hpp"
 #include "heap.hpp"
 
-__DATA_STRUCTURE_START(iterator)
-namespace data_structure {
-    template <typename Iterator>
-    inline iterator_traits_t(Iterator, difference_type)
-    distance(enable_if_t<not is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end) {
-        iterator_traits_t(Iterator, difference_type) difference {0};
-        while(begin not_eq end) {
-            ++begin, static_cast<void>(++difference);
-        }
-        return difference;
-    }
-    template <typename Iterator>
-    inline iterator_traits_t(Iterator, difference_type)
-    distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end)
-            noexcept(has_nothrow_minus_operator_v<Iterator>) {
-        return end - begin;
-    }
-    inline ptrdiff_t distance(void *begin, void *end) noexcept {
-        return reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin);
-    }
-    template <typename Iterator>
-    inline enable_if_t<not is_random_access_iterator_v<Iterator>, Iterator>
-    advance(Iterator begin, iterator_traits_t(Iterator, difference_type) step = 1) {
-        if(step > 0) {
-            while(step > 0) {
-                ++begin, static_cast<void>(--step);
-            }
-        }else if(step < 0) {
-            while(step < 0) {
-                --begin, static_cast<void>(++step);
-            }
-        }
-        return begin;
-    }
-    template <typename RandomAccessIterator>
-    inline enable_if_t<is_random_access_iterator_v<RandomAccessIterator>, RandomAccessIterator>
-    advance(RandomAccessIterator begin, iterator_traits_t(RandomAccessIterator, difference_type) step = 1)
-            noexcept(has_nothrow_plus_operator_v<iterator_traits_t(RandomAccessIterator, difference_type)>) {
-        return begin + step;
-    }
-    inline void *advance(void *ptr, ptrdiff_t step = 1) noexcept {
-        return reinterpret_cast<char *>(ptr) + step;
-    }
-    template <typename Iterator>
-    inline Iterator next(Iterator it) noexcept(has_nothrow_pre_increment_operator_v<Iterator>) {
-        return ++it;
-    }
-    inline void *next(void *ptr) noexcept {
-        return reinterpret_cast<char *>(ptr) + 1;
-    }
-    template <typename Iterator>
-    inline Iterator previous(Iterator it) noexcept(has_nothrow_pre_decrement_operator_v<Iterator>) {
-        return --it;
-    }
-    inline void *previous(void *ptr) noexcept {
-        return reinterpret_cast<char *>(ptr) - 1;
-    }
-}
-__DATA_STRUCTURE_END
-
 __DATA_STRUCTURE_START(numeric)
 namespace data_structure {
     template <typename T>

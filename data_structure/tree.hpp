@@ -57,19 +57,20 @@ namespace data_structure {
         static ptrdiff_t locate(node_type, node_type) noexcept;
         static void erase_auxiliary(node_type) noexcept;
         static void copy_to_this(node_type, node_type);
-        size_type level_auxiliary(node_type, size_type = 1) const noexcept;
+        static size_type level_auxiliary(node_type) noexcept;
+        template <typename UnaryPredicate>
+        static void pre_traversal(UnaryPredicate, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
+        template <typename UnaryPredicate>
+        static void post_traversal(UnaryPredicate, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
+        template <typename UnaryPredicate>
+        static void level_traversal(UnaryPredicate, node_type)
+                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
     private:
         void constructor_setting() noexcept(is_nothrow_default_constructible_v<value_type>);
         template <typename Value>
         void constructor_setting(Value &&) noexcept(is_nothrow_constructible_v<value_type, Value>);
-        template <typename UnaryPredicate>
-        void pre_traversal(UnaryPredicate, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
-        template <typename UnaryPredicate>
-        void post_traversal(UnaryPredicate, node_type)
-                noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>);
-        template <typename UnaryPredicate>
-        void level_traversal(UnaryPredicate, node_type);
     private:
         explicit tree(node_type) noexcept;
     public:
@@ -162,13 +163,6 @@ namespace data_structure {
         return reinterpret_cast<node_type>(alloc_traits::operator new(sizeof(node_value_type)));
     }
     template <typename T, typename Allocator>
-    inline void tree<T, Allocator>::constructor_setting()
-            noexcept(is_nothrow_default_constructible_v<value_type>) {
-        alloc_traits::construct(ds::address_of(this->root->value));
-        this->root->next = this->root->previous = nullptr;
-        this->root->next_size = 0;
-    }
-    template <typename T, typename Allocator>
     inline typename tree<T, Allocator>::node_type *tree<T, Allocator>::next_allocate(size_type size) {
         return reinterpret_cast<node_type *>(alloc_traits::operator new(sizeof(node_type) * size));
     }
@@ -247,27 +241,16 @@ namespace data_structure {
         to->next_size = copy->next_size;
     }
     template <typename T, typename Allocator>
-    typename tree<T, Allocator>::size_type tree<T, Allocator>::level_auxiliary(
-            node_type root, size_type level) const noexcept {
-        size_type r {level};
+    typename tree<T, Allocator>::size_type tree<T, Allocator>::level_auxiliary(node_type root) noexcept {
+        size_type level {1};
         if(root->next) {
             for(auto i {0}; i < root->next_size; ++i) {
-                if(const auto next_level {tree::level_auxiliary(root->next[i], level + 1)};
-                        next_level > r) {
-                    r = next_level;
+                if(auto level_i {tree::level_auxiliary(root->next[i]) + 1}; level_i > level) {
+                    level = level_i;
                 }
             }
         }
-        return r;
-    }
-    template <typename T, typename Allocator>
-    template <typename Value>
-    inline void tree<T, Allocator>::constructor_setting(Value &&value)
-            noexcept(is_nothrow_constructible_v<value_type, Value>) {
-        alloc_traits::construct(ds::address_of(this->root->value), ds::forward<Value>(value));
-        this->root->next = nullptr;
-        this->root->previous = nullptr;
-        this->root->next_size = 0;
+        return level;
     }
     template <typename T, typename Allocator>
     template <typename UnaryPredicate>
@@ -276,7 +259,7 @@ namespace data_structure {
         pred(node->value);
         for(auto i {0}; i < node->next_size; ++i) {
             if(node->next[i]) {
-                pre_traversal<add_lvalue_reference_t<UnaryPredicate>>(pred, node->next[i]);
+                tree::pre_traversal<add_lvalue_reference_t<UnaryPredicate>>(pred, node->next[i]);
             }
         }
     }
@@ -286,14 +269,15 @@ namespace data_structure {
             noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>) {
         for(auto i {0}; i < node->next_size; ++i) {
             if(node->next[i]) {
-                post_traversal<add_lvalue_reference_t<UnaryPredicate>>(pred, node->next[i]);
+                tree::post_traversal<add_lvalue_reference_t<UnaryPredicate>>(pred, node->next[i]);
             }
         }
         pred(node->value);
     }
     template <typename T, typename Allocator>
     template <typename UnaryPredicate>
-    void tree<T, Allocator>::level_traversal(UnaryPredicate pred, node_type node) {
+    void tree<T, Allocator>::level_traversal(UnaryPredicate pred, node_type node)
+            noexcept(has_nothrow_function_call_operator_v<UnaryPredicate, reference>) {
         queue<node_type> q;
         q.push(node);
         while(not q.empty()) {
@@ -304,6 +288,22 @@ namespace data_structure {
             }
             q.pop();
         }
+    }
+    template <typename T, typename Allocator>
+    inline void tree<T, Allocator>::constructor_setting()
+    noexcept(is_nothrow_default_constructible_v<value_type>) {
+        alloc_traits::construct(ds::address_of(this->root->value));
+        this->root->next = this->root->previous = nullptr;
+        this->root->next_size = 0;
+    }
+    template <typename T, typename Allocator>
+    template <typename Value>
+    inline void tree<T, Allocator>::constructor_setting(Value &&value)
+            noexcept(is_nothrow_constructible_v<value_type, Value>) {
+        alloc_traits::construct(ds::address_of(this->root->value), ds::forward<Value>(value));
+        this->root->next = nullptr;
+        this->root->previous = nullptr;
+        this->root->next_size = 0;
     }
     template <typename T, typename Allocator>
     inline tree<T, Allocator>::tree(node_type node) noexcept : root {node} {}
@@ -733,10 +733,10 @@ namespace data_structure {
             throw;
         }
         if constexpr(is_nothrow_move_constructible_v<value_type>) {
-            alloc_traits::constrct(ds::address_of(next[0]->value), ds::forward<Args>(args)...);
+            alloc_traits::construct(ds::address_of(next[0]->value), ds::forward<Args>(args)...);
         }else {
             try {
-                alloc_traits::constrct(ds::address_of(next[0]->value), ds::forward<Args>(args)...);
+                alloc_traits::construct(ds::address_of(next[0]->value), ds::forward<Args>(args)...);
             }catch(...) {
                 alloc_traits::operator delete(next[0]);
                 alloc_traits::operator delete(next);

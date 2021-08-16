@@ -19,7 +19,6 @@
 
 #include "allocator.hpp"
 #include "iterator.hpp"
-#include "algorithm.hpp"
 
 namespace data_structure {
     template <typename T, typename Allocator = allocator<type_holder<T>>>
