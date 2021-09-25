@@ -157,6 +157,8 @@ namespace data_structure {
         template <typename UnaryPrediction>
         static void traversal(const_iterator, UnaryPrediction, binary_tree::order = binary_tree::order::in)
                 noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>);
+        template <typename ...Args>
+        void initialize_top(Args &&...args);
         iterator insert_under(const_iterator, const_reference, binary_tree::direction);
         iterator insert_under(const_iterator, rvalue_reference, binary_tree::direction);
         iterator insert_under(const_iterator, const binary_tree &,
@@ -603,6 +605,24 @@ namespace data_structure {
                 break;
             default :
                 break;
+        }
+    }
+    template <typename T, typename Allocator>
+    template <typename ...Args>
+    void binary_tree<T, Allocator>::initialize_top(Args &&...args) {
+        if(this->root == nullptr) {
+            this->root = this->node_allocate();
+            if constexpr(is_nothrow_constructible_v<value_type, Args...>) {
+                alloc_traits::construct(ds::address_of(this->root->value), ds::forward<Args>(args)...);
+            }else {
+                try {
+                    alloc_traits::construct(ds::address_of(this->root->value), ds::forward<Args>(args)...);
+                }catch(...) {
+                    alloc_traits::operator delete(this->root);
+                    throw;
+                }
+            }
+            this->root->parent = this->root->left_child = this->root->right_child = nullptr;
         }
     }
     template <typename T, typename Allocator>
