@@ -221,6 +221,10 @@ namespace data_structure {
                 noexcept(has_nothrow_function_call_operator_v<UnaryPrediction, reference>) {
             this->tree.template traversal<add_lvalue_reference_t<UnaryPrediction>>(pred, order);
         }
+        template <typename ...Args>
+        void initialize_top(Args &&...args) {
+            this->initialize_top(ds::forward<Args>(args)...);
+        }
         template <typename Condition = __dsa::leftist_tree_default_condition>
         iterator insert_under(const_iterator pos, const_reference value,
                 leftist_tree::direction direction, Condition condition = {}) {
