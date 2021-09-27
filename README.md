@@ -66,7 +66,6 @@ Jonny
 ### Array ###
 - bits
 - matrix
-- static_matrix
 - string
 - generalized_list
 
