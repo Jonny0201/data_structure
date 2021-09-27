@@ -18,7 +18,7 @@ Appreciative only.
 
 ## Compiler Support ##
 
-- Apple clang version 12.0.5 (clang-1205.0.22.9) with compile flag `-std=c++20`
+- Apple clang version 13.0.0 (clang-1300.0.29.3) with compile flag `-std=c++20`
 
 ## Contributors ##
 
@@ -71,8 +71,6 @@ Jonny
 - generalized_list
 
 ### List ###
-- circular_forward_list
-- uncircular_list
 - static_list
 
 ### Hash ###
