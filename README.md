@@ -45,6 +45,9 @@ Jonny
 - hash_table
 - binary_tree
 - leftist_tree (adaptor)
+- buffer
+- winner_tree
+- loser_tree
 
 ### Algorithms ###
 
@@ -77,8 +80,6 @@ Jonny
 
 ### Tree ###
 - huffman_tree
-- winner_tree
-- loser_tree
 - binary_search_tree
 - avl_tree
 - red_black_tree (rb_tree)
