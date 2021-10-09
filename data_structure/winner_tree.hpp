@@ -52,7 +52,7 @@ namespace data_structure::__data_structure_auxiliary {
             return static_cast<Compare &>(*this);
         }
         const Compare &compare() const noexcept {
-            return tstatic_cast<Compare &>(*this);
+            return static_cast<Compare &>(*this);
         }
     };
     template <typename SizeType, typename Compare>
@@ -187,6 +187,9 @@ namespace data_structure {
                 noexcept(is_nothrow_constructible_v<value_type, Args...> and
                         (is_nothrow_move_assignable_v<value_type> or is_nothrow_copy_assignable_v<value_type>));
         void pop();
+    public:
+        value_compare &compare() noexcept;
+        const value_compare &compare() const noexcept;
     };
     template <typename T, typename AllocatorLHS, typename AllocatorRHS = AllocatorLHS>
     void swap(winner_tree<T, AllocatorLHS> &, winner_tree<T, AllocatorRHS> &) noexcept;
@@ -275,8 +278,24 @@ namespace data_structure {
     typename winner_tree<T, Compare, Group, Allocator>::const_reference
     winner_tree<T, Compare, Group, Allocator>::max_k(contestant_type *begin, difference_type left,
             difference_type right, difference_type k) {
-        auto pivot {begin[right]};
         auto &compare {this->contestant_size.compare()};
+        switch(this->contestant_size.size) {
+            case 1:
+                return this->contestant->value;
+            case 2:
+                return compare(this->contestant->value, this->contestant[1].value) ?
+                        this->contestant->value : this->contestant[1].value;
+            case 3:
+                if(compare(this->contestant->value, this->contestant[1].value)) {
+                    return compare(this->contestant->value, this->contestant[2].value) ?
+                            this->contestant->value : this->contestant[2].value;
+                }
+                return compare(this->contestant[1].value, this->contestant[2].value) ?
+                        this->contestant[1].value : this->contestant[2].value;
+            default:
+                break;
+        }
+        auto pivot {begin[right]};
         auto move_flag {true};
         auto left_cursor {left}, right_cursor {right};
         while(left_cursor not_eq right_cursor) {
@@ -366,102 +385,6 @@ namespace data_structure {
                         }
                     }
                     contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent = competition[j];
-                }else if constexpr(Group == 4) {
-                    if(cmp(contestant[i].value, contestant[i + 1].value)) {
-                        if(cmp(contestant[i].value, contestant[i + 2].value)) {
-                            if(cmp(contestant[i].value, contestant[i + 3].value)) {
-                                competition[j].winner = contestant + i;
-                            }else {
-                                competition[j].winner = contestant + (i + 3);
-                            }
-                        }else {
-                            if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                competition[j].winner = contestant + (i + 2);
-                            }else {
-                                competition[j].winner = contestant + (i + 3);
-                            }
-                        }
-                    }else {
-                        if(cmp(contestant[i + 1].value, contestant[i + 2].value)) {
-                            if(cmp(contestant[i + 1].value, contestant[i + 3].value)) {
-                                competition[j].winner = contestant + (i + 1);
-                            }else {
-                                competition[j].winner = contestant + (i + 3);
-                            }
-                        }else {
-                            if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                competition[j].winner = contestant + (i + 2);
-                            }else {
-                                competition[j].winner = contestant + (i + 3);
-                            }
-                        }
-                    }
-                    contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent \
-                        = contestant[i + 3].parent = competition[j];
-                }else if constexpr(Group == 5) {
-                    if(cmp(contestant[i].value, contestant[i + 1].value)) {
-                        if(cmp(contestant[i].value, contestant[i + 2].value)) {
-                            if(cmp(contestant[i].value, contestant[i + 3].value)) {
-                                if(cmp(contestant[i].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + i;
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 3);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }
-                        }else {
-                            if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 2);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 3);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }
-                        }
-                    }else {
-                        if(cmp(contestant[i + 1].value, contestant[i + 2].value)) {
-                            if(cmp(contestant[i + 1].value, contestant[i + 3].value)) {
-                                if(cmp(contestant[i + 1].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 1);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 2);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }
-                        }else {
-                            if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 2);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                    competition[j].winner = contestant + (i + 3);
-                                }else {
-                                    competition[j].winner = contestant + (i + 4);
-                                }
-                            }
-                        }
-                    }
-                    contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent \
-                        = contestant[i + 3].parent = contestant[i + 4].parent = competition[j];
                 }else {
                     auto min {i};
                     contestant[i].parent = competition[j];
@@ -536,102 +459,6 @@ namespace data_structure {
                         }
                         competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
                             = competition_parent + j;
-                    }else if constexpr(Group == 4) {
-                        if(cmp(competition[i].winner->value, competition[i + 1].winner->value)) {
-                            if(cmp(competition[i].winner->value, competition[i + 2].winner->value)) {
-                                if(cmp(competition[i].value, competition[i + 3].value)) {
-                                    competition_parent[j].winner = competition[i].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 3].winner;
-                                }
-                            }else {
-                                if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                    competition_parent[j].winner = competition[i + 2].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 3].winner;
-                                }
-                            }
-                        }else {
-                            if(cmp(competition[i + 1].winner->value, competition[i + 2].winner->value)) {
-                                if(cmp(competition[i + 1].winner->value, competition[i + 3].winner->value)) {
-                                    competition_parent[j].winner = competition[i + 1].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 3].winner;
-                                }
-                            }else {
-                                if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                    competition_parent[j].winner = competition[i + 2].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 3].winner;
-                                }
-                            }
-                        }
-                        competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
-                            = competition[i + 3].parent = competition_parent + j;
-                    }else if constexpr(Group == 5) {
-                        if(cmp(competition[i].winner->value, competition[i + 1].winner->value)) {
-                            if(cmp(competition[i].winner->value, competition[i + 2].winner->value)) {
-                                if(cmp(competition[i].winner->value, competition[i + 3].winner->value)) {
-                                    if(cmp(competition[i].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }
-                            }else {
-                                if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 2].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }
-                            }
-                        }else {
-                            if(cmp(competition[i + 1].winner->value, competition[i + 2].winner->value)) {
-                                if(cmp(competition[i + 1].winner->value, competition[i + 3].winner->value)) {
-                                    if(cmp(competition[i + 1].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 1].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 2].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }
-                            }else {
-                                if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 2].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 4].winner;
-                                    }
-                                }
-                            }
-                        }
-                        competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
-                            = competition[i + 3].parent = competition[i + 4].parent = competition_parent + j;
                     }else {
                         auto winner {i};
                         const auto parent {competition_parent + j};
@@ -702,102 +529,6 @@ namespace data_structure {
                             }
                         }
                         contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent = competition[j];
-                    }else if constexpr(Group == 4) {
-                        if(cmp(contestant[i].value, contestant[i + 1].value)) {
-                            if(cmp(contestant[i].value, contestant[i + 2].value)) {
-                                if(cmp(contestant[i].value, contestant[i + 3].value)) {
-                                    competition[j].winner = contestant + i;
-                                }else {
-                                    competition[j].winner = contestant + (i + 3);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                    competition[j].winner = contestant + (i + 2);
-                                }else {
-                                    competition[j].winner = contestant + (i + 3);
-                                }
-                            }
-                        }else {
-                            if(cmp(contestant[i + 1].value, contestant[i + 2].value)) {
-                                if(cmp(contestant[i + 1].value, contestant[i + 3].value)) {
-                                    competition[j].winner = contestant + (i + 1);
-                                }else {
-                                    competition[j].winner = contestant + (i + 3);
-                                }
-                            }else {
-                                if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                    competition[j].winner = contestant + (i + 2);
-                                }else {
-                                    competition[j].winner = contestant + (i + 3);
-                                }
-                            }
-                        }
-                        contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent \
-                        = contestant[i + 3].parent = competition[j];
-                    }else if constexpr(Group == 5) {
-                        if(cmp(contestant[i].value, contestant[i + 1].value)) {
-                            if(cmp(contestant[i].value, contestant[i + 2].value)) {
-                                if(cmp(contestant[i].value, contestant[i + 3].value)) {
-                                    if(cmp(contestant[i].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + i;
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }else {
-                                    if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 3);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }
-                            }else {
-                                if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                    if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 2);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }else {
-                                    if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 3);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }
-                            }
-                        }else {
-                            if(cmp(contestant[i + 1].value, contestant[i + 2].value)) {
-                                if(cmp(contestant[i + 1].value, contestant[i + 3].value)) {
-                                    if(cmp(contestant[i + 1].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 1);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }else {
-                                    if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 2);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }
-                            }else {
-                                if(cmp(contestant[i + 2].value, contestant[i + 3].value)) {
-                                    if(cmp(contestant[i + 2].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 2);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }else {
-                                    if(cmp(contestant[i + 3].value, contestant[i + 4].value)) {
-                                        competition[j].winner = contestant + (i + 3);
-                                    }else {
-                                        competition[j].winner = contestant + (i + 4);
-                                    }
-                                }
-                            }
-                        }
-                        contestant[i].parent = contestant[i + 1].parent = contestant[i + 2].parent \
-                        = contestant[i + 3].parent = contestant[i + 4].parent = competition[j];
                     }else {
                         auto min {i};
                         contestant[i].parent = competition[j];
@@ -856,118 +587,6 @@ namespace data_structure {
                                     cmp(competition[i].winner->value, competition[i + 1].winner->value)
                                     ? competition[i].winner : competition[i + 1].winner;
                             competition[i].parent = competition[i + 1].parent = competition_parent + j;
-                        }else if constexpr(Group == 3) {
-                            if(cmp(competition[i].winner->value, competition[i + 1].winner->value)) {
-                                if(cmp(competition[i].winner->value, competition[i + 2].winner->value)) {
-                                    competition_parent[j].winner = competition[i].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 1].winner;
-                                }
-                            }else {
-                                if(cmp(competition[i + 1].winner->value, competition[i + 2].winner->value)) {
-                                    competition_parent[j].winner = competition[i + 1].winner;
-                                }else {
-                                    competition_parent[j].winner = competition[i + 2].winner;
-                                }
-                            }
-                            competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
-                            = competition_parent + j;
-                        }else if constexpr(Group == 4) {
-                            if(cmp(competition[i].winner->value, competition[i + 1].winner->value)) {
-                                if(cmp(competition[i].winner->value, competition[i + 2].winner->value)) {
-                                    if(cmp(competition[i].value, competition[i + 3].value)) {
-                                        competition_parent[j].winner = competition[i].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 2].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }
-                                }
-                            }else {
-                                if(cmp(competition[i + 1].winner->value, competition[i + 2].winner->value)) {
-                                    if(cmp(competition[i + 1].winner->value, competition[i + 3].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 1].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                        competition_parent[j].winner = competition[i + 2].winner;
-                                    }else {
-                                        competition_parent[j].winner = competition[i + 3].winner;
-                                    }
-                                }
-                            }
-                            competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
-                            = competition[i + 3].parent = competition_parent + j;
-                        }else if constexpr(Group == 5) {
-                            if(cmp(competition[i].winner->value, competition[i + 1].winner->value)) {
-                                if(cmp(competition[i].winner->value, competition[i + 2].winner->value)) {
-                                    if(cmp(competition[i].winner->value, competition[i + 3].winner->value)) {
-                                        if(cmp(competition[i].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }else {
-                                        if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 3].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                        if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 2].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }else {
-                                        if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 3].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }
-                                }
-                            }else {
-                                if(cmp(competition[i + 1].winner->value, competition[i + 2].winner->value)) {
-                                    if(cmp(competition[i + 1].winner->value, competition[i + 3].winner->value)) {
-                                        if(cmp(competition[i + 1].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 1].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }else {
-                                        if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 2].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }
-                                }else {
-                                    if(cmp(competition[i + 2].winner->value, competition[i + 3].winner->value)) {
-                                        if(cmp(competition[i + 2].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 2].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }else {
-                                        if(cmp(competition[i + 3].winner->value, competition[i + 4].winner->value)) {
-                                            competition_parent[j].winner = competition[i + 3].winner;
-                                        }else {
-                                            competition_parent[j].winner = competition[i + 4].winner;
-                                        }
-                                    }
-                                }
-                            }
-                            competition[i].parent = competition[i + 1].parent = competition[i + 2].parent \
-                            = competition[i + 3].parent = competition[i + 4].parent = competition_parent + j;
                         }else {
                             auto winner {i};
                             const auto parent {competition_parent + j};
@@ -1443,6 +1062,16 @@ namespace data_structure {
     template <typename T, typename Compare, size_t Group, typename Allocator>
     void winner_tree<T, Compare, Group, Allocator>::pop() {
         this->erase(this->top_node()->winner - this->contestant);
+    }
+    template <typename T, typename Compare, size_t Group, typename Allocator>
+    typename winner_tree<T, Compare, Group, Allocator>::value_compare &
+    winner_tree<T, Compare, Group, Allocator>::compare() noexcept {
+        return this->contestant_size.compare();
+    }
+    template <typename T, typename Compare, size_t Group, typename Allocator>
+    const typename winner_tree<T, Compare, Group, Allocator>::value_compare &
+    winner_tree<T, Compare, Group, Allocator>::compare() const noexcept {
+        return this->contestant_size.compare();
     }
 }
 
