@@ -708,7 +708,6 @@ namespace data_structure {
     template <typename R, typename ...Args>
     struct function_traits<R (*)(Args..., ...) noexcept> : function_traits<R (Args..., ...) noexcept> {};
 
-    /* TODO : refactor it by modules in C++ 20 */
     #define function_traits_t(type, trait_name) typename ds::function_traits<type>::trait_name
     #define function_traits_v(type, trait_name) ds::function_traits<type>::trait_name()()
 }
@@ -756,6 +755,12 @@ namespace data_structure {
             return ds::forward<LHS>(lhs) < ds::forward<RHS>(rhs);
         }
     };
+    template <typename LHS, typename RHS>
+    struct less<LHS *, RHS *> {
+        constexpr bool operator()(LHS *lhs, RHS *rhs) const noexcept {
+            return rhs - lhs > 0;
+        }
+    };
     template <typename LHS = void, typename RHS = LHS>
     struct less_equal {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs <= rhs)) {
@@ -768,6 +773,12 @@ namespace data_structure {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
                 noexcept(noexcept(ds::forward<LHS>(lhs) <= ds::forward<RHS>(rhs))) {
             return ds::forward<LHS>(lhs) <= ds::forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS>
+    struct less_equal<LHS *, RHS *> {
+        constexpr bool operator()(LHS *lhs, RHS *rhs) const noexcept {
+            return rhs - lhs >= 0;
         }
     };
     template <typename LHS = void, typename RHS = LHS>
@@ -784,6 +795,12 @@ namespace data_structure {
             return ds::forward<LHS>(lhs) > ds::forward<RHS>(rhs);
         }
     };
+    template <typename LHS, typename RHS>
+    struct greater<LHS *, RHS *> {
+        constexpr bool operator()(LHS *lhs, RHS *rhs) const noexcept {
+            return lhs - rhs > 0;
+        }
+    };
     template <typename LHS = void, typename RHS = LHS>
     struct greater_equal {
         constexpr bool operator()(const LHS &lhs, const RHS &rhs) const noexcept(noexcept(lhs >= rhs)) {
@@ -796,6 +813,12 @@ namespace data_structure {
         constexpr bool operator()(LHS &&lhs, RHS &&rhs) const
                 noexcept(noexcept(ds::forward<LHS>(lhs) >= ds::forward<RHS>(rhs))) {
             return ds::forward<LHS>(lhs) >= ds::forward<RHS>(rhs);
+        }
+    };
+    template <typename LHS, typename RHS>
+    struct greater_equal<LHS *, RHS *> {
+        constexpr bool operator()(LHS *lhs, RHS *rhs) const noexcept {
+            return lhs - rhs >= 0;
         }
     };
     template <typename LHS = void, typename RHS = LHS>
