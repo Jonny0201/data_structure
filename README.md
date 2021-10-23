@@ -26,28 +26,36 @@ Jonny
 
 ## Finished ##
 
+### Headers ###
+
+- allocator.hpp
 - type_traits.hpp
 - concepts.hpp (moduled)
 
 ### Structures ###
 
+#### Linear ####
+
+- buffer
 - vector
-- forward_list
 - array
-- priority_queue (adaptor)
+- forward_list
 - list
-- static_forward_list (adaptor)
+- deque
 - stack (adaptor)
 - queue (adaptor)
-- deque
+- priority_queue (adaptor)
 - skip_list
-- tree
 - hash_table
+- static_forward_list (adaptor)
+
+#### Tree ####
+
+- tree
 - binary_tree
 - leftist_tree (adaptor)
-- buffer
 - winner_tree
-- loser_tree
+- loser_tree (alias)
 
 ### Algorithms ###
 
