@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ namespace data_structure {
     private:
         union free_list_node {
             free_list_node *free_list_link;
-            char client_data[0];        //client_data[1] for compatibility
+            char client_data[0];        // client_data[1] for compatibility
         };
     private:
         constexpr static auto align {Align};
-        constexpr static auto max_bytes {Align};
+        constexpr static auto max_bytes {MaxBytes};
         constexpr static auto free_list_extent {max_bytes / align};
     public:
         using size_type = size_t;
@@ -66,10 +66,10 @@ namespace data_structure {
         static char *chunk_alloc(size_type, size_type &);
     protected:
         void *operator new(size_t size) {
-            return ::operator new (size);
+            return ::operator new(size);
         }
         void *operator new(size_t size, dynamic) noexcept {
-            return ::operator new (size, std::nothrow);
+            return ::operator new(size, std::nothrow);
         }
         void operator delete(void *p) noexcept {
             ::operator delete(p, std::nothrow);
@@ -143,8 +143,8 @@ namespace data_structure {
             memory_pool::operator delete(p, size);
             return;
         }
-        auto first {*(free_list + free_list_index(size))};
-        auto return_node {reinterpret_cast<free_list_node *>(p)};
+        auto &first {*(free_list + free_list_index(size))};
+        auto return_node {static_cast<free_list_node *>(p)};
         return_node->free_list_link = first;
         first = return_node;
     }
@@ -181,15 +181,15 @@ namespace data_structure {
         }
         auto bytes_to_get {2 * total_bytes + round_up(chunk_size >> 4)};
         if(bytes_left > 0) {
-            auto first {*(free_list + free_list_index(bytes_left))};
+            auto &first {*(free_list + free_list_index(bytes_left))};
             auto new_first {reinterpret_cast<free_list_node *>(start)};
             new_first->free_list_link = first;
             first = new_first;
         }
-        start = reinterpret_cast<char *>(memory_pool::operator new(bytes_to_get, {}));
+        start = static_cast<char *>(memory_pool::operator new(bytes_to_get, {}));
         if(not start) {
             for(auto i {size}; i <= max_bytes; i += align) {
-                auto first {*(free_list + free_list_index(i))};
+                auto &first {*(free_list + free_list_index(i))};
                 if(first) {
                     start = reinterpret_cast<char *>(first);
                     first = first->free_list_link;
@@ -198,7 +198,7 @@ namespace data_structure {
                 }
             }
             end = nullptr;
-            start = reinterpret_cast<char *>(memory_pool::operator new(bytes_to_get));
+            start = static_cast<char *>(memory_pool::operator new(bytes_to_get));
             if(start) {
                 chunk_size += bytes_to_get;
                 end = start + chunk_size;
