@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -467,41 +467,43 @@ namespace data_structure {
             ds::rotate(i, middle, j);
         }
     }
-}
-__DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(forward_list)
-namespace data_structure {
-    template <typename ForwardIterator>
-    [[nodiscard]]
-    bool is_loop_list(ForwardIterator begin, ForwardIterator end) {
-        auto quick {begin};
-        while(begin not_eq quick) {
-            ++begin;
-            ++++quick;
-            if(quick == end) {
-                return false;
+    template <typename RandomAccessIterator, typename Compare = less<>>
+    void ranking_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare = {}) {
+        const auto size {end - begin};
+        auto rank {new size_t[size] {}};
+        for(auto i {1}; i < size; ++i) {
+            for(auto j {0}; j < i; ++j) {
+                if(begin[j] < begin[i]) {
+                    ++rank[i];
+                }else {
+                    ++rank[j];
+                }
             }
         }
-        return true;
-    }
-    template <typename ForwardIterator>
-    [[nodiscard]]
-    ForwardIterator loop_list_entry(ForwardIterator begin, ForwardIterator end) {
-        auto slow {begin};
-        auto quick {begin};
-        while(slow not_eq quick) {
-            ++slow;
-            ++++quick;
-            if(quick == end) {
-                return end;
+        if constexpr(is_nothrow_swappable_v<typename RandomAccessIterator::reference>) {
+            for(auto i {0}; i < size; ++i) {
+                auto &save {rank[i]};
+                while(save not_eq i) {
+                    ds::swap(begin[save], begin[i]);
+                    ds::swap(rank[save], save);
+                }
+            }
+        }else {
+            try {
+                for(auto i {0}; i < size; ++i) {
+                    auto &save {rank[i]};
+                    while(save not_eq i) {
+                        ds::swap(begin[save], begin[i]);
+                        ds::swap(rank[save], save);
+                    }
+                }
+            }catch(...) {
+                ::delete[] rank;
+                throw;
             }
         }
-        while(slow not_eq begin) {
-            ++slow;
-            ++begin;
-        }
-        return slow;
+        ::delete[] rank;
     }
 }
 __DATA_STRUCTURE_END
@@ -550,32 +552,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(testing)
 namespace data_structure::__data_structure_testing {
-    template <typename RandomAccessIterator>
-    void ranking_sort(RandomAccessIterator begin, RandomAccessIterator end) {
-        const auto size {ds::distance(begin, end)};
-        auto rank {::new int[size] {}};
-        try {
-            for(auto i {1}; i < size; ++i) {
-                for(auto j {0}; j < i; ++j) {
-                    if(begin[j] < begin[i] or begin[j] == begin[i]) {
-                        ++rank[i];
-                    }else {
-                        ++rank[j];
-                    }
-                }
-            }
-            for(auto i {0}; i < size; ++i) {
-                auto &save {rank[i]};
-                while(save not_eq i) {
-                    ds::swap(begin[save], begin[i]);
-                    ds::swap(rank[save], save);
-                }
-            }
-        }catch(...) {
-            ::delete[] rank;
-        }
-        ::delete[] rank;
-    }
     template <typename BidirectionalIterator>
     inline BidirectionalIterator
     __selection_sort_index_max_element(BidirectionalIterator begin, BidirectionalIterator end) {
@@ -696,14 +672,14 @@ namespace data_structure::__data_structure_testing {
                     bucket[digit].insert_after(__radix_sort_before_end(bucket[digit]), value);
                 }
                 ++exponent;
-                list.clear();
+                list.destroy_and_deallocate();
                 if(flag) {
                     forward_list = ds::move(bucket[0]);
                     break;
                 }
                 for(auto i {0}; i < radix; ++i) {
                     list.insert_after(__radix_sort_before_end(list), bucket[i].cbegin(), bucket[i].cend());
-                    bucket[i].clear();
+                    bucket[i].destroy_and_deallocate();
                 }
                 begin = list.begin();
                 end = list.end();
