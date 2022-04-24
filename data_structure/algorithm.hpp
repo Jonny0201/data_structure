@@ -205,6 +205,7 @@ namespace data_structure {
         }
         return backup;
     }
+
     template <typename Compare = less<>, typename ForwardIterator, typename T>
     ForwardIterator lower_bound(ForwardIterator begin, ForwardIterator end, const T &value, Compare cmp = {}) {
         auto size {ds::distance(begin, end)};
@@ -219,6 +220,48 @@ namespace data_structure {
             }
         }
         return begin;
+    }
+
+    template <typename InputIterator, typename T>
+    InputIterator find(InputIterator begin, InputIterator end, const T &value) {
+        while(begin not_eq end) {
+            if(*begin == value) {
+                return begin;
+            }
+        }
+        return end;
+    }
+    template <typename UnaryPrediction, typename InputIterator>
+    InputIterator find(InputIterator begin, InputIterator end, UnaryPrediction pred) {
+        while(begin not_eq end) {
+            if(pred(*begin)) {
+                return begin;
+            }
+        }
+        return end;
+    }
+
+    template <typename Compare = less<>, typename ForwardIterator>
+    ForwardIterator minimum_element(ForwardIterator begin, ForwardIterator end, Compare compare = {}) {
+        auto result {begin++};
+        while(begin not_eq end) {
+            if(compare(*begin, *result)) {
+                result = begin;
+            }
+            ++begin;
+        }
+        return result;
+    }
+    template <typename Compare = greater<>, typename ForwardIterator>
+    ForwardIterator maximum_element(ForwardIterator begin, ForwardIterator end, Compare compare = {}) {
+        auto result {begin++};
+        while(begin not_eq end) {
+            if(compare(*begin, *result)) {
+                result = begin;
+            }
+            ++begin;
+        }
+        return result;
     }
 }
 __DATA_STRUCTURE_END
@@ -468,7 +511,7 @@ namespace data_structure {
         }
     }
 
-    template <typename RandomAccessIterator, typename Compare = less<>>
+    template <typename Compare = less<>, typename RandomAccessIterator>
     void ranking_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare = {}) {
         const auto size {end - begin};
         auto rank {new size_t[size] {}};
@@ -504,6 +547,17 @@ namespace data_structure {
             }
         }
         ::delete[] rank;
+    }
+
+    template <typename Compare = less<>, typename BidirectionalIterator>
+    void selection_sort(BidirectionalIterator begin, BidirectionalIterator end, Compare compare = {}) {
+        while(begin not_eq end) {
+            auto min {ds::minimum_element<add_lvalue_reference_t<Compare>>(begin, end, compare)};
+            if(min not_eq begin) {
+                ds::swap(*min, *begin);
+            }
+            ++begin;
+        }
     }
 }
 __DATA_STRUCTURE_END
@@ -552,28 +606,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(testing)
 namespace data_structure::__data_structure_testing {
-    template <typename BidirectionalIterator>
-    inline BidirectionalIterator
-    __selection_sort_index_max_element(BidirectionalIterator begin, BidirectionalIterator end) {
-        auto it {ds::move(begin++)};
-        while(begin not_eq end) {
-            if(*begin > *it) {
-                it = begin;
-            }
-            ++begin;
-        }
-        return ds::move(it);
-    }
-    template <typename BidirectionalIterator>
-    void selection_sort(BidirectionalIterator begin, BidirectionalIterator end) {
-        auto max_iter {__dst::__selection_sort_index_max_element(begin, end)};
-        for(--end; end not_eq begin; --end) {
-            if(max_iter not_eq end) {
-                ds::swap(*max_iter, *end);
-            }
-            max_iter = __dst::__selection_sort_index_max_element(begin, end);
-        }
-    }
     template <typename BidirectionalIterator>
     void bubble_sort(BidirectionalIterator begin, BidirectionalIterator end) {
         auto last {end};
