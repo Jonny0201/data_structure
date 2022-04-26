@@ -559,6 +559,35 @@ namespace data_structure {
             ++begin;
         }
     }
+
+    template <typename Compare = less<>, typename BidirectionalIterator>
+    void bubble_sort(BidirectionalIterator begin, BidirectionalIterator end, Compare compare = {}) {
+        auto pre_end {end};
+        --pre_end;
+        while(begin not_eq end) {
+            for(auto j {pre_end}; j not_eq begin; --j) {
+                auto previous {j};
+                --previous;
+                if(compare(*j, *previous)) {
+                    std::swap(*j, *previous);
+                }
+            }
+            ++begin;
+        }
+    }
+
+    template <typename Compare = less<>, typename RandomAccessIterator>
+    void insertion_sort(RandomAccessIterator begin, RandomAccessIterator end, Compare compare = {}) {
+        const auto size {end - begin};
+        for(auto i {1}; i < size; ++i) {
+            auto j {i - 1};
+            auto save {ds::move(begin[i])};
+            for(; compare(save, begin[j]) and j >= 0; --j) {
+                begin[j + 1] = begin[j];
+            }
+            begin[j + 1] = ds::move(save);
+        }
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -606,30 +635,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(testing)
 namespace data_structure::__data_structure_testing {
-    template <typename BidirectionalIterator>
-    void bubble_sort(BidirectionalIterator begin, BidirectionalIterator end) {
-        auto last {end};
-        --last;
-        for(auto i {begin}; i not_eq end; ++i) {
-            for(auto j {last}; i not_eq j; --j) {
-                if(*j < *i) {
-                    swap(*i, *j);
-                }
-            }
-        }
-    }
-    template <typename RandomAccessIterator>
-    void insertion_sort(RandomAccessIterator begin, RandomAccessIterator end) {
-        const auto size {ds::distance(begin, end)};
-        for(auto i {1}; i < size; ++i) {
-            auto j {i - 1};
-            auto save {ds::move(begin[i])};
-            for(; j >= 0 and save < begin[j]; --j) {
-                begin[j + 1] = begin[j];
-            }
-            begin[j + 1] = ds::move(save);
-        }
-    }
     template <typename ForwardList, typename ForwardIterator>
     void bucket_sort(ForwardIterator begin, ForwardIterator end, ForwardList &forward_list,
             iterator_traits_t(ForwardIterator, size_type) range,
