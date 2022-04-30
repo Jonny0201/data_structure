@@ -588,6 +588,66 @@ namespace data_structure {
             begin[j + 1] = ds::move(save);
         }
     }
+
+    namespace __data_structure_auxiliary {
+        struct bucket_sort_default_index {
+            template <typename T>
+            int operator()(T value, T min, T) const noexcept {
+                return value - min;
+            }
+        };
+    }
+    /* numeric only */
+    template <typename ForwardList, typename Compare = less<>,
+            typename Index = __dsa::bucket_sort_default_index, typename ForwardIterator>
+    void bucket_sort(ForwardIterator begin, ForwardIterator end, Compare compare = {}, Index index = {}) {
+        const auto &min {*ds::minimum_element<add_lvalue_reference_t<Compare>>(begin, end, compare)};
+        auto ge {[compare](auto x, auto y) mutable noexcept {
+            return not compare(x, y);
+        }};
+        const auto &max {*ds::minimum_element<add_lvalue_reference_t<decltype(ge)>>(begin, end, ge)};
+        const auto range {max - min + 1};
+        auto bucket {new ForwardList[range] {}};
+        using value_type = decltype((min));
+        auto result {begin};
+        if constexpr(has_nothrow_function_call_operator_v<Index, value_type, value_type, value_type>) {
+            while(begin not_eq end) {
+                const auto &value {*begin++};
+                bucket[index(value, min, max)].push_front(value);
+            }
+        }else {
+            try {
+                while(begin not_eq end) {
+                    auto &value {*begin++};
+                    bucket[index(value, min, max)].push_front(value);
+                }
+            }catch(...) {
+                delete[] bucket;
+                throw;
+            }
+        }
+        if constexpr(std::is_nothrow_copy_assignable_v<iterator_traits_t(ForwardIterator, reference)>) {
+            for(auto i {0}; i < range; ++i) {
+                while(not bucket[i].empty()) {
+                    *result++ = bucket[i].front();
+                    bucket[i].pop_front();
+                }
+            }
+        }else {
+            try {
+                for(auto i {0}; i < range; ++i) {
+                    while(not bucket[i].empty()) {
+                        *result++ = bucket[i].front();
+                        bucket[i].pop_front();
+                    }
+                }
+            }catch(...) {
+                delete[] bucket;
+                throw;
+            }
+        }
+        delete[] bucket;
+    }
 }
 __DATA_STRUCTURE_END
 
@@ -635,26 +695,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(testing)
 namespace data_structure::__data_structure_testing {
-    template <typename ForwardList, typename ForwardIterator>
-    void bucket_sort(ForwardIterator begin, ForwardIterator end, ForwardList &forward_list,
-            iterator_traits_t(ForwardIterator, size_type) range,
-            int (*index_function)(iterator_traits_t(ForwardIterator, const_reference))) {
-        auto bucket {::new ForwardList[range] {}};
-        try {
-            while(begin not_eq end) {
-                auto &value {*begin};
-                bucket[index_function(value)].push_back(value);
-                ++begin;
-            }
-            for(auto i {0}; i < range; ++i) {
-                forward_list.merge(bucket[i]);
-            }
-        }catch(...) {
-            ::delete[] bucket;
-            throw;
-        }
-        ::delete[] bucket;
-    }
     template <typename T>
     T __radix_sort_power_auxiliary(T base, unsigned exponent) {
         if(not exponent) {
