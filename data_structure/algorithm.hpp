@@ -569,7 +569,7 @@ namespace data_structure {
                 auto previous {j};
                 --previous;
                 if(compare(*j, *previous)) {
-                    std::swap(*j, *previous);
+                    ds::swap(*j, *previous);
                 }
             }
             ++begin;
@@ -626,7 +626,7 @@ namespace data_structure {
                 throw;
             }
         }
-        if constexpr(std::is_nothrow_copy_assignable_v<iterator_traits_t(ForwardIterator, reference)>) {
+        if constexpr(is_nothrow_copy_assignable_v<iterator_traits_t(ForwardIterator, reference)>) {
             for(auto i {0}; i < range; ++i) {
                 while(not bucket[i].empty()) {
                     *result++ = bucket[i].front();
@@ -645,6 +645,54 @@ namespace data_structure {
                 delete[] bucket;
                 throw;
             }
+        }
+        delete[] bucket;
+    }
+
+    namespace __data_structure_auxiliary {
+        unsigned long long radix_sort_integral_power(unsigned base, unsigned exponent) noexcept {
+            if(exponent == 0) {
+                return 1;
+            }
+            auto result {1ull};
+            while(true) {
+                if(exponent % 2 not_eq 0) {
+                    result *= base;
+                }
+                exponent /= 2;
+                if(exponent == 0) {
+                    break;
+                }
+                base *= base;
+            }
+            return result;
+        }
+    }
+    template <typename List, typename Compare = greater<>, typename ForwardIterator>
+    void radix_sort(ForwardIterator begin, ForwardIterator end, unsigned radix = 10, Compare compare = {}) {
+        auto bucket {new List[radix] {}};
+        auto m {static_cast<int>(std::log2l(
+                *maximum_element<add_lvalue_reference_t<Compare>>(begin, end, compare) / std::log2l(radix))) + 1};
+        try {
+            for(unsigned i {1}; i <= m; ++i) {
+                auto cursor {begin};
+                while(cursor not_eq end) {
+                    const auto &value {*cursor++};
+                    bucket[value % __dsa::radix_sort_integral_power(radix, i) /
+                            __dsa::radix_sort_integral_power(radix, i - 1)].push_back(value);
+                }
+                cursor = begin;
+                for(auto j {0}; j < radix; ++j) {
+                    while(not bucket[j].empty()) {
+                        *cursor = bucket[j].front();
+                        bucket[j].pop_front();
+                        ++cursor;
+                    }
+                }
+            }
+        }catch(...) {
+            delete[] bucket;
+            throw;
         }
         delete[] bucket;
     }
@@ -689,83 +737,6 @@ namespace data_structure::__data_structure_auxiliary {
                 }
             }
         }
-    }
-}
-__DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(testing)
-namespace data_structure::__data_structure_testing {
-    template <typename T>
-    T __radix_sort_power_auxiliary(T base, unsigned exponent) {
-        if(not exponent) {
-            return 1;
-        }
-        T result {1};
-        while(true) {
-            if(exponent % 2) {
-                result *= base;
-            }
-            exponent /= 2;
-            if(not exponent) {
-                break;
-            }
-            base *= base;
-        }
-        return result;
-    }
-    template <typename ForwardList>
-    typename ForwardList::const_iterator __radix_sort_before_end(const ForwardList &forward_list) noexcept {
-        auto before_end {forward_list.cbefore_begin()};
-        const auto the_end {forward_list.cend()};
-        while(true) {
-            auto next {before_end};
-            ++next;
-            if(next == the_end) {
-                break;
-            }
-            ++before_end;
-        }
-        return before_end;
-    }
-    template <typename ForwardList, typename ForwardIterator>
-    void radix_sort(ForwardIterator begin, ForwardIterator end, ForwardList &forward_list, int radix = 10) {
-        auto bucket {::new ForwardList[radix] {}};
-        try {
-            ForwardList list {};
-            auto exponent {1};
-            while(true) {
-                auto flag {true};
-                while(begin not_eq end) {
-                    auto &value {*begin++};
-                    auto digit {static_cast<int>(value % __radix_sort_power_auxiliary(radix, exponent) /
-                            __radix_sort_power_auxiliary(radix, exponent - 1))};
-                    if(flag and digit) {
-                        flag = false;
-                    }
-                    if(bucket[digit].empty()) {
-                        bucket[digit].push_front(value);
-                        continue;
-                    }
-                    bucket[digit].insert_after(__radix_sort_before_end(bucket[digit]), value);
-                }
-                ++exponent;
-                list.destroy_and_deallocate();
-                if(flag) {
-                    forward_list = ds::move(bucket[0]);
-                    break;
-                }
-                for(auto i {0}; i < radix; ++i) {
-                    list.insert_after(__radix_sort_before_end(list), bucket[i].cbegin(), bucket[i].cend());
-                    bucket[i].destroy_and_deallocate();
-                }
-                begin = list.begin();
-                end = list.end();
-            }
-        }catch(...) {
-            ::delete[] bucket;
-            throw;
-        }
-        ::delete[] bucket;
     }
 }
 __DATA_STRUCTURE_END
