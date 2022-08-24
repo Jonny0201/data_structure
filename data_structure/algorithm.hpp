@@ -422,7 +422,7 @@ __DATA_STRUCTURE_START(sort)
 namespace data_structure {
     namespace __data_structure_auxiliary {
         struct quick_sort_selector {
-            constexpr void operator()(dynamic, dynamic, dynamic) const noexcept {}
+            constexpr void operator()(...) const noexcept {}
         };
         template <typename Compare, typename Selector, typename RandomAccessIterator>
         void quick_sort_auxiliary(RandomAccessIterator begin, RandomAccessIterator end,
@@ -457,8 +457,12 @@ namespace data_structure {
                     }
                 }
                 begin[left_cursor] = ds::move(pivot);
-                quick_sort_auxiliary(begin, end, left, left_cursor - 1, compare, selector);
-                quick_sort_auxiliary(begin, end, right_cursor + 1, right, compare, selector);
+                if(left_cursor - left > 1) {
+                    quick_sort_auxiliary(begin, end, left, left_cursor - 1, compare, selector);
+                }
+                if(right - left_cursor - 1 > 1) {
+                    quick_sort_auxiliary(begin, end, right_cursor + 1, right, compare, selector);
+                }
                 return;
             }
         }
