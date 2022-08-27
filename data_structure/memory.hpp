@@ -33,63 +33,109 @@ namespace data_structure {
     private:
         union free_list_node {
             free_list_node *free_list_link;
-            char client_data[0];        // client_data[1] for compatibility
+            char client_data[sizeof free_list_link];
         };
     private:
         constexpr static auto align {Align};
         constexpr static auto max_bytes {MaxBytes};
         constexpr static auto free_list_extent {max_bytes / align};
-    public:
-        using size_type = size_t;
-        using difference_type = ptrdiff_t;
-        using pointer = void *;
-        using const_pointer = const void *;
     private:
         static free_list_node *volatile free_list[free_list_extent];
         static char *start;
         static char *end;
-        static size_type chunk_size;
+        static size_t chunk_size;
 #ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
     private:
-        static void **record;
-        static size_type chunk_counter;
+        static void **chunk_record;
+        static size_t chunk_size;
 #endif
     private:
-        static constexpr size_type round_up(size_type bytes) noexcept {
+        static constexpr size_t round_up(size_t bytes) noexcept {
             return (bytes + align - 1) & ~(align - 1);
         }
-        static constexpr size_type free_list_index(size_type bytes) noexcept {
+        static constexpr size_t free_list_index(size_t bytes) noexcept {
             return (bytes + align - 1) / align - 1;
         }
     private:
-        static void *refill(size_type);
-        static char *chunk_alloc(size_type, size_type &);
+        static void *refill(size_t);
+        static char *chunk_alloc(size_t, size_t &);
     protected:
         void *operator new(size_t size) {
             return ::operator new(size);
         }
-        void *operator new(size_t size, dynamic) noexcept {
+        void *operator new(size_t size, meta::dynamic) noexcept {
             return ::operator new(size, std::nothrow);
         }
+        void *operator new[](size_t size) {
+            return ::operator new[](size);
+        }
+        void *operator new[](size_t size, meta::dynamic) noexcept {
+            return ::operator new[](size, std::nothrow);
+        }
+        void *operator new(size_t size, align_val_t align) {
+            return ::operator new(size, align);
+        }
+        void *operator new(size_t size, align_val_t align, meta::dynamic) noexcept {
+            return ::operator new(size, align, std::nothrow);
+        }
+        void *operator new[](size_t size, align_val_t align) {
+            return ::operator new[](size, align);
+        }
+        void *operator new[](size_t size, align_val_t align, meta::dynamic) noexcept {
+            return ::operator new[](size, align, std::nothrow);
+        }
         void operator delete(void *p) noexcept {
+            ::operator delete(p);
+        }
+        void operator delete(void *p, meta::dynamic) noexcept {
             ::operator delete(p, std::nothrow);
         }
-        void operator delete(void *p, dynamic) noexcept {
-            ::operator delete(p, std::nothrow);
+        void operator delete[](void *p) noexcept {
+            ::operator delete[](p);
         }
-        void operator delete(void *p, size_type) noexcept {
-            ::operator delete(p, std::nothrow);
+        void operator delete[](void *p, meta::dynamic) noexcept {
+            ::operator delete[](p, std::nothrow);
         }
-        void operator delete(void *p, size_type, dynamic) noexcept {
-            ::operator delete(p, std::nothrow);
+        void operator delete(void *p, size_t size) noexcept {
+            ::operator delete(p, size);
+        }
+        void operator delete[](void *p, size_t size) noexcept {
+            ::operator delete[](p, size);
+        }
+        void operator delete(void *p, align_val_t align) noexcept {
+            ::operator delete(p, align);
+        }
+        void operator delete(void *p, align_val_t align, meta::dynamic) noexcept {
+            ::operator delete(p, align, std::nothrow);
+        }
+        void operator delete[](void *p, align_val_t align) noexcept {
+            ::operator delete[](p, align);
+        }
+        void operator delete[](void *p, align_val_t align, meta::dynamic) noexcept {
+            ::operator delete[](p, align, std::nothrow);
+        }
+        void operator delete(void *p, size_t size, align_val_t align) noexcept {
+            ::operator delete(p, size, align);
+        }
+        void operator delete[](void *p, size_t size, align_val_t align) noexcept {
+            ::operator delete(p, size, align);
+        }
+        void operator delete(void *p, size_t size, align_val_t align, meta::dynamic) noexcept {
+            ::operator delete(p, size, align);
+        }
+        void operator delete[](void *p, size_t size, align_val_t align, meta::dynamic) noexcept {
+            ::operator delete(p, size, align);
+        }
+        void operator delete(void *p, void *place) noexcept {
+            ::operator delete(p, place);
+        }
+        void operator delete[](void *p, void *place) noexcept {
+            ::operator delete(p, place);
         }
     public:
         template <bool NoThrow = false>
-        static void *allocate(size_type);
-        static void deallocate(void *, size_type) noexcept;
-        /* TODO */
-        template <bool NoThrow = false>
-        static void *reallocate(void *, size_type, size_type) noexcept(NoThrow);
+        static void *allocate(size_t);
+        static void deallocate(void *, size_t) noexcept;
     public:
         constexpr memory_pool() noexcept = default;
         constexpr memory_pool(const memory_pool &) noexcept = default;
@@ -106,22 +152,28 @@ namespace data_structure {
         static void release() noexcept;
 #endif
     };
-    template <size_t Align, size_t MaxBytes>
-    typename memory_pool<Align, MaxBytes>::free_list_node *volatile
-    memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
-    template <size_t Align, size_t MaxBytes>
-    char *memory_pool<Align, MaxBytes>::start {nullptr};
-    template <size_t Align, size_t MaxBytes>
-    char *memory_pool<Align, MaxBytes>::end {nullptr};
-    template <size_t Align, size_t MaxBytes>
-    typename memory_pool<Align, MaxBytes>::size_type
-    memory_pool<Align, MaxBytes>::chunk_size {0};
 }
 
 namespace data_structure {
     template <size_t Align, size_t MaxBytes>
+    typename memory_pool<Align, MaxBytes>::free_list_node *volatile
+            memory_pool<Align, MaxBytes>::free_list[free_list_extent] {};
+    template <size_t Align, size_t MaxBytes>
+    char *memory_pool<Align, MaxBytes>::start {};
+    template <size_t Align, size_t MaxBytes>
+    char *memory_pool<Align, MaxBytes>::end {};
+    template <size_t Align, size_t MaxBytes>
+    size_t memory_pool<Align, MaxBytes>::chunk_size {0};
+#ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
+    template <size_t Align, size_t MaxBytes>
+    void **memory_pool<Align, MaxByes>::chunk_record {};
+    template <size_t Align, size_t MaxBytes>
+    size_t memory_pool<Align, MaxBytes>::chunk_record_size {0};
+#endif
+
+    template <size_t Align, size_t MaxBytes>
     template <bool NoThrow>
-    void *memory_pool<Align, MaxBytes>::allocate(size_type size) {
+    void *memory_pool<Align, MaxBytes>::allocate(size_t size) {
         if(size > max_bytes) {
             if constexpr(NoThrow) {
                 return memory_pool::operator new(size, {});
@@ -138,7 +190,7 @@ namespace data_structure {
         return result_node;
     }
     template <size_t Align, size_t MaxBytes>
-    void memory_pool<Align, MaxBytes>::deallocate(void *p, size_type size) noexcept {
+    void memory_pool<Align, MaxBytes>::deallocate(void *p, size_t size) noexcept {
         if(size > max_bytes) {
             memory_pool::operator delete(p, size);
             return;
@@ -149,8 +201,8 @@ namespace data_structure {
         first = return_node;
     }
     template <size_t Align, size_t MaxBytes>
-    void *memory_pool<Align, MaxBytes>::refill(size_type size) {
-        size_type nodes {16};
+    void *memory_pool<Align, MaxBytes>::refill(size_t size) {
+        size_t nodes {16};
         auto chunk {chunk_alloc(size, nodes)};
         if(nodes == 1) {
             return chunk;
@@ -166,9 +218,9 @@ namespace data_structure {
         return chunk;
     }
     template <size_t Align, size_t MaxBytes>
-    char *memory_pool<Align, MaxBytes>::chunk_alloc(size_type size, size_type &nodes) {
+    char *memory_pool<Align, MaxBytes>::chunk_alloc(size_t size, size_t &nodes) {
         auto total_bytes {size * nodes};
-        auto bytes_left {static_cast<size_type>(end - start)};
+        auto bytes_left {static_cast<size_t>(end - start)};
         if(bytes_left >= total_bytes) {
             auto result {start};
             start += total_bytes;
@@ -202,13 +254,39 @@ namespace data_structure {
             if(start) {
                 chunk_size += bytes_to_get;
                 end = start + chunk_size;
+#ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
+                void **new_chunk_record = new void *[chunk_size + 1];
+                ds::memory_set(new_chunk_record, chunk_record, sizeof(void *) * chunk_record);
+                new_chunk_record[chunk_size++] = start;
+                delete[] chunk_record;
+                chunk_record = new_chunk_record;
+#endif
                 return chunk_alloc(size, nodes);
             }
         }
         chunk_size += bytes_to_get;
         end = start + bytes_to_get;
+#ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
+        void **new_chunk_record = new void *[chunk_size + 1];
+        ds::memory_set(new_chunk_record, chunk_record, sizeof(void *) * chunk_record);
+        new_chunk_record[chunk_size++] = start;
+        delete[] chunk_record;
+        chunk_record = new_chunk_record;
+#endif
         return chunk_alloc(size, nodes);
     }
+#ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
+    template <size_t Align, size_t MaxBytes>
+    void memory_pool<Align, MaxBytes>::release() noexcept {
+        for(auto i {0}; i < chunk_size; ++i) {
+            memory_pool::operator delete(chunk_record[i]);
+        }
+        chunk_record = nullptr;
+        chunk_record_size = chunk_size = 0;
+        start = end = nullptr;
+        ds::memory_default_initialization(free_list, sizeof free_list);
+    }
+#endif
 }
 
 #endif //DATA_STRUCTURE_MEMORY_HPP
