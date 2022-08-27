@@ -30,6 +30,7 @@ namespace data_structure {
     using initializer_list = std::initializer_list<T>;
     using size_t = decltype(sizeof 0);
     using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
+    using align_val_t = std::align_val_t;
 
     inline namespace __data_structure_helper {}
     namespace __data_structure_auxiliary {}
