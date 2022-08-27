@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -20,14 +20,9 @@
 #include <memory>
 #include <initializer_list>
 #include <limits>
-#include <random>
 
 #define __DATA_STRUCTURE_START(x, ...)
 #define __DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(data_structure macro)
-#define __DS data_structure
-__DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(namespace creation)
 namespace data_structure {
@@ -57,27 +52,40 @@ namespace data_structure {
     inline void *memory_move(void *start, const void *first, size_t size) noexcept {
         return __builtin_memmove(start, first, size);
     }
-    inline void *memory_character(const void *start, int ch, size_t size) noexcept {
+    inline void *memory_character_search(const void *start, int ch, size_t size) noexcept {
         return __builtin_memchr(start, ch, size);
     }
-    inline int memory_compare(const void *start, const void *first, size_t size) noexcept {
+    inline int memory_comparison(const void *start, const void *first, size_t size) noexcept {
         return __builtin_memcmp(start, first, size);
     }
-    inline void *memory_allocate(size_t size) noexcept {
+    inline void *memory_allocation(size_t size) noexcept {
         return std::malloc(size);
     }
-    inline void memory_deallocate(void *ptr) noexcept {
+    inline void memory_free(void *ptr) noexcept {
         std::free(ptr);
     }
-    inline void *memory_callocate(size_t num, size_t size) noexcept {
+    inline void *memory_contiguous_allocation(size_t num, size_t size) noexcept {
         return std::calloc(num, size);
     }
-    inline void *memory_reallocate(void *ptr, size_t size) noexcept {
+    inline void *memory_reallocation(void *ptr, size_t size) noexcept {
         return std::realloc(ptr, size);
     }
-    const auto memory_initialize {[](void *start, size_t size) noexcept -> void * {
-        return __builtin_memset(start, 0, size);
-    }};
+    template <typename T = char>
+    inline void *memory_default_initialization(void *start, size_t size) noexcept {
+        return __builtin_memset(start, 0, size * sizeof(T));
+    }
+    [[noreturn]]
+    inline void abort() noexcept {
+        std::abort();
+    }
+    [[noreturn]]
+    inline void terminate() noexcept {
+        std::terminate();
+    }
+    [[noreturn]]
+    inline void exit(int code) {
+        std::exit(code);
+    }
 }
 __DATA_STRUCTURE_END
 
