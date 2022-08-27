@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -17,9 +17,16 @@
 #ifndef DATA_STRUCTURE_META_HPP
 #define DATA_STRUCTURE_META_HPP
 
-#include "type_traits.hpp"
+__DATA_STRUCTURE_START(namespace of meta)
+namespace data_structure::meta {}
+__DATA_STRUCTURE_END
 
-namespace data_structure {
+__DATA_STRUCTURE_START(meta namespace alias)
+namespace dsmeta = data_structure::meta;
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(dynamic)
+namespace data_structure::meta {
     struct dynamic {
         constexpr dynamic() noexcept = default;
         constexpr dynamic(const dynamic &) noexcept = default;
@@ -57,7 +64,11 @@ namespace data_structure {
             return {};
         }
     };
+}
+__DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(meta fundamental)
+namespace data_structure::meta {
     struct nil final {};
     struct null_type final {};
 
@@ -68,12 +79,43 @@ namespace data_structure {
     };
     template <typename First, typename Second>
     struct type_pair {
-        using first_type = First;
-        using second_type = Second;
+        using first = First;
+        using second = Second;
     };
 }
+__DATA_STRUCTURE_END
 
-namespace data_structure {
+__DATA_STRUCTURE_START(meta function)
+namespace data_structure::meta {
+    template <typename T, size_t N>
+    struct choose_argument;
+    template <size_t N, typename ...Args>
+    struct choose_argument<type_container<Args...>, N> {
+        using type = typename choose_argument<typename type_container<Args...>::remaining, N - 1>::type;
+    };
+    template <typename ...Args>
+    struct choose_argument<type_container<Args...>, 0> {
+        using type = typename type_container<Args...>::type;
+    };
+    template <size_t N, typename T, typename Pair>
+    struct choose_argument<type_list<T, Pair>, N> {
+        using type = typename choose_argument<Pair, N - 1>::type;
+    };
+    template <typename T, typename Pair>
+    struct choose_argument<type_list<T, Pair>, 0> {
+        using type = T;
+    };
+    template <size_t N, typename T>
+    struct choose_argument<type_list<T>, N> {
+        using type = T;
+    };
+    template <size_t N>
+    struct choose_argument<type_list<>, N> {
+        using type = nil;
+    };
+    template <typename T, size_t N>
+    using choose_argument_t = typename choose_argument<T, N>::type;
+
     template <typename BooleanExpression>
     struct negation : bool_constant<not BooleanExpression::value> {};
     template <typename BooleanExpression>
@@ -104,40 +146,7 @@ namespace data_structure {
             disjunction<disjunction<BooleanExpressionLHS, BooleanExpressionRHS>, BooleanExpressions...> {};
     template <typename BooleanExpression, typename ...Expressions>
     constexpr inline auto disjunction_v {disjunction<BooleanExpression, Expressions...>::value};
-}
 
-namespace data_structure {
-    template <typename T, size_t N = 0>
-    struct choose_argument;
-    template <size_t N, typename ...Args>
-    struct choose_argument<type_container<Args...>, N> {
-        using type = typename choose_argument<typename type_container<Args...>::remaining, N - 1>::type;
-    };
-    template <typename ...Args>
-    struct choose_argument<type_container<Args...>, 0> {
-        using type = typename type_container<Args...>::type;
-    };
-    template <size_t N, typename T, typename Pair>
-    struct choose_argument<type_list<T, Pair>, N> {
-        using type = typename choose_argument<Pair, N - 1>::type;
-    };
-    template <typename T, typename Pair>
-    struct choose_argument<type_list<T, Pair>, 0> {
-        using type = T;
-    };
-    template <size_t N, typename T>
-    struct choose_argument<type_list<T>, N> {
-        using type = T;
-    };
-    template <size_t N>
-    struct choose_argument<type_list<>, N> {
-        using type = nil;
-    };
-    template <typename T, size_t N = 0>
-    using choose_argument_t = typename choose_argument<T, N>::type;
-}
-
-namespace data_structure::meta {
     template <typename, typename ...>
     struct max;
     template <typename T, typename ...Args>
@@ -168,5 +177,6 @@ namespace data_structure::meta {
     template <typename T, typename U, typename ...Args>
     struct min<T, U, Args...> : min<min_t<T, U>, Args...> {};
 }
+__DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_META_HPP
