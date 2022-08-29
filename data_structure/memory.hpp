@@ -20,13 +20,16 @@
 #include "__config.hpp"
 #include "meta.hpp"
 
+__DATA_STRUCTURE_START(memory functions)
 namespace data_structure {
     template <typename T>
     constexpr inline T *address_of(T &arg) noexcept {
         return reinterpret_cast<T *>(&const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
     }
 }
+__DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(data structure memory pool)
 namespace data_structure {
     template <size_t Align = 8, size_t MaxBytes = 128>
     class memory_pool {
@@ -288,5 +291,6 @@ namespace data_structure {
     }
 #endif
 }
+__DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_MEMORY_HPP
