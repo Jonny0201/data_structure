@@ -1,7 +1,6 @@
 # data_structure #
 
-![](https://img.shields.io/badge/Build-Pending-yellow)
-![](https://img.shields.io/badge/Contributors-1-blue)
+![](https://img.shields.io/badge/Build-Failed-red)
 ![](https://img.shields.io/badge/License-Apache%202.0-brightgreen)
 
 In computer science, a data structure is a data organization, management, and storage format that enables efficient access and modification. More precisely, a data structure is a collection of data values, the relationships among them, and the functions or operations that can be applied to the data.
@@ -16,13 +15,18 @@ Data structures provide a means to manage large amounts of data efficiently for 
 
 Appreciative only.
 
+**There may exist compile errors in headers not mentioned.** (This part will be removed when all headers uploaded are complete.)
+- \_\_config.hpp ![](https://img.shields.io/badge/Build-OK-success)
+- meta.hpp ![](https://img.shields.io/badge/Build-OK-success)
+- memory.hpp ![](https://img.shields.io/badge/Build-OK-success)
+- buffer.hpp ![](https://img.shields.io/badge/Build-OK-success)
+
 ## Compiler Support ##
 
-- Apple clang version 13.0.0 (clang-1300.0.29.3) with compile flag `-std=c++20`
-
-## Contributors ##
-
-Jonny
+- Apple clang version 13.1.6 (clang-1316.0.21.2.5) with compile flag `-std=c++2b` ![](https://img.shields.io/badge/Build-Supported-green)
+- GCC version 12.2 ![](https://img.shields.io/badge/Build-Failed-red)
+- MSVC_x64 version v19.latest ![](https://img.shields.io/badge/Build-Unknown-yellow)
+- ICC_x64 version 2021.6.0 ![](https://img.shields.io/badge/Build-Unknown-yellow)
 
 ## Finished ##
 
@@ -95,7 +99,7 @@ Jonny
 - b_tree
 
 ### Graph ###
-- graph [matrix, list, array]
+- graph [matrix, list]
 
 ### Other ###
 - dictionary (Adaptor)
