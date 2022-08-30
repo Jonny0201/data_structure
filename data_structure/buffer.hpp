@@ -18,41 +18,40 @@
 #define DATA_STRUCTURE_BUFFER_HPP
 
 #include "allocator.hpp"
-#include "type_traits.hpp"
+#include "iterator.hpp"
+
+namespace data_structure::__data_structure_auxiliary {
+    struct buffer_construction_without_initialization {};
+}
 
 namespace data_structure {
-    template <typename T, typename Allocator = allocator<type_holder<T>>>
+    template <typename T, typename Allocator = allocator<void>>
     class buffer {
     public:
         using allocator_type = Allocator;
-        using size_type = allocator_traits_t(allocator_type, size_type);
-        using difference_type = allocator_traits_t(allocator_type, difference_type);
+        using size_type = typename allocator_type::size_type;
+        using difference_type = typename allocator_type::difference_type;
         using value_type = T;
-        using reference = allocator_traits_t(allocator_type, reference);
-        using const_reference = allocator_traits_t(allocator_type, const_reference);
-        using rvalue_reference = allocator_traits_t(allocator_type, rvalue_reference);
-        using pointer = allocator_traits_t(allocator_type, pointer);
-        using const_pointer = allocator_traits_t(allocator_type, const_pointer);
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<value_type>;
         using iterator = pointer;
         using const_iterator = const_pointer;
         using move_iterator = ds::move_iterator<iterator>;
-    private:
-        using alloc_traits = allocator_traits<allocator_type>;
-        static_assert(is_same_v<value_type, typename alloc_traits::value_type>,
-                "The Allocator::value_type must be the same as template argument T!");
     private:
         size_type buffer_size;
         pointer first;
     private:
         static pointer allocate(size_type);
-        static void destroy_and_deallocate(pointer, size_type);
     private:
         void move_to(pointer, size_type);
     private:
         template <typename InputIterator>
-        buffer(InputIterator, InputIterator, true_type);
+        buffer(InputIterator, InputIterator, false_type);
         template <typename ForwardIterator>
-        buffer(ForwardIterator, ForwardIterator, false_type);
+        buffer(ForwardIterator, ForwardIterator, true_type);
     public:
         buffer() = delete;
         explicit buffer(size_type);
@@ -60,6 +59,7 @@ namespace data_structure {
         template <typename InputIterator> requires is_input_iterator_v<InputIterator>
         buffer(InputIterator, InputIterator);
         buffer(initializer_list<value_type>);
+        buffer(size_type, __dsa::buffer_construction_without_initialization);
         buffer(const buffer &);
         buffer(buffer &&) noexcept;
         ~buffer() noexcept;
@@ -88,16 +88,7 @@ namespace data_structure {
     /* private functions */
     template <typename T, typename Allocator>
     typename buffer<T, Allocator>::pointer buffer<T, Allocator>::allocate(size_type n) {
-        return static_cast<pointer>(alloc_traits::operator new(sizeof(value_type) * n));
-    }
-    template <typename T, typename Allocator>
-    void buffer<T, Allocator>::destroy_and_deallocate(pointer begin, size_type size) {
-        if constexpr(not is_trivially_destructible_v<value_type>) {
-            for(auto i {0}; i < size; ++i) {
-                alloc_traits::destroy(begin + i);
-            }
-        }
-        alloc_traits::operator delete(begin);
+        return static_cast<pointer>(allocator_type::operator new(sizeof(value_type) * n));
     }
     template <typename T, typename Allocator>
     void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_size) {
@@ -106,40 +97,46 @@ namespace data_structure {
         }else {
             if constexpr(is_nothrow_move_constructible_v<value_type> or is_nothrow_copy_constructible_v<value_type>) {
                 for(auto i {0}; i < old_size; ++i) {
-                    alloc_traits::construct(new_buffer + i,
+                    ds::construct(new_buffer + i,
                             ds::move_if<is_nothrow_move_constructible_v<value_type>>(this->first[i]));
                 }
             }else {
                 difference_type i {0};
                 try {
                     for(; i < old_size; ++i) {
-                        alloc_traits::construct(new_buffer + i, this->first[i]);
+                        ds::construct(new_buffer + i, this->first[i]);
                     }
                 }catch(...) {
-                    this->destroy_and_deallocate(new_buffer, static_cast<size_type>(i));
-                    this->destroy_and_deallocate(this->first, old_size);
+                    ds::destroy(this->first, this->first + static_cast<difference_type>(old_size));
+                    ds::destroy(new_buffer, new_buffer + i);
+                    allocator_type::operator delete(this->first);
+                    allocator_type::operator delete(new_buffer);
                     throw;
                 }
             }
         }
-        this->destroy_and_deallocate(this->first, old_size);
+        ds::destroy(this->first, this->first + static_cast<difference_type>(old_size));
+        allocator_type::operator delete(this->first);
         this->first = new_buffer;
     }
     template <typename T, typename Allocator>
     template <typename InputIterator>
-    buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, true_type) :
+    buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, false_type) :
             buffer_size {64}, first {this->allocate(this->buffer_size)} {
         difference_type i {0};
-        if constexpr(is_nothrow_copy_constructible_v<value_type>) {
+        if constexpr(is_nothrow_constructible_v<value_type, typename InputIterator::rvalue_reference> or
+                is_nothrow_constructible_v<value_type, typename InputIterator::reference>) {
             for(; begin not_eq end; ++i) {
-                alloc_traits::construct(this->first + i, ds::move(*begin++));
+                ds::construct(this->first + i, ds::move_if<is_nothrow_constructible_v<
+                        value_type, typename InputIterator::rvalue_reference>>(*begin++));
                 if(i == this->buffer_size and begin not_eq end) {
                     this->buffer_size *= 2;
                     pointer new_first {};
                     try {
                         new_first = this->allocate(this->buffer_size);
                     }catch(...) {
-                        this->destroy_and_deallocate(this->first, static_cast<size_type>(i));
+                        ds::destroy(this->first, this->first + i);
+                        allocator_type::operator delete(this->first);
                         throw;
                     }
                     this->move_to(new_first, static_cast<size_type>(i));
@@ -148,9 +145,10 @@ namespace data_structure {
         }else {
             for(; begin not_eq end; ++i) {
                 try {
-                    alloc_traits::construct(this->first + i, ds::move(*begin++));
+                    ds::construct(this->first + i, *begin++);
                 }catch(...) {
-                    this->destroy_and_deallocate(this->first, static_cast<size_type>(i));
+                    ds::destroy(this->first, this->first + i);
+                    allocator_type::operator delete(this->first);
                     throw;
                 }
                 if(i == this->buffer_size and begin not_eq end) {
@@ -159,7 +157,8 @@ namespace data_structure {
                     try {
                         new_first = this->allocate(this->buffer_size);
                     }catch(...) {
-                        this->destroy_and_deallocate(this->first, static_cast<size_type>(i));
+                        ds::destroy(this->first, this->first + i);
+                        allocator_type::operator delete(this->first);
                         throw;
                     }
                     this->move_to(new_first, static_cast<size_type>(i));
@@ -171,7 +170,8 @@ namespace data_structure {
             try {
                 new_first = this->allocate(static_cast<size_type>(i));
             }catch(...) {
-                this->destroy_and_deallocate(this->first, static_cast<size_type>(i));
+                ds::destroy(this->first, this->first + i);
+                allocator_type::operator delete(this->first);
                 throw;
             }
             this->move_to(new_first, static_cast<size_type>(i));
@@ -179,29 +179,31 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     template <typename ForwardIterator>
-    buffer<T, Allocator>::buffer(ForwardIterator begin, ForwardIterator end, false_type) :
-            buffer_size {ds::distance(begin, end)}, first {this->allocate(this->buffer_size)} {
+    buffer<T, Allocator>::buffer(ForwardIterator begin, ForwardIterator end, true_type) :
+            buffer_size {static_cast<size_type>(ds::distance(begin, end))},
+            first {this->allocate(this->buffer_size)} {
         if constexpr(is_pointer_v<ForwardIterator> and is_trivially_copy_assignable_v<value_type>) {
             ds::memory_copy(this->first, begin, sizeof(value_type) * this->buffer_size);
         }else {
             if constexpr(is_nothrow_constructible_v<value_type, iterator_traits_t(ForwardIterator, reference)>) {
                 for(auto i {0}; begin not_eq end; ++i) {
-                    alloc_traits::construct(this->first + i, *begin++);
+                    ds::construct(this->first + i, *begin++);
                 }
             }else {
                 difference_type i {0};
                 try {
                     for(; begin not_eq end; ++i) {
-                        alloc_traits::construct(this->first + i, *begin++);
+                        ds::construct(this->first + i, *begin++);
                     }
                 }catch(...) {
-                    this->destroy_and_deallocate(this->first, static_cast<size_type>(i));
+                    ds::destroy(this->first, this->first + i);
+                    allocator_type::operator delete(this->first);
                     throw;
                 }
             }
         }
     }
-    
+
     /* public functions */
     template <typename T, typename Allocator>
     buffer<T, Allocator>::buffer(size_type n) : buffer_size {n == 0 ? 64 : n},
@@ -211,21 +213,17 @@ namespace data_structure {
         }else {
             if constexpr(is_nothrow_default_constructible_v<value_type>) {
                 for(auto i {0}; i < this->buffer_size; ++i) {
-                    alloc_traits::construct(this->first + i);
+                    ds::construct(this->first + i);
                 }
             }else {
                 difference_type i {0};
                 try {
                     for(; i < this->buffer_size; ++i) {
-                        alloc_traits::construct(this->first + i);
+                        ds::construct(this->first + i);
                     }
                 }catch(...) {
-                    if constexpr(not is_trivially_destructible_v<value_type>) {
-                        for(auto j {0}; j < i; ++j) {
-                            alloc_traits::destroy(this->first + j);
-                        }
-                    }
-                    alloc_traits::operator delete(this->first);
+                    ds::destroy(this->first, this->first + i);
+                    allocator_type::operator delete(this->first);
                     throw;
                 }
             }
@@ -236,21 +234,17 @@ namespace data_structure {
             first {this->allocate(this->buffer_size)} {
         if constexpr(is_nothrow_copy_constructible_v<value_type>) {
             for(auto i {0}; i < this->buffer_size; ++i) {
-                alloc_traits::construct(this->first + i, value);
+                ds::construct(this->first + i, value);
             }
         }else {
             difference_type i {0};
             try {
                 for(; i < this->buffer_size; ++i) {
-                    alloc_traits::construct(this->first + i, value);
+                    ds::construct(this->first + i, value);
                 }
             }catch(...) {
-                if constexpr(not is_trivially_destructible_v<value_type>) {
-                    for(auto j {0}; j < i; ++j) {
-                        alloc_traits::destroy(this->first + j);
-                    }
-                }
-                alloc_traits::operator delete(this->first);
+                ds::destroy(this->first, this->first + i);
+                allocator_type::operator delete(this->first);
                 throw;
             }
         }
@@ -263,6 +257,9 @@ namespace data_structure {
     buffer<T, Allocator>::buffer(initializer_list<value_type> init_list) :
             buffer(init_list.begin(), init_list.end()) {}
     template <typename T, typename Allocator>
+    buffer<T, Allocator>::buffer(size_type n, __dsa::buffer_construction_without_initialization) :
+            buffer_size {n == 0 ? 64 : n}, first {this->allocate(this->buffer_size)} {}
+    template <typename T, typename Allocator>
     buffer<T, Allocator>::buffer(const buffer &rhs) : buffer(rhs.begin(), rhs.end()) {}
     template <typename T, typename Allocator>
     buffer<T, Allocator>::buffer(buffer &&rhs) noexcept : buffer_size {rhs.buffer_size}, first {rhs.first} {
@@ -271,7 +268,8 @@ namespace data_structure {
     }
     template <typename T, typename Allocator>
     buffer<T, Allocator>::~buffer() noexcept {
-        this->destroy_and_deallocate(this->first, this->buffer_size);
+        ds::destroy(this->first, this->first + static_cast<difference_type>(this->buffer_size));
+        allocator_type::operator delete(this->first);
     }
     template <typename T, typename Allocator>
     typename buffer<T, Allocator>::reference buffer<T, Allocator>::operator[](difference_type n) noexcept {
