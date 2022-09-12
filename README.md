@@ -20,6 +20,7 @@ Appreciative only.
 - meta.hpp ![](https://img.shields.io/badge/Build-OK-success)
 - memory.hpp ![](https://img.shields.io/badge/Build-OK-success)
 - buffer.hpp ![](https://img.shields.io/badge/Build-OK-success)
+- type_traits.hpp ![](https://img.shields.io/badge/Build-OK-success)
 
 ## Compiler Support ##
 
