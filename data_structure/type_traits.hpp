@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -1246,6 +1246,11 @@ namespace data_structure {
             is_castable_v<Derived, Base> and not is_castable_v<Base, Derived>> {};
     template <typename Base, typename Derived>
     constexpr inline auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
+
+    template <typename E>
+    struct is_scoped_enum : bool_constant<is_enum_v<E> and is_convertible_v<E, int>> {};
+    template <typename E>
+    constexpr inline auto is_scoped_enum_v {is_scoped_enum<E>::value};
 }
 __DATA_STRUCTURE_END
 
@@ -2361,8 +2366,6 @@ namespace data_structure {
         using rebind = T<Ts...>;
         using arguments = type_container<Args...>;
     };
-    /* TODO : refactor it by modules in C++ 20 */
-    #define class_template_traits_t(type, trait_name) typename ds::class_template_traits<type>::trait_name
 
     template <typename Ptr, typename ...Args>
     struct invoke_result : __dsa::result_of_auxiliary<is_member_object_pointer_v<remove_reference_t<Ptr>>,
