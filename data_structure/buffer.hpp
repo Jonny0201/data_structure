@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ namespace data_structure {
         buffer(size_type, __dsa::buffer_construction_without_initialization);
         buffer(const buffer &);
         buffer(buffer &&) noexcept;
-        ~buffer() noexcept;
+        ~buffer() noexcept = default;
     public:
         buffer &operator=(const buffer &) = delete;
         buffer &operator=(buffer &&) noexcept = delete;
@@ -265,11 +265,6 @@ namespace data_structure {
     buffer<T, Allocator>::buffer(buffer &&rhs) noexcept : buffer_size {rhs.buffer_size}, first {rhs.first} {
         rhs.buffer_size = 0;
         rhs.first = nullptr;
-    }
-    template <typename T, typename Allocator>
-    buffer<T, Allocator>::~buffer() noexcept {
-        ds::destroy(this->first, this->first + static_cast<difference_type>(this->buffer_size));
-        allocator_type::operator delete(this->first);
     }
     template <typename T, typename Allocator>
     typename buffer<T, Allocator>::reference buffer<T, Allocator>::operator[](difference_type n) noexcept {
