@@ -94,19 +94,4 @@ __DATA_STRUCTURE_START(namespace alias)
 namespace ds = data_structure;
 __DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(compressed pair)
-namespace data_structure::__data_structure_auxiliary {
-    template <typename Data, typename Allocator>
-    struct compressed_pair : private Allocator {
-        Data data;
-        Allocator &allocator() noexcept {
-            return static_cast<Allocator &>(*this);
-        }
-        const Allocator &allocator() const noexcept {
-            return static_cast<const Allocator &>(*this);
-        }
-    };
-}
-__DATA_STRUCTURE_END
-
 #endif //DATA_STRUCTURE_CONFIG_HPP
