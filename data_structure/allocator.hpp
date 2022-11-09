@@ -56,18 +56,6 @@ namespace data_structure {
         static void deallocate(pointer p, size_type, meta::dynamic) noexcept {
             ::operator delete(p);
         }
-        template <typename ...Args>
-        [[deprecated("This member function is removed in C++ 20!")]]
-        static pointer construct(pointer p, Args &&...args)
-                noexcept(is_nothrow_constructible_v<value_type, Args...>) {
-            return ::new (p) value_type(ds::forward<Args>(args)...);
-        }
-        [[deprecated("This member function is removed in C++ 20!")]]
-        static constexpr void destroy(pointer p) noexcept(is_nothrow_destructible_v<value_type>) {
-            if constexpr(not is_trivially_destructible_v<value_type>) {
-                p->~value_type();
-            }
-        }
     };
     template <typename T, typename U>
     [[nodiscard]]
@@ -85,7 +73,7 @@ __DATA_STRUCTURE_END
 __DATA_STRUCTURE_START(stateless allocator of data structure library)
 namespace data_structure {
     template <>
-    class allocator<void> final : private memory_pool<> {
+    class allocator<void> : private memory_pool<> {
     private:
         using pool = memory_pool;
     public:
@@ -118,22 +106,22 @@ __DATA_STRUCTURE_START(construction function and destroy functions)
 namespace data_structure {
     template <typename T, typename ...Args>
     inline constexpr T *construct(T *p, Args &&...args) noexcept(is_nothrow_constructible_v<T, Args...>) {
-        return new (p) T(ds::forward<Args>(args)...);
+    return new (p) T(ds::forward<Args>(args)...);
+}
+template <typename T>
+inline constexpr void destroy(T *p) noexcept {
+    if constexpr(not is_trivially_destructible_v<T>) {
+        p->~T();
     }
-    template <typename T>
-    inline constexpr void destroy(T *p) noexcept {
-        if constexpr(not is_trivially_destructible_v<T>) {
-            p->~T();
+}
+template <typename T>
+inline constexpr void destroy(T *begin, T *end) noexcept {
+    if constexpr(not is_trivially_destructible_v<T>) {
+        while(begin not_eq end) {
+            begin++->~T();
         }
     }
-    template <typename T>
-    inline constexpr void destroy(T *begin, T *end) noexcept {
-        if constexpr(not is_trivially_destructible_v<T>) {
-            while(begin not_eq end) {
-                begin++->~T();
-            }
-        }
-    }
+}
 }
 __DATA_STRUCTURE_END
 
