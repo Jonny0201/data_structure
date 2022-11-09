@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2022] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -30,6 +30,9 @@ namespace data_structure {
     template <typename, typename, typename> class hash_table;
     template <typename, typename> class tree;
     template <typename, typename> class binary_tree;
+    template <typename, typename> class leftist_tree;
+    template <typename, typename, size_t, typename> class winner_tree;
+    template <typename, typename, typename> class binary_search_tree;
 }
 __DATA_STRUCTURE_END
 
@@ -72,8 +75,7 @@ namespace data_structure {
         using iterator_category = random_access_iterator_tag;
     };
 
-    /* TODO : refactor it by modules in C++ 20 */
-    #define iterator_traits_t(type, trait_name) typename iterator_traits<type>::trait_name
+#define iterator_traits_t(type, trait_name) typename iterator_traits<type>::trait_name
 
     namespace __data_structure_auxiliary {
         template <bool, typename T, typename = void>
@@ -87,65 +89,65 @@ namespace data_structure {
         };
         template <typename T>
         struct has_iterator_category_impl<false, T, void_t<typename T::iterator_category>> : true_type {
-            using is_iterator = is_base_of<iterator_tag, typename T::iterator_category>;
-            using is_input_iterator = is_base_of<input_iterator_tag, typename T::iterator_category>;
-            using is_output_iterator = is_same<output_iterator_tag, typename T::iterator_category>;
-            using is_forward_iterator = is_base_of<forward_iterator_tag, typename T::iterator_category>;
-            using is_bidirectional_iterator =
-            is_base_of<bidirectional_iterator_tag, typename T::iterator_category>;
-            using is_random_access_iterator =
-            is_base_of<random_access_iterator_tag, typename T::iterator_category>;
-        };
-        template <typename T>
-        struct has_iterator_category_impl<true, T, void> : true_type {
-            using is_iterator = true_type;
-            using is_input_iterator = true_type;
-            using is_output_iterator = true_type;
-            using is_forward_iterator = true_type;
-            using is_bidirectional_iterator = true_type;
-            using is_random_access_iterator = true_type;
-        };
-    }
+        using is_iterator = is_base_of<iterator_tag, typename T::iterator_category>;
+        using is_input_iterator = is_base_of<input_iterator_tag, typename T::iterator_category>;
+        using is_output_iterator = is_same<output_iterator_tag, typename T::iterator_category>;
+        using is_forward_iterator = is_base_of<forward_iterator_tag, typename T::iterator_category>;
+        using is_bidirectional_iterator =
+                is_base_of<bidirectional_iterator_tag, typename T::iterator_category>;
+        using is_random_access_iterator =
+                is_base_of<random_access_iterator_tag, typename T::iterator_category>;
+    };
+    template <typename T>
+    struct has_iterator_category_impl<true, T, void> : true_type {
+        using is_iterator = true_type;
+        using is_input_iterator = true_type;
+        using is_output_iterator = true_type;
+        using is_forward_iterator = true_type;
+        using is_bidirectional_iterator = true_type;
+        using is_random_access_iterator = true_type;
+    };
+}
 
-    template <typename T>
-    struct has_iterator_category : __dsa::has_iterator_category_impl<is_pointer_v<T>, T> {};
-    template <typename T>
-    constexpr inline auto has_iterator_category_v {has_iterator_category<T>::value};
+template <typename T>
+struct has_iterator_category : __dsa::has_iterator_category_impl<is_pointer_v<T>, T> {};
+template <typename T>
+constexpr inline auto has_iterator_category_v {has_iterator_category<T>::value};
 
-    template <typename T>
-    struct is_iterator : __dsa::has_iterator_category_impl<is_pointer_v<T>, T> {};
-    template <typename T>
-    constexpr inline auto is_iterator_v {is_iterator<T>::value};
+template <typename T>
+struct is_iterator : __dsa::has_iterator_category_impl<is_pointer_v<T>, T> {};
+template <typename T>
+constexpr inline auto is_iterator_v {is_iterator<T>::value};
 
-    template <typename T>
-    struct is_output_iterator :
-            __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_output_iterator {};
-    template <typename T>
-    constexpr inline auto is_output_iterator_v {is_output_iterator<T>::value};
+template <typename T>
+struct is_output_iterator :
+        __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_output_iterator {};
+template <typename T>
+constexpr inline auto is_output_iterator_v {is_output_iterator<T>::value};
 
-    template <typename T>
-    struct is_input_iterator :
-            __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_input_iterator {};
-    template <typename T>
-    constexpr inline auto is_input_iterator_v {is_input_iterator<T>::value};
+template <typename T>
+struct is_input_iterator :
+        __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_input_iterator {};
+template <typename T>
+constexpr inline auto is_input_iterator_v {is_input_iterator<T>::value};
 
-    template <typename T>
-    struct is_forward_iterator :
-            __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_forward_iterator {};
-    template <typename T>
-    constexpr inline auto is_forward_iterator_v {is_forward_iterator<T>::value};
+template <typename T>
+struct is_forward_iterator :
+        __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_forward_iterator {};
+template <typename T>
+constexpr inline auto is_forward_iterator_v {is_forward_iterator<T>::value};
 
-    template <typename T>
-    struct is_bidirectional_iterator :
-            __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_bidirectional_iterator {};
-    template <typename T>
-    constexpr inline auto is_bidirectional_iterator_v {is_bidirectional_iterator<T>::value};
+template <typename T>
+struct is_bidirectional_iterator :
+        __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_bidirectional_iterator {};
+template <typename T>
+constexpr inline auto is_bidirectional_iterator_v {is_bidirectional_iterator<T>::value};
 
-    template <typename T>
-    struct is_random_access_iterator :
-            __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_random_access_iterator {};
-    template <typename T>
-    constexpr inline auto is_random_access_iterator_v {is_random_access_iterator<T>::value};
+template <typename T>
+struct is_random_access_iterator :
+        __dsa::has_iterator_category_impl<is_pointer_v<T>, T>::is_random_access_iterator {};
+template <typename T>
+constexpr inline auto is_random_access_iterator_v {is_random_access_iterator<T>::value};
 }
 __DATA_STRUCTURE_END
 
@@ -163,7 +165,7 @@ namespace data_structure {
     template <typename Iterator>
     inline iterator_traits_t(Iterator, difference_type)
     distance(enable_if_t<is_random_access_iterator_v<Iterator>, Iterator> begin, Iterator end)
-    noexcept(has_nothrow_minus_operator_v<Iterator>) {
+            noexcept(has_nothrow_minus_operator_v<Iterator>) {
         return end - begin;
     }
     inline ptrdiff_t distance(void *begin, void *end) noexcept {
@@ -186,7 +188,7 @@ namespace data_structure {
     template <typename RandomAccessIterator>
     inline enable_if_t<is_random_access_iterator_v<RandomAccessIterator>, RandomAccessIterator>
     advance(RandomAccessIterator begin, iterator_traits_t(RandomAccessIterator, difference_type) step = 1)
-    noexcept(has_nothrow_plus_operator_v<iterator_traits_t(RandomAccessIterator, difference_type)>) {
+            noexcept(has_nothrow_plus_operator_v<iterator_traits_t(RandomAccessIterator, difference_type)>) {
         return begin + step;
     }
     inline void *advance(void *ptr, ptrdiff_t step = 1) noexcept {
@@ -231,12 +233,10 @@ namespace data_structure {
     private:
         template <typename IteratorRHS>
         explicit constexpr wrap_iterator(const wrap_iterator<IteratorRHS> &rhs,
-                enable_if_t<is_nothrow_convertible_v<IteratorRHS, iterator_type>> *)
-                noexcept : iter {rhs.base()} {}
+                enable_if_t<is_nothrow_convertible_v<IteratorRHS, iterator_type>> *) noexcept : iter {rhs.base()} {}
         template <typename IteratorRHS>
         constexpr wrap_iterator &operator_assignment_auxiliary(const wrap_iterator<IteratorRHS> &rhs,
-                enable_if_t<is_nothrow_convertible_v<IteratorRHS, iterator_type>> *)
-                noexcept {
+                enable_if_t<is_nothrow_convertible_v<IteratorRHS, iterator_type>> *) noexcept {
             this->iter = rhs.base();
             return *this;
         }
@@ -244,8 +244,7 @@ namespace data_structure {
         constexpr wrap_iterator() noexcept = default;
         explicit constexpr wrap_iterator(iterator_type iterator) noexcept : iter {iterator} {}
         template <typename IteratorRHS>
-        constexpr wrap_iterator(const wrap_iterator<IteratorRHS> &rhs)
-                noexcept : wrap_iterator(rhs, nullptr) {}
+        constexpr wrap_iterator(const wrap_iterator<IteratorRHS> &rhs) noexcept : wrap_iterator(rhs, nullptr) {}
         constexpr wrap_iterator(const wrap_iterator &) noexcept = default;
         constexpr wrap_iterator(wrap_iterator &&) noexcept = default;
         ~wrap_iterator() noexcept = default;
@@ -423,14 +422,14 @@ namespace data_structure {
             return backup;
         }
         enable_if_t<is_random_access_iterator_v<iterator_type>, reverse_iterator &>
-        operator+=(difference_type n) & noexcept(
-                has_nothrow_minus_assignment_operator_v<iterator_type, difference_type>) {
+        operator+=(difference_type n) &
+                noexcept(has_nothrow_minus_assignment_operator_v<iterator_type, difference_type>) {
             this->iter -= n;
             return *this;
         }
         enable_if_t<is_random_access_iterator_v<iterator_type>, reverse_iterator &>
-        operator-=(difference_type n) & noexcept(
-                has_nothrow_plus_assignment_operator_v<iterator_type, difference_type>) {
+        operator-=(difference_type n) &
+                noexcept(has_nothrow_plus_assignment_operator_v<iterator_type, difference_type>) {
             return *this += -n;
         }
         enable_if_t<is_random_access_iterator_v<iterator_type>, reverse_iterator> operator+(difference_type n)
@@ -457,14 +456,12 @@ namespace data_structure {
     };
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
     inline auto operator-(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
-           noexcept(has_nothrow_minus_operator_v<IteratorLHS, IteratorRHS>) ->
-           decltype(lhs.base() - rhs.base()) {
+            noexcept(has_nothrow_minus_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() - rhs.base()) {
         return rhs.base() - lhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
     inline auto operator==(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
-            noexcept(has_nothrow_equal_to_operator_v<IteratorLHS, IteratorRHS>) ->
-            decltype(rhs.base() == lhs.base()) {
+            noexcept(has_nothrow_equal_to_operator_v<IteratorLHS, IteratorRHS>) -> decltype(rhs.base() == lhs.base()) {
         return rhs.base() == lhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
@@ -474,24 +471,161 @@ namespace data_structure {
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
     inline auto operator<(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
-            noexcept(has_nothrow_less_operator_v<IteratorLHS, IteratorRHS>) ->
-            decltype(lhs.base() < rhs.base()) {
+            noexcept(has_nothrow_less_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() < rhs.base()) {
         return lhs.base() < rhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
     inline auto operator<=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_less_equal_to_operator_v<IteratorLHS, IteratorRHS>)
+            -> decltype(lhs.base() <= rhs.base()) {
+        return lhs.base() <= rhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline auto operator>(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_greater_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() > rhs.base()) {
+        return lhs.base() > rhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    inline auto operator>=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_greater_equal_to_operator_v<IteratorLHS, IteratorRHS>)
+            -> decltype(lhs.base() >= rhs.base()) {
+        return lhs.base() >= rhs.base();
+    }
+}
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(move_iterator)
+namespace data_structure {
+    template <typename Iterator>
+    class move_iterator {
+    public:
+        using iterator_type = Iterator;
+        using size_type = iterator_traits_t(iterator_type, size_type);
+        using difference_type = iterator_traits_t(iterator_type, difference_type);
+        using value_type = iterator_traits_t(iterator_type, value_type);
+        using reference = iterator_traits_t(iterator_type, reference);
+        using const_reference = iterator_traits_t(iterator_type, const_reference);
+        using rvalue_reference = iterator_traits_t(iterator_type, rvalue_reference);
+        using pointer = iterator_traits_t(iterator_type, pointer);
+        using const_pointer = iterator_traits_t(iterator_type, const_pointer);
+        using iterator_category = iterator_traits_t(iterator_type, iterator_category);
+        static_assert(is_input_iterator_v<iterator_type>,
+                "The template argument must be at least an input iterator!");
+    private:
+        iterator_type iter;
+    public:
+        constexpr move_iterator() = delete;
+        explicit constexpr move_iterator(iterator_type iterator)
+                noexcept(is_nothrow_copy_constructible_v<iterator_type>) : iter {iterator} {}
+        template <typename IteratorRHS>
+        explicit constexpr move_iterator(const move_iterator<IteratorRHS> &rhs)
+                noexcept(is_nothrow_constructible_v<iterator_type, IteratorRHS>) : move_iterator(rhs.base()) {}
+        constexpr move_iterator(const move_iterator &) = default;
+        constexpr move_iterator(move_iterator &&) = default;
+        ~move_iterator() noexcept = default;
+    public:
+        constexpr move_iterator &operator=(const move_iterator &) = default;
+        constexpr move_iterator &operator=(move_iterator &&) = default;
+        template <typename IteratorRHS>
+        constexpr move_iterator &operator=(const move_iterator<IteratorRHS> &rhs)
+                noexcept(is_nothrow_assignable_v<iterator_type, IteratorRHS>) {
+            this->iter = rhs.base();
+            return *this;
+        }
+    public:
+        rvalue_reference operator*() const noexcept(has_nothrow_dereference_operator_v<iterator_type>) {
+            return static_cast<rvalue_reference>(*this->iter);
+        }
+        pointer operator->() const noexcept(has_nothrow_member_access_by_pointer_operator_v<iterator_type>) {
+            return this->iter.operator->();
+        }
+        enable_if_t<is_random_access_iterator_v<iterator_type>, rvalue_reference> operator[](difference_type n)
+                noexcept(has_nothrow_subscript_operator_v<iterator_type>) {
+            return static_cast<rvalue_reference>(this->iter[n]);
+        }
+        move_iterator &operator++() & noexcept(has_nothrow_pre_increment_operator_v<iterator_type>) {
+            ++this->iter;
+            return *this;
+        }
+        move_iterator operator++(int) & noexcept(has_nothrow_post_increment_operator_v<iterator_type>) {
+            auto backup {*this};
+            ++this->iter;
+            return backup;
+        }
+        move_iterator &operator--() & noexcept(has_nothrow_pre_decrement_operator_v<iterator_type>) {
+            --this->iter;
+            return *this;
+        }
+        move_iterator operator--(int) & noexcept(has_nothrow_post_decrement_operator_v<iterator_type>) {
+            auto backup {*this};
+            --this->iter;
+            return backup;
+        }
+        enable_if_t<is_random_access_iterator_v<iterator_type>, move_iterator &> operator+=(difference_type n) &
+                noexcept(has_nothrow_minus_assignment_operator_v<iterator_type, difference_type>) {
+            this->iter += n;
+            return *this;
+        }
+        enable_if_t<is_random_access_iterator_v<iterator_type>, move_iterator &> operator-=(difference_type n) &
+                noexcept(has_nothrow_plus_assignment_operator_v<iterator_type, difference_type>) {
+            return *this += -n;
+        }
+        enable_if_t<is_random_access_iterator_v<iterator_type>, move_iterator> operator+(difference_type n)
+                noexcept(has_nothrow_minus_assignment_operator_v<iterator_type, difference_type>) {
+            auto backup {*this};
+            backup += n;
+            return backup;
+        }
+        enable_if_t<is_random_access_iterator_v<iterator_type>, move_iterator> operator-(difference_type n)
+                noexcept(has_nothrow_minus_assignment_operator_v<iterator_type, difference_type>) {
+            return *this + -n;
+        }
+        operator iterator_type() const noexcept {
+            return this->iter;
+        }
+        explicit operator enable_if_t<is_static_castable_v<iterator_type, bool>, bool>() const
+                noexcept(is_nothrow_static_castable_v<iterator_type, bool>) {
+            return static_cast<bool>(this->iter);
+        }
+    public:
+        iterator_type base() const noexcept {
+            return this->iter;
+        }
+    };
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    auto operator-(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_minus_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() - rhs.base()) {
+        return rhs.base() - lhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    auto operator==(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_equal_to_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() == rhs.base()) {
+        return rhs.base() == lhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    auto operator!=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_not_equal_to_operator_v<IteratorLHS, IteratorRHS>) ->
+            decltype(lhs.base() not_eq rhs.base()) {
+        return lhs.base() not_eq rhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    auto operator<(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_less_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() < rhs.base()) {
+        return lhs.base() < rhs.base();
+    }
+    template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
+    auto operator<=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
             noexcept(has_nothrow_less_equal_to_operator_v<IteratorLHS, IteratorRHS>) ->
             decltype(lhs.base() <= rhs.base()) {
         return lhs.base() <= rhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-    inline auto operator>(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
-            noexcept(has_nothrow_greater_operator_v<IteratorLHS, IteratorRHS>) ->
-            decltype(lhs.base() > rhs.base()) {
+    auto operator>(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
+            noexcept(has_nothrow_greater_operator_v<IteratorLHS, IteratorRHS>) -> decltype(lhs.base() > rhs.base()) {
         return lhs.base() > rhs.base();
     }
     template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-    inline auto operator>=(const reverse_iterator<IteratorLHS> &lhs, const reverse_iterator<IteratorRHS> &rhs)
+    auto operator>=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
             noexcept(has_nothrow_greater_equal_to_operator_v<IteratorLHS, IteratorRHS>) ->
             decltype(lhs.base() >= rhs.base()) {
         return lhs.base() >= rhs.base();
@@ -903,7 +1037,7 @@ namespace data_structure::__data_structure_auxiliary {
     inline bool operator==(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &lhs,
             const static_forward_list_iterator<Type, ContainerTp, IsConstRHS> &rhs) noexcept {
         return lhs.head == rhs.head and lhs.node == rhs.node and
-                ds::address_of(lhs.c) == ds::address_of(rhs.c);
+               ds::address_of(lhs.c) == ds::address_of(rhs.c);
     }
     template <typename Type, typename ContainerTp, bool IsConstLHS, bool IsConstRHS>
     inline bool operator!=(const static_forward_list_iterator<Type, ContainerTp, IsConstLHS> &lhs,
@@ -990,7 +1124,8 @@ namespace data_structure::__data_structure_auxiliary {
                 this->iter += n;
             }else {
                 const auto node_offset {
-                    offset > 0 ? offset / this->buffer_size : (-offset - 1) / this->buffer_size - 1};
+                    offset > 0 ? offset / this->buffer_size : (-offset - 1) / this->buffer_size - 1
+                };
                 this->map += node_offset;
                 this->iter = *this->map + (offset - node_offset * this->buffer_size);
             }
@@ -1009,7 +1144,7 @@ namespace data_structure::__data_structure_auxiliary {
         }
         difference_type operator-(const deque_iterator &rhs) const noexcept {
             return this->buffer_size * (this->map - rhs.map - 1) +
-                    (this->iter - *this->map) + (const_cast<deque_iterator &>(rhs).after_tail() - rhs.iter);
+                   (this->iter - *this->map) + (const_cast<deque_iterator &>(rhs).after_tail() - rhs.iter);
         }
         explicit operator bool() const noexcept {
             return this->iter;
@@ -1826,6 +1961,7 @@ namespace data_structure::__data_structure_auxiliary {
     class binary_tree_iterator {
         template <typename, typename> friend class ds::binary_tree;
         template <typename, typename> friend class ds::leftist_tree;
+        template <typename, typename> friend class ds::binary_search_tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
                 const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
@@ -1929,6 +2065,7 @@ namespace data_structure::__data_structure_auxiliary {
     class binary_tree_iterator<T, true> {
         template <typename, typename> friend class ds::binary_tree;
         template <typename, typename> friend class ds::leftist_tree;
+        template <typename, typename> friend class ds::binary_search_tree;
         template <typename Type, bool IsConstLHS, bool IsConstRHS>
         friend bool operator==(const binary_tree_iterator<Type, IsConstLHS> &lhs,
                 const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept;
@@ -2034,6 +2171,126 @@ namespace data_structure::__data_structure_auxiliary {
     bool operator!=(const binary_tree_iterator<Type, IsConstLHS> &lhs,
             const binary_tree_iterator<Type, IsConstRHS> &rhs) noexcept {
         return not(lhs == rhs);
+    }
+}
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(special iterator, winner_tree_iterator)
+namespace data_structure::__data_structure_auxiliary {
+    template <typename> struct winner_tree_contestant_node;
+    template <typename T>
+    struct winner_tree_competition_node {
+        winner_tree_contestant_node<T> *winner;
+        winner_tree_competition_node *parent;
+    };
+    template <typename T>
+    struct winner_tree_contestant_node {
+        winner_tree_competition_node<T> *parent;
+        T value;
+    };
+    template <typename T>
+    class winner_tree_iterator final {
+        template <typename, typename, size_t, typename> friend class ds::winner_tree;
+        template <typename Type>
+        friend bool operator==(const winner_tree_iterator<Type> &, const winner_tree_iterator<Type> &) noexcept;
+        template <typename Type>
+        friend bool operator<(const winner_tree_iterator<Type> &, const winner_tree_iterator<Type> &) noexcept;
+    private:
+        using contestant_type = winner_tree_contestant_node<T> *;
+        using competition_type = winner_tree_competition_node<T> *;
+    public:
+        using size_type = size_t;
+        using difference_type = ptrdiff_t;
+        using value_type = T;
+        using reference = add_lvalue_reference_t<value_type>;
+        using const_reference = add_const_reference_t<value_type>;
+        using rvalue_reference = add_rvalue_reference_t<value_type>;
+        using pointer = add_pointer_t<value_type>;
+        using const_pointer = add_const_pointer_t<value_type>;
+        using iterator_category = random_access_iterator_tag;
+    private:
+        contestant_type contestant;
+    public:
+        constexpr winner_tree_iterator() noexcept = default;
+        explicit winner_tree_iterator(contestant_type c) noexcept : contestant {c} {}
+        constexpr winner_tree_iterator(const winner_tree_iterator &) noexcept = default;
+        constexpr winner_tree_iterator(winner_tree_iterator &&) noexcept = default;
+        ~winner_tree_iterator() noexcept = default;
+    public:
+        constexpr winner_tree_iterator &operator=(const winner_tree_iterator &) noexcept = default;
+        constexpr winner_tree_iterator &operator=(winner_tree_iterator &&) noexcept = default;
+        const_reference operator*() noexcept {
+            return this->contestant->value;
+        }
+        const_pointer operator->() noexcept {
+            return ds::address_of(**this);
+        }
+        const_reference operator[](difference_type n) noexcept {
+            return this->contestant[n].value;
+        };
+        winner_tree_iterator &operator++() & noexcept {
+            ++this->contestant;
+            return *this;
+        }
+        winner_tree_iterator operator++(int) & noexcept {
+            auto backup {*this};
+            ++*this;
+            return backup;
+        }
+        winner_tree_iterator &operator--() & noexcept {
+            --this->contestant;
+            return *this;
+        }
+        winner_tree_iterator operator--(int) & noexcept {
+            auto backup {*this};
+            --*this;
+            return backup;
+        }
+        winner_tree_iterator &operator+=(difference_type n) & noexcept {
+            this->contestant += n;
+            return *this;
+        }
+        winner_tree_iterator &operator-=(difference_type n) & noexcept {
+            return *this += -n;
+        }
+        winner_tree_iterator operator+(difference_type n) noexcept {
+            auto backup {*this};
+            return backup += n;
+        }
+        winner_tree_iterator operator-(difference_type n) noexcept {
+            return *this + -n;
+        }
+        explicit operator bool() const noexcept {
+            return static_cast<bool>(this->contestant);
+        }
+    public:
+        competition_type parent() const noexcept {
+            return this->contestant->parent;
+        }
+    };
+    template <typename T>
+    bool operator==(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return lhs.contestant == rhs.contestant;
+    }
+    template <typename T>
+    bool operator!=(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return not(lhs == rhs);
+    }
+    template <typename T>
+    bool operator<(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return rhs.contestant - lhs.contestant > 0;
+    }
+    template <typename T>
+    bool operator<=(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return not(lhs > rhs);
+    }
+    template <typename T>
+    bool operator>(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return rhs < lhs;
+    }
+    template <typename T>
+    bool operator>=(const winner_tree_iterator<T> &lhs, const winner_tree_iterator<T> &rhs) noexcept {
+        return not(lhs < rhs);
     }
 }
 __DATA_STRUCTURE_END
