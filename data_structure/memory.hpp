@@ -23,7 +23,7 @@
 __DATA_STRUCTURE_START(memory functions)
 namespace data_structure {
     template <typename T>
-    constexpr inline T *address_of(T &arg) noexcept {
+    inline constexpr T *address_of(T &arg) noexcept {
         return reinterpret_cast<T *>(&const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
     }
 }
@@ -48,7 +48,7 @@ namespace data_structure {
         static char *end;
         static size_t chunk_size;
 #ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
-    private:
+        private:
         static void **chunk_record;
         static size_t chunk_size;
 #endif
@@ -151,7 +151,7 @@ namespace data_structure {
             return this->start;
         }
 #ifdef DATA_STRUCTURE_DEALLOCATE_MEMORY_POOL_MANUALLY
-    public:
+        public:
         static void release() noexcept;
 #endif
     };
@@ -210,10 +210,10 @@ namespace data_structure {
         if(nodes == 1) {
             return chunk;
         }
-        auto current_node {static_cast<free_list_node *>(chunk + size)};
+        auto current_node {reinterpret_cast<free_list_node *>(chunk + size)};
         *(free_list + free_list_index(size)) = current_node;
         while(--nodes > 1) {
-            auto next_node {static_cast<free_list_node *>(static_cast<char *>(current_node) + size)};
+            auto next_node {reinterpret_cast<free_list_node *>(reinterpret_cast<char *>(current_node) + size)};
             current_node->free_list_link = next_node;
             current_node = next_node;
         }
@@ -237,7 +237,7 @@ namespace data_structure {
         auto bytes_to_get {2 * total_bytes + round_up(chunk_size >> 4)};
         if(bytes_left > 0) {
             auto &first {*(free_list + free_list_index(bytes_left))};
-            auto new_first {static_cast<free_list_node *>(start)};
+            auto new_first {reinterpret_cast<free_list_node *>(start)};
             new_first->free_list_link = first;
             first = new_first;
         }
@@ -246,7 +246,7 @@ namespace data_structure {
             for(auto i {size}; i <= max_bytes; i += align) {
                 auto &first {*(free_list + free_list_index(i))};
                 if(first) {
-                    start = static_cast<char *>(first);
+                    start = reinterpret_cast<char *>(first);
                     first = first->free_list_link;
                     end = start + i;
                     return chunk_alloc(size, nodes);
