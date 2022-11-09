@@ -33,7 +33,7 @@ namespace data_structure {
             return this->value;
         }
     };
-    
+
     template <bool Value>
     using bool_constant = constant<bool, Value>;
     using true_type = bool_constant<true>;
@@ -861,7 +861,7 @@ namespace data_structure {
     template <typename T>
     struct is_function_pointer : bool_constant<is_pointer_v<T> and
             (is_function_v<remove_pointer_t<T>> or is_void_v<remove_pointer_t<T>> or
-                    is_null_pointer_v<remove_pointer_t<T>>)> {};
+            is_null_pointer_v<remove_pointer_t<T>>)> {};
     template <typename T>
     constexpr inline auto is_function_pointer_v {is_function_pointer<T>::value};
 
@@ -1084,7 +1084,8 @@ namespace data_structure {
     struct is_swappable_with : conditional_t<is_void_v<LHS> or is_void_v<RHS>, false_type,
             conditional_t<is_same_v<decltype(__dsa::test_swappable<LHS, RHS>(0)),
                     decltype(__dsa::test_swappable<RHS, LHS>(0))>,
-            decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>> {};
+                    decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>
+            > {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto is_swappable_with_v {is_swappable_with<LHS, RHS>::value};
 
@@ -1193,7 +1194,7 @@ namespace data_structure {
     template <typename Ptr, typename ...Args>
     struct is_nothrow_invocable :
             __dsa::result_of_nothrow_auxiliary<is_member_object_pointer_v<remove_reference_t<Ptr>>,
-            is_member_function_pointer_v<remove_reference_t<Ptr>>, Ptr, Args...> {};
+                    is_member_function_pointer_v<remove_reference_t<Ptr>>, Ptr, Args...> {};
     template <typename Ptr, typename ...Args>
     constexpr inline auto is_nothrow_invocable_v {is_nothrow_invocable<Ptr, Args...>::value};
 
@@ -1307,7 +1308,8 @@ namespace data_structure {
             decltype(__dsa::test_nothrow_bit_and_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_bit_and_assignment_operator_v {
-        has_nothrow_bit_and_assignment_operator<LHS, RHS>::value};
+        has_nothrow_bit_and_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_bit_or_operator : decltype(__dsa::test_bit_or<LHS, RHS>(0)) {};
@@ -1329,7 +1331,8 @@ namespace data_structure {
             decltype(__dsa::test_nothrow_bit_or_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_bit_or_assignment_operator_v {
-        has_nothrow_bit_or_assignment_operator<LHS, RHS>::value};
+        has_nothrow_bit_or_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_bit_xor_operator : decltype(__dsa::test_bit_xor<LHS, RHS>(0)) {};
@@ -1351,7 +1354,8 @@ namespace data_structure {
             decltype(__dsa::test_nothrow_bit_xor_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_bit_xor_assignment_operator_v {
-        has_nothrow_bit_xor_assignment_operator<LHS, RHS>::value};
+        has_nothrow_bit_xor_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename T>
     struct has_complement_operator : decltype(__dsa::test_complement<T>(0)) {};
@@ -1393,7 +1397,8 @@ namespace data_structure {
             decltype(__dsa::test_nothrow_divide_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_divide_assignment_operator_v {
-        has_nothrow_divide_assignment_operator<LHS, RHS>::value};
+        has_nothrow_divide_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_equal_to_operator : decltype(__dsa::test_equal_to<LHS, RHS>(0)) {};
@@ -1421,11 +1426,11 @@ namespace data_structure {
     constexpr inline auto has_greater_equal_to_operator_v {has_greater_equal_to_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_greater_equal_to_operator :
-            decltype(__dsa::test_nothrow_greater_equal_to<LHS, RHS>(0)) {};
+    struct has_nothrow_greater_equal_to_operator : decltype(__dsa::test_nothrow_greater_equal_to<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_greater_equal_to_operator_v {
-        has_nothrow_greater_equal_to_operator<LHS, RHS>::value};
+        has_nothrow_greater_equal_to_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_left_shift_operator : decltype(__dsa::test_left_shift<LHS, RHS>(0)) {};
@@ -1440,15 +1445,15 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_left_shift_assignment_operator : decltype(__dsa::test_left_shift_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_left_shift_assignment_operator_v {
-        has_left_shift_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_left_shift_assignment_operator_v {has_left_shift_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_left_shift_assignment_operator :
             decltype(__dsa::test_nothrow_left_shift_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_left_shift_assignment_operator_v {
-        has_nothrow_left_shift_assignment_operator<LHS, RHS>::value};
+        has_nothrow_left_shift_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_right_shift_operator : decltype(__dsa::test_right_shift<LHS, RHS>(0)) {};
@@ -1458,22 +1463,21 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_right_shift_operator : decltype(__dsa::test_nothrow_right_shift<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_right_shift_operator_v {
-        has_nothrow_right_shift_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_right_shift_operator_v {has_nothrow_right_shift_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_right_shift_assignment_operator :
             decltype(__dsa::test_right_shift_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_right_shift_assignment_operator_v {
-        has_right_shift_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_right_shift_assignment_operator_v {has_right_shift_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_right_shift_assignment_operator :
             decltype(__dsa::test_nothrow_right_shift_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_right_shift_assignment_operator_v {
-        has_nothrow_right_shift_assignment_operator<LHS, RHS>::value};
+        has_nothrow_right_shift_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_less_operator : decltype(__dsa::test_less<LHS, RHS>(0)) {};
@@ -1491,11 +1495,9 @@ namespace data_structure {
     constexpr inline auto has_less_equal_to_operator_v {has_less_equal_to_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_less_equal_to_operator :
-            decltype(__dsa::test_nothrow_less_equal_to<LHS, RHS>(0)) {};
+    struct has_nothrow_less_equal_to_operator : decltype(__dsa::test_nothrow_less_equal_to<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_less_equal_to_operator_v {
-        has_nothrow_less_equal_to_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_less_equal_to_operator_v {has_nothrow_less_equal_to_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_logical_and_operator : decltype(__dsa::test_logical_and<LHS, RHS>(0)) {};
@@ -1505,8 +1507,7 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_logical_and_operator : decltype(__dsa::test_nothrow_logical_and<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_logical_and_operator_v {
-        has_nothrow_logical_and_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_logical_and_operator_v {has_nothrow_logical_and_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_logical_or_operator : decltype(__dsa::test_logical_or<LHS, RHS>(0)) {};
@@ -1516,8 +1517,7 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_logical_or_operator : decltype(__dsa::test_nothrow_logical_or<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_logical_or_operator_v {
-        has_nothrow_logical_or_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_logical_or_operator_v {has_nothrow_logical_or_operator<LHS, RHS>::value};
 
     template <typename T>
     struct has_logical_not_operator : decltype(__dsa::test_logical_not<T>(0)) {};
@@ -1545,11 +1545,9 @@ namespace data_structure {
     constexpr inline auto has_minus_operator_v {has_minus_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_minus_operator :
-            decltype(__dsa::test_nothrow_minus<LHS, RHS>(0)) {};
+    struct has_nothrow_minus_operator : decltype(__dsa::test_nothrow_minus<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_minus_operator_v {
-        has_nothrow_minus_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_minus_operator_v {has_nothrow_minus_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_minus_assignment_operator : decltype(__dsa::test_minus_assignment<LHS, RHS>(0)) {};
@@ -1557,11 +1555,11 @@ namespace data_structure {
     constexpr inline auto has_minus_assignment_operator_v {has_minus_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_minus_assignment_operator :
-            decltype(__dsa::test_nothrow_minus_assignment<LHS, RHS>(0)) {};
+    struct has_nothrow_minus_assignment_operator : decltype(__dsa::test_nothrow_minus_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_minus_assignment_operator_v {
-        has_nothrow_minus_assignment_operator<LHS, RHS>::value};
+        has_nothrow_minus_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_modules_operator : decltype(__dsa::test_modules<LHS, RHS>(0)) {};
@@ -1576,15 +1574,14 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_modules_assignment_operator : decltype(__dsa::test_modules_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_modules_assignment_operator_v {
-        has_modules_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_modules_assignment_operator_v {=has_modules_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_modules_assignment_operator :
-            decltype(__dsa::test_nothrow_modules_assignment<LHS, RHS>(0)) {};
+    struct has_nothrow_modules_assignment_operator : decltype(__dsa::test_nothrow_modules_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_modules_assignment_operator_v {
-        has_nothrow_modules_assignment_operator<LHS, RHS>::value};
+        has_nothrow_modules_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_multiply_operator : decltype(__dsa::test_multiply<LHS, RHS>(0)) {};
@@ -1599,15 +1596,14 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_multiply_assignment_operator : decltype(__dsa::test_multiply_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_multiply_assignment_operator_v {
-        has_multiply_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_multiply_assignment_operator_v {has_multiply_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_multiply_assignment_operator :
-            decltype(__dsa::test_nothrow_multiply_assignment<LHS, RHS>(0)) {};
+    struct has_nothrow_multiply_assignment_operator : decltype(__dsa::test_nothrow_multiply_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
     constexpr inline auto has_nothrow_multiply_assignment_operator_v {
-        has_nothrow_multiply_assignment_operator<LHS, RHS>::value};
+        has_nothrow_multiply_assignment_operator<LHS, RHS>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_three_way_operator : decltype(__dsa::test_three_way<LHS, RHS>(0)) {};
@@ -1627,8 +1623,7 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_not_equal_to_operator : decltype(__dsa::test_nothrow_not_equal_to<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_not_equal_to_operator_v {
-        has_nothrow_not_equal_to_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_not_equal_to_operator_v {has_nothrow_not_equal_to_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_plus_operator : decltype(__dsa::test_plus<LHS, RHS>(0)) {};
@@ -1656,11 +1651,9 @@ namespace data_structure {
     constexpr inline auto has_plus_assignment_operator_v {has_plus_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
-    struct has_nothrow_plus_assignment_operator :
-            decltype(__dsa::test_nothrow_plus_assignment<LHS, RHS>(0)) {};
+    struct has_nothrow_plus_assignment_operator : decltype(__dsa::test_nothrow_plus_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_nothrow_plus_assignment_operator_v {
-        has_nothrow_plus_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_nothrow_plus_assignment_operator_v {has_nothrow_plus_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_subscript_operator : decltype(__dsa::test_subscript<LHS, RHS>(0)) {};
@@ -1713,32 +1706,33 @@ namespace data_structure {
     constexpr inline auto has_nothrow_post_decrement_operator_v {has_nothrow_post_decrement_operator<T>::value};
 
     template <typename T>
-    struct has_member_access_by_pointer_operator :
-            decltype(__dsa::test_member_access_by_pointer<T>(0)) {};
+    struct has_member_access_by_pointer_operator : decltype(__dsa::test_member_access_by_pointer<T>(0)) {};
     template <typename T>
-    constexpr inline auto has_member_access_by_pointer_operator_v {
-        has_member_access_by_pointer_operator<T>::value};
+    constexpr inline auto has_member_access_by_pointer_operator_v {has_member_access_by_pointer_operator<T>::value};
 
     template <typename T>
     struct has_nothrow_member_access_by_pointer_operator :
             decltype(__dsa::test_nothrow_member_access_by_pointer<T>(0)) {};
     template <typename T>
     constexpr inline auto has_nothrow_member_access_by_pointer_operator_v {
-        has_nothrow_member_access_by_pointer_operator<T>::value};
+        has_nothrow_member_access_by_pointer_operator<T>::value
+    };
 
     template <typename T>
     struct has_member_access_by_pointer_dereference_operator :
             decltype(__dsa::test_member_access_by_pointer_dereference<T>(0)) {};
     template <typename T>
     constexpr inline auto has_member_access_by_pointer_dereference_operator_v {
-        has_member_access_by_pointer_dereference_operator<T>::value};
+        has_member_access_by_pointer_dereference_operator<T>::value
+    };
 
     template <typename T>
     struct has_nothrow_member_access_by_pointer_dereference_operator :
             decltype(__dsa::test_nothrow_member_access_by_pointer_dereference<T>(0)) {};
     template <typename T>
     constexpr inline auto has_nothrow_member_access_by_pointer_dereference_operator_v {
-        has_nothrow_member_access_by_pointer_dereference_operator<T>::value};
+        has_nothrow_member_access_by_pointer_dereference_operator<T>::value
+    };
 
     template <typename T, typename ...Args>
     struct has_new_operator : decltype(__dsa::test_new_operator<T, Args...>(0)) {};
@@ -1776,11 +1770,11 @@ namespace data_structure {
     constexpr inline auto has_delete_array_operator_v {has_delete_array_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_delete_array_operator :
-            decltype(__dsa::test_nothrow_delete_array_operator<T, Args...>(0)) {};
+    struct has_nothrow_delete_array_operator : decltype(__dsa::test_nothrow_delete_array_operator<T, Args...>(0)) {};
     template <typename T, typename ...Args>
     constexpr inline auto has_nothrow_delete_array_operator_v {
-        has_nothrow_delete_array_operator<T, Args...>::value};
+        has_nothrow_delete_array_operator<T, Args...>::value
+    };
 
     template <typename T, typename ...Args>
     struct has_function_call_operator : decltype(__dsa::test_function_call<T, Args...>(0)) {};
@@ -1788,11 +1782,11 @@ namespace data_structure {
     constexpr inline auto has_function_call_operator_v {has_function_call_operator<T, Args...>::value};
 
     template <typename T, typename ...Args>
-    struct has_nothrow_function_call_operator :
-            decltype(__dsa::test_nothrow_function_call<T, Args...>(0)) {};
+    struct has_nothrow_function_call_operator : decltype(__dsa::test_nothrow_function_call<T, Args...>(0)) {};
     template <typename T, typename ...Args>
     constexpr inline auto has_nothrow_function_call_operator_v {
-        has_nothrow_function_call_operator<T, Args...>::value};
+        has_nothrow_function_call_operator<T, Args...>::value
+    };
 
     template <typename LHS, typename RHS = LHS>
     struct has_comma_operator : decltype(__dsa::test_comma<LHS, RHS>(0)) {};
@@ -1871,10 +1865,10 @@ namespace data_structure {
     template <typename ...> struct common_type;
     template <typename> struct alignment_of;
     namespace __data_structure_auxiliary {
-        using signed_integral = type_container<signed char, signed short, signed int, signed long,
-        signed long long, __int128_t>;
+        using signed_integral = type_container<signed char, signed short, signed int,
+                signed long,signed long long, __int128_t>;
         using unsigned_integral = type_container<unsigned char, unsigned short, unsigned int,
-        unsigned long, unsigned long long, __uint128_t>;
+                unsigned long, unsigned long long, __uint128_t>;
         using floating_point = type_container<float, double, long double>;
         using character = type_container<char8_t, char16_t, char32_t>;
 
@@ -1966,7 +1960,7 @@ namespace data_structure {
         template <typename> struct reference_wrapper;
         struct invoke_failure_tag {};
         template <typename T, typename = decay_t<T>>
-                struct unwrap : type_identity<T> {};
+        struct unwrap : type_identity<T> {};
         template <typename T, typename U>
         struct unwrap<T, reference_wrapper<U>> : type_identity<reference_wrapper<U>> {};
         template <typename Fp, typename T, typename ...Args>
@@ -2151,7 +2145,7 @@ namespace data_structure {
         template <size_t Align, typename T, typename ...Args>
         struct type_with_alignment_find_suitable_type<type_container<T, Args...>, Align> {
             using type = conditional_t<Align < alignof(T), T,
-            typename type_with_alignment_find_suitable_type<type_container<Args...>, Align>::type>;
+                    typename type_with_alignment_find_suitable_type<type_container<Args...>, Align>::type>;
         };
 
         template <typename T, typename U>
@@ -2390,8 +2384,8 @@ namespace data_structure {
                 __dsa::aligned_storage_helper_types, Align>::type;
     public:
         union type {
-             aligner align;
-             unsigned char data[(Length + Align - 1) / Align * Align];
+            aligner align;
+            unsigned char data[(Length + Align - 1) / Align * Align];
         };
     };
     template <size_t Length, size_t Align =
