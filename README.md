@@ -15,7 +15,7 @@ Data structures provide a means to manage large amounts of data efficiently for 
 
 Appreciative only.
 
-**There may exist compile errors in headers not mentioned.** (This part will be removed when all headers uploaded are complete.)
+**There may exist compile errors in headers not mentioned.** (This part will be removed when all headers updated are complete.)
 - \_\_config.hpp ![](https://img.shields.io/badge/Build-OK-success)
 - meta.hpp ![](https://img.shields.io/badge/Build-OK-success)
 - memory.hpp ![](https://img.shields.io/badge/Build-OK-success)
