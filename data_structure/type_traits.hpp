@@ -1574,7 +1574,7 @@ namespace data_structure {
     template <typename LHS, typename RHS = LHS>
     struct has_modules_assignment_operator : decltype(__dsa::test_modules_assignment<LHS, RHS>(0)) {};
     template <typename LHS, typename RHS = LHS>
-    constexpr inline auto has_modules_assignment_operator_v {=has_modules_assignment_operator<LHS, RHS>::value};
+    constexpr inline auto has_modules_assignment_operator_v {has_modules_assignment_operator<LHS, RHS>::value};
 
     template <typename LHS, typename RHS = LHS>
     struct has_nothrow_modules_assignment_operator : decltype(__dsa::test_nothrow_modules_assignment<LHS, RHS>(0)) {};
