@@ -17,7 +17,6 @@
 #include "../buffer.hpp"
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <vector>
 
 template <typename T>
@@ -465,12 +464,12 @@ void buffer_unit_test() {
             for(auto i {0}; i < 64; ++i) {
                 assert(b1.begin()[i] == 0);
                 assert(b2.begin()[i].empty());
-                //assert(b3.begin()[i].a == 0 and b3.begin()[i].b == 0 and b3.begin()[i].c == 0);
+                assert(b3.begin()[i].a == 0 and b3.begin()[i].b == 0 and b3.begin()[i].c == 0);
             }
             for(auto i {0}; i < 42; ++i) {
                 assert(b4.begin()[i] == 0);
                 assert(b5.begin()[i].empty());
-                //assert(b6.begin()[i].a == 0 and b6.begin()[i].b == 0 and b6.begin()[i].c == 0);
+                assert(b6.begin()[i].a == 0 and b6.begin()[i].b == 0 and b6.begin()[i].c == 0);
             }
             b1.clear();
             b2.clear();
@@ -829,12 +828,12 @@ void buffer_unit_test() {
             for(auto i {0}; i < 64; ++i) {
                 assert(b1.begin()[i] == 0);
                 assert(b2.begin()[i].empty());
-                //assert(b3.begin()[i].a == 0 and b3.begin()[i].b == 0 and b3.begin()[i].c == 0);
+                assert(b3.begin()[i].a == 0 and b3.begin()[i].b == 0 and b3.begin()[i].c == 0);
             }
             for(auto i {0}; i < 42; ++i) {
                 assert(b4.begin()[i] == 0);
                 assert(b5.begin()[i].empty());
-                //assert(b6.begin()[i].a == 0 and b6.begin()[i].b == 0 and b6.begin()[i].c == 0);
+                assert(b6.begin()[i].a == 0 and b6.begin()[i].b == 0 and b6.begin()[i].c == 0);
             }
             b1.clear();
             b2.clear();
