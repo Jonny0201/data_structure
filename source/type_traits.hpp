@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2022] [Jonny Charlotte]
+    * Copyright © [2019 - 2024] [Jonny]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.

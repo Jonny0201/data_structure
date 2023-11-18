@@ -42,4 +42,3 @@ main.cpp
 
 # Exclude CMakeLists.txt for main project
 CMakeLists.txt
-source/CMakeLists.txt
