@@ -19,8 +19,9 @@
 
 #include "__config.hpp"
 
-__DATA_STRUCTURE_START(constant)
 namespace data_structure {
+
+__DATA_STRUCTURE_START(constant)
 template <typename T, T Value>
 struct constant {
     using value_type = T;
@@ -136,6 +137,7 @@ namespace __data_structure_auxiliary {
 __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_integral);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, bool);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char);
+__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, signed char);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned char);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char8_t);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char16_t);
@@ -601,8 +603,16 @@ struct remove_cv : remove_const<remove_volatile_t<T>> {};
 template <typename T>
 using remove_cv_t = typename remove_cv<T>::type;
 
+template <typename> struct is_reference;
+template <typename> struct is_const;
 template <typename T>
-struct remove_const_reference : remove_const<remove_reference_t<T>> {};
+struct remove_const_reference : conditional_t<
+        is_reference<T>::value,
+        type_identity<conditional_t<
+                is_const<remove_reference_t<T>>::value,
+                remove_const_t<remove_reference_t<T>>,
+                T>>,
+        type_identity<T>> {};
 template <typename T>
 using remove_const_reference_t = typename remove_const_reference<T>::type;
 
