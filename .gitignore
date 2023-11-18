@@ -37,3 +37,9 @@
 # Exclude main.cpp
 main.cpp
 
+# Exclude idea related
+.idea
+
+# Exclude CMakeLists.txt for main project
+CMakeLists.txt
+source/CMakeLists.txt
