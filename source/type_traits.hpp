@@ -39,11 +39,9 @@ template <bool Value>
 using bool_constant = constant<bool, Value>;
 using true_type = bool_constant<true>;
 using false_type = bool_constant<false>;
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(conditional and SFINAE)
-namespace data_structure {
 template <bool, typename If, typename>
 struct conditional {
     using type = If;
@@ -120,7 +118,6 @@ struct type_container<T, Args...> {
 
 template <void () = [] {}>
 struct unique_type {};
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(detail)
@@ -130,48 +127,9 @@ __DATA_STRUCTURE_START(detail)
 #define __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(name, type, ...) \
     template <__VA_ARGS__> \
     struct name##_auxiliary<type> : true_type {}
-namespace data_structure {
 template <typename>
 struct is_function;
 namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_integral);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, bool);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, signed char);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned char);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char8_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char16_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, char32_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, wchar_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, short);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned short);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, int);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned int);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, long long);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, unsigned long long);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __int128_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_integral, __uint128_t);
-
-__DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_floating_point);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, float);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, double);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_floating_point, long double);
-
-__DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_character);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, unsigned char);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char8_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char16_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, char32_t);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_character, wchar_t);
-
-template <typename T>
-struct is_signed_auxiliary : bool_constant<static_cast<T>(-1) < static_cast<T>(0)> {};
-
-template <typename T>
-struct is_unsigned_auxiliary : bool_constant<static_cast<T>(0) < static_cast<T>(-1)> {};
 
 __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_pointer);
 __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_pointer, T *, typename T);
@@ -200,7 +158,6 @@ struct is_invocable_auxiliary<Result, void_t<typename Result::type>> : true_type
 template <bool, bool, typename ...>
 struct result_of_nothrow_auxiliary : false_type {};
 }
-}
 #define __DATA_STRUCTURE_TEST_OPERATION(name, expression, ...) \
     template <__VA_ARGS__> \
     static constexpr select_second_t<decltype(expression), true_type> test_##name(int) noexcept; \
@@ -211,7 +168,6 @@ struct result_of_nothrow_auxiliary : false_type {};
     static constexpr bool_constant<noexcept(expression)> test_nothrow_##name(int) noexcept; \
     template <__VA_ARGS__> \
     static constexpr false_type test_nothrow_##name(...) noexcept
-namespace data_structure {
 namespace __data_structure_auxiliary {
 template <typename, typename T>
 struct select_second {
@@ -439,11 +395,9 @@ __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(function_call, declval<T>()(declval<Args
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(comma, (declval<T>().operator,(declval<Arg>())),
                                         typename T, typename Arg);
 }
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(add something)
-namespace data_structure {
 namespace __data_structure_auxiliary {
 template <typename T>
 static constexpr select_second_t<T &, true_type> test_lvalue_reference(int) noexcept;
@@ -514,11 +468,9 @@ struct add_const_reference : add_lvalue_reference<add_const_t<
         typename remove_reference<T>::type>> {};
 template <typename T>
 using add_const_reference_t = typename add_const_reference<T>::type;
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(remove something)
-namespace data_structure {
 template <typename T>
 struct remove_lvalue_reference {
     using type = T;
@@ -650,11 +602,9 @@ template <typename T, size_t N>
 struct remove_extents<T [N]> {
     using type = remove_extents_t<T>;
 };
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(is something)
-namespace data_structure {
 template <typename, typename>
 struct is_same : false_type {};
 template <typename T>
@@ -693,26 +643,108 @@ struct is_cv<const volatile T> : true_type {};
 template <typename T>
 constexpr inline auto is_cv_v {is_cv<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename>
+struct is_integral_auxiliary : false_type {};
+template <>
+struct is_integral_auxiliary<bool> : true_type {};
+template <>
+struct is_integral_auxiliary<char> : true_type {};
+template <>
+struct is_integral_auxiliary<signed char> : true_type {};
+template <>
+struct is_integral_auxiliary<unsigned char> : true_type {};
+template <>
+struct is_integral_auxiliary<char8_t> : true_type {};
+template <>
+struct is_integral_auxiliary<char16_t> : true_type {};
+template <>
+struct is_integral_auxiliary<char32_t> : true_type {};
+template <>
+struct is_integral_auxiliary<wchar_t> : true_type {};
+template <>
+struct is_integral_auxiliary<short> : true_type {};
+template <>
+struct is_integral_auxiliary<unsigned short> : true_type {};
+template <>
+struct is_integral_auxiliary<int> : true_type {};
+template <>
+struct is_integral_auxiliary<unsigned int> : true_type {};
+template <>
+struct is_integral_auxiliary<long> : true_type {};
+template <>
+struct is_integral_auxiliary<unsigned long> : true_type {};
+template <>
+struct is_integral_auxiliary<long long> : true_type {};
+template <>
+struct is_integral_auxiliary<unsigned long long> : true_type {};
+template <>
+struct is_integral_auxiliary<__int128_t> : true_type {};
+template <>
+struct is_integral_auxiliary<__uint128_t> : true_type {};
+}
 template <typename T>
 struct is_integral : __dsa::is_integral_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_integral_v {is_integral<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename>
+struct is_floating_point_auxiliary : false_type {};
+template <>
+struct is_floating_point_auxiliary<float> : true_type {};
+template <>
+struct is_floating_point_auxiliary<double> : true_type {};
+template <>
+struct is_floating_point_auxiliary<long double> : true_type {};
+}
 template <typename T>
 struct is_floating_point : __dsa::is_floating_point_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_floating_point_v {is_floating_point<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T, typename = void>
+struct is_signed_auxiliary : false_type {};
+template <typename T>
+struct is_signed_auxiliary<T, make_void_t<decltype(static_cast<T>(-1) < static_cast<T>(0))>> :
+        conditional_t<static_cast<T>(-1) < static_cast<T>(0), true_type, false_type> {};
+}
 template <typename T>
 struct is_signed : __dsa::is_signed_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_signed_v {is_signed<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T, typename = void>
+struct is_unsigned_auxiliary : false_type {};
+template <typename T>
+struct is_unsigned_auxiliary<T, make_void_t<decltype(static_cast<T>(0) < static_cast<T>(-1))>> :
+        conditional_t<static_cast<T>(0) < static_cast<T>(-1), true_type, false_type> {};
+}
 template <typename T>
 struct is_unsigned : __dsa::is_unsigned_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_unsigned_v {is_unsigned<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename>
+struct is_character_auxiliary : false_type {};
+template <>
+struct is_character_auxiliary<char> : true_type {};
+template <>
+struct is_character_auxiliary<signed char> : true_type {};
+template <>
+struct is_character_auxiliary<unsigned char> : true_type {};
+template <>
+struct is_character_auxiliary<char8_t> : true_type {};
+template <>
+struct is_character_auxiliary<char16_t> : true_type {};
+template <>
+struct is_character_auxiliary<char32_t> : true_type {};
+template <>
+struct is_character_auxiliary<wchar_t> : true_type {};
+}
 template <typename T>
 struct is_character : __dsa::is_character_auxiliary<remove_cv_t<T>> {};
 template <typename T>
@@ -1105,8 +1137,7 @@ template <typename LHS, typename RHS = LHS>
 struct is_swappable_with : conditional_t<is_void_v<LHS> or is_void_v<RHS>, false_type,
         conditional_t<is_same_v<decltype(__dsa::test_swappable<LHS, RHS>(0)),
                 decltype(__dsa::test_swappable<RHS, LHS>(0))>,
-                decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>
-> {};
+                decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>> {};
 template <typename LHS, typename RHS = LHS>
 constexpr inline auto is_swappable_with_v {is_swappable_with<LHS, RHS>::value};
 
@@ -1273,11 +1304,9 @@ template <typename E>
 struct is_scoped_enum : bool_constant<is_enum_v<E> and is_convertible_v<E, int>> {};
 template <typename E>
 constexpr inline auto is_scoped_enum_v {is_scoped_enum<E>::value};
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(has something)
-namespace data_structure {
 template <typename T>
 struct has_virtual_destructor : conditional_t<__has_virtual_destructor(T), true_type, false_type> {};
 template <typename T>
@@ -1818,11 +1847,9 @@ template <typename LHS, typename RHS = LHS>
 struct has_nothrow_comma_operator : decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
 constexpr inline auto has_nothrow_comma_operator_v {has_nothrow_comma_operator<LHS, RHS>::value};
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(copy something)
-namespace data_structure {
 template <typename Original, typename To>
 struct copy_const {
     using type = conditional_t<is_const_v<Original>, add_const_t<To>, To>;
@@ -1877,11 +1904,9 @@ template <typename Original, typename To>
 struct copy_cvref {
     using type = copy_cv_t<Original, copy_reference_t<Original, To>>;
 };
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other auxliary)
-namespace data_structure {
 template <typename> struct decay;
 template <typename ...> struct common_type;
 template <typename> struct alignment_of;
@@ -2249,11 +2274,9 @@ struct common_reference_auxiliary<T, U, 4, void_t<typename common_type<T, U>::ty
 template <typename T, typename U>
 struct common_reference_auxiliary<T, U, 5, void> {};
 }
-}
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other)
-namespace data_structure {
 template <typename T>
 struct size_of : constant<size_t, sizeof(T)> {};
 template <typename T>
@@ -2428,8 +2451,9 @@ struct type_with_alignment :
         __dsa::type_with_alignment_find_suitable_type<__dsa::type_with_alignment_helper_types, Align> {};
 template <size_t Align>
 using type_with_alignment_t = typename type_with_alignment<Align>::type;
-}
 __DATA_STRUCTURE_END
+
+}       // namespace data_structure
 
 __DATA_STRUCTURE_START(undefine useless macros)
 #undef __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN
