@@ -23,6 +23,10 @@ template <typename T>
 constexpr T min_of {~max_of<T>};
 
 class A {};
+struct B;
+enum class C;
+enum D : int;
+union E;
 
 __DATA_STRUCTURE_START(unit test for ds::constant)
 static_assert(constant<int, 0> {} == 0);
@@ -473,6 +477,7 @@ static_assert(not is_const_v<const int *[]>);
 static_assert(is_const_v<const int *const []>);
 static_assert(not is_const_v<const void ()>);
 static_assert(is_const_v<void (A::*const)()>);
+static_assert(not is_const_v<void () const>);
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(unit test for ds::is_volatile)
@@ -498,6 +503,7 @@ static_assert(not is_volatile_v<volatile int *[]>);
 static_assert(is_volatile_v<volatile int *volatile []>);
 static_assert(not is_volatile_v<volatile void ()>);
 static_assert(is_volatile_v<void (A::*volatile)()>);
+static_assert(not is_volatile_v<void () volatile>);
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(unit test for ds::is_cv)
@@ -523,6 +529,7 @@ static_assert(not is_cv_v<const volatile int *[]>);
 static_assert(is_cv_v<const volatile int *const volatile []>);
 static_assert(not is_cv_v<const volatile void ()>);
 static_assert(is_cv_v<void (A::*const volatile)()>);
+static_assert(not is_cv_v<void () const volatile>);
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(unit test for ds::is_integral)
@@ -601,4 +608,213 @@ static_assert(not is_floating_point_v<__int128_t>);
 static_assert(not is_floating_point_v<__uint128_t>);
 static_assert(not is_floating_point_v<void>);
 static_assert(not is_floating_point_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_signed)
+static_assert(is_signed_v<int>);
+static_assert(is_signed_v<const int>);
+static_assert(is_signed_v<volatile int>);
+static_assert(is_signed_v<const volatile int>);
+static_assert(not is_signed_v<int *>);
+static_assert(not is_signed_v<int &>);
+static_assert(not is_signed_v<int []>);
+static_assert(not is_signed_v<int [42]>);
+static_assert(not is_signed_v<int ()>);
+static_assert(not is_signed_v<bool>);
+static_assert(not is_signed_v<A>);
+static_assert(is_signed_v<char>);
+static_assert(is_signed_v<signed char>);
+static_assert(not is_signed_v<unsigned char>);
+static_assert(not is_signed_v<char8_t>);
+static_assert(not is_signed_v<char16_t>);
+static_assert(not is_signed_v<char32_t>);
+// todo : compatibility
+static_assert(is_signed_v<wchar_t>);
+static_assert(is_signed_v<short>);
+static_assert(is_signed_v<signed short>);
+static_assert(not is_signed_v<unsigned short>);
+static_assert(is_signed_v<signed>);
+static_assert(is_signed_v<signed int>);
+static_assert(not is_signed_v<unsigned>);
+static_assert(not is_signed_v<unsigned int>);
+static_assert(is_signed_v<long>);
+static_assert(not is_signed_v<unsigned long>);
+static_assert(is_signed_v<long long>);
+static_assert(not is_signed_v<unsigned long long>);
+static_assert(is_signed_v<__int128_t>);
+static_assert(not is_signed_v<__uint128_t>);
+static_assert(is_signed_v<float>);
+static_assert(is_signed_v<double>);
+static_assert(is_signed_v<long double>);
+static_assert(not is_signed_v<void>);
+static_assert(not is_signed_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_unsigned)
+static_assert(is_unsigned_v<unsigned>);
+static_assert(is_unsigned_v<const unsigned>);
+static_assert(is_unsigned_v<volatile unsigned>);
+static_assert(is_unsigned_v<const volatile unsigned>);
+static_assert(not is_unsigned_v<unsigned *>);
+static_assert(not is_unsigned_v<unsigned &>);
+static_assert(not is_unsigned_v<unsigned []>);
+static_assert(not is_unsigned_v<unsigned [42]>);
+static_assert(not is_unsigned_v<unsigned ()>);
+static_assert(is_unsigned_v<bool>);
+static_assert(not is_unsigned_v<A>);
+static_assert(not is_unsigned_v<char>);
+static_assert(not is_unsigned_v<signed char>);
+static_assert(is_unsigned_v<unsigned char>);
+static_assert(is_unsigned_v<char8_t>);
+static_assert(is_unsigned_v<char16_t>);
+static_assert(is_unsigned_v<char32_t>);
+// todo : compatibility
+static_assert(not is_unsigned_v<wchar_t>);
+static_assert(not is_unsigned_v<short>);
+static_assert(not is_unsigned_v<signed short>);
+static_assert(is_unsigned_v<unsigned short>);
+static_assert(not is_unsigned_v<signed>);
+static_assert(not is_unsigned_v<signed int>);
+static_assert(is_unsigned_v<unsigned int>);
+static_assert(not is_unsigned_v<long>);
+static_assert(is_unsigned_v<unsigned long>);
+static_assert(not is_unsigned_v<long long>);
+static_assert(is_unsigned_v<unsigned long long>);
+static_assert(not is_unsigned_v<__int128_t>);
+static_assert(is_unsigned_v<__uint128_t>);
+static_assert(not is_unsigned_v<float>);
+static_assert(not is_unsigned_v<double>);
+static_assert(not is_unsigned_v<long double>);
+static_assert(not is_unsigned_v<void>);
+static_assert(not is_unsigned_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_character)
+static_assert(is_character_v<char>);
+static_assert(is_character_v<const char>);
+static_assert(is_character_v<volatile char>);
+static_assert(is_character_v<const volatile char>);
+static_assert(not is_character_v<char *>);
+static_assert(not is_character_v<char &>);
+static_assert(not is_character_v<char []>);
+static_assert(not is_character_v<char [42]>);
+static_assert(not is_character_v<char ()>);
+static_assert(not is_character_v<bool>);
+static_assert(not is_character_v<A>);
+static_assert(is_character_v<signed char>);
+static_assert(is_character_v<unsigned char>);
+static_assert(is_character_v<char8_t>);
+static_assert(is_character_v<char16_t>);
+static_assert(is_character_v<char32_t>);
+static_assert(is_character_v<wchar_t>);
+static_assert(not is_character_v<short>);
+static_assert(not is_character_v<signed short>);
+static_assert(not is_character_v<unsigned short>);
+static_assert(not is_character_v<signed>);
+static_assert(not is_character_v<signed int>);
+static_assert(not is_character_v<unsigned int>);
+static_assert(not is_character_v<long>);
+static_assert(not is_character_v<unsigned long>);
+static_assert(not is_character_v<long long>);
+static_assert(not is_character_v<unsigned long long>);
+static_assert(not is_character_v<__int128_t>);
+static_assert(not is_character_v<__uint128_t>);
+static_assert(not is_character_v<float>);
+static_assert(not is_character_v<double>);
+static_assert(not is_character_v<long double>);
+static_assert(not is_character_v<void>);
+static_assert(not is_character_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_array)
+static_assert(is_array_v<int []>);
+static_assert(is_array_v<const int []>);
+static_assert(is_array_v<volatile int []>);
+static_assert(is_array_v<const volatile int []>);
+static_assert(is_array_v<int [42]>);
+static_assert(is_array_v<int [][42]>);
+static_assert(is_array_v<int [][42][1][2][3][4]>);
+static_assert(not is_array_v<int>);
+static_assert(is_array_v<int *[]>);
+static_assert(not is_array_v<int (*)[]>);
+static_assert(not is_array_v<int (&)[]>);
+static_assert(is_array_v<void (*[])()>);
+static_assert(not is_array_v<void (*(&)[])()>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_unbounded_array)
+static_assert(is_unbounded_array_v<int []>);
+static_assert(is_unbounded_array_v<const int []>);
+static_assert(is_unbounded_array_v<volatile int []>);
+static_assert(is_unbounded_array_v<const volatile int []>);
+static_assert(not is_unbounded_array_v<int [42]>);
+static_assert(is_unbounded_array_v<int [][42]>);
+static_assert(is_unbounded_array_v<int [][42][1][2][3][4]>);
+static_assert(not is_unbounded_array_v<int>);
+static_assert(is_unbounded_array_v<int *[]>);
+static_assert(not is_unbounded_array_v<int (*)[]>);
+static_assert(not is_unbounded_array_v<int (&)[]>);
+static_assert(is_unbounded_array_v<void (*[])()>);
+static_assert(not is_unbounded_array_v<void (*(&)[])()>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_bounded_array)
+static_assert(is_bounded_array_v<int [42]>);
+static_assert(is_bounded_array_v<const int [42]>);
+static_assert(is_bounded_array_v<volatile int [42]>);
+static_assert(is_bounded_array_v<const volatile int [42]>);
+static_assert(not is_bounded_array_v<int []>);
+static_assert(not is_bounded_array_v<int [][42]>);
+static_assert(not is_bounded_array_v<int [][42][1][2][3][4]>);
+static_assert(not is_bounded_array_v<int>);
+static_assert(is_bounded_array_v<int *[42]>);
+static_assert(not is_bounded_array_v<int (*)[42]>);
+static_assert(not is_bounded_array_v<int (&)[42]>);
+static_assert(is_bounded_array_v<void (*[42])()>);
+static_assert(not is_bounded_array_v<void (*(&)[42])()>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_enum)
+static_assert(is_enum_v<C>);
+static_assert(is_enum_v<D>);
+static_assert(is_enum_v<const C>);
+static_assert(is_enum_v<volatile C>);
+static_assert(is_enum_v<const volatile C>);
+static_assert(not is_enum_v<int>);
+static_assert(not is_enum_v<C []>);
+static_assert(not is_enum_v<C [42]>);
+static_assert(not is_enum_v<C &>);
+static_assert(not is_enum_v<C *>);
+static_assert(not is_enum_v<C ()>);
+static_assert(not is_enum_v<C (A::*)(D)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_union)
+static_assert(is_union_v<E>);
+static_assert(is_union_v<const E>);
+static_assert(is_union_v<volatile E>);
+static_assert(is_union_v<const volatile E>);
+static_assert(not is_union_v<int>);
+static_assert(not is_union_v<E []>);
+static_assert(not is_union_v<E [42]>);
+static_assert(not is_union_v<E &>);
+static_assert(not is_union_v<E *>);
+static_assert(not is_union_v<E ()>);
+static_assert(not is_union_v<E (E::*)(E)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_class)
+static_assert(is_class_v<A>);
+static_assert(is_class_v<B>);
+static_assert(is_class_v<const A>);
+static_assert(is_class_v<volatile A>);
+static_assert(is_class_v<const volatile A>);
+static_assert(not is_class_v<int>);
+static_assert(not is_class_v<A []>);
+static_assert(not is_class_v<A [42]>);
+static_assert(not is_class_v<A &>);
+static_assert(not is_class_v<A *>);
+static_assert(not is_class_v<A ()>);
+static_assert(not is_class_v<A (B::*)(A)>);
+static_assert(not is_class_v<decltype(nullptr)>);
 __DATA_STRUCTURE_END
