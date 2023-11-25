@@ -818,3 +818,253 @@ static_assert(not is_class_v<A ()>);
 static_assert(not is_class_v<A (B::*)(A)>);
 static_assert(not is_class_v<decltype(nullptr)>);
 __DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_function)
+static_assert(is_function_v<void ()>);
+static_assert(not is_function_v<void (*)()>);
+static_assert(not is_function_v<void (&)()>);
+static_assert(not is_function_v<void (&&)()>);
+static_assert(not is_function_v<void (A::*)()>);
+static_assert(not is_function_v<void (A::*&)()>);
+static_assert(not is_function_v<void (A::*&&)()>);
+static_assert(is_function_v<void (int)>);
+static_assert(is_function_v<void (int) const>);
+static_assert(is_function_v<void (int) volatile>);
+static_assert(is_function_v<void (int) const noexcept>);
+static_assert(is_function_v<void (int) volatile noexcept>);
+static_assert(is_function_v<void (int) const volatile noexcept>);
+static_assert(is_function_v<void (int) &>);
+static_assert(is_function_v<void (int) const &>);
+static_assert(is_function_v<void (int) volatile &>);
+static_assert(is_function_v<void (int) const & noexcept>);
+static_assert(is_function_v<void (int) volatile & noexcept>);
+static_assert(is_function_v<void (int) const volatile & noexcept>);
+static_assert(is_function_v<void (int) &&>);
+static_assert(is_function_v<void (int) const &&>);
+static_assert(is_function_v<void (int) volatile &&>);
+static_assert(is_function_v<void (int) const && noexcept>);
+static_assert(is_function_v<void (int) volatile && noexcept>);
+static_assert(is_function_v<void (int) const volatile && noexcept>);
+static_assert(is_function_v<void (int, ...)>);
+static_assert(is_function_v<void (int, ...) const>);
+static_assert(is_function_v<void (int, ...) volatile>);
+static_assert(is_function_v<void (int, ...) const noexcept>);
+static_assert(is_function_v<void (int, ...) volatile noexcept>);
+static_assert(is_function_v<void (int, ...) const volatile noexcept>);
+static_assert(is_function_v<void (int, ...) &>);
+static_assert(is_function_v<void (int, ...) const &>);
+static_assert(is_function_v<void (int, ...) volatile &>);
+static_assert(is_function_v<void (int, ...) const & noexcept>);
+static_assert(is_function_v<void (int, ...) volatile & noexcept>);
+static_assert(is_function_v<void (int, ...) const volatile & noexcept>);
+static_assert(is_function_v<void (int, ...) &&>);
+static_assert(is_function_v<void (int, ...) const &&>);
+static_assert(is_function_v<void (int, ...) volatile &&>);
+static_assert(is_function_v<void (int, ...) const && noexcept>);
+static_assert(is_function_v<void (int, ...) volatile && noexcept>);
+static_assert(is_function_v<void (int, ...) const volatile && noexcept>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_pointer)
+static_assert(is_pointer_v<void *>);
+static_assert(is_pointer_v<void *const>);
+static_assert(is_pointer_v<void *volatile>);
+static_assert(is_pointer_v<void *const volatile>);
+static_assert(is_pointer_v<const void *>);
+static_assert(is_pointer_v<volatile void *>);
+static_assert(is_pointer_v<const volatile void *>);
+static_assert(is_pointer_v<const void *const>);
+static_assert(is_pointer_v<const void *volatile>);
+static_assert(is_pointer_v<volatile void *const>);
+static_assert(is_pointer_v<volatile void *volatile>);
+static_assert(is_pointer_v<const volatile void *>);
+static_assert(is_pointer_v<const volatile void *const>);
+static_assert(is_pointer_v<const volatile void *volatile>);
+static_assert(is_pointer_v<const volatile void *const volatile>);
+static_assert(not is_pointer_v<decltype(nullptr)>);
+static_assert(is_pointer_v<void (*)()>);
+static_assert(is_pointer_v<void (*const)()>);
+static_assert(is_pointer_v<void (*volatile)()>);
+static_assert(is_pointer_v<void (*const volatile)()>);
+static_assert(is_pointer_v<int (*)[]>);
+static_assert(not is_pointer_v<int *[]>);
+static_assert(not is_pointer_v<void (A::*)()>);
+static_assert(not is_pointer_v<int A::*>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_member_pointer)
+static_assert(is_member_pointer_v<void (A::*)()>);
+static_assert(is_member_pointer_v<void (A::*const)()>);
+static_assert(is_member_pointer_v<void (A::*volatile)()>);
+static_assert(is_member_pointer_v<void (A::*const volatile)()>);
+static_assert(is_member_pointer_v<int A::*>);
+static_assert(is_member_pointer_v<int A::*const>);
+static_assert(is_member_pointer_v<int A::*volatile>);
+static_assert(is_member_pointer_v<int A::*const volatile>);
+static_assert(not is_member_pointer_v<void *>);
+static_assert(not is_member_pointer_v<void *[]>);
+static_assert(not is_member_pointer_v<int (*)[]>);
+static_assert(not is_member_pointer_v<void (*)()>);
+static_assert(not is_member_pointer_v<void (...) const & noexcept>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_member_function_pointer)
+static_assert(is_member_function_pointer_v<void (A::*)()>);
+static_assert(is_member_function_pointer_v<void (A::*const)()>);
+static_assert(is_member_function_pointer_v<void (A::*volatile)()>);
+static_assert(is_member_function_pointer_v<void (A::*const volatile)()>);
+static_assert(not is_member_function_pointer_v<int A::*>);
+static_assert(not is_member_function_pointer_v<int A::*const>);
+static_assert(not is_member_function_pointer_v<int A::*volatile>);
+static_assert(not is_member_function_pointer_v<int A::*const volatile>);
+static_assert(not is_member_function_pointer_v<void *>);
+static_assert(not is_member_function_pointer_v<void *[]>);
+static_assert(not is_member_function_pointer_v<int (*)[]>);
+static_assert(not is_member_function_pointer_v<void (*)()>);
+static_assert(not is_member_function_pointer_v<void (...) const & noexcept>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_member_object_pointer)
+static_assert(not is_member_object_pointer_v<void (A::*)()>);
+static_assert(not is_member_object_pointer_v<void (A::*const)()>);
+static_assert(not is_member_object_pointer_v<void (A::*volatile)()>);
+static_assert(not is_member_object_pointer_v<void (A::*const volatile)()>);
+static_assert(is_member_object_pointer_v<int A::*>);
+static_assert(is_member_object_pointer_v<int A::*const>);
+static_assert(is_member_object_pointer_v<int A::*volatile>);
+static_assert(is_member_object_pointer_v<int A::*const volatile>);
+static_assert(not is_member_object_pointer_v<void *>);
+static_assert(not is_member_object_pointer_v<void *[]>);
+static_assert(not is_member_object_pointer_v<int (*)[]>);
+static_assert(not is_member_object_pointer_v<void (*)()>);
+static_assert(not is_member_object_pointer_v<void (...) const & noexcept>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_function_pointer)
+static_assert(is_function_pointer_v<void (*)()>);
+static_assert(is_function_pointer_v<void (*const)()>);
+static_assert(is_function_pointer_v<void (*volatile)()>);
+static_assert(is_function_pointer_v<void (*const volatile)()>);
+static_assert(not is_function_pointer_v<void ()>);
+static_assert(not is_function_pointer_v<void (*[])()>);
+static_assert(not is_function_pointer_v<void (&)()>);
+static_assert(is_function_pointer_v<void *>);       // void * maybe point to a function
+static_assert(is_function_pointer_v<void *const>);
+static_assert(is_function_pointer_v<void *volatile>);
+static_assert(is_function_pointer_v<void *const volatile>);
+static_assert(is_function_pointer_v<const void *>);
+static_assert(is_function_pointer_v<const void *const>);
+static_assert(is_function_pointer_v<const void *volatile>);
+static_assert(is_function_pointer_v<const void *const volatile>);
+static_assert(is_function_pointer_v<volatile void *>);
+static_assert(is_function_pointer_v<volatile void *const>);
+static_assert(is_function_pointer_v<volatile void *volatile>);
+static_assert(is_function_pointer_v<volatile void *const volatile>);
+static_assert(is_function_pointer_v<const volatile void *>);
+static_assert(is_function_pointer_v<const volatile void *const>);
+static_assert(is_function_pointer_v<const volatile void *volatile>);
+static_assert(is_function_pointer_v<const volatile void *const volatile>);
+static_assert(not is_function_pointer_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_lvalue_reference_v)
+static_assert(is_lvalue_reference_v<int &>);
+static_assert(is_lvalue_reference_v<const int &>);
+static_assert(is_lvalue_reference_v<volatile int &>);
+static_assert(is_lvalue_reference_v<const volatile int &>);
+static_assert(is_lvalue_reference_v<int (&)()>);
+static_assert(is_lvalue_reference_v<int (A::*&)()>);
+static_assert(is_lvalue_reference_v<int A::*&>);
+static_assert(is_lvalue_reference_v<int (&)[]>);
+static_assert(is_lvalue_reference_v<int (&)[42]>);
+static_assert(is_lvalue_reference_v<int (*&)[]>);
+static_assert(is_lvalue_reference_v<int *(&)[]>);
+static_assert(not is_lvalue_reference_v<int *>);
+static_assert(not is_lvalue_reference_v<int &&>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_rvalue_reference_v)
+static_assert(is_rvalue_reference_v<int &&>);
+static_assert(is_rvalue_reference_v<const int &&>);
+static_assert(is_rvalue_reference_v<volatile int &&>);
+static_assert(is_rvalue_reference_v<const volatile int &&>);
+static_assert(is_rvalue_reference_v<int (&&)()>);
+static_assert(is_rvalue_reference_v<int (A::*&&)()>);
+static_assert(is_rvalue_reference_v<int A::*&&>);
+static_assert(is_rvalue_reference_v<int (&&)[]>);
+static_assert(is_rvalue_reference_v<int (&&)[42]>);
+static_assert(is_rvalue_reference_v<int (*&&)[]>);
+static_assert(is_rvalue_reference_v<int *(&&)[]>);
+static_assert(not is_rvalue_reference_v<int *>);
+static_assert(not is_rvalue_reference_v<int &>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_reference_v)
+static_assert(is_reference_v<int &>);
+static_assert(is_reference_v<const int &>);
+static_assert(is_reference_v<volatile int &>);
+static_assert(is_reference_v<const volatile int &>);
+static_assert(is_reference_v<int (&)()>);
+static_assert(is_reference_v<int (A::*&)()>);
+static_assert(is_reference_v<int A::*&>);
+static_assert(is_reference_v<int (&)[]>);
+static_assert(is_reference_v<int (&)[42]>);
+static_assert(is_reference_v<int (*&)[]>);
+static_assert(is_reference_v<int *(&)[]>);
+static_assert(is_reference_v<int &&>);
+static_assert(is_reference_v<const int &&>);
+static_assert(is_reference_v<volatile int &&>);
+static_assert(is_reference_v<const volatile int &&>);
+static_assert(is_reference_v<int (&&)()>);
+static_assert(is_reference_v<int (A::*&&)()>);
+static_assert(is_reference_v<int A::*&&>);
+static_assert(is_reference_v<int (&&)[]>);
+static_assert(is_reference_v<int (&&)[42]>);
+static_assert(is_reference_v<int (*&&)[]>);
+static_assert(is_reference_v<int *(&&)[]>);
+static_assert(not is_reference_v<int *>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_const_reference_v)
+static_assert(is_const_reference_v<const int &>);
+static_assert(is_const_reference_v<const volatile int &>);
+static_assert(not is_const_reference_v<int &>);
+static_assert(not is_const_reference_v<volatile int &>);
+static_assert(not is_const_reference_v<int &&>);
+static_assert(not is_const_reference_v<const int &&>);
+static_assert(not is_const_reference_v<volatile int &&>);
+static_assert(not is_const_reference_v<const volatile int &&>);
+static_assert(is_const_reference_v<void (A::*const &)()>);
+static_assert(is_const_reference_v<int A::*const &>);
+static_assert(is_const_reference_v<const int (&)[]>);
+static_assert(is_const_reference_v<int (*const &)[]>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_type)
+static_assert(is_type_v<void>);
+static_assert(is_type_v<int>);
+static_assert(is_type_v<void ()>);
+static_assert(is_type_v<A>);
+static_assert(is_type_v<B>);
+static_assert(is_type_v<C>);
+static_assert(is_type_v<D>);
+static_assert(is_type_v<E>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for is_complete)
+static_assert(is_complete_v<int>);
+static_assert(is_complete_v<int *>);
+static_assert(is_complete_v<int &>);
+static_assert(is_complete_v<void (*)()>);
+static_assert(is_complete_v<int [42]>);
+static_assert(not is_complete_v<int []>);
+static_assert(is_complete_v<int A::*>);
+static_assert(is_complete_v<int (A::*)()>);
+static_assert(not is_complete_v<void>);
+static_assert(not is_complete_v<void ()>);
+static_assert(is_complete_v<A>);
+static_assert(not is_complete_v<B>);
+static_assert(is_complete_v<C>);
+static_assert(is_complete_v<D>);
+static_assert(not is_complete_v<E>);
+__DATA_STRUCTURE_END
