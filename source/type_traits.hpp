@@ -121,23 +121,7 @@ struct unique_type {};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(detail)
-#define __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(name) \
-    template <typename> \
-    struct name##_auxiliary : false_type {}
-#define __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(name, type, ...) \
-    template <__VA_ARGS__> \
-    struct name##_auxiliary<type> : true_type {}
-template <typename>
-struct is_function;
 namespace __data_structure_auxiliary {
-
-__DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN(is_pointer);
-__DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION(is_pointer, T *, typename T);
-
-template <typename>
-struct is_member_function_pointer_auxiliary : false_type {};
-template <typename F, typename Class>
-struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
 
 template <typename T>
 static constexpr true_type test_convertible(T) noexcept;
@@ -196,7 +180,6 @@ __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T >().~T(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T >().~T(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
                                 typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(complete, sizeof(T) > 0, typename T);
 __DATA_STRUCTURE_TEST_OPERATION(list_constructible, T {declval<Args>()...},
                                 typename T, typename ...Args);
 __DATA_STRUCTURE_TEST_OPERATION(static_castable, static_cast<To>(declval<From>()),
@@ -889,18 +872,34 @@ struct is_function<R (Args..., ...) const volatile && noexcept> : true_type {};
 template <typename T>
 constexpr inline auto is_function_v {is_function<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T>
+struct is_pointer_auxiliary : false_type {};
+template <typename T>
+struct is_pointer_auxiliary<T *> : true_type {};
+}
 template <typename T>
 struct is_pointer : __dsa::is_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_pointer_v {is_pointer<T>::value};
 
+namespace __data_structure_auxiliary {
 template <typename T>
-struct is_member_pointer : false_type {};
+struct is_member_pointer_auxiliary : false_type {};
 template <typename T, typename Class>
-struct is_member_pointer<T Class::*> : true_type {};
+struct is_member_pointer_auxiliary<T Class::*> : true_type {};
+}
+template <typename T>
+struct is_member_pointer : __dsa::is_member_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
 constexpr inline auto is_member_pointer_v {is_member_pointer<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T>
+struct is_member_function_pointer_auxiliary : false_type {};
+template <typename F, typename Class>
+struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
+}
 template <typename T>
 struct is_member_function_pointer : __dsa::is_member_function_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
@@ -913,22 +912,21 @@ constexpr inline auto is_member_object_pointer_v {is_member_object_pointer<T>::v
 
 template <typename T>
 struct is_function_pointer : bool_constant<is_pointer_v<T> and
-        (is_function_v<remove_pointer_t<T>> or is_void_v<remove_pointer_t<T>> or
-                is_null_pointer_v<remove_pointer_t<T>>)> {};
+        (is_function_v<remove_pointer_t<T>> or is_void_v<remove_pointer_t<T>>)> {};
 template <typename T>
 constexpr inline auto is_function_pointer_v {is_function_pointer<T>::value};
 
 template <typename T>
 struct is_lvalue_reference : false_type {};
 template <typename T>
-struct is_lvalue_reference<T &> : false_type {};
+struct is_lvalue_reference<T &> : true_type {};
 template <typename T>
 constexpr inline auto is_lvalue_reference_v {is_lvalue_reference<T>::value};
 
 template <typename T>
 struct is_rvalue_reference : false_type {};
 template <typename T>
-struct is_rvalue_reference<T &&> : false_type {};
+struct is_rvalue_reference<T &&> : true_type {};
 template <typename T>
 constexpr inline auto is_rvalue_reference_v {is_rvalue_reference<T>::value};
 
@@ -952,8 +950,15 @@ struct is_type : true_type {};
 template <typename T>
 constexpr inline auto is_type_v {is_type<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T, typename = void>
+struct is_complete_auxiliary : false_type {};
 template <typename T>
-struct is_complete : decltype(__dsa::test_complete<T>(0)) {};
+struct is_complete_auxiliary<T, void_t<decltype(sizeof(T))>> :
+        conditional_t<(sizeof(T) > 0), true_type, false_type> {};
+}
+template <typename T>
+struct is_complete : __dsa::is_complete_auxiliary<T> {};
 template <typename T>
 constexpr inline auto is_complete_v {is_complete<T>::value};
 
