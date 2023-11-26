@@ -1051,7 +1051,7 @@ static_assert(is_type_v<D>);
 static_assert(is_type_v<E>);
 __DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(unit test for is_complete)
+__DATA_STRUCTURE_START(unit test for ds::is_complete)
 static_assert(is_complete_v<int>);
 static_assert(is_complete_v<int *>);
 static_assert(is_complete_v<int &>);
@@ -1067,4 +1067,265 @@ static_assert(not is_complete_v<B>);
 static_assert(is_complete_v<C>);
 static_assert(is_complete_v<D>);
 static_assert(not is_complete_v<E>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_pod)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_empty)
+struct unit_test_is_empty_virtual_class {
+    virtual ~unit_test_is_empty_virtual_class() = default;
+};
+struct unit_test_is_empty_virtual_derived_from_A : virtual A {};
+struct unit_test_is_empty_derived_from_A : A {};
+struct unit_test_is_empty_derived_from_A_final final : A {};
+
+static_assert(is_empty_v<A>);
+//static_assert(is_empty_v<B>);     // undefined behavior
+static_assert(not is_empty_v<C>);
+static_assert(not is_empty_v<D>);
+static_assert(not is_empty_v<E>);
+static_assert(not is_empty_v<unit_test_is_empty_virtual_class>);
+static_assert(not is_empty_v<unit_test_is_empty_virtual_derived_from_A>);
+static_assert(is_empty_v<unit_test_is_empty_derived_from_A>);
+static_assert(is_empty_v<unit_test_is_empty_derived_from_A_final>);
+static_assert(not is_empty_v<int>);
+static_assert(not is_empty_v<void>);
+static_assert(not is_empty_v<void ()>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_literal_type)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds:is_standard_layout)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_polymorphic)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_abstract)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_base_of)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_final)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_aggregate)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_arithmetic)
+static_assert(is_arithmetic_v<int>);
+static_assert(is_arithmetic_v<const int>);
+static_assert(is_arithmetic_v<volatile int>);
+static_assert(is_arithmetic_v<const volatile int>);
+static_assert(not is_arithmetic_v<int *>);
+static_assert(not is_arithmetic_v<int &>);
+static_assert(not is_arithmetic_v<int []>);
+static_assert(not is_arithmetic_v<int [42]>);
+static_assert(not is_arithmetic_v<int ()>);
+static_assert(not is_arithmetic_v<A>);
+static_assert(not is_arithmetic_v<C>);
+static_assert(not is_arithmetic_v<D>);
+static_assert(not is_arithmetic_v<E>);
+static_assert(is_arithmetic_v<bool>);
+static_assert(is_arithmetic_v<char>);
+static_assert(is_arithmetic_v<signed char>);
+static_assert(is_arithmetic_v<unsigned char>);
+static_assert(is_arithmetic_v<char8_t>);
+static_assert(is_arithmetic_v<char16_t>);
+static_assert(is_arithmetic_v<char32_t>);
+static_assert(is_arithmetic_v<wchar_t>);
+static_assert(is_arithmetic_v<short>);
+static_assert(is_arithmetic_v<signed short>);
+static_assert(is_arithmetic_v<unsigned short>);
+static_assert(is_arithmetic_v<signed>);
+static_assert(is_arithmetic_v<signed int>);
+static_assert(is_arithmetic_v<unsigned>);
+static_assert(is_arithmetic_v<unsigned int>);
+static_assert(is_arithmetic_v<long>);
+static_assert(is_arithmetic_v<unsigned long>);
+static_assert(is_arithmetic_v<long long>);
+static_assert(is_arithmetic_v<unsigned long long>);
+static_assert(is_arithmetic_v<__int128_t>);
+static_assert(is_arithmetic_v<__uint128_t>);
+static_assert(is_arithmetic_v<float>);
+static_assert(is_arithmetic_v<double>);
+static_assert(is_arithmetic_v<long double>);
+static_assert(not is_arithmetic_v<void>);
+static_assert(not is_arithmetic_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_fundamental)
+static_assert(is_fundamental_v<int>);
+static_assert(is_fundamental_v<const int>);
+static_assert(is_fundamental_v<volatile int>);
+static_assert(is_fundamental_v<const volatile int>);
+static_assert(not is_fundamental_v<int *>);
+static_assert(not is_fundamental_v<int &>);
+static_assert(not is_fundamental_v<int []>);
+static_assert(not is_fundamental_v<int [42]>);
+static_assert(not is_fundamental_v<int ()>);
+static_assert(not is_fundamental_v<A>);
+static_assert(not is_fundamental_v<C>);
+static_assert(not is_fundamental_v<D>);
+static_assert(not is_fundamental_v<E>);
+static_assert(is_fundamental_v<bool>);
+static_assert(is_fundamental_v<char>);
+static_assert(is_fundamental_v<signed char>);
+static_assert(is_fundamental_v<unsigned char>);
+static_assert(is_fundamental_v<char8_t>);
+static_assert(is_fundamental_v<char16_t>);
+static_assert(is_fundamental_v<char32_t>);
+static_assert(is_fundamental_v<wchar_t>);
+static_assert(is_fundamental_v<short>);
+static_assert(is_fundamental_v<signed short>);
+static_assert(is_fundamental_v<unsigned short>);
+static_assert(is_fundamental_v<signed>);
+static_assert(is_fundamental_v<signed int>);
+static_assert(is_fundamental_v<unsigned>);
+static_assert(is_fundamental_v<unsigned int>);
+static_assert(is_fundamental_v<long>);
+static_assert(is_fundamental_v<unsigned long>);
+static_assert(is_fundamental_v<long long>);
+static_assert(is_fundamental_v<unsigned long long>);
+static_assert(is_fundamental_v<__int128_t>);
+static_assert(is_fundamental_v<__uint128_t>);
+static_assert(is_fundamental_v<float>);
+static_assert(is_fundamental_v<double>);
+static_assert(is_fundamental_v<long double>);
+static_assert(is_fundamental_v<void>);
+static_assert(is_fundamental_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_scalar)
+static_assert(is_scalar_v<int>);
+static_assert(is_scalar_v<const int>);
+static_assert(is_scalar_v<volatile int>);
+static_assert(is_scalar_v<const volatile int>);
+static_assert(is_scalar_v<int *>);
+static_assert(is_scalar_v<int A::*>);
+static_assert(is_scalar_v<void (A::*)()>);
+static_assert(not is_scalar_v<int &>);
+static_assert(not is_scalar_v<int []>);
+static_assert(not is_scalar_v<int [42]>);
+static_assert(not is_scalar_v<int ()>);
+static_assert(not is_scalar_v<A>);
+static_assert(is_scalar_v<C>);
+static_assert(is_scalar_v<D>);
+static_assert(not is_scalar_v<E>);
+static_assert(is_scalar_v<bool>);
+static_assert(is_scalar_v<char>);
+static_assert(is_scalar_v<signed char>);
+static_assert(is_scalar_v<unsigned char>);
+static_assert(is_scalar_v<char8_t>);
+static_assert(is_scalar_v<char16_t>);
+static_assert(is_scalar_v<char32_t>);
+static_assert(is_scalar_v<wchar_t>);
+static_assert(is_scalar_v<short>);
+static_assert(is_scalar_v<signed short>);
+static_assert(is_scalar_v<unsigned short>);
+static_assert(is_scalar_v<signed>);
+static_assert(is_scalar_v<signed int>);
+static_assert(is_scalar_v<unsigned>);
+static_assert(is_scalar_v<unsigned int>);
+static_assert(is_scalar_v<long>);
+static_assert(is_scalar_v<unsigned long>);
+static_assert(is_scalar_v<long long>);
+static_assert(is_scalar_v<unsigned long long>);
+static_assert(is_scalar_v<__int128_t>);
+static_assert(is_scalar_v<__uint128_t>);
+static_assert(is_scalar_v<float>);
+static_assert(is_scalar_v<double>);
+static_assert(is_scalar_v<long double>);
+static_assert(not is_scalar_v<void>);
+static_assert(is_scalar_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_compound)
+struct unit_test_is_compound_virtual {
+    virtual ~unit_test_is_compound_virtual() = default;
+};
+struct unit_test_is_compound_derived_from_A {};
+struct unit_test_is_compound_virtual_derived_from_A : virtual A {};
+
+static_assert(is_compound_v<int *>);
+static_assert(is_compound_v<int &>);
+static_assert(is_compound_v<int []>);
+static_assert(is_compound_v<int [42]>);
+static_assert(is_compound_v<int ()>);
+static_assert(is_compound_v<A>);
+static_assert(is_compound_v<C>);
+static_assert(is_compound_v<D>);
+static_assert(is_compound_v<E>);
+static_assert(is_compound_v<unit_test_is_compound_virtual>);
+static_assert(is_compound_v<unit_test_is_compound_derived_from_A>);
+static_assert(is_compound_v<unit_test_is_compound_virtual_derived_from_A>);
+static_assert(is_compound_v<int A::*>);
+static_assert(is_compound_v<void (A::*)()>);
+static_assert(not is_compound_v<int>);
+static_assert(not is_compound_v<const int>);
+static_assert(not is_compound_v<volatile int>);
+static_assert(not is_compound_v<const volatile int>);
+static_assert(not is_compound_v<bool>);
+static_assert(not is_compound_v<char>);
+static_assert(not is_compound_v<signed char>);
+static_assert(not is_compound_v<unsigned char>);
+static_assert(not is_compound_v<char8_t>);
+static_assert(not is_compound_v<char16_t>);
+static_assert(not is_compound_v<char32_t>);
+static_assert(not is_compound_v<wchar_t>);
+static_assert(not is_compound_v<short>);
+static_assert(not is_compound_v<signed short>);
+static_assert(not is_compound_v<unsigned short>);
+static_assert(not is_compound_v<signed>);
+static_assert(not is_compound_v<signed int>);
+static_assert(not is_compound_v<unsigned>);
+static_assert(not is_compound_v<unsigned int>);
+static_assert(not is_compound_v<long>);
+static_assert(not is_compound_v<unsigned long>);
+static_assert(not is_compound_v<long long>);
+static_assert(not is_compound_v<unsigned long long>);
+static_assert(not is_compound_v<__int128_t>);
+static_assert(not is_compound_v<__uint128_t>);
+static_assert(not is_compound_v<float>);
+static_assert(not is_compound_v<double>);
+static_assert(not is_compound_v<long double>);
+static_assert(not is_compound_v<void>);
+static_assert(not is_compound_v<decltype(nullptr)>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_object)
+static_assert(is_object_v<int>);
+static_assert(is_object_v<const int>);
+static_assert(is_object_v<volatile int>);
+static_assert(is_object_v<const volatile int>);
+static_assert(is_object_v<double>);
+static_assert(is_object_v<void *>);
+static_assert(is_object_v<int []>);
+static_assert(is_object_v<int [42]>);
+static_assert(is_object_v<int (*)[]>);
+static_assert(is_object_v<int *[]>);
+static_assert(is_object_v<A>);
+static_assert(is_object_v<B>);
+static_assert(is_object_v<C>);
+static_assert(is_object_v<D>);
+static_assert(is_object_v<E>);
+static_assert(is_object_v<int A::*>);
+static_assert(is_object_v<int (A::*)(...)>);
+static_assert(is_object_v<decltype(nullptr)>);
+static_assert(not is_object_v<void>);
+static_assert(not is_object_v<const void>);
+static_assert(not is_object_v<volatile void>);
+static_assert(not is_object_v<const volatile void>);
+static_assert(not is_object_v<int &>);
+static_assert(not is_object_v<int &&>);
+static_assert(not is_object_v<void ()>);
+static_assert(not is_object_v<int (&)[]>);
+static_assert(not is_object_v<int (&)[42]>);
+static_assert(not is_object_v<int (&&)[]>);
+static_assert(not is_object_v<int (&&)[42]>);
+static_assert(not is_object_v<void (&)()>);
+static_assert(not is_object_v<void (&&)()>);
 __DATA_STRUCTURE_END
