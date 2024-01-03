@@ -965,7 +965,7 @@ constexpr inline auto is_complete_v {is_complete<T>::value};
 template <typename T>
 struct [[deprecated]] is_pod : bool_constant<__is_pod(T)> {};
 template <typename T>
-constexpr inline auto is_pod_v {is_pod<T>::value};
+[[deprecated]] constexpr inline auto is_pod_v {is_pod<T>::value};
 
 template <typename T>
 struct is_empty : bool_constant<__is_empty(T)> {};
@@ -975,7 +975,7 @@ constexpr inline auto is_empty_v {is_empty<T>::value};
 template <typename T>
 struct [[deprecated]] is_literal_type : bool_constant<__is_literal_type(T)> {};
 template <typename T>
-constexpr inline auto is_literal_type_v {is_literal_type<T>::value};
+[[deprecated]] constexpr inline auto is_literal_type_v {is_literal_type<T>::value};
 
 template <typename T>
 struct is_standard_layout : bool_constant<__is_standard_layout(T)> {};
