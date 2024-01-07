@@ -1055,7 +1055,7 @@ template <typename T>
 constexpr inline auto is_trivially_default_constructible_v {is_trivially_default_constructible<T>::value};
 
 template <typename T>
-struct is_trivially_copy_constructible : is_trivially_constructible<T, add_const_reference_t<T>> {};
+struct is_trivially_copy_constructible : is_trivially_constructible<T, add_lvalue_reference_t<const T>> {};
 template <typename T>
 constexpr inline auto is_trivially_copy_constructible_v {is_trivially_copy_constructible<T>::value};
 
