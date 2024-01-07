@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <initializer_list>
+#include <compare>
 
 #define __DATA_STRUCTURE_START(x, ...)
 #define __DATA_STRUCTURE_END
@@ -31,6 +32,10 @@ using initializer_list = std::initializer_list<T>;
 using size_t = decltype(sizeof 0);
 using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
 using align_val_t = std::align_val_t;
+
+using strong_ordering = std::strong_ordering;
+using weak_ordering = std::weak_ordering;
+using partial_ordering = std::partial_ordering;
 
 namespace __data_structure_helper {}
 namespace __data_structure_auxiliary {}
