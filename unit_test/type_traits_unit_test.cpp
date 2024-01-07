@@ -1083,6 +1083,7 @@ struct unit_test_non_standard_layout {
     virtual ~unit_test_non_standard_layout();
 };
 struct unit_test_pure_virtual {
+    void *p;
     virtual ~unit_test_pure_virtual() = 0;
 };
 struct unit_test_derived_from_stateless : unit_test_stateless {};
@@ -1198,6 +1199,7 @@ static_assert(not is_pod_v<unit_test_derived_from_stateless_non_standard_layout>
 static_assert(not is_pod_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_pod_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_pod_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_pod_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1215,6 +1217,7 @@ static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_non_standard
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_pod_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1232,6 +1235,7 @@ static_assert(not is_pod_v<unit_test_derived_from_stateless_non_standard_layout_
 static_assert(not is_pod_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_pod_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_pod_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1249,6 +1253,7 @@ static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_non_standard
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_pod_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_pod_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1277,6 +1282,7 @@ static_assert(not is_empty_v<unit_test_derived_from_stateless_non_standard_layou
 static_assert(not is_empty_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_empty_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_empty_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_empty_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1294,6 +1300,7 @@ static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_non_standa
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_empty_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1311,6 +1318,7 @@ static_assert(not is_empty_v<unit_test_derived_from_stateless_non_standard_layou
 static_assert(not is_empty_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_empty_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_empty_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1328,6 +1336,7 @@ static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_non_standa
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_empty_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_empty_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1374,6 +1383,7 @@ static_assert(not is_literal_type_v<unit_test_derived_from_stateless_non_standar
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_literal_type_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1391,6 +1401,7 @@ static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_non
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_literal_type_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1408,6 +1419,7 @@ static_assert(not is_literal_type_v<unit_test_derived_from_stateless_non_standar
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_literal_type_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_literal_type_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1425,6 +1437,7 @@ static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_non
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_literal_type_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_literal_type_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1471,6 +1484,7 @@ static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_non_stan
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_standard_layout_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1488,6 +1502,7 @@ static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1505,6 +1520,7 @@ static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_non_stan
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_standard_layout_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1522,6 +1538,7 @@ static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_standard_layout_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1542,6 +1559,7 @@ static_assert(is_polymorphic_v<unit_test_derived_from_stateless_non_standard_lay
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(is_polymorphic_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1559,6 +1577,7 @@ static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_non_stan
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(is_polymorphic_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1576,6 +1595,7 @@ static_assert(is_polymorphic_v<unit_test_derived_from_stateless_non_standard_lay
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(is_polymorphic_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(is_polymorphic_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1593,6 +1613,7 @@ static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_non_stan
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(is_polymorphic_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(is_polymorphic_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1656,6 +1677,7 @@ static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_non_sta
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_abstract_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1673,6 +1695,7 @@ static_assert(not is_abstract_v<unit_test_derived_from_stateless_non_standard_la
 static_assert(not is_abstract_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_abstract_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_abstract_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_abstract_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1690,6 +1713,7 @@ static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_non_sta
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_abstract_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_abstract_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1758,6 +1782,7 @@ static_assert(not is_final_v<unit_test_derived_from_stateless_non_standard_layou
 static_assert(not is_final_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_final_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_final_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_final_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_final_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_final_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_final_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1775,6 +1800,7 @@ static_assert(not is_final_v<unit_test_virtual_derived_from_stateless_non_standa
 static_assert(not is_final_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_final_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_final_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_final_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_final_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_final_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_final_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1792,6 +1818,7 @@ static_assert(is_final_v<unit_test_derived_from_stateless_non_standard_layout_fi
 static_assert(is_final_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(is_final_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(is_final_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(is_final_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1809,6 +1836,7 @@ static_assert(is_final_v<unit_test_virtual_derived_from_stateless_non_standard_l
 static_assert(is_final_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(is_final_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(is_final_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(is_final_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(is_final_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1857,6 +1885,7 @@ static_assert(not is_aggregate_v<unit_test_derived_from_stateless_non_standard_l
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_aggregate_v<unit_test_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1874,6 +1903,7 @@ static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_non_st
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_pure_virtual>);
+static_assert(not is_aggregate_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual>);
@@ -1891,6 +1921,7 @@ static_assert(not is_aggregate_v<unit_test_derived_from_stateless_non_standard_l
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_aggregate_v<unit_test_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_aggregate_v<unit_test_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -1908,6 +1939,7 @@ static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_non_st
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_finally>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_pure_virtual_finally>);
+static_assert(not is_aggregate_v<unit_test_virtual_derived_from_non_standard_layout_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_standard_layout_non_standard_layout_finally>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_stateless_standard_layout_pure_virtual_finally>);
 static_assert(not is_aggregate_v<unit_test_virtual_derived_from_standard_layout_non_standard_layout_pure_virtual_finally>);
@@ -2151,4 +2183,1249 @@ static_assert(not is_object_v<int (&&)[]>);
 static_assert(not is_object_v<int (&&)[42]>);
 static_assert(not is_object_v<void (&)()>);
 static_assert(not is_object_v<void (&&)()>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test helper classes)
+struct trivial_stateless {};
+struct trivial {
+    int a;
+    char b;
+    void *c;
+    double d[42];
+};
+struct non_trivial_1 {
+    non_trivial_1();
+};
+struct non_trivial_2 {
+    non_trivial_2();
+};
+struct trivial_with_deleted_destructor {
+    trivial_with_deleted_destructor() = default;
+    ~trivial_with_deleted_destructor() = delete;
+};
+struct trivially_copy_constructible {
+    trivially_copy_constructible() = delete;
+    trivially_copy_constructible(const trivially_copy_constructible &) = default;
+    trivially_copy_constructible(trivially_copy_constructible &&) = delete;
+    trivially_copy_constructible &operator=(const trivially_copy_constructible &) = delete;
+    trivially_copy_constructible &operator=(trivially_copy_constructible &&) = delete;
+    ~trivially_copy_constructible() = default;
+};
+struct trivially_copy_constructible_non_destructible {
+    trivially_copy_constructible_non_destructible() = delete;
+    trivially_copy_constructible_non_destructible(const trivially_copy_constructible_non_destructible &) = default;
+    trivially_copy_constructible_non_destructible(trivially_copy_constructible_non_destructible &&) = delete;
+    trivially_copy_constructible_non_destructible &operator=(const trivially_copy_constructible_non_destructible &) = delete;
+    trivially_copy_constructible_non_destructible &operator=(trivially_copy_constructible_non_destructible &&) = delete;
+    ~trivially_copy_constructible_non_destructible() = delete;
+};
+struct trivially_move_constructible {
+    trivially_move_constructible() = delete;
+    trivially_move_constructible(const trivially_move_constructible &) = delete;
+    trivially_move_constructible(trivially_move_constructible &&) = default;
+    trivially_move_constructible &operator=(const trivially_move_constructible &) = delete;
+    trivially_move_constructible &operator=(trivially_move_constructible &&) = delete;
+    ~trivially_move_constructible() = default;
+};
+struct trivially_move_constructible_non_destructible {
+    trivially_move_constructible_non_destructible() = delete;
+    trivially_move_constructible_non_destructible(const trivially_move_constructible_non_destructible &) = delete;
+    trivially_move_constructible_non_destructible(trivially_move_constructible_non_destructible &&) = default;
+    trivially_move_constructible_non_destructible &operator=(const trivially_move_constructible_non_destructible &) = delete;
+    trivially_move_constructible_non_destructible &operator=(trivially_move_constructible_non_destructible &&) = delete;
+    ~trivially_move_constructible_non_destructible() = delete;
+};
+struct trivially_copy_assignable {
+    trivially_copy_assignable() = delete;
+    trivially_copy_assignable(const trivially_copy_assignable &) = delete;
+    trivially_copy_assignable(trivially_copy_assignable &&) = delete;
+    trivially_copy_assignable &operator=(const trivially_copy_assignable &) = default;
+    trivially_copy_assignable &operator=(trivially_copy_assignable &&) = delete;
+    ~trivially_copy_assignable() = default;
+};
+struct trivially_copy_assignable_non_destructible {
+    trivially_copy_assignable_non_destructible() = delete;
+    trivially_copy_assignable_non_destructible(const trivially_copy_assignable_non_destructible &) = delete;
+    trivially_copy_assignable_non_destructible(trivially_copy_assignable_non_destructible &&) = delete;
+    trivially_copy_assignable_non_destructible &operator=(const trivially_copy_assignable_non_destructible &) = default;
+    trivially_copy_assignable_non_destructible &operator=(trivially_copy_assignable_non_destructible &&) = delete;
+    ~trivially_copy_assignable_non_destructible() = delete;
+};
+struct trivially_move_assignable {
+    trivially_move_assignable() = delete;
+    trivially_move_assignable(const trivially_move_assignable &) = delete;
+    trivially_move_assignable(trivially_move_assignable &&) = delete;
+    trivially_move_assignable &operator=(const trivially_move_assignable &) = delete;
+    trivially_move_assignable &operator=(trivially_move_assignable &&) = default;
+    ~trivially_move_assignable() = default;
+};
+struct trivially_move_assignable_non_destructible {
+    trivially_move_assignable_non_destructible() = delete;
+    trivially_move_assignable_non_destructible(const trivially_move_assignable_non_destructible &) = delete;
+    trivially_move_assignable_non_destructible(trivially_move_assignable_non_destructible &&) = delete;
+    trivially_move_assignable_non_destructible &operator=(const trivially_move_assignable_non_destructible &) = delete;
+    trivially_move_assignable_non_destructible &operator=(trivially_move_assignable_non_destructible &&) = default;
+    ~trivially_move_assignable_non_destructible() = delete;
+};
+struct trivially_default_constructible_simulator {
+    trivially_default_constructible_simulator() {
+        using type = int;
+        static_assert(true);
+        ;;;;
+    }
+};
+struct non_trivially_default_constructible {
+    non_trivially_default_constructible() {
+        int a {};
+        ++a;
+    }
+};
+struct trivially_constructible_simulator : trivial {
+    trivially_constructible_simulator(int) {}
+    trivially_constructible_simulator(char) {}
+    trivially_constructible_simulator(void *) {}
+    trivially_constructible_simulator(double *, std::size_t) {}
+    template <typename T>
+    trivially_constructible_simulator(T &&) {}
+    template <std::size_t N>
+    trivially_constructible_simulator(double (&arr)[N]) {}
+};
+struct non_trivially_constructible {
+    non_trivially_constructible(int) {
+        f();
+    }
+    template <typename T>
+    non_trivially_constructible(T) {
+        f();
+    }
+    template <typename ...Args>
+    non_trivially_constructible(Args &&...) {
+        f();
+    }
+    void f() {
+        int a {};
+        ++a;
+    }
+};
+struct only_copy_constructor_implemented : trivial {
+    only_copy_constructor_implemented(const only_copy_constructor_implemented &) {
+        int a {};
+        ++a;
+    }
+};
+struct only_copy_assignment_operator_implemented : trivial {
+    only_copy_assignment_operator_implemented(only_copy_assignment_operator_implemented &&) {
+        int a {};
+        ++a;
+    }
+};
+struct only_move_constructor_implemented : trivial {
+    only_move_constructor_implemented &operator=(const only_move_constructor_implemented &) {
+        int a {};
+        ++a;
+        return *this;
+    }
+};
+struct only_move_assignment_operator_implemented : trivial {
+    only_move_assignment_operator_implemented &operator=(only_move_assignment_operator_implemented &&) {
+        int a {};
+        ++a;
+        return *this;
+    }
+};
+struct unit_test_is_constructible : trivial {
+    unit_test_is_constructible(int);
+    unit_test_is_constructible(char) = delete;
+    template <typename T>
+    unit_test_is_constructible(T);
+    unit_test_is_constructible(const unit_test_is_constructible &) {
+        int a {};
+        ++a;
+    }
+    unit_test_is_constructible(unit_test_is_constructible &&) = delete;
+    unit_test_is_constructible &operator=(const unit_test_is_constructible &) = delete;
+    unit_test_is_constructible &operator=(unit_test_is_constructible &&) {
+        int a {};
+        ++a;
+        return *this;
+    }
+    unit_test_is_constructible(int, char);
+    template <std::size_t N>
+    unit_test_is_constructible(double (&arr)[N]);
+    template <typename T, typename U>
+    unit_test_is_constructible(T, U) = delete;
+    template <typename T, typename U, typename ...Args>
+    unit_test_is_constructible(T, U, Args &&...);
+};
+struct unit_test_derived_from_is_constructible : unit_test_is_constructible {
+    int f;
+};
+struct trivially_destructible {
+    ~trivially_destructible() = default;
+};
+struct non_trivially_destructible {
+    ~non_trivially_destructible() {
+        int a {};
+        ++a;
+    }
+};
+struct exceptional_trivially_destructible {
+    ~exceptional_trivially_destructible() noexcept(false) = default;
+};
+struct exceptional_non_trivially_destructible {
+    ~exceptional_non_trivially_destructible() noexcept(false) {
+        int a {};
+        ++a;
+    }
+};
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivial)
+static_assert(is_trivial_v<int>);
+static_assert(is_trivial_v<const int>);
+static_assert(is_trivial_v<volatile int>);
+static_assert(is_trivial_v<const volatile int>);
+static_assert(is_trivial_v<int *>);
+static_assert(is_trivial_v<const int *>);
+static_assert(is_trivial_v<volatile int *>);
+static_assert(is_trivial_v<int *const>);
+static_assert(is_trivial_v<int *volatile>);
+static_assert(not is_trivial_v<int &>);
+static_assert(not is_trivial_v<const int &>);
+static_assert(not is_trivial_v<volatile int &>);
+static_assert(not is_trivial_v<int &&>);
+static_assert(not is_trivial_v<void>);
+static_assert(is_trivial_v<int []>);
+static_assert(is_trivial_v<int [42]>);
+static_assert(not is_trivial_v<int (&)[42]>);
+static_assert(not is_trivial_v<int (&&)[]>);
+static_assert(not is_trivial_v<void ()>);
+static_assert(is_trivial_v<void (*)()>);
+static_assert(is_trivial_v<void (*const)()>);
+static_assert(is_trivial_v<decltype(nullptr)>);
+static_assert(not is_trivial_v<void (&)()>);
+static_assert(not is_trivial_v<void (&&)()>);
+static_assert(is_trivial_v<A>);
+//static_assert(is_trivial_v<B>);     // undefined behavior
+static_assert(is_trivial_v<C>);
+static_assert(is_trivial_v<D>);
+//static_assert(is_trivial_v<E>);     // undefined behavior
+static_assert(is_trivial_v<trivial_stateless>);
+static_assert(is_trivial_v<trivial>);
+static_assert(not is_trivial_v<non_trivial_1>);
+static_assert(not is_trivial_v<non_trivial_2>);
+static_assert(is_trivial_v<trivial_with_deleted_destructor>);
+static_assert(is_trivial_v<trivially_copy_constructible>);
+static_assert(is_trivial_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_trivial_v<trivially_move_constructible>);
+static_assert(is_trivial_v<trivially_move_constructible_non_destructible>);
+static_assert(is_trivial_v<trivially_copy_assignable>);
+static_assert(is_trivial_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_trivial_v<trivially_move_assignable>);
+static_assert(is_trivial_v<trivially_move_assignable_non_destructible>);
+static_assert(not is_trivial_v<trivially_default_constructible_simulator>);
+static_assert(not is_trivial_v<trivially_constructible_simulator>);
+static_assert(not is_trivial_v<non_trivially_constructible>);
+static_assert(not is_trivial_v<only_copy_constructor_implemented>);
+static_assert(not is_trivial_v<only_copy_assignment_operator_implemented>);
+static_assert(not is_trivial_v<only_move_constructor_implemented>);
+static_assert(not is_trivial_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivial_v<unit_test_is_constructible>);
+static_assert(not is_trivial_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivial_v<trivially_destructible>);
+static_assert(not is_trivial_v<non_trivially_destructible>);
+static_assert(is_trivial_v<exceptional_trivially_destructible>);
+static_assert(not is_trivial_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_copyable)
+static_assert(is_trivially_copyable_v<int>);
+static_assert(is_trivially_copyable_v<const int>);
+static_assert(is_trivially_copyable_v<volatile int>);
+static_assert(is_trivially_copyable_v<const volatile int>);
+static_assert(is_trivially_copyable_v<int *>);
+static_assert(is_trivially_copyable_v<const int *>);
+static_assert(is_trivially_copyable_v<volatile int *>);
+static_assert(is_trivially_copyable_v<int *const>);
+static_assert(is_trivially_copyable_v<int *volatile>);
+static_assert(not is_trivially_copyable_v<int &>);
+static_assert(not is_trivially_copyable_v<const int &>);
+static_assert(not is_trivially_copyable_v<volatile int &>);
+static_assert(not is_trivially_copyable_v<int &&>);
+static_assert(not is_trivially_copyable_v<void>);
+static_assert(is_trivially_copyable_v<int []>);
+static_assert(is_trivially_copyable_v<int [42]>);
+static_assert(not is_trivially_copyable_v<int (&)[42]>);
+static_assert(not is_trivially_copyable_v<int (&&)[]>);
+static_assert(not is_trivially_copyable_v<void ()>);
+static_assert(is_trivially_copyable_v<void (*)()>);
+static_assert(is_trivially_copyable_v<void (*const)()>);
+static_assert(is_trivially_copyable_v<decltype(nullptr)>);
+static_assert(not is_trivially_copyable_v<void (&)()>);
+static_assert(not is_trivially_copyable_v<void (&&)()>);
+static_assert(is_trivially_copyable_v<A>);
+//static_assert(is_trivially_copyable_v<B>);     // undefined behavior
+static_assert(is_trivially_copyable_v<C>);
+static_assert(is_trivially_copyable_v<D>);
+//static_assert(is_trivially_copyable_v<E>);     // undefined behavior
+static_assert(is_trivially_copyable_v<trivial_stateless>);
+static_assert(is_trivially_copyable_v<trivial>);
+static_assert(is_trivially_copyable_v<non_trivial_1>);
+static_assert(is_trivially_copyable_v<non_trivial_2>);
+static_assert(is_trivially_copyable_v<trivial_with_deleted_destructor>);
+static_assert(is_trivially_copyable_v<trivially_copy_constructible>);
+static_assert(is_trivially_copyable_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_trivially_copyable_v<trivially_move_constructible>);
+static_assert(is_trivially_copyable_v<trivially_move_constructible_non_destructible>);
+static_assert(is_trivially_copyable_v<trivially_copy_assignable>);
+static_assert(is_trivially_copyable_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_trivially_copyable_v<trivially_move_assignable>);
+static_assert(is_trivially_copyable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_copyable_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_copyable_v<trivially_constructible_simulator>);
+static_assert(is_trivially_copyable_v<non_trivially_constructible>);
+static_assert(not is_trivially_copyable_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_copyable_v<only_copy_assignment_operator_implemented>);
+static_assert(not is_trivially_copyable_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_copyable_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_copyable_v<unit_test_is_constructible>);
+static_assert(not is_trivially_copyable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_copyable_v<trivially_destructible>);
+static_assert(not is_trivially_copyable_v<non_trivially_destructible>);
+static_assert(is_trivially_copyable_v<exceptional_trivially_destructible>);
+static_assert(not is_trivially_copyable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_constructible)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_default_constructible)
+static_assert(is_trivially_default_constructible_v<int>);
+static_assert(is_trivially_default_constructible_v<const int>);
+static_assert(is_trivially_default_constructible_v<volatile int>);
+static_assert(is_trivially_default_constructible_v<const volatile int>);
+static_assert(is_trivially_default_constructible_v<int *>);
+static_assert(is_trivially_default_constructible_v<const int *>);
+static_assert(is_trivially_default_constructible_v<volatile int *>);
+static_assert(is_trivially_default_constructible_v<int *const>);
+static_assert(is_trivially_default_constructible_v<int *volatile>);
+static_assert(not is_trivially_default_constructible_v<int &>);
+static_assert(not is_trivially_default_constructible_v<const int &>);
+static_assert(not is_trivially_default_constructible_v<volatile int &>);
+static_assert(not is_trivially_default_constructible_v<int &&>);
+static_assert(not is_trivially_default_constructible_v<void>);
+static_assert(not is_trivially_default_constructible_v<int []>);
+static_assert(is_trivially_default_constructible_v<int [42]>);
+static_assert(not is_trivially_default_constructible_v<int (&)[42]>);
+static_assert(not is_trivially_default_constructible_v<int (&&)[]>);
+static_assert(not is_trivially_default_constructible_v<void ()>);
+static_assert(is_trivially_default_constructible_v<void (*)()>);
+static_assert(is_trivially_default_constructible_v<void (*const)()>);
+static_assert(is_trivially_default_constructible_v<decltype(nullptr)>);
+static_assert(not is_trivially_default_constructible_v<void (&)()>);
+static_assert(not is_trivially_default_constructible_v<void (&&)()>);
+static_assert(is_trivially_default_constructible_v<A>);
+//static_assert(is_trivially_default_constructible_v<B>);     // undefined behavior
+static_assert(is_trivially_default_constructible_v<C>);
+static_assert(is_trivially_default_constructible_v<D>);
+//static_assert(is_trivially_default_constructible_v<E>);     // undefined behavior
+static_assert(is_trivially_default_constructible_v<trivial_stateless>);
+static_assert(is_trivially_default_constructible_v<trivial>);
+static_assert(not is_trivially_default_constructible_v<non_trivial_1>);
+static_assert(not is_trivially_default_constructible_v<non_trivial_2>);
+static_assert(not is_trivially_default_constructible_v<trivial_with_deleted_destructor>);
+static_assert(not is_trivially_default_constructible_v<trivially_copy_constructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_move_constructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_copy_assignable>);
+static_assert(not is_trivially_default_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_move_assignable>);
+static_assert(not is_trivially_default_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(not is_trivially_default_constructible_v<trivially_default_constructible_simulator>);
+static_assert(not is_trivially_default_constructible_v<trivially_constructible_simulator>);
+static_assert(not is_trivially_default_constructible_v<non_trivially_constructible>);
+static_assert(not is_trivially_default_constructible_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_default_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_trivially_default_constructible_v<only_move_constructor_implemented>);
+static_assert(is_trivially_default_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_default_constructible_v<unit_test_is_constructible>);
+static_assert(not is_trivially_default_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_default_constructible_v<trivially_destructible>);
+static_assert(not is_trivially_default_constructible_v<non_trivially_destructible>);
+static_assert(is_trivially_default_constructible_v<exceptional_trivially_destructible>);
+static_assert(not is_trivially_default_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_copy_constructible)
+static_assert(is_trivially_copy_constructible_v<int>);
+static_assert(is_trivially_copy_constructible_v<const int>);
+static_assert(is_trivially_copy_constructible_v<volatile int>);
+static_assert(is_trivially_copy_constructible_v<const volatile int>);
+static_assert(is_trivially_copy_constructible_v<int *>);
+static_assert(is_trivially_copy_constructible_v<const int *>);
+static_assert(is_trivially_copy_constructible_v<volatile int *>);
+static_assert(is_trivially_copy_constructible_v<int *const>);
+static_assert(is_trivially_copy_constructible_v<int *volatile>);
+static_assert(is_trivially_copy_constructible_v<int &>);
+static_assert(is_trivially_copy_constructible_v<const int &>);
+static_assert(is_trivially_copy_constructible_v<volatile int &>);
+static_assert(not is_trivially_copy_constructible_v<int &&>);
+static_assert(not is_trivially_copy_constructible_v<void>);
+static_assert(not is_trivially_copy_constructible_v<int []>);
+static_assert(not is_trivially_copy_constructible_v<int [42]>);
+static_assert(is_trivially_copy_constructible_v<int (&)[42]>);
+static_assert(not is_trivially_copy_constructible_v<int (&&)[]>);
+static_assert(not is_trivially_copy_constructible_v<void ()>);
+static_assert(is_trivially_copy_constructible_v<void (*)()>);
+static_assert(is_trivially_copy_constructible_v<void (*const)()>);
+static_assert(is_trivially_copy_constructible_v<decltype(nullptr)>);
+static_assert(is_trivially_copy_constructible_v<void (&)()>);
+static_assert(is_trivially_copy_constructible_v<void (&&)()>);
+static_assert(is_trivially_copy_constructible_v<A>);
+//static_assert(is_trivially_copy_constructible_v<B>);     // undefined behavior
+static_assert(is_trivially_copy_constructible_v<C>);
+static_assert(is_trivially_copy_constructible_v<D>);
+//static_assert(is_trivially_copy_constructible_v<E>);     // undefined behavior
+static_assert(is_trivially_copy_constructible_v<trivial_stateless>);
+static_assert(is_trivially_copy_constructible_v<trivial>);
+static_assert(is_trivially_copy_constructible_v<non_trivial_1>);
+static_assert(is_trivially_copy_constructible_v<non_trivial_2>);
+static_assert(not is_trivially_copy_constructible_v<trivial_with_deleted_destructor>);
+static_assert(is_trivially_copy_constructible_v<trivially_copy_constructible>);
+static_assert(not is_trivially_copy_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_trivially_copy_constructible_v<trivially_move_constructible>);
+static_assert(not is_trivially_copy_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_trivially_copy_constructible_v<trivially_copy_assignable>);
+static_assert(not is_trivially_copy_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_trivially_copy_constructible_v<trivially_move_assignable>);
+static_assert(not is_trivially_copy_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_copy_constructible_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_copy_constructible_v<trivially_constructible_simulator>);
+static_assert(is_trivially_copy_constructible_v<non_trivially_constructible>);
+static_assert(not is_trivially_copy_constructible_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_copy_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_trivially_copy_constructible_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_copy_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_copy_constructible_v<unit_test_is_constructible>);
+static_assert(not is_trivially_copy_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_copy_constructible_v<trivially_destructible>);
+static_assert(not is_trivially_copy_constructible_v<non_trivially_destructible>);
+static_assert(is_trivially_copy_constructible_v<exceptional_trivially_destructible>);
+static_assert(not is_trivially_copy_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_move_constructible)
+static_assert(is_trivially_move_constructible_v<int>);
+static_assert(is_trivially_move_constructible_v<const int>);
+static_assert(is_trivially_move_constructible_v<volatile int>);
+static_assert(is_trivially_move_constructible_v<const volatile int>);
+static_assert(is_trivially_move_constructible_v<int *>);
+static_assert(is_trivially_move_constructible_v<const int *>);
+static_assert(is_trivially_move_constructible_v<volatile int *>);
+static_assert(is_trivially_move_constructible_v<int *const>);
+static_assert(is_trivially_move_constructible_v<int *volatile>);
+static_assert(is_trivially_move_constructible_v<int &>);
+static_assert(is_trivially_move_constructible_v<const int &>);
+static_assert(is_trivially_move_constructible_v<volatile int &>);
+static_assert(is_trivially_move_constructible_v<int &&>);
+static_assert(not is_trivially_move_constructible_v<void>);
+static_assert(not is_trivially_move_constructible_v<int []>);
+static_assert(not is_trivially_move_constructible_v<int [42]>);
+static_assert(is_trivially_move_constructible_v<int (&)[42]>);
+static_assert(is_trivially_move_constructible_v<int (&&)[]>);
+static_assert(not is_trivially_move_constructible_v<void ()>);
+static_assert(is_trivially_move_constructible_v<void (*)()>);
+static_assert(is_trivially_move_constructible_v<void (*const)()>);
+static_assert(is_trivially_move_constructible_v<decltype(nullptr)>);
+static_assert(is_trivially_move_constructible_v<void (&)()>);
+static_assert(is_trivially_move_constructible_v<void (&&)()>);
+static_assert(is_trivially_move_constructible_v<A>);
+//static_assert(is_trivially_move_constructible_v<B>);     // undefined behavior
+static_assert(is_trivially_move_constructible_v<C>);
+static_assert(is_trivially_move_constructible_v<D>);
+//static_assert(is_trivially_move_constructible_v<E>);     // undefined behavior
+static_assert(is_trivially_move_constructible_v<trivial_stateless>);
+static_assert(is_trivially_move_constructible_v<trivial>);
+static_assert(is_trivially_move_constructible_v<non_trivial_1>);
+static_assert(is_trivially_move_constructible_v<non_trivial_2>);
+static_assert(not is_trivially_move_constructible_v<trivial_with_deleted_destructor>);
+static_assert(not is_trivially_move_constructible_v<trivially_copy_constructible>);
+static_assert(not is_trivially_move_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_trivially_move_constructible_v<trivially_move_constructible>);
+static_assert(not is_trivially_move_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_trivially_move_constructible_v<trivially_copy_assignable>);
+static_assert(not is_trivially_move_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_trivially_move_constructible_v<trivially_move_assignable>);
+static_assert(not is_trivially_move_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_move_constructible_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_move_constructible_v<trivially_constructible_simulator>);
+static_assert(is_trivially_move_constructible_v<non_trivially_constructible>);
+static_assert(not is_trivially_move_constructible_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_move_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_trivially_move_constructible_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_move_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_move_constructible_v<unit_test_is_constructible>);
+static_assert(not is_trivially_move_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_move_constructible_v<trivially_destructible>);
+static_assert(not is_trivially_move_constructible_v<non_trivially_destructible>);
+static_assert(is_trivially_move_constructible_v<exceptional_trivially_destructible>);
+static_assert(not is_trivially_move_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_assignable)
+static_assert(not is_trivially_assignable_v<int>);      // int is an rvalue type, cannot be assigned
+static_assert(not is_trivially_assignable_v<const int>);
+static_assert(not is_trivially_assignable_v<volatile int>);
+static_assert(not is_trivially_assignable_v<const volatile int>);
+static_assert(not is_trivially_assignable_v<int *>);
+static_assert(not is_trivially_assignable_v<const int *>);
+static_assert(not is_trivially_assignable_v<volatile int *>);
+static_assert(not is_trivially_assignable_v<int *const>);
+static_assert(not is_trivially_assignable_v<int *volatile>);
+static_assert(is_trivially_assignable_v<int &>);
+static_assert(not is_trivially_assignable_v<const int &>);
+static_assert(is_trivially_assignable_v<volatile int &>);
+static_assert(not is_trivially_assignable_v<int &&>);
+static_assert(not is_trivially_assignable_v<void>);
+static_assert(not is_trivially_assignable_v<int []>);
+static_assert(not is_trivially_assignable_v<int [42]>);
+static_assert(not is_trivially_assignable_v<int (&)[42]>);
+static_assert(not is_trivially_assignable_v<int (&&)[]>);
+static_assert(not is_trivially_assignable_v<void ()>);
+static_assert(not is_trivially_assignable_v<void (*)()>);
+static_assert(not is_trivially_assignable_v<void (*const)()>);
+static_assert(not is_trivially_assignable_v<decltype(nullptr)>);
+static_assert(not is_trivially_assignable_v<void (&)()>);
+static_assert(not is_trivially_assignable_v<void (&&)()>);
+static_assert(is_trivially_assignable_v<A>);
+//static_assert(is_trivially_assignable_v<B>);     // undefined behavior
+static_assert(not is_trivially_assignable_v<C>);
+static_assert(not is_trivially_assignable_v<D>);
+//static_assert(is_trivially_assignable_v<E>);     // undefined behavior
+static_assert(is_trivially_assignable_v<trivial_stateless>);
+static_assert(is_trivially_assignable_v<trivial>);
+static_assert(is_trivially_assignable_v<non_trivial_1>);
+static_assert(is_trivially_assignable_v<non_trivial_2>);
+static_assert(is_trivially_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_trivially_assignable_v<trivially_copy_constructible>);
+static_assert(not is_trivially_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_trivially_assignable_v<trivially_move_constructible>);
+static_assert(not is_trivially_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_trivially_assignable_v<trivially_copy_assignable>);
+static_assert(not is_trivially_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_trivially_assignable_v<trivially_move_assignable>);
+static_assert(is_trivially_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_assignable_v<trivially_constructible_simulator>);
+static_assert(is_trivially_assignable_v<non_trivially_constructible>);
+static_assert(is_trivially_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(not is_trivially_assignable_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_assignable_v<unit_test_is_constructible>);
+static_assert(not is_trivially_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_assignable_v<trivially_destructible>);
+static_assert(is_trivially_assignable_v<non_trivially_destructible>);
+static_assert(is_trivially_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_trivially_assignable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_copy_assignable)
+static_assert(is_trivially_copy_assignable_v<int>);
+static_assert(not is_trivially_copy_assignable_v<const int>);
+static_assert(is_trivially_copy_assignable_v<volatile int>);
+static_assert(not is_trivially_copy_assignable_v<const volatile int>);
+static_assert(is_trivially_copy_assignable_v<int *>);
+static_assert(is_trivially_copy_assignable_v<const int *>);
+static_assert(is_trivially_copy_assignable_v<volatile int *>);
+static_assert(not is_trivially_copy_assignable_v<int *const>);
+static_assert(is_trivially_copy_assignable_v<int *volatile>);
+static_assert(is_trivially_copy_assignable_v<int &>);
+static_assert(not is_trivially_copy_assignable_v<const int &>);
+static_assert(is_trivially_copy_assignable_v<volatile int &>);
+static_assert(is_trivially_copy_assignable_v<int &&>);
+static_assert(not is_trivially_copy_assignable_v<void>);
+static_assert(not is_trivially_copy_assignable_v<int []>);
+static_assert(not is_trivially_copy_assignable_v<int [42]>);
+static_assert(not is_trivially_copy_assignable_v<int (&)[42]>);
+static_assert(not is_trivially_copy_assignable_v<int (&&)[]>);
+static_assert(not is_trivially_copy_assignable_v<void ()>);
+static_assert(is_trivially_copy_assignable_v<void (*)()>);
+static_assert(not is_trivially_copy_assignable_v<void (*const)()>);
+static_assert(is_trivially_copy_assignable_v<decltype(nullptr)>);
+static_assert(not is_trivially_copy_assignable_v<void (&)()>);
+static_assert(not is_trivially_copy_assignable_v<void (&&)()>);
+static_assert(is_trivially_copy_assignable_v<A>);
+//static_assert(is_trivially_copy_assignable_v<B>);     // undefined behavior
+static_assert(is_trivially_copy_assignable_v<C>);
+static_assert(is_trivially_copy_assignable_v<D>);
+//static_assert(is_trivially_copy_assignable_v<E>);     // undefined behavior
+static_assert(is_trivially_copy_assignable_v<trivial_stateless>);
+static_assert(is_trivially_copy_assignable_v<trivial>);
+static_assert(is_trivially_copy_assignable_v<non_trivial_1>);
+static_assert(is_trivially_copy_assignable_v<non_trivial_2>);
+static_assert(is_trivially_copy_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_trivially_copy_assignable_v<trivially_copy_constructible>);
+static_assert(not is_trivially_copy_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_trivially_copy_assignable_v<trivially_move_constructible>);
+static_assert(not is_trivially_copy_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(is_trivially_copy_assignable_v<trivially_copy_assignable>);
+static_assert(is_trivially_copy_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_trivially_copy_assignable_v<trivially_move_assignable>);
+static_assert(not is_trivially_copy_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_copy_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_copy_assignable_v<trivially_constructible_simulator>);
+static_assert(is_trivially_copy_assignable_v<non_trivially_constructible>);
+static_assert(is_trivially_copy_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_copy_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(not is_trivially_copy_assignable_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_copy_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_copy_assignable_v<unit_test_is_constructible>);
+static_assert(not is_trivially_copy_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_copy_assignable_v<trivially_destructible>);
+static_assert(is_trivially_copy_assignable_v<non_trivially_destructible>);
+static_assert(is_trivially_copy_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_trivially_copy_assignable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_move_assignable)
+static_assert(is_trivially_move_assignable_v<int>);
+static_assert(not is_trivially_move_assignable_v<const int>);
+static_assert(is_trivially_move_assignable_v<volatile int>);
+static_assert(not is_trivially_move_assignable_v<const volatile int>);
+static_assert(is_trivially_move_assignable_v<int *>);
+static_assert(is_trivially_move_assignable_v<const int *>);
+static_assert(is_trivially_move_assignable_v<volatile int *>);
+static_assert(not is_trivially_move_assignable_v<int *const>);
+static_assert(is_trivially_move_assignable_v<int *volatile>);
+static_assert(is_trivially_move_assignable_v<int &>);
+static_assert(not is_trivially_move_assignable_v<const int &>);
+static_assert(is_trivially_move_assignable_v<volatile int &>);
+static_assert(is_trivially_move_assignable_v<int &&>);
+static_assert(not is_trivially_move_assignable_v<void>);
+static_assert(not is_trivially_move_assignable_v<int []>);
+static_assert(not is_trivially_move_assignable_v<int [42]>);
+static_assert(not is_trivially_move_assignable_v<int (&)[42]>);
+static_assert(not is_trivially_move_assignable_v<int (&&)[]>);
+static_assert(not is_trivially_move_assignable_v<void ()>);
+static_assert(is_trivially_move_assignable_v<void (*)()>);
+static_assert(not is_trivially_move_assignable_v<void (*const)()>);
+static_assert(is_trivially_move_assignable_v<decltype(nullptr)>);
+static_assert(not is_trivially_move_assignable_v<void (&)()>);
+static_assert(not is_trivially_move_assignable_v<void (&&)()>);
+static_assert(is_trivially_move_assignable_v<A>);
+//static_assert(is_trivially_move_assignable_v<B>);     // undefined behavior
+static_assert(is_trivially_move_assignable_v<C>);
+static_assert(is_trivially_move_assignable_v<D>);
+//static_assert(is_trivially_move_assignable_v<E>);     // undefined behavior
+static_assert(is_trivially_move_assignable_v<trivial_stateless>);
+static_assert(is_trivially_move_assignable_v<trivial>);
+static_assert(is_trivially_move_assignable_v<non_trivial_1>);
+static_assert(is_trivially_move_assignable_v<non_trivial_2>);
+static_assert(is_trivially_move_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_trivially_move_assignable_v<trivially_copy_constructible>);
+static_assert(not is_trivially_move_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_trivially_move_assignable_v<trivially_move_constructible>);
+static_assert(not is_trivially_move_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_trivially_move_assignable_v<trivially_copy_assignable>);
+static_assert(not is_trivially_move_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_trivially_move_assignable_v<trivially_move_assignable>);
+static_assert(is_trivially_move_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_move_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_move_assignable_v<trivially_constructible_simulator>);
+static_assert(is_trivially_move_assignable_v<non_trivially_constructible>);
+static_assert(is_trivially_move_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_trivially_move_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(not is_trivially_move_assignable_v<only_move_constructor_implemented>);
+static_assert(not is_trivially_move_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(not is_trivially_move_assignable_v<unit_test_is_constructible>);
+static_assert(not is_trivially_move_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_move_assignable_v<trivially_destructible>);
+static_assert(is_trivially_move_assignable_v<non_trivially_destructible>);
+static_assert(is_trivially_move_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_trivially_move_assignable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_convertible)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_trivially_destructible)
+static_assert(is_trivially_destructible_v<int>);
+static_assert(is_trivially_destructible_v<const int>);
+static_assert(is_trivially_destructible_v<volatile int>);
+static_assert(is_trivially_destructible_v<const volatile int>);
+static_assert(is_trivially_destructible_v<int *>);
+static_assert(is_trivially_destructible_v<const int *>);
+static_assert(is_trivially_destructible_v<volatile int *>);
+static_assert(is_trivially_destructible_v<int *const>);
+static_assert(is_trivially_destructible_v<int *volatile>);
+static_assert(is_trivially_destructible_v<int &>);
+static_assert(is_trivially_destructible_v<const int &>);
+static_assert(is_trivially_destructible_v<volatile int &>);
+static_assert(is_trivially_destructible_v<int &&>);
+static_assert(not is_trivially_destructible_v<void>);
+static_assert(not is_trivially_destructible_v<int []>);
+static_assert(is_trivially_destructible_v<int [42]>);
+static_assert(is_trivially_destructible_v<int (&)[42]>);
+static_assert(is_trivially_destructible_v<int (&&)[]>);
+static_assert(not is_trivially_destructible_v<void ()>);
+static_assert(is_trivially_destructible_v<void (*)()>);
+static_assert(is_trivially_destructible_v<void (*const)()>);
+static_assert(is_trivially_destructible_v<decltype(nullptr)>);
+static_assert(is_trivially_destructible_v<void (&)()>);
+static_assert(is_trivially_destructible_v<void (&&)()>);
+static_assert(is_trivially_destructible_v<A>);
+//static_assert(is_trivially_destructible_v<B>);     // undefined behavior
+static_assert(is_trivially_destructible_v<C>);
+static_assert(is_trivially_destructible_v<D>);
+//static_assert(is_trivially_destructible_v<E>);     // undefined behavior
+static_assert(is_trivially_destructible_v<trivial_stateless>);
+static_assert(is_trivially_destructible_v<trivial>);
+static_assert(is_trivially_destructible_v<non_trivial_1>);
+static_assert(is_trivially_destructible_v<non_trivial_2>);
+static_assert(not is_trivially_destructible_v<trivial_with_deleted_destructor>);
+static_assert(is_trivially_destructible_v<trivially_copy_constructible>);
+static_assert(not is_trivially_destructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_trivially_destructible_v<trivially_move_constructible>);
+static_assert(not is_trivially_destructible_v<trivially_move_constructible_non_destructible>);
+static_assert(is_trivially_destructible_v<trivially_copy_assignable>);
+static_assert(not is_trivially_destructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_trivially_destructible_v<trivially_move_assignable>);
+static_assert(not is_trivially_destructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_trivially_destructible_v<trivially_default_constructible_simulator>);
+static_assert(is_trivially_destructible_v<trivially_constructible_simulator>);
+static_assert(is_trivially_destructible_v<non_trivially_constructible>);
+static_assert(is_trivially_destructible_v<only_copy_constructor_implemented>);
+static_assert(is_trivially_destructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_trivially_destructible_v<only_move_constructor_implemented>);
+static_assert(is_trivially_destructible_v<only_move_assignment_operator_implemented>);
+static_assert(is_trivially_destructible_v<unit_test_is_constructible>);
+static_assert(is_trivially_destructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_trivially_destructible_v<trivially_destructible>);
+static_assert(not is_trivially_destructible_v<non_trivially_destructible>);
+static_assert(is_trivially_destructible_v<exceptional_trivially_destructible>);
+static_assert(not is_trivially_destructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_constructible)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_default_constructible)
+static_assert(is_default_constructible_v<int>);
+static_assert(is_default_constructible_v<const int>);
+static_assert(is_default_constructible_v<volatile int>);
+static_assert(is_default_constructible_v<const volatile int>);
+static_assert(is_default_constructible_v<int *>);
+static_assert(is_default_constructible_v<const int *>);
+static_assert(is_default_constructible_v<volatile int *>);
+static_assert(is_default_constructible_v<int *const>);
+static_assert(is_default_constructible_v<int *volatile>);
+static_assert(not is_default_constructible_v<int &>);
+static_assert(not is_default_constructible_v<const int &>);
+static_assert(not is_default_constructible_v<volatile int &>);
+static_assert(not is_default_constructible_v<int &&>);
+static_assert(not is_default_constructible_v<void>);
+static_assert(not is_default_constructible_v<int []>);
+static_assert(is_default_constructible_v<int [42]>);
+static_assert(not is_default_constructible_v<int (&)[42]>);
+static_assert(not is_default_constructible_v<int (&&)[]>);
+static_assert(not is_default_constructible_v<void ()>);
+static_assert(is_default_constructible_v<void (*)()>);
+static_assert(is_default_constructible_v<void (*const)()>);
+static_assert(is_default_constructible_v<decltype(nullptr)>);
+static_assert(not is_default_constructible_v<void (&)()>);
+static_assert(not is_default_constructible_v<void (&&)()>);
+static_assert(is_default_constructible_v<A>);
+//static_assert(is_default_constructible_v<B>);     // undefined behavior
+static_assert(is_default_constructible_v<C>);
+static_assert(is_default_constructible_v<D>);
+//static_assert(is_default_constructible_v<E>);     // undefined behavior
+static_assert(is_default_constructible_v<trivial_stateless>);
+static_assert(is_default_constructible_v<trivial>);
+static_assert(is_default_constructible_v<non_trivial_1>);
+static_assert(is_default_constructible_v<non_trivial_2>);
+static_assert(not is_default_constructible_v<trivial_with_deleted_destructor>);
+static_assert(not is_default_constructible_v<trivially_copy_constructible>);
+static_assert(not is_default_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_default_constructible_v<trivially_move_constructible>);
+static_assert(not is_default_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_default_constructible_v<trivially_copy_assignable>);
+static_assert(not is_default_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_default_constructible_v<trivially_move_assignable>);
+static_assert(not is_default_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_default_constructible_v<trivially_default_constructible_simulator>);
+static_assert(not is_default_constructible_v<trivially_constructible_simulator>);
+static_assert(is_default_constructible_v<non_trivially_constructible>);
+static_assert(not is_default_constructible_v<only_copy_constructor_implemented>);
+static_assert(not is_default_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_default_constructible_v<only_move_constructor_implemented>);
+static_assert(is_default_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(not is_default_constructible_v<unit_test_is_constructible>);
+static_assert(not is_default_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_default_constructible_v<trivially_destructible>);
+static_assert(is_default_constructible_v<non_trivially_destructible>);
+static_assert(is_default_constructible_v<exceptional_trivially_destructible>);
+static_assert(is_default_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for is_copy_constructible)
+static_assert(is_copy_constructible_v<int>);
+static_assert(is_copy_constructible_v<const int>);
+static_assert(is_copy_constructible_v<volatile int>);
+static_assert(is_copy_constructible_v<const volatile int>);
+static_assert(is_copy_constructible_v<int *>);
+static_assert(is_copy_constructible_v<const int *>);
+static_assert(is_copy_constructible_v<volatile int *>);
+static_assert(is_copy_constructible_v<int *const>);
+static_assert(is_copy_constructible_v<int *volatile>);
+static_assert(not is_copy_constructible_v<int &>);
+static_assert(is_copy_constructible_v<const int &>);
+static_assert(not is_copy_constructible_v<volatile int &>);
+static_assert(not is_copy_constructible_v<int &&>);
+static_assert(not is_copy_constructible_v<void>);
+static_assert(not is_copy_constructible_v<int []>);
+static_assert(not is_copy_constructible_v<int [42]>);
+static_assert(not is_copy_constructible_v<int (&)[42]>);
+static_assert(not is_copy_constructible_v<int (&&)[]>);
+static_assert(not is_copy_constructible_v<void ()>);
+static_assert(is_copy_constructible_v<void (*)()>);
+static_assert(is_copy_constructible_v<void (*const)()>);
+static_assert(is_copy_constructible_v<decltype(nullptr)>);
+static_assert(is_copy_constructible_v<void (&)()>);
+static_assert(is_copy_constructible_v<void (&&)()>);
+static_assert(is_copy_constructible_v<A>);
+//static_assert(is_copy_constructible_v<B>);     // undefined behavior
+static_assert(is_copy_constructible_v<C>);
+static_assert(is_copy_constructible_v<D>);
+//static_assert(is_copy_constructible_v<E>);     // undefined behavior
+static_assert(is_copy_constructible_v<trivial_stateless>);
+static_assert(is_copy_constructible_v<trivial>);
+static_assert(is_copy_constructible_v<non_trivial_1>);
+static_assert(is_copy_constructible_v<non_trivial_2>);
+static_assert(not is_copy_constructible_v<trivial_with_deleted_destructor>);
+static_assert(is_copy_constructible_v<trivially_copy_constructible>);
+static_assert(not is_copy_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_copy_constructible_v<trivially_move_constructible>);
+static_assert(not is_copy_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_copy_constructible_v<trivially_copy_assignable>);
+static_assert(not is_copy_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_copy_constructible_v<trivially_move_assignable>);
+static_assert(not is_copy_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_copy_constructible_v<trivially_default_constructible_simulator>);
+static_assert(is_copy_constructible_v<trivially_constructible_simulator>);
+static_assert(is_copy_constructible_v<non_trivially_constructible>);
+static_assert(is_copy_constructible_v<only_copy_constructor_implemented>);
+static_assert(not is_copy_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_copy_constructible_v<only_move_constructor_implemented>);
+static_assert(not is_copy_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(is_copy_constructible_v<unit_test_is_constructible>);
+static_assert(is_copy_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_copy_constructible_v<trivially_destructible>);
+static_assert(is_copy_constructible_v<non_trivially_destructible>);
+static_assert(is_copy_constructible_v<exceptional_trivially_destructible>);
+static_assert(is_copy_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_move_constructible)
+static_assert(is_move_constructible_v<int>);
+static_assert(is_move_constructible_v<const int>);
+static_assert(is_move_constructible_v<volatile int>);
+static_assert(is_move_constructible_v<const volatile int>);
+static_assert(is_move_constructible_v<int *>);
+static_assert(is_move_constructible_v<const int *>);
+static_assert(is_move_constructible_v<volatile int *>);
+static_assert(is_move_constructible_v<int *const>);
+static_assert(is_move_constructible_v<int *volatile>);
+static_assert(is_move_constructible_v<int &>);
+static_assert(is_move_constructible_v<const int &>);
+static_assert(is_move_constructible_v<volatile int &>);
+static_assert(is_move_constructible_v<int &&>);
+static_assert(not is_move_constructible_v<void>);
+static_assert(not is_move_constructible_v<int []>);
+static_assert(not is_move_constructible_v<int [42]>);
+static_assert(is_move_constructible_v<int (&)[42]>);
+static_assert(is_move_constructible_v<int (&&)[]>);
+static_assert(not is_move_constructible_v<void ()>);
+static_assert(is_move_constructible_v<void (*)()>);
+static_assert(is_move_constructible_v<void (*const)()>);
+static_assert(is_move_constructible_v<decltype(nullptr)>);
+static_assert(is_move_constructible_v<void (&)()>);
+static_assert(is_move_constructible_v<void (&&)()>);
+static_assert(is_move_constructible_v<A>);
+//static_assert(is_move_constructible_v<B>);     // undefined behavior
+static_assert(is_move_constructible_v<C>);
+static_assert(is_move_constructible_v<D>);
+//static_assert(is_move_constructible_v<E>);     // undefined behavior
+static_assert(is_move_constructible_v<trivial_stateless>);
+static_assert(is_move_constructible_v<trivial>);
+static_assert(is_move_constructible_v<non_trivial_1>);
+static_assert(is_move_constructible_v<non_trivial_2>);
+static_assert(not is_move_constructible_v<trivial_with_deleted_destructor>);
+static_assert(not is_move_constructible_v<trivially_copy_constructible>);
+static_assert(not is_move_constructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_move_constructible_v<trivially_move_constructible>);
+static_assert(not is_move_constructible_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_move_constructible_v<trivially_copy_assignable>);
+static_assert(not is_move_constructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_move_constructible_v<trivially_move_assignable>);
+static_assert(not is_move_constructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_move_constructible_v<trivially_default_constructible_simulator>);
+static_assert(is_move_constructible_v<trivially_constructible_simulator>);
+static_assert(is_move_constructible_v<non_trivially_constructible>);
+static_assert(is_move_constructible_v<only_copy_constructor_implemented>);
+static_assert(is_move_constructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_move_constructible_v<only_move_constructor_implemented>);
+static_assert(not is_move_constructible_v<only_move_assignment_operator_implemented>);
+static_assert(not is_move_constructible_v<unit_test_is_constructible>);
+static_assert(is_move_constructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_move_constructible_v<trivially_destructible>);
+static_assert(is_move_constructible_v<non_trivially_destructible>);
+static_assert(is_move_constructible_v<exceptional_trivially_destructible>);
+static_assert(is_move_constructible_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_list_constructible)
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_assignable)
+struct unit_test_is_assignable {
+    void operator=(int *);
+    unit_test_is_assignable &operator=(int);
+    auto operator=(char) -> void (*)();
+    template <std::size_t N>
+    void operator=(unit_test_is_assignable (&)[N]);
+    int operator=(double);
+    void operator=(double *) &;
+    void operator=(double **) const &;
+    void operator=(double ***) volatile &;
+    void operator=(double ****) const volatile &;
+    void operator=(double *****) &&;
+    void operator=(double ******) const &&;
+    void operator=(double *******) volatile &&;
+    void operator=(double ********) const volatile &&;
+};
+static_assert(not is_assignable_v<int>);
+static_assert(not is_assignable_v<const int>);
+static_assert(not is_assignable_v<volatile int>);
+static_assert(not is_assignable_v<const volatile int>);
+static_assert(not is_assignable_v<int *>);
+static_assert(not is_assignable_v<const int *>);
+static_assert(not is_assignable_v<volatile int *>);
+static_assert(not is_assignable_v<int *const>);
+static_assert(not is_assignable_v<int *volatile>);
+static_assert(is_assignable_v<int &>);
+static_assert(not is_assignable_v<const int &>);
+static_assert(is_assignable_v<volatile int &>);
+static_assert(not is_assignable_v<int &&>);
+static_assert(not is_assignable_v<void>);
+static_assert(not is_assignable_v<int []>);
+static_assert(not is_assignable_v<int [42]>);
+static_assert(not is_assignable_v<int (&)[42]>);
+static_assert(not is_assignable_v<int (&&)[]>);
+static_assert(not is_assignable_v<void ()>);
+static_assert(not is_assignable_v<void (*)()>);
+static_assert(not is_assignable_v<void (*const)()>);
+static_assert(not is_assignable_v<decltype(nullptr)>);
+static_assert(not is_assignable_v<void (&)()>);
+static_assert(not is_assignable_v<void (&&)()>);
+static_assert(is_assignable_v<A>);
+//static_assert(is_assignable_v<B>);     // undefined behavior
+static_assert(not is_assignable_v<C>);
+static_assert(not is_assignable_v<D>);
+//static_assert(is_assignable_v<E>);     // undefined behavior
+static_assert(is_assignable_v<trivial_stateless>);
+static_assert(is_assignable_v<trivial>);
+static_assert(is_assignable_v<non_trivial_1>);
+static_assert(is_assignable_v<non_trivial_2>);
+static_assert(is_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_assignable_v<trivially_copy_constructible>);
+static_assert(not is_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_assignable_v<trivially_move_constructible>);
+static_assert(not is_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_assignable_v<trivially_copy_assignable>);
+static_assert(not is_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_assignable_v<trivially_move_assignable>);
+static_assert(is_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_assignable_v<trivially_constructible_simulator>);
+static_assert(is_assignable_v<non_trivially_constructible>);
+static_assert(is_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(is_assignable_v<only_move_constructor_implemented>);
+static_assert(is_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(is_assignable_v<unit_test_is_constructible>);
+static_assert(is_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_assignable_v<trivially_destructible>);
+static_assert(is_assignable_v<non_trivially_destructible>);
+static_assert(is_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_assignable_v<exceptional_non_trivially_destructible>);
+static_assert(is_assignable_v<unit_test_is_assignable, int>);
+static_assert(not is_assignable_v<unit_test_is_assignable, void *>);
+static_assert(is_assignable_v<unit_test_is_assignable, const int &>);
+static_assert(is_assignable_v<unit_test_is_assignable, char>);
+static_assert(not is_assignable_v<unit_test_is_assignable, unit_test_is_assignable []>);
+static_assert(not is_assignable_v<unit_test_is_assignable, unit_test_is_assignable [42]>);
+static_assert(not is_assignable_v<unit_test_is_assignable, unit_test_is_assignable (&)[]>);
+static_assert(is_assignable_v<unit_test_is_assignable, unit_test_is_assignable (&)[42]>);
+static_assert(is_assignable_v<unit_test_is_assignable, unit_test_is_assignable>);
+static_assert(is_assignable_v<unit_test_is_assignable, const unit_test_is_assignable>);
+static_assert(not is_assignable_v<unit_test_is_assignable, volatile unit_test_is_assignable>);
+static_assert(not is_assignable_v<unit_test_is_assignable, const volatile unit_test_is_assignable>);
+static_assert(is_assignable_v<unit_test_is_assignable, unit_test_is_assignable &>);
+static_assert(is_assignable_v<unit_test_is_assignable, unit_test_is_assignable &&>);
+static_assert(is_assignable_v<unit_test_is_assignable, const unit_test_is_assignable &>);
+static_assert(is_assignable_v<unit_test_is_assignable, const unit_test_is_assignable &&>);
+static_assert(not is_assignable_v<unit_test_is_assignable, volatile unit_test_is_assignable &>);
+static_assert(not is_assignable_v<unit_test_is_assignable, volatile unit_test_is_assignable &&>);
+static_assert(not is_assignable_v<unit_test_is_assignable, double *>);
+static_assert(is_assignable_v<unit_test_is_assignable &, double *>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double *>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double *>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double *>);
+static_assert(not is_assignable_v<unit_test_is_assignable &&, double *>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &&, double *>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double *>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double *>);
+static_assert(is_assignable_v<unit_test_is_assignable, double **>);
+static_assert(is_assignable_v<unit_test_is_assignable &, double **>);
+static_assert(is_assignable_v<const unit_test_is_assignable &, double **>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double **>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double **>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double **>);
+static_assert(is_assignable_v<const unit_test_is_assignable &&, double **>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double **>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double **>);
+static_assert(not is_assignable_v<unit_test_is_assignable, double ***>);
+static_assert(is_assignable_v<unit_test_is_assignable &, double ***>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double ***>);
+static_assert(is_assignable_v<volatile unit_test_is_assignable &, double ***>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double ***>);
+static_assert(not is_assignable_v<unit_test_is_assignable &&, double ***>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &&, double ***>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double ***>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double ***>);
+static_assert(not is_assignable_v<unit_test_is_assignable, double ****>);
+static_assert(is_assignable_v<unit_test_is_assignable &, double ****>);
+static_assert(is_assignable_v<const unit_test_is_assignable &, double ****>);
+static_assert(is_assignable_v<volatile unit_test_is_assignable &, double ****>);
+static_assert(is_assignable_v<const volatile unit_test_is_assignable &, double ****>);
+static_assert(not is_assignable_v<unit_test_is_assignable &&, double ****>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &&, double ****>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double ****>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double ****>);
+static_assert(is_assignable_v<unit_test_is_assignable, double *****>);
+static_assert(not is_assignable_v<unit_test_is_assignable &, double *****>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double *****>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double *****>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double *****>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double *****>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &&, double *****>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double *****>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double *****>);
+static_assert(is_assignable_v<unit_test_is_assignable, double ******>);
+static_assert(not is_assignable_v<unit_test_is_assignable &, double ******>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double ******>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double ******>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double ******>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double ******>);
+static_assert(is_assignable_v<const unit_test_is_assignable &&, double ******>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double ******>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double ******>);
+static_assert(is_assignable_v<unit_test_is_assignable, double *******>);
+static_assert(not is_assignable_v<unit_test_is_assignable &, double *******>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double *******>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double *******>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double *******>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double *******>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &&, double *******>);
+static_assert(is_assignable_v<volatile unit_test_is_assignable &&, double *******>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double *******>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double ******>);
+static_assert(is_assignable_v<const unit_test_is_assignable &&, double ******>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &&, double ******>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &&, double ******>);
+static_assert(is_assignable_v<unit_test_is_assignable, double ********>);
+static_assert(not is_assignable_v<unit_test_is_assignable &, double ********>);
+static_assert(not is_assignable_v<const unit_test_is_assignable &, double ********>);
+static_assert(not is_assignable_v<volatile unit_test_is_assignable &, double ********>);
+static_assert(not is_assignable_v<const volatile unit_test_is_assignable &, double ********>);
+static_assert(is_assignable_v<unit_test_is_assignable &&, double ********>);
+static_assert(is_assignable_v<const unit_test_is_assignable &&, double ********>);
+static_assert(is_assignable_v<volatile unit_test_is_assignable &&, double ********>);
+static_assert(is_assignable_v<const volatile unit_test_is_assignable &&, double ********>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_copy_assignable)
+static_assert(not is_copy_assignable_v<int>);
+static_assert(not is_copy_assignable_v<const int>);
+static_assert(not is_copy_assignable_v<volatile int>);
+static_assert(not is_copy_assignable_v<const volatile int>);
+static_assert(not is_copy_assignable_v<int *>);
+static_assert(not is_copy_assignable_v<const int *>);
+static_assert(not is_copy_assignable_v<volatile int *>);
+static_assert(not is_copy_assignable_v<int *const>);
+static_assert(not is_copy_assignable_v<int *volatile>);
+static_assert(is_copy_assignable_v<int &>);
+static_assert(not is_copy_assignable_v<const int &>);
+static_assert(is_copy_assignable_v<volatile int &>);
+static_assert(not is_copy_assignable_v<int &&>);
+static_assert(not is_copy_assignable_v<void>);
+static_assert(not is_copy_assignable_v<int []>);
+static_assert(not is_copy_assignable_v<int [42]>);
+static_assert(not is_copy_assignable_v<int (&)[42]>);
+static_assert(not is_copy_assignable_v<int (&&)[]>);
+static_assert(not is_copy_assignable_v<void ()>);
+static_assert(not is_copy_assignable_v<void (*)()>);
+static_assert(not is_copy_assignable_v<void (*const)()>);
+static_assert(not is_copy_assignable_v<decltype(nullptr)>);
+static_assert(not is_copy_assignable_v<void (&)()>);
+static_assert(not is_copy_assignable_v<void (&&)()>);
+static_assert(is_copy_assignable_v<A>);
+//static_assert(is_copy_assignable_v<B>);     // undefined behavior
+static_assert(not is_copy_assignable_v<C>);
+static_assert(not is_copy_assignable_v<D>);
+//static_assert(is_copy_assignable_v<E>);     // undefined behavior
+static_assert(is_copy_assignable_v<trivial_stateless>);
+static_assert(is_copy_assignable_v<trivial>);
+static_assert(is_copy_assignable_v<non_trivial_1>);
+static_assert(is_copy_assignable_v<non_trivial_2>);
+static_assert(is_copy_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_copy_assignable_v<trivially_copy_constructible>);
+static_assert(not is_copy_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_copy_assignable_v<trivially_move_constructible>);
+static_assert(not is_copy_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(is_copy_assignable_v<trivially_copy_assignable>);
+static_assert(is_copy_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(not is_copy_assignable_v<trivially_move_assignable>);
+static_assert(not is_copy_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_copy_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_copy_assignable_v<trivially_constructible_simulator>);
+static_assert(is_copy_assignable_v<non_trivially_constructible>);
+static_assert(is_copy_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_copy_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(is_copy_assignable_v<only_move_constructor_implemented>);
+static_assert(not is_copy_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(not is_copy_assignable_v<unit_test_is_constructible>);
+static_assert(not is_copy_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_copy_assignable_v<trivially_destructible>);
+static_assert(is_copy_assignable_v<non_trivially_destructible>);
+static_assert(is_copy_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_copy_assignable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_move_assignable)
+static_assert(not is_move_assignable_v<int>);
+static_assert(not is_move_assignable_v<const int>);
+static_assert(not is_move_assignable_v<volatile int>);
+static_assert(not is_move_assignable_v<const volatile int>);
+static_assert(not is_move_assignable_v<int *>);
+static_assert(not is_move_assignable_v<const int *>);
+static_assert(not is_move_assignable_v<volatile int *>);
+static_assert(not is_move_assignable_v<int *const>);
+static_assert(not is_move_assignable_v<int *volatile>);
+static_assert(is_move_assignable_v<int &>);
+static_assert(not is_move_assignable_v<const int &>);
+static_assert(is_move_assignable_v<volatile int &>);
+static_assert(not is_move_assignable_v<int &&>);
+static_assert(not is_move_assignable_v<void>);
+static_assert(not is_move_assignable_v<int []>);
+static_assert(not is_move_assignable_v<int [42]>);
+static_assert(not is_move_assignable_v<int (&)[42]>);
+static_assert(not is_move_assignable_v<int (&&)[]>);
+static_assert(not is_move_assignable_v<void ()>);
+static_assert(not is_move_assignable_v<void (*)()>);
+static_assert(not is_move_assignable_v<void (*const)()>);
+static_assert(not is_move_assignable_v<decltype(nullptr)>);
+static_assert(not is_move_assignable_v<void (&)()>);
+static_assert(not is_move_assignable_v<void (&&)()>);
+static_assert(is_move_assignable_v<A>);
+//static_assert(is_move_assignable_v<B>);     // undefined behavior
+static_assert(not is_move_assignable_v<C>);
+static_assert(not is_move_assignable_v<D>);
+//static_assert(is_move_assignable_v<E>);     // undefined behavior
+static_assert(is_move_assignable_v<trivial_stateless>);
+static_assert(is_move_assignable_v<trivial>);
+static_assert(is_move_assignable_v<non_trivial_1>);
+static_assert(is_move_assignable_v<non_trivial_2>);
+static_assert(is_move_assignable_v<trivial_with_deleted_destructor>);
+static_assert(not is_move_assignable_v<trivially_copy_constructible>);
+static_assert(not is_move_assignable_v<trivially_copy_constructible_non_destructible>);
+static_assert(not is_move_assignable_v<trivially_move_constructible>);
+static_assert(not is_move_assignable_v<trivially_move_constructible_non_destructible>);
+static_assert(not is_move_assignable_v<trivially_copy_assignable>);
+static_assert(not is_move_assignable_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_move_assignable_v<trivially_move_assignable>);
+static_assert(is_move_assignable_v<trivially_move_assignable_non_destructible>);
+static_assert(is_move_assignable_v<trivially_default_constructible_simulator>);
+static_assert(is_move_assignable_v<trivially_constructible_simulator>);
+static_assert(is_move_assignable_v<non_trivially_constructible>);
+static_assert(is_move_assignable_v<only_copy_constructor_implemented>);
+static_assert(not is_move_assignable_v<only_copy_assignment_operator_implemented>);
+static_assert(is_move_assignable_v<only_move_constructor_implemented>);
+static_assert(is_move_assignable_v<only_move_assignment_operator_implemented>);
+static_assert(is_move_assignable_v<unit_test_is_constructible>);
+static_assert(is_move_assignable_v<unit_test_derived_from_is_constructible>);
+static_assert(is_move_assignable_v<trivially_destructible>);
+static_assert(is_move_assignable_v<non_trivially_destructible>);
+static_assert(is_move_assignable_v<exceptional_trivially_destructible>);
+static_assert(is_move_assignable_v<exceptional_non_trivially_destructible>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_destructible)
+static_assert(is_destructible_v<int>);
+static_assert(is_destructible_v<const int>);
+static_assert(is_destructible_v<volatile int>);
+static_assert(is_destructible_v<const volatile int>);
+static_assert(is_destructible_v<int *>);
+static_assert(is_destructible_v<const int *>);
+static_assert(is_destructible_v<volatile int *>);
+static_assert(is_destructible_v<int *const>);
+static_assert(is_destructible_v<int *volatile>);
+static_assert(is_destructible_v<int &>);
+static_assert(is_destructible_v<const int &>);
+static_assert(is_destructible_v<volatile int &>);
+static_assert(is_destructible_v<int &&>);
+static_assert(not is_destructible_v<void>);
+static_assert(not is_destructible_v<int []>);
+static_assert(is_destructible_v<int [42]>);
+static_assert(is_destructible_v<int (&)[42]>);
+static_assert(is_destructible_v<int (&&)[]>);
+static_assert(not is_destructible_v<void ()>);
+static_assert(is_destructible_v<void (*)()>);
+static_assert(is_destructible_v<void (*const)()>);
+static_assert(is_destructible_v<decltype(nullptr)>);
+static_assert(is_destructible_v<void (&)()>);
+static_assert(is_destructible_v<void (&&)()>);
+static_assert(is_destructible_v<A>);
+//static_assert(is_destructible_v<B>);     // undefined behavior
+static_assert(is_destructible_v<C>);
+static_assert(is_destructible_v<D>);
+//static_assert(is_destructible_v<E>);     // undefined behavior
+static_assert(is_destructible_v<trivial_stateless>);
+static_assert(is_destructible_v<trivial>);
+static_assert(is_destructible_v<non_trivial_1>);
+static_assert(is_destructible_v<non_trivial_2>);
+static_assert(not is_destructible_v<trivial_with_deleted_destructor>);
+static_assert(is_destructible_v<trivially_copy_constructible>);
+static_assert(not is_destructible_v<trivially_copy_constructible_non_destructible>);
+static_assert(is_destructible_v<trivially_move_constructible>);
+static_assert(not is_destructible_v<trivially_move_constructible_non_destructible>);
+static_assert(is_destructible_v<trivially_copy_assignable>);
+static_assert(not is_destructible_v<trivially_copy_assignable_non_destructible>);
+static_assert(is_destructible_v<trivially_move_assignable>);
+static_assert(not is_destructible_v<trivially_move_assignable_non_destructible>);
+static_assert(is_destructible_v<trivially_default_constructible_simulator>);
+static_assert(is_destructible_v<trivially_constructible_simulator>);
+static_assert(is_destructible_v<non_trivially_constructible>);
+static_assert(is_destructible_v<only_copy_constructor_implemented>);
+static_assert(is_destructible_v<only_copy_assignment_operator_implemented>);
+static_assert(is_destructible_v<only_move_constructor_implemented>);
+static_assert(is_destructible_v<only_move_assignment_operator_implemented>);
+static_assert(is_destructible_v<unit_test_is_constructible>);
+static_assert(is_destructible_v<unit_test_derived_from_is_constructible>);
+static_assert(is_destructible_v<trivially_destructible>);
+static_assert(is_destructible_v<non_trivially_destructible>);
+static_assert(is_destructible_v<exceptional_trivially_destructible>);
+static_assert(is_destructible_v<exceptional_non_trivially_destructible>);
 __DATA_STRUCTURE_END
