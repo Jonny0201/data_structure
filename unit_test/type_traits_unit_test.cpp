@@ -408,6 +408,7 @@ static_assert(is_same_v<remove_extent_t<int *[]>, int *>);
 static_assert(is_same_v<remove_extent_t<void (*[])()>, void (*)()>);
 static_assert(is_same_v<remove_extent_t<void (A::*[])()>, void (A::*)()>);
 // only for Clang and GCC, todo : compatibility
+// update : Clang has built-in __remove_extent, which is able to remove zero-dimensional array type
 static_assert(is_same_v<remove_extent_t<int [0]>, int [0]>);
 static_assert(is_same_v<remove_extent_t<const int [0]>, const int [0]>);
 __DATA_STRUCTURE_END
@@ -423,6 +424,7 @@ static_assert(is_same_v<remove_extents_t<int *[][1][2][3]>, int *>);
 static_assert(is_same_v<remove_extents_t<void (*[][1][2][3][4])()>, void (*)()>);
 static_assert(is_same_v<remove_extents_t<void (A::*[1][2][3][4][5][6][7])()>, void (A::*)()>);
 // only for Clang and GCC, todo : compatibility
+// update : Clang has built-in __remove_extents, which is able to remove zero-dimensional array type
 static_assert(is_same_v<remove_extents_t<int [0][0][0][0]>, int [0][0][0][0]>);
 __DATA_STRUCTURE_END
 
@@ -3257,34 +3259,34 @@ static_assert(is_assignable_v<const volatile unit_test_is_assignable &&, double 
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(unit test for ds::is_copy_assignable)
-static_assert(not is_copy_assignable_v<int>);
+static_assert(is_copy_assignable_v<int>);
 static_assert(not is_copy_assignable_v<const int>);
-static_assert(not is_copy_assignable_v<volatile int>);
+static_assert(is_copy_assignable_v<volatile int>);
 static_assert(not is_copy_assignable_v<const volatile int>);
-static_assert(not is_copy_assignable_v<int *>);
-static_assert(not is_copy_assignable_v<const int *>);
-static_assert(not is_copy_assignable_v<volatile int *>);
+static_assert(is_copy_assignable_v<int *>);
+static_assert(is_copy_assignable_v<const int *>);
+static_assert(is_copy_assignable_v<volatile int *>);
 static_assert(not is_copy_assignable_v<int *const>);
-static_assert(not is_copy_assignable_v<int *volatile>);
+static_assert(is_copy_assignable_v<int *volatile>);
 static_assert(is_copy_assignable_v<int &>);
 static_assert(not is_copy_assignable_v<const int &>);
 static_assert(is_copy_assignable_v<volatile int &>);
-static_assert(not is_copy_assignable_v<int &&>);
+static_assert(is_copy_assignable_v<int &&>);
 static_assert(not is_copy_assignable_v<void>);
 static_assert(not is_copy_assignable_v<int []>);
 static_assert(not is_copy_assignable_v<int [42]>);
 static_assert(not is_copy_assignable_v<int (&)[42]>);
 static_assert(not is_copy_assignable_v<int (&&)[]>);
 static_assert(not is_copy_assignable_v<void ()>);
-static_assert(not is_copy_assignable_v<void (*)()>);
+static_assert(is_copy_assignable_v<void (*)()>);
 static_assert(not is_copy_assignable_v<void (*const)()>);
-static_assert(not is_copy_assignable_v<decltype(nullptr)>);
+static_assert(is_copy_assignable_v<decltype(nullptr)>);
 static_assert(not is_copy_assignable_v<void (&)()>);
 static_assert(not is_copy_assignable_v<void (&&)()>);
 static_assert(is_copy_assignable_v<A>);
 //static_assert(is_copy_assignable_v<B>);     // undefined behavior
-static_assert(not is_copy_assignable_v<C>);
-static_assert(not is_copy_assignable_v<D>);
+static_assert(is_copy_assignable_v<C>);
+static_assert(is_copy_assignable_v<D>);
 //static_assert(is_copy_assignable_v<E>);     // undefined behavior
 static_assert(is_copy_assignable_v<trivial_stateless>);
 static_assert(is_copy_assignable_v<trivial>);
@@ -3315,34 +3317,34 @@ static_assert(is_copy_assignable_v<exceptional_non_trivially_destructible>);
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(unit test for ds::is_move_assignable)
-static_assert(not is_move_assignable_v<int>);
+static_assert(is_move_assignable_v<int>);
 static_assert(not is_move_assignable_v<const int>);
-static_assert(not is_move_assignable_v<volatile int>);
+static_assert(is_move_assignable_v<volatile int>);
 static_assert(not is_move_assignable_v<const volatile int>);
-static_assert(not is_move_assignable_v<int *>);
-static_assert(not is_move_assignable_v<const int *>);
-static_assert(not is_move_assignable_v<volatile int *>);
+static_assert(is_move_assignable_v<int *>);
+static_assert(is_move_assignable_v<const int *>);
+static_assert(is_move_assignable_v<volatile int *>);
 static_assert(not is_move_assignable_v<int *const>);
-static_assert(not is_move_assignable_v<int *volatile>);
+static_assert(is_move_assignable_v<int *volatile>);
 static_assert(is_move_assignable_v<int &>);
 static_assert(not is_move_assignable_v<const int &>);
 static_assert(is_move_assignable_v<volatile int &>);
-static_assert(not is_move_assignable_v<int &&>);
+static_assert(is_move_assignable_v<int &&>);
 static_assert(not is_move_assignable_v<void>);
 static_assert(not is_move_assignable_v<int []>);
 static_assert(not is_move_assignable_v<int [42]>);
 static_assert(not is_move_assignable_v<int (&)[42]>);
 static_assert(not is_move_assignable_v<int (&&)[]>);
 static_assert(not is_move_assignable_v<void ()>);
-static_assert(not is_move_assignable_v<void (*)()>);
+static_assert(is_move_assignable_v<void (*)()>);
 static_assert(not is_move_assignable_v<void (*const)()>);
-static_assert(not is_move_assignable_v<decltype(nullptr)>);
+static_assert(is_move_assignable_v<decltype(nullptr)>);
 static_assert(not is_move_assignable_v<void (&)()>);
 static_assert(not is_move_assignable_v<void (&&)()>);
 static_assert(is_move_assignable_v<A>);
 //static_assert(is_move_assignable_v<B>);     // undefined behavior
-static_assert(not is_move_assignable_v<C>);
-static_assert(not is_move_assignable_v<D>);
+static_assert(is_move_assignable_v<C>);
+static_assert(is_move_assignable_v<D>);
 //static_assert(is_move_assignable_v<E>);     // undefined behavior
 static_assert(is_move_assignable_v<trivial_stateless>);
 static_assert(is_move_assignable_v<trivial>);
