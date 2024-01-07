@@ -1070,7 +1070,8 @@ template <typename LHS, typename RHS = LHS>
 constexpr inline auto is_trivially_assignable_v {is_trivially_assignable<LHS, RHS>::value};
 
 template <typename T>
-struct is_trivially_copy_assignable : is_trivially_assignable<add_lvalue_reference_t<T>, add_const_reference_t<T>> {};
+struct is_trivially_copy_assignable :
+        is_trivially_assignable<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>> {};
 template <typename T>
 constexpr inline auto is_trivially_copy_assignable_v {is_trivially_copy_assignable<T>::value};
 
@@ -1120,12 +1121,12 @@ template <typename LHS, typename RHS = LHS>
 constexpr inline auto is_assignable_v {is_assignable<LHS, RHS>::value};
 
 template <typename T>
-struct is_copy_assignable : is_assignable<T, add_const_reference_t<T>> {};
+struct is_copy_assignable : is_assignable<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>> {};
 template <typename T>
 constexpr inline auto is_copy_assignable_v {is_copy_assignable<T>::value};
 
 template <typename T>
-struct is_move_assignable : is_assignable<T, add_rvalue_reference_t<T>> {};
+struct is_move_assignable : is_assignable<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>> {};
 template <typename T>
 constexpr inline auto is_move_assignable_v {is_move_assignable<T>::value};
 
