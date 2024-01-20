@@ -176,12 +176,8 @@ void swap(T &lhs, T &rhs) noexcept(is_nothrow_move_constructible<T>::value and
         is_nothrow_move_assignable<T>::value);
 
 namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T >().~T(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(destructible, declval<T >().~T(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
                                 typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(list_constructible, T {declval<Args>()...},
-                                typename T, typename ...Args);
 __DATA_STRUCTURE_TEST_OPERATION(static_castable, static_cast<To>(declval<From>()),
                                 typename From, typename To);
 __DATA_STRUCTURE_TEST_OPERATION(dynamic_castable, dynamic_cast<To>(declval<From>()),
@@ -1092,8 +1088,8 @@ constexpr inline auto is_trivially_destructible_v {is_trivially_destructible<T>:
 
 template <typename T, typename ...Args>
 struct is_constructible : bool_constant<__is_constructible(T, Args...)> {};
-template <typename T>
-constexpr inline auto is_constructible_v {is_constructible<T>::value};
+template <typename T, typename ...Args>
+constexpr inline auto is_constructible_v {is_constructible<T, Args...>::value};
 
 template <typename T>
 struct is_default_constructible : is_constructible<T> {};
@@ -1110,6 +1106,12 @@ struct is_move_constructible : is_constructible<T, add_rvalue_reference_t<T>> {}
 template <typename T>
 constexpr inline auto is_move_constructible_v {is_move_constructible<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T {declval<Args>()...}), true_type> test_list_constructible(int) noexcept;
+template <typename ...>
+false_type test_list_constructible(...) noexcept;
+}
 template <typename T, typename ...Args>
 struct is_list_constructible : decltype(__dsa::test_list_constructible<T, Args...>(0)) {};
 template <typename T, typename ...Args>
@@ -1130,6 +1132,12 @@ struct is_move_assignable : is_assignable<add_lvalue_reference_t<T>, add_rvalue_
 template <typename T>
 constexpr inline auto is_move_assignable_v {is_move_assignable<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().~T()), true_type> test_destructible(int) noexcept;
+template <typename>
+false_type test_destructible(...) noexcept;
+}
 template <typename T>
 struct is_destructible : conditional_t<
         not is_function_v<T> and not is_unbounded_array_v<T> and not is_same_v<void, T>,
