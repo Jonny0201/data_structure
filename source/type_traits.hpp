@@ -26,7 +26,7 @@ template <typename T, T Value>
 struct constant {
     using value_type = T;
     using type = constant;
-    constexpr static auto value {Value};
+    static constexpr auto value {Value};
     constexpr value_type operator()() const noexcept {
         return this->value;
     }
@@ -93,10 +93,10 @@ template <typename ...Ts>
 using make_false_type_t = typename make_false_type<Ts...>::type;
 
 template <typename ...>
-constexpr inline auto make_true {true};
+inline constexpr auto make_true {true};
 
 template <typename ...>
-constexpr inline auto make_false {false};
+inline constexpr auto make_false {false};
 
 template <typename ...Args>
 struct type_container;
@@ -122,12 +122,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(detail)
 namespace __data_structure_auxiliary {
-
-template <typename T>
-static constexpr true_type test_convertible(T) noexcept;
-
-static constexpr false_type test_convertible(...) noexcept;
-
 template <typename T>
 static constexpr void test_noexcept(T) noexcept;
 
@@ -171,13 +165,8 @@ constexpr decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
 
 template <typename> struct is_nothrow_move_constructible;
 template <typename> struct is_nothrow_move_assignable;
-template <typename T>
-void swap(T &lhs, T &rhs) noexcept(is_nothrow_move_constructible<T>::value and
-        is_nothrow_move_assignable<T>::value);
 
 namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_TEST_OPERATION(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
-                                typename LHS, typename RHS);
 __DATA_STRUCTURE_TEST_OPERATION(static_castable, static_cast<To>(declval<From>()),
                                 typename From, typename To);
 __DATA_STRUCTURE_TEST_OPERATION(dynamic_castable, dynamic_cast<To>(declval<From>()),
@@ -274,8 +263,6 @@ __DATA_STRUCTURE_TEST_OPERATION(function_call, declval<T>()(declval<Args>()...),
 __DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>().operator,(declval<Arg>())), typename T, typename Arg);
 
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(destructible, declval<T &>().~T(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swappable, ds::swap(declval<LHS>(), declval<RHS>()),
-                                        typename LHS, typename RHS);
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(list_constructible, T {declval<Args>()...},
                                         typename T, typename ...Args);
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(static_castable, static_cast<To>(declval<From>()),
@@ -589,38 +576,38 @@ struct is_same : false_type {};
 template <typename T>
 struct is_same<T, T> : true_type {};
 template <typename T, typename U>
-constexpr inline auto is_same_v = is_same<T, U>::value;
+inline constexpr auto is_same_v = is_same<T, U>::value;
 
 template <typename T>
 struct is_void : is_same<void, remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_void_v {is_void<T>::value};
+inline constexpr auto is_void_v {is_void<T>::value};
 
 template <typename T>
 struct is_null_pointer : is_same<decltype(nullptr), remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_null_pointer_v {is_null_pointer<T>::value};
+inline constexpr auto is_null_pointer_v {is_null_pointer<T>::value};
 
 template <typename T>
 struct is_const : false_type {};
 template <typename T>
 struct is_const<const T> : true_type {};
 template <typename T>
-constexpr inline auto is_const_v {is_const<T>::value};
+inline constexpr auto is_const_v {is_const<T>::value};
 
 template <typename T>
 struct is_volatile : false_type {};
 template <typename T>
 struct is_volatile<volatile T> : true_type {};
 template <typename T>
-constexpr inline auto is_volatile_v {is_volatile<T>::value};
+inline constexpr auto is_volatile_v {is_volatile<T>::value};
 
 template <typename T>
 struct is_cv : false_type {};
 template <typename T>
 struct is_cv<const volatile T> : true_type {};
 template <typename T>
-constexpr inline auto is_cv_v {is_cv<T>::value};
+inline constexpr auto is_cv_v {is_cv<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename>
@@ -665,7 +652,7 @@ struct is_integral_auxiliary<__uint128_t> : true_type {};
 template <typename T>
 struct is_integral : __dsa::is_integral_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_integral_v {is_integral<T>::value};
+inline constexpr auto is_integral_v {is_integral<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename>
@@ -680,7 +667,7 @@ struct is_floating_point_auxiliary<long double> : true_type {};
 template <typename T>
 struct is_floating_point : __dsa::is_floating_point_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_floating_point_v {is_floating_point<T>::value};
+inline constexpr auto is_floating_point_v {is_floating_point<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T, typename = void>
@@ -692,7 +679,7 @@ struct is_signed_auxiliary<T, make_void_t<decltype(static_cast<T>(-1) < static_c
 template <typename T>
 struct is_signed : __dsa::is_signed_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_signed_v {is_signed<T>::value};
+inline constexpr auto is_signed_v {is_signed<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T, typename = void>
@@ -704,7 +691,7 @@ struct is_unsigned_auxiliary<T, make_void_t<decltype(static_cast<T>(0) < static_
 template <typename T>
 struct is_unsigned : __dsa::is_unsigned_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_unsigned_v {is_unsigned<T>::value};
+inline constexpr auto is_unsigned_v {is_unsigned<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename>
@@ -727,7 +714,7 @@ struct is_character_auxiliary<wchar_t> : true_type {};
 template <typename T>
 struct is_character : __dsa::is_character_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_character_v {is_character<T>::value};
+inline constexpr auto is_character_v {is_character<T>::value};
 
 template <typename>
 struct is_array : false_type {};
@@ -736,36 +723,36 @@ struct is_array<T []> : true_type {};
 template <typename T, size_t N>
 struct is_array<T [N]> : true_type {};
 template <typename T>
-constexpr inline auto is_array_v {is_array<T>::value};
+inline constexpr auto is_array_v {is_array<T>::value};
 
 template <typename>
 struct is_unbounded_array : false_type {};
 template <typename T>
 struct is_unbounded_array<T []> : true_type {};
 template <typename T>
-constexpr inline auto is_unbounded_array_v {is_unbounded_array<T>::value};
+inline constexpr auto is_unbounded_array_v {is_unbounded_array<T>::value};
 
 template <typename>
 struct is_bounded_array : false_type {};
 template <typename T, size_t N>
 struct is_bounded_array<T [N]> : true_type {};
 template <typename T>
-constexpr inline auto is_bounded_array_v {is_bounded_array<T>::value};
+inline constexpr auto is_bounded_array_v {is_bounded_array<T>::value};
 
 template <typename T>
 struct is_enum : bool_constant<__is_enum(T)> {};
 template <typename T>
-constexpr inline auto is_enum_v {is_enum<T>::value};
+inline constexpr auto is_enum_v {is_enum<T>::value};
 
 template <typename T>
 struct is_union : bool_constant<__is_union(T)> {};
 template <typename T>
-constexpr inline auto is_union_v {is_union<T>::value};
+inline constexpr auto is_union_v {is_union<T>::value};
 
 template <typename T>
 struct is_class : bool_constant<__is_class(T)> {};
 template <typename T>
-constexpr inline auto is_class_v {is_class<T>::value};
+inline constexpr auto is_class_v {is_class<T>::value};
 
 template <typename>
 struct is_function : false_type {};
@@ -866,7 +853,7 @@ struct is_function<R (Args..., ...) volatile && noexcept> : true_type {};
 template <typename R, typename ...Args>
 struct is_function<R (Args..., ...) const volatile && noexcept> : true_type {};
 template <typename T>
-constexpr inline auto is_function_v {is_function<T>::value};
+inline constexpr auto is_function_v {is_function<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T>
@@ -877,7 +864,7 @@ struct is_pointer_auxiliary<T *> : true_type {};
 template <typename T>
 struct is_pointer : __dsa::is_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_pointer_v {is_pointer<T>::value};
+inline constexpr auto is_pointer_v {is_pointer<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T>
@@ -888,7 +875,7 @@ struct is_member_pointer_auxiliary<T Class::*> : true_type {};
 template <typename T>
 struct is_member_pointer : __dsa::is_member_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_member_pointer_v {is_member_pointer<T>::value};
+inline constexpr auto is_member_pointer_v {is_member_pointer<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T>
@@ -899,32 +886,32 @@ struct is_member_function_pointer_auxiliary<F Class::*> : is_function<F> {};
 template <typename T>
 struct is_member_function_pointer : __dsa::is_member_function_pointer_auxiliary<remove_cv_t<T>> {};
 template <typename T>
-constexpr inline auto is_member_function_pointer_v {is_member_function_pointer<T>::value};
+inline constexpr auto is_member_function_pointer_v {is_member_function_pointer<T>::value};
 
 template <typename T>
 struct is_member_object_pointer : bool_constant<is_member_pointer_v<T> and not is_member_function_pointer_v<T>> {};
 template <typename T>
-constexpr inline auto is_member_object_pointer_v {is_member_object_pointer<T>::value};
+inline constexpr auto is_member_object_pointer_v {is_member_object_pointer<T>::value};
 
 template <typename T>
 struct is_function_pointer : bool_constant<is_pointer_v<T> and
         (is_function_v<remove_pointer_t<T>> or is_void_v<remove_pointer_t<T>>)> {};
 template <typename T>
-constexpr inline auto is_function_pointer_v {is_function_pointer<T>::value};
+inline constexpr auto is_function_pointer_v {is_function_pointer<T>::value};
 
 template <typename T>
 struct is_lvalue_reference : false_type {};
 template <typename T>
 struct is_lvalue_reference<T &> : true_type {};
 template <typename T>
-constexpr inline auto is_lvalue_reference_v {is_lvalue_reference<T>::value};
+inline constexpr auto is_lvalue_reference_v {is_lvalue_reference<T>::value};
 
 template <typename T>
 struct is_rvalue_reference : false_type {};
 template <typename T>
 struct is_rvalue_reference<T &&> : true_type {};
 template <typename T>
-constexpr inline auto is_rvalue_reference_v {is_rvalue_reference<T>::value};
+inline constexpr auto is_rvalue_reference_v {is_rvalue_reference<T>::value};
 
 template <typename T>
 struct is_reference : false_type {};
@@ -933,18 +920,18 @@ struct is_reference<T &> : true_type {};
 template <typename T>
 struct is_reference<T &&> : true_type {};
 template <typename T>
-constexpr inline auto is_reference_v {is_reference<T>::value};
+inline constexpr auto is_reference_v {is_reference<T>::value};
 
 template <typename T>
 struct is_const_reference : bool_constant<is_lvalue_reference_v<T> and
         is_const_v<remove_lvalue_reference_t<T>>> {};
 template <typename T>
-constexpr inline auto is_const_reference_v {is_const_reference<T>::value};
+inline constexpr auto is_const_reference_v {is_const_reference<T>::value};
 
 template <typename>
 struct is_type : true_type {};
 template <typename T>
-constexpr inline auto is_type_v {is_type<T>::value};
+inline constexpr auto is_type_v {is_type<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T, typename = void>
@@ -956,155 +943,150 @@ struct is_complete_auxiliary<T, void_t<decltype(sizeof(T))>> :
 template <typename T>
 struct is_complete : __dsa::is_complete_auxiliary<T> {};
 template <typename T>
-constexpr inline auto is_complete_v {is_complete<T>::value};
+inline constexpr auto is_complete_v {is_complete<T>::value};
 
 template <typename T>
 struct [[deprecated]] is_pod : bool_constant<__is_pod(T)> {};
 template <typename T>
-[[deprecated]] constexpr inline auto is_pod_v {is_pod<T>::value};
+[[deprecated]] inline constexpr auto is_pod_v {is_pod<T>::value};
 
 template <typename T>
 struct is_empty : bool_constant<__is_empty(T)> {};
 template <typename T>
-constexpr inline auto is_empty_v {is_empty<T>::value};
+inline constexpr auto is_empty_v {is_empty<T>::value};
 
 template <typename T>
 struct [[deprecated]] is_literal_type : bool_constant<__is_literal_type(T)> {};
 template <typename T>
-[[deprecated]] constexpr inline auto is_literal_type_v {is_literal_type<T>::value};
+[[deprecated]] inline constexpr auto is_literal_type_v {is_literal_type<T>::value};
 
 template <typename T>
 struct is_standard_layout : bool_constant<__is_standard_layout(T)> {};
 template <typename T>
-constexpr inline auto is_standard_layout_v {is_standard_layout<T>::value};
+inline constexpr auto is_standard_layout_v {is_standard_layout<T>::value};
 
 template <typename T>
 struct is_polymorphic : bool_constant<__is_polymorphic(T)> {};
 template <typename T>
-constexpr inline auto is_polymorphic_v {is_polymorphic<T>::value};
+inline constexpr auto is_polymorphic_v {is_polymorphic<T>::value};
 
 template <typename T>
 struct is_abstract : bool_constant<__is_abstract(T)> {};
 template <typename T>
-constexpr inline auto is_abstract_v {is_abstract<T>::value};
+inline constexpr auto is_abstract_v {is_abstract<T>::value};
 
 template <typename Base, typename Derived>
 struct is_base_of : bool_constant<__is_base_of(Base, Derived)> {};
 template <typename Base, typename Derived>
-constexpr inline auto is_base_of_v {is_base_of<Base, Derived>::value};
+inline constexpr auto is_base_of_v {is_base_of<Base, Derived>::value};
 
 template <typename T>
 struct is_final : bool_constant<__is_final(T)> {};
 template <typename T>
-constexpr inline auto is_final_v {is_final<T>::value};
+inline constexpr auto is_final_v {is_final<T>::value};
 
 template <typename T>
 struct is_aggregate : bool_constant<__is_aggregate(T)> {};
 template <typename T>
-constexpr inline auto is_aggregate_v {is_aggregate<T>::value};
+inline constexpr auto is_aggregate_v {is_aggregate<T>::value};
 
 template <typename T>
 struct is_arithmetic : bool_constant<is_integral_v<T> or is_floating_point_v<T>> {};
 template <typename T>
-constexpr inline auto is_arithmetic_v {is_arithmetic<T>::value};
+inline constexpr auto is_arithmetic_v {is_arithmetic<T>::value};
 
 template <typename T>
 struct is_fundamental : bool_constant<is_arithmetic_v<T> or is_void_v<T> or
         is_null_pointer_v<remove_cv_t<T>>> {};
 template <typename T>
-constexpr inline auto is_fundamental_v {is_fundamental<T>::value};
+inline constexpr auto is_fundamental_v {is_fundamental<T>::value};
 
 template <typename T>
 struct is_scalar : bool_constant<is_arithmetic_v<T> or is_enum_v<T> or is_pointer_v<T> or
         is_member_pointer_v<T> or is_null_pointer_v<T>> {};
 template <typename T>
-constexpr inline auto is_scalar_v {is_scalar<T>::value};
+inline constexpr auto is_scalar_v {is_scalar<T>::value};
 
 template <typename T>
 struct is_compound : bool_constant<not is_fundamental_v<T>> {};
 template <typename T>
-constexpr inline auto is_compound_v {is_compound<T>::value};
+inline constexpr auto is_compound_v {is_compound<T>::value};
 
 template <typename T>
 struct is_object : bool_constant<is_scalar_v<T> or is_array_v<T> or is_union_v<T> or is_class_v<T>> {};
 template <typename T>
-constexpr inline auto is_object_v {is_object<T>::value};
+inline constexpr auto is_object_v {is_object<T>::value};
 
 template <typename T>
 struct is_trivial : bool_constant<__is_trivial(T)> {};
 template <typename T>
-constexpr inline auto is_trivial_v {is_trivial<T>::value};
+inline constexpr auto is_trivial_v {is_trivial<T>::value};
 
 template <typename T>
 struct is_trivially_copyable : bool_constant<__is_trivially_copyable(T)> {};
 template <typename T>
-constexpr inline auto is_trivially_copyable_v {is_trivially_copyable<T>::value};
+inline constexpr auto is_trivially_copyable_v {is_trivially_copyable<T>::value};
 
 template <typename T, typename ...Args>
 struct is_trivially_constructible : bool_constant<__is_trivially_constructible(T, Args...)> {};
 template <typename T, typename ...Args>
-constexpr inline auto is_trivially_constructible_v {is_trivially_constructible<T, Args...>::value};
+inline constexpr auto is_trivially_constructible_v {is_trivially_constructible<T, Args...>::value};
 
 template <typename T>
 struct is_trivially_default_constructible : is_trivially_constructible<T> {};
 template <typename T>
-constexpr inline auto is_trivially_default_constructible_v {is_trivially_default_constructible<T>::value};
+inline constexpr auto is_trivially_default_constructible_v {is_trivially_default_constructible<T>::value};
 
 template <typename T>
 struct is_trivially_copy_constructible : is_trivially_constructible<T, add_lvalue_reference_t<const T>> {};
 template <typename T>
-constexpr inline auto is_trivially_copy_constructible_v {is_trivially_copy_constructible<T>::value};
+inline constexpr auto is_trivially_copy_constructible_v {is_trivially_copy_constructible<T>::value};
 
 template <typename T>
 struct is_trivially_move_constructible : is_trivially_constructible<T, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_trivially_move_constructible_v {is_trivially_move_constructible<T>::value};
+inline constexpr auto is_trivially_move_constructible_v {is_trivially_move_constructible<T>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct is_trivially_assignable : bool_constant<__is_trivially_assignable(LHS, RHS)> {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto is_trivially_assignable_v {is_trivially_assignable<LHS, RHS>::value};
+inline constexpr auto is_trivially_assignable_v {is_trivially_assignable<LHS, RHS>::value};
 
 template <typename T>
 struct is_trivially_copy_assignable :
         is_trivially_assignable<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>> {};
 template <typename T>
-constexpr inline auto is_trivially_copy_assignable_v {is_trivially_copy_assignable<T>::value};
+inline constexpr auto is_trivially_copy_assignable_v {is_trivially_copy_assignable<T>::value};
 
 template <typename T>
 struct is_trivially_move_assignable : is_trivially_assignable<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_trivially_move_assignable_v {is_trivially_move_assignable<T>::value};
-
-template <typename From, typename To>
-struct is_convertible : bool_constant<__is_convertible_to(From, To) and not is_abstract_v<To>> {};
-template <typename From, typename To>
-constexpr inline auto is_convertible_v {is_convertible<From, To>::value};
+inline constexpr auto is_trivially_move_assignable_v {is_trivially_move_assignable<T>::value};
 
 template <typename T>
 struct is_trivially_destructible : bool_constant<__is_trivially_destructible(T)> {};
 template <typename T>
-constexpr inline auto is_trivially_destructible_v {is_trivially_destructible<T>::value};
+inline constexpr auto is_trivially_destructible_v {is_trivially_destructible<T>::value};
 
 template <typename T, typename ...Args>
 struct is_constructible : bool_constant<__is_constructible(T, Args...)> {};
 template <typename T, typename ...Args>
-constexpr inline auto is_constructible_v {is_constructible<T, Args...>::value};
+inline constexpr auto is_constructible_v {is_constructible<T, Args...>::value};
 
 template <typename T>
 struct is_default_constructible : is_constructible<T> {};
 template <typename T>
-constexpr inline auto is_default_constructible_v {is_default_constructible<T>::value};
+inline constexpr auto is_default_constructible_v {is_default_constructible<T>::value};
 
 template <typename T>
 struct is_copy_constructible : is_constructible<T, add_const_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_copy_constructible_v {is_copy_constructible<T>::value};
+inline constexpr auto is_copy_constructible_v {is_copy_constructible<T>::value};
 
 template <typename T>
 struct is_move_constructible : is_constructible<T, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_move_constructible_v {is_move_constructible<T>::value};
+inline constexpr auto is_move_constructible_v {is_move_constructible<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T, typename ...Args>
@@ -1115,22 +1097,22 @@ false_type test_list_constructible(...) noexcept;
 template <typename T, typename ...Args>
 struct is_list_constructible : decltype(__dsa::test_list_constructible<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto is_list_constructible_v {is_list_constructible<T, Args...>::value};
+inline constexpr auto is_list_constructible_v {is_list_constructible<T, Args...>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct is_assignable : bool_constant<__is_assignable(LHS, RHS)> {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto is_assignable_v {is_assignable<LHS, RHS>::value};
+inline constexpr auto is_assignable_v {is_assignable<LHS, RHS>::value};
 
 template <typename T>
 struct is_copy_assignable : is_assignable<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>> {};
 template <typename T>
-constexpr inline auto is_copy_assignable_v {is_copy_assignable<T>::value};
+inline constexpr auto is_copy_assignable_v {is_copy_assignable<T>::value};
 
 template <typename T>
 struct is_move_assignable : is_assignable<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_move_assignable_v {is_move_assignable<T>::value};
+inline constexpr auto is_move_assignable_v {is_move_assignable<T>::value};
 
 namespace __data_structure_auxiliary {
 template <typename T>
@@ -1145,131 +1127,180 @@ struct is_destructible : conditional_t<
                 is_complete_v<T>, decltype(__dsa::test_destructible<remove_extents_t<T>>(0)), false_type>
         >, false_type> {};
 template <typename T>
-constexpr inline auto is_destructible_v {is_destructible<T>::value};
+inline constexpr auto is_destructible_v {is_destructible<T>::value};
 
-template <typename LHS, typename RHS = LHS>
+template <typename From, typename To>
+struct is_convertible : bool_constant<__is_convertible_to(From, To) and not is_abstract_v<To>> {};
+template <typename From, typename To>
+inline constexpr auto is_convertible_v {is_convertible<From, To>::value};
+
+__DATA_STRUCTURE_START(forward declaration for ds::swap)
+template <typename> struct is_nothrow_copy_constructible;
+template <typename> struct is_nothrow_copy_assignable;
+template <typename> struct is_nothrow_move_constructible;
+template <typename> struct is_nothrow_move_assignable;
+template <typename T>
+enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
+swap(T &lhs, T &rhs) noexcept((is_nothrow_move_constructible<T>::value and is_nothrow_move_assignable<T>::value) or
+        (is_nothrow_copy_constructible<T>::value and is_nothrow_copy_assignable<T>::value));
+template <typename T, size_t N>
+enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
+swap(T (&lhs)[N], T (&rhs)[N]) noexcept((is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>));
+__DATA_STRUCTURE_END
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(swap(declval<LHS>(), declval<RHS>())), true_type> test_swappable(int) noexcept;
+template <typename, typename>
+false_type test_swappable(...) noexcept;
+}
+template <typename LHS, typename RHS>
 struct is_swappable_with : conditional_t<is_void_v<LHS> or is_void_v<RHS>, false_type,
         conditional_t<is_same_v<decltype(__dsa::test_swappable<LHS, RHS>(0)),
                 decltype(__dsa::test_swappable<RHS, LHS>(0))>,
-                decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>> {};
-template <typename LHS, typename RHS = LHS>
-constexpr inline auto is_swappable_with_v {is_swappable_with<LHS, RHS>::value};
+        decltype(__dsa::test_swappable<LHS, RHS>(0)), false_type>> {};
+template <typename LHS, typename RHS>
+inline constexpr auto is_swappable_with_v {is_swappable_with<LHS, RHS>::value};
 
 template <typename T>
-struct is_swappable : is_swappable_with<T, T> {};
+struct is_swappable : conditional_t<decltype(__dsa::test_lvalue_reference<T>(0))::value,
+        is_swappable_with<add_lvalue_reference_t<T>, add_lvalue_reference_t<T>>, false_type> {};
 template <typename T>
-constexpr inline auto is_swappable_v {is_swappable<T>::value};
+inline constexpr auto is_swappable_v {is_swappable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>().swap(declval<RHS>())), true_type> test_member_function_swap(int) noexcept;
+template <typename, typename>
+false_type test_member_function_swap(...) noexcept;
+}
+template <typename LHS, typename RHS>
+struct is_swappable_by_member_function_with : conditional_t<
+        is_class_v<remove_reference_t<LHS>> and is_class_v<remove_reference_t<RHS>>,
+        conditional_t<is_same_v<decltype(__dsa::test_member_function_swap<LHS, RHS>(0)),
+                decltype(__dsa::test_member_function_swap<RHS, LHS>(0))>,
+                decltype(__dsa::test_member_function_swap<LHS, RHS>(0)), false_type>, false_type> {};
+template <typename LHS, typename RHS>
+inline constexpr auto is_swappable_by_member_function_with_v {is_swappable_by_member_function_with<LHS, RHS>::value};
+
+template <typename T>
+struct is_swappable_by_member_function : conditional_t<decltype(__dsa::test_lvalue_reference<T>(0))::value,
+        is_swappable_by_member_function_with<add_lvalue_reference_t<T>, add_lvalue_reference_t<T>>, false_type> {};
+template<typename T>
+inline constexpr auto is_swappable_by_member_function_v {is_swappable_by_member_function<T>::value};
+
+template <typename From, typename To>
+struct is_static_castable : decltype(__dsa::test_static_castable<From, To>(0)) {};
+template <typename From, typename To>
+inline constexpr auto is_static_castable_v {is_static_castable<From, To>::value};
+
+template <typename From, typename To>
+struct is_dynamic_castable : decltype(__dsa::test_dynamic_castable<From, To>(0)) {};
+template <typename From, typename To>
+inline constexpr auto is_dynamic_castable_v {is_dynamic_castable<From, To>::value};
+
+template <typename From, typename To>
+struct is_const_castable : decltype(__dsa::test_const_castable<From, To>(0)) {};
+template <typename From, typename To>
+inline constexpr auto is_const_castable_v {is_const_castable<From, To>::value};
+
+template <typename From, typename To>
+struct is_reinterpret_castable : decltype(__dsa::test_reinterpret_castable<From, To>(0)) {};
+template <typename From, typename To>
+inline constexpr auto is_reinterpret_castable_v {is_reinterpret_castable<From, To>::value};
+
+template <typename From, typename To>
+struct is_castable : decltype(__dsa::test_castable<From, To>(0)) {};
+template <typename From, typename To>
+inline constexpr auto is_castable_v {is_castable<From, To>::value};
 
 template <typename, typename ...> struct invoke_result;
 template <typename F, typename ...Args>
 struct is_invocable : __dsa::is_invocable_auxiliary<invoke_result<F, Args...>> {};
 template <typename F, typename ...Args>
-constexpr inline auto is_invocable_v {is_invocable<F, Args...>::value};
+inline constexpr auto is_invocable_v {is_invocable<F, Args...>::value};
 
 template <typename R, typename F, typename ...Args>
 struct is_invocable_r : conditional_t<is_invocable_v<F, Args...>,
         conditional_t<is_convertible_v<typename invoke_result<F, Args...>::type, R>, true_type, false_type>,
         false_type> {};
 template <typename R, typename F, typename ...Args>
-constexpr inline auto is_invocable_r_v {is_invocable_r<R, F, Args...>::value};
-
-template <typename From, typename To>
-struct is_static_castable : decltype(__dsa::test_static_castable<From, To>(0)) {};
-template <typename From, typename To>
-constexpr inline auto is_static_castable_v {is_static_castable<From, To>::value};
-
-template <typename From, typename To>
-struct is_dynamic_castable : decltype(__dsa::test_dynamic_castable<From, To>(0)) {};
-template <typename From, typename To>
-constexpr inline auto is_dynamic_castable_v {is_dynamic_castable<From, To>::value};
-
-template <typename From, typename To>
-struct is_const_castable : decltype(__dsa::test_const_castable<From, To>(0)) {};
-template <typename From, typename To>
-constexpr inline auto is_const_castable_v {is_const_castable<From, To>::value};
-
-template <typename From, typename To>
-struct is_reinterpret_castable : decltype(__dsa::test_reinterpret_castable<From, To>(0)) {};
-template <typename From, typename To>
-constexpr inline auto is_reinterpret_castable_v {is_reinterpret_castable<From, To>::value};
-
-template <typename From, typename To>
-struct is_castable : decltype(__dsa::test_castable<From, To>(0)) {};
-template <typename From, typename To>
-constexpr inline auto is_castable_v {is_castable<From, To>::value};
+inline constexpr auto is_invocable_r_v {is_invocable_r<R, F, Args...>::value};
 
 template <typename T, typename ...Args>
 struct is_nothrow_constructible : bool_constant<__is_nothrow_constructible(T, Args...)> {};
 template <typename T, typename ...Args>
-constexpr inline auto is_nothrow_constructible_v {is_nothrow_constructible<T, Args...>::value};
+inline constexpr auto is_nothrow_constructible_v {is_nothrow_constructible<T, Args...>::value};
 
 template <typename T>
 struct is_nothrow_default_constructible : is_nothrow_constructible<T> {};
 template <typename T>
-constexpr inline auto is_nothrow_default_constructible_v {is_nothrow_default_constructible<T>::value};
+inline constexpr auto is_nothrow_default_constructible_v {is_nothrow_default_constructible<T>::value};
 
 template <typename T>
 struct is_nothrow_copy_constructible : is_nothrow_constructible<T, add_const_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_nothrow_copy_constructible_v {is_nothrow_copy_constructible<T>::value};
+inline constexpr auto is_nothrow_copy_constructible_v {is_nothrow_copy_constructible<T>::value};
 
 template <typename T>
 struct is_nothrow_move_constructible : is_nothrow_constructible<T, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_nothrow_move_constructible_v {is_nothrow_move_constructible<T>::value};
+inline constexpr auto is_nothrow_move_constructible_v {is_nothrow_move_constructible<T>::value};
 
 template <typename T, typename ...Args>
 struct is_nothrow_list_constructible :
         decltype(__dsa::test_nothrow_list_constructible<T, Args...>()) {};
 template <typename T, typename ...Args>
-constexpr inline auto is_nothrow_list_constructible_v {is_nothrow_list_constructible<T, Args...>::value};
+inline constexpr auto is_nothrow_list_constructible_v {is_nothrow_list_constructible<T, Args...>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct is_nothrow_assignable : bool_constant<__is_nothrow_assignable(LHS, RHS)> {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto is_nothrow_assignable_v {is_nothrow_assignable<LHS, RHS>::value};
+inline constexpr auto is_nothrow_assignable_v {is_nothrow_assignable<LHS, RHS>::value};
 
 template <typename T>
 struct is_nothrow_copy_assignable :
         is_nothrow_assignable<add_lvalue_reference_t<T>, add_const_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_nothrow_copy_assignable_v {is_nothrow_copy_assignable<T>::value};
+inline constexpr auto is_nothrow_copy_assignable_v {is_nothrow_copy_assignable<T>::value};
 
 template <typename T>
 struct is_nothrow_move_assignable :
         is_nothrow_assignable<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>> {};
 template <typename T>
-constexpr inline auto is_nothrow_move_assignable_v {is_nothrow_move_assignable<T>::value};
+inline constexpr auto is_nothrow_move_assignable_v {is_nothrow_move_assignable<T>::value};
 
 template <typename T>
 struct is_nothrow_destructible : decltype(__dsa::test_nothrow_destructible<T>(0)) {};
 template <typename T>
-constexpr inline auto is_nothrow_destructible_v {is_nothrow_destructible<T>::value};
+inline constexpr auto is_nothrow_destructible_v {is_nothrow_destructible<T>::value};
 
-template <typename LHS, typename RHS = LHS>
-struct is_nothrow_swappable_with : conditional_t<is_swappable_with_v<LHS, RHS>,
-        decltype(__dsa::test_nothrow_swappable<LHS, RHS>(0)), false_type> {};
-template <typename LHS, typename RHS = LHS>
-constexpr inline auto is_nothrow_swappable_with_v {is_nothrow_swappable_with<LHS, RHS>::value};
+template <typename LHS, typename RHS>
+struct is_nothrow_swappable_with : bool_constant<is_swappable_with_v<LHS, RHS> and
+        noexcept(ds::swap(declval<LHS>(), declval<RHS>())) and noexcept(ds::swap(declval<RHS>(), declval<LHS>()))> {};
+template <typename LHS, typename RHS>
+inline constexpr auto is_nothrow_swappable_with_v {is_nothrow_swappable_with<LHS, RHS>::value};
 
 template <typename T>
 struct is_nothrow_swappable : is_nothrow_swappable_with<T, T> {};
 template <typename T>
-constexpr inline auto is_nothrow_swappable_v {is_nothrow_swappable<T>::value};
+inline constexpr auto is_nothrow_swappable_v {is_nothrow_swappable<T>::value};
 
 template <typename Ptr, typename ...Args>
 struct is_nothrow_invocable :
         __dsa::result_of_nothrow_auxiliary<is_member_object_pointer_v<remove_reference_t<Ptr>>,
                 is_member_function_pointer_v<remove_reference_t<Ptr>>, Ptr, Args...> {};
 template <typename Ptr, typename ...Args>
-constexpr inline auto is_nothrow_invocable_v {is_nothrow_invocable<Ptr, Args...>::value};
+inline constexpr auto is_nothrow_invocable_v {is_nothrow_invocable<Ptr, Args...>::value};
 
 template <typename From, typename To>
 struct is_nothrow_convertible : conditional_t<is_void_v<From> and is_void_v<To>, true_type,
         conditional_t<is_convertible_v<From, To>,
                 decltype(__dsa::test_nothrow_convertible<To>(declval<From>())), false_type>> {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_convertible_v {is_nothrow_convertible<From, To>::value};
+inline constexpr auto is_nothrow_convertible_v {is_nothrow_convertible<From, To>::value};
 
 template <typename R, typename Ptr, typename ...Args>
 struct is_nothrow_invocable_r : bool_constant<is_nothrow_invocable_v<Ptr, Args...> and
@@ -1278,507 +1309,507 @@ struct is_nothrow_invocable_r : bool_constant<is_nothrow_invocable_v<Ptr, Args..
 template <typename From, typename To>
 struct is_nothrow_static_castable : decltype(__dsa::test_nothrow_static_castable<From, To>(0)) {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_static_castable_v {is_nothrow_static_castable<From, To>::value};
+inline constexpr auto is_nothrow_static_castable_v {is_nothrow_static_castable<From, To>::value};
 
 template <typename From, typename To>
 struct is_nothrow_dynamic_castable : decltype(__dsa::test_nothrow_dynamic_castable<From, To>(0)) {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_dynamic_castable_v {is_nothrow_dynamic_castable<From, To>::value};
+inline constexpr auto is_nothrow_dynamic_castable_v {is_nothrow_dynamic_castable<From, To>::value};
 
 template <typename From, typename To>
 struct is_nothrow_const_castable : decltype(__dsa::test_nothrow_const_castable<From, To>(0)) {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_const_castable_v {is_nothrow_const_castable<From, To>::value};
+inline constexpr auto is_nothrow_const_castable_v {is_nothrow_const_castable<From, To>::value};
 
 template <typename From, typename To>
 struct is_nothrow_reinterpret_castable :
         decltype(__dsa::test_nothrow_reinterpret_castable<From, To>(0)) {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_reinterpret_castable_v {is_nothrow_reinterpret_castable<From, To>::value};
+inline constexpr auto is_nothrow_reinterpret_castable_v {is_nothrow_reinterpret_castable<From, To>::value};
 
 template <typename From, typename To>
 struct is_nothrow_castable : decltype(__dsa::test_nothrow_castable<From, To>(0)) {};
 template <typename From, typename To>
-constexpr inline auto is_nothrow_castable_v {is_nothrow_castable<From, To>::value};
+inline constexpr auto is_nothrow_castable_v {is_nothrow_castable<From, To>::value};
 
 template <typename T>
 struct is_stateless : conditional_t<is_trivially_default_constructible_v<T> and
         is_trivially_copy_constructible_v<T> and is_trivially_assignable_v<T> and
         is_trivially_destructible_v<T> and is_empty_v<T>, true_type, false_type> {};
 template <typename T>
-constexpr inline auto is_stateless_v {is_stateless<T>::value};
+inline constexpr auto is_stateless_v {is_stateless<T>::value};
 
 template <typename Base, typename Derived>
 struct is_virtual_base_of : bool_constant<is_base_of_v<Base, Derived> and
         is_castable_v<Derived, Base> and not is_castable_v<Base, Derived>> {};
 template <typename Base, typename Derived>
-constexpr inline auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
+inline constexpr auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
 
 template <typename E>
 struct is_scoped_enum : bool_constant<is_enum_v<E> and is_convertible_v<E, int>> {};
 template <typename E>
-constexpr inline auto is_scoped_enum_v {is_scoped_enum<E>::value};
+inline constexpr auto is_scoped_enum_v {is_scoped_enum<E>::value};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(has something)
 template <typename T>
 struct has_virtual_destructor : conditional_t<__has_virtual_destructor(T), true_type, false_type> {};
 template <typename T>
-constexpr inline auto has_virtual_destructor_v {has_virtual_destructor<T>::value};
+inline constexpr auto has_virtual_destructor_v {has_virtual_destructor<T>::value};
 
 template <typename T>
 struct has_unique_object_representations :
         conditional_t<__has_unique_object_representations(T), true_type, false_type> {};
 template <typename T>
-constexpr inline auto has_unique_object_representations_v {has_unique_object_representations<T>::value};
+inline constexpr auto has_unique_object_representations_v {has_unique_object_representations<T>::value};
 
 template <typename T>
 struct has_swap_member_function : decltype(__dsa::test_swap_memfun<T>(0)) {};
 template <typename T>
-constexpr inline auto has_swap_member_function_v {has_swap_member_function<T>::value};
+inline constexpr auto has_swap_member_function_v {has_swap_member_function<T>::value};
 
 template <typename T>
 struct has_nothrow_swap_member_function : decltype(__dsa::test_nothrow_swap_memfun<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_swap_member_function_v {has_nothrow_swap_member_function<T>::value};
+inline constexpr auto has_nothrow_swap_member_function_v {has_nothrow_swap_member_function<T>::value};
 
 template <typename T>
 struct has_address_of_operator : decltype(__dsa::test_address_of<T>(0)) {};
 template <typename T>
-constexpr inline auto has_address_of_operator_v {has_address_of_operator<T>::value};
+inline constexpr auto has_address_of_operator_v {has_address_of_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_address_of_operator : decltype(__dsa::test_nothrow_address_of<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_address_of_operator_v {has_nothrow_address_of_operator<T>::value};
+inline constexpr auto has_nothrow_address_of_operator_v {has_nothrow_address_of_operator<T>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_and_operator : decltype(__dsa::test_bit_and<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_and_operator_v {has_bit_and_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_and_operator_v {has_bit_and_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_and_operator : decltype(__dsa::test_nothrow_bit_and<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_and_operator_v {has_nothrow_bit_and_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_bit_and_operator_v {has_nothrow_bit_and_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_and_assignment_operator : decltype(__dsa::test_bit_and_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_and_assignment_operator_v {has_bit_and_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_and_assignment_operator_v {has_bit_and_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_and_assignment_operator :
         decltype(__dsa::test_nothrow_bit_and_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_and_assignment_operator_v {
+inline constexpr auto has_nothrow_bit_and_assignment_operator_v {
         has_nothrow_bit_and_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_or_operator : decltype(__dsa::test_bit_or<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_or_operator_v {has_bit_or_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_or_operator_v {has_bit_or_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_or_operator : decltype(__dsa::test_nothrow_bit_or<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_or_operator_v {has_nothrow_bit_or_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_bit_or_operator_v {has_nothrow_bit_or_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_or_assignment_operator : decltype(__dsa::test_bit_or_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_or_assignment_operator_v {has_bit_or_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_or_assignment_operator_v {has_bit_or_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_or_assignment_operator :
         decltype(__dsa::test_nothrow_bit_or_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_or_assignment_operator_v {
+inline constexpr auto has_nothrow_bit_or_assignment_operator_v {
         has_nothrow_bit_or_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_xor_operator : decltype(__dsa::test_bit_xor<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_xor_operator_v {has_bit_xor_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_xor_operator_v {has_bit_xor_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_xor_operator : decltype(__dsa::test_nothrow_bit_xor<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_xor_operator_v {has_nothrow_bit_xor_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_bit_xor_operator_v {has_nothrow_bit_xor_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_bit_xor_assignment_operator : decltype(__dsa::test_bit_xor_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_bit_xor_assignment_operator_v {has_bit_xor_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_bit_xor_assignment_operator_v {has_bit_xor_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_bit_xor_assignment_operator :
         decltype(__dsa::test_nothrow_bit_xor_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_bit_xor_assignment_operator_v {
+inline constexpr auto has_nothrow_bit_xor_assignment_operator_v {
         has_nothrow_bit_xor_assignment_operator<LHS, RHS>::value
 };
 
 template <typename T>
 struct has_complement_operator : decltype(__dsa::test_complement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_complement_operator_v {has_complement_operator<T>::value};
+inline constexpr auto has_complement_operator_v {has_complement_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_complement_operator : decltype(__dsa::test_nothrow_complement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_complement_operator_v {has_nothrow_complement_operator<T>::value};
+inline constexpr auto has_nothrow_complement_operator_v {has_nothrow_complement_operator<T>::value};
 
 template <typename T>
 struct has_dereference_operator : decltype(__dsa::test_dereference<T>(0)) {};
 template <typename T>
-constexpr inline auto has_dereference_operator_v {has_dereference_operator<T>::value};
+inline constexpr auto has_dereference_operator_v {has_dereference_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_dereference_operator : decltype(__dsa::test_nothrow_dereference<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_dereference_operator_v {has_nothrow_dereference_operator<T>::value};
+inline constexpr auto has_nothrow_dereference_operator_v {has_nothrow_dereference_operator<T>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_divide_operator : decltype(__dsa::test_divide<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_divide_operator_v {has_divide_operator<LHS, RHS>::value};
+inline constexpr auto has_divide_operator_v {has_divide_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_divide_operator : decltype(__dsa::test_nothrow_divide<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_divide_operator_v {has_nothrow_divide_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_divide_operator_v {has_nothrow_divide_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_divide_assignment_operator : decltype(__dsa::test_divide_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_divide_assignment_operator_v {has_divide_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_divide_assignment_operator_v {has_divide_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_divide_assignment_operator :
         decltype(__dsa::test_nothrow_divide_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_divide_assignment_operator_v {
+inline constexpr auto has_nothrow_divide_assignment_operator_v {
         has_nothrow_divide_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_equal_to_operator : decltype(__dsa::test_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_equal_to_operator_v {has_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_equal_to_operator_v {has_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_equal_to_operator : decltype(__dsa::test_nothrow_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_equal_to_operator_v {has_nothrow_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_equal_to_operator_v {has_nothrow_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_greater_operator : decltype(__dsa::test_greater<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_greater_operator_v {has_greater_operator<LHS, RHS>::value};
+inline constexpr auto has_greater_operator_v {has_greater_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_greater_operator : decltype(__dsa::test_nothrow_greater<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_greater_operator_v {has_nothrow_greater_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_greater_operator_v {has_nothrow_greater_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_greater_equal_to_operator : decltype(__dsa::test_greater_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_greater_equal_to_operator_v {has_greater_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_greater_equal_to_operator_v {has_greater_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_greater_equal_to_operator : decltype(__dsa::test_nothrow_greater_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_greater_equal_to_operator_v {
+inline constexpr auto has_nothrow_greater_equal_to_operator_v {
         has_nothrow_greater_equal_to_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_left_shift_operator : decltype(__dsa::test_left_shift<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_left_shift_operator_v {has_left_shift_operator<LHS, RHS>::value};
+inline constexpr auto has_left_shift_operator_v {has_left_shift_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_left_shift_operator : decltype(__dsa::test_nothrow_left_shift<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_left_shift_operator_v {has_nothrow_left_shift_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_left_shift_operator_v {has_nothrow_left_shift_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_left_shift_assignment_operator : decltype(__dsa::test_left_shift_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_left_shift_assignment_operator_v {has_left_shift_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_left_shift_assignment_operator_v {has_left_shift_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_left_shift_assignment_operator :
         decltype(__dsa::test_nothrow_left_shift_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_left_shift_assignment_operator_v {
+inline constexpr auto has_nothrow_left_shift_assignment_operator_v {
         has_nothrow_left_shift_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_right_shift_operator : decltype(__dsa::test_right_shift<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_right_shift_operator_v {has_right_shift_operator<LHS, RHS>::value};
+inline constexpr auto has_right_shift_operator_v {has_right_shift_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_right_shift_operator : decltype(__dsa::test_nothrow_right_shift<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_right_shift_operator_v {has_nothrow_right_shift_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_right_shift_operator_v {has_nothrow_right_shift_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_right_shift_assignment_operator :
         decltype(__dsa::test_right_shift_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_right_shift_assignment_operator_v {has_right_shift_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_right_shift_assignment_operator_v {has_right_shift_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_right_shift_assignment_operator :
         decltype(__dsa::test_nothrow_right_shift_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_right_shift_assignment_operator_v {
+inline constexpr auto has_nothrow_right_shift_assignment_operator_v {
         has_nothrow_right_shift_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_less_operator : decltype(__dsa::test_less<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_less_operator_v {has_less_operator<LHS, RHS>::value};
+inline constexpr auto has_less_operator_v {has_less_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_less_operator : decltype(__dsa::test_nothrow_less<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_less_operator_v {has_nothrow_less_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_less_operator_v {has_nothrow_less_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_less_equal_to_operator : decltype(__dsa::test_less_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_less_equal_to_operator_v {has_less_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_less_equal_to_operator_v {has_less_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_less_equal_to_operator : decltype(__dsa::test_nothrow_less_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_less_equal_to_operator_v {has_nothrow_less_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_less_equal_to_operator_v {has_nothrow_less_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_logical_and_operator : decltype(__dsa::test_logical_and<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_logical_and_operator_v {has_logical_and_operator<LHS, RHS>::value};
+inline constexpr auto has_logical_and_operator_v {has_logical_and_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_logical_and_operator : decltype(__dsa::test_nothrow_logical_and<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_logical_and_operator_v {has_nothrow_logical_and_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_logical_and_operator_v {has_nothrow_logical_and_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_logical_or_operator : decltype(__dsa::test_logical_or<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_logical_or_operator_v {has_logical_or_operator<LHS, RHS>::value};
+inline constexpr auto has_logical_or_operator_v {has_logical_or_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_logical_or_operator : decltype(__dsa::test_nothrow_logical_or<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_logical_or_operator_v {has_nothrow_logical_or_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_logical_or_operator_v {has_nothrow_logical_or_operator<LHS, RHS>::value};
 
 template <typename T>
 struct has_logical_not_operator : decltype(__dsa::test_logical_not<T>(0)) {};
 template <typename T>
-constexpr inline auto has_logical_not_operator_v {has_logical_not_operator<T>::value};
+inline constexpr auto has_logical_not_operator_v {has_logical_not_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_logical_not_operator : decltype(__dsa::test_nothrow_logical_not<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_logical_not_operator_v {has_nothrow_logical_not_operator<T>::value};
+inline constexpr auto has_nothrow_logical_not_operator_v {has_nothrow_logical_not_operator<T>::value};
 
 template <typename T>
 struct has_unary_minus_operator : decltype(__dsa::test_unary_minus<T>(0)) {};
 template <typename T>
-constexpr inline auto has_unary_minus_operator_v {has_unary_minus_operator<T>::value};
+inline constexpr auto has_unary_minus_operator_v {has_unary_minus_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_unary_minus_operator : decltype(__dsa::test_nothrow_unary_minus<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_unary_minus_operator_v {has_nothrow_unary_minus_operator<T>::value};
+inline constexpr auto has_nothrow_unary_minus_operator_v {has_nothrow_unary_minus_operator<T>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_minus_operator : decltype(__dsa::test_minus<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_minus_operator_v {has_minus_operator<LHS, RHS>::value};
+inline constexpr auto has_minus_operator_v {has_minus_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_minus_operator : decltype(__dsa::test_nothrow_minus<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_minus_operator_v {has_nothrow_minus_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_minus_operator_v {has_nothrow_minus_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_minus_assignment_operator : decltype(__dsa::test_minus_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_minus_assignment_operator_v {has_minus_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_minus_assignment_operator_v {has_minus_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_minus_assignment_operator : decltype(__dsa::test_nothrow_minus_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_minus_assignment_operator_v {
+inline constexpr auto has_nothrow_minus_assignment_operator_v {
         has_nothrow_minus_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_modules_operator : decltype(__dsa::test_modules<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_modules_operator_v {has_modules_operator<LHS, RHS>::value};
+inline constexpr auto has_modules_operator_v {has_modules_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_modules_operator : decltype(__dsa::test_nothrow_modules<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_modules_operator_v {has_nothrow_modules_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_modules_operator_v {has_nothrow_modules_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_modules_assignment_operator : decltype(__dsa::test_modules_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_modules_assignment_operator_v {has_modules_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_modules_assignment_operator_v {has_modules_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_modules_assignment_operator : decltype(__dsa::test_nothrow_modules_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_modules_assignment_operator_v {
+inline constexpr auto has_nothrow_modules_assignment_operator_v {
         has_nothrow_modules_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_multiply_operator : decltype(__dsa::test_multiply<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_multiply_operator_v {has_multiply_operator<LHS, RHS>::value};
+inline constexpr auto has_multiply_operator_v {has_multiply_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_multiply_operator : decltype(__dsa::test_nothrow_multiply<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_multiply_operator_v {has_nothrow_multiply_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_multiply_operator_v {has_nothrow_multiply_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_multiply_assignment_operator : decltype(__dsa::test_multiply_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_multiply_assignment_operator_v {has_multiply_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_multiply_assignment_operator_v {has_multiply_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_multiply_assignment_operator : decltype(__dsa::test_nothrow_multiply_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_multiply_assignment_operator_v {
+inline constexpr auto has_nothrow_multiply_assignment_operator_v {
         has_nothrow_multiply_assignment_operator<LHS, RHS>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_three_way_operator : decltype(__dsa::test_three_way<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_three_way_operator_v {has_three_way_operator<LHS, RHS>::value};
+inline constexpr auto has_three_way_operator_v {has_three_way_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_three_way_operator : decltype(__dsa::test_nothrow_three_way<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_three_way_operator_v {has_nothrow_three_way_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_three_way_operator_v {has_nothrow_three_way_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_not_equal_to_operator : decltype(__dsa::test_not_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_not_equal_to_operator_v {has_not_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_not_equal_to_operator_v {has_not_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_not_equal_to_operator : decltype(__dsa::test_nothrow_not_equal_to<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_not_equal_to_operator_v {has_nothrow_not_equal_to_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_not_equal_to_operator_v {has_nothrow_not_equal_to_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_plus_operator : decltype(__dsa::test_plus<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_plus_operator_v {has_plus_operator<LHS, RHS>::value};
+inline constexpr auto has_plus_operator_v {has_plus_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_plus_operator : decltype(__dsa::test_nothrow_plus<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_plus_operator_v {has_nothrow_plus_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_plus_operator_v {has_nothrow_plus_operator<LHS, RHS>::value};
 
 template <typename T>
 struct has_unary_plus_operator : decltype(__dsa::test_unary_plus<T>(0)) {};
 template <typename T>
-constexpr inline auto has_unary_plus_operator_v {has_unary_plus_operator<T>::value};
+inline constexpr auto has_unary_plus_operator_v {has_unary_plus_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_unary_plus_operator : decltype(__dsa::test_nothrow_unary_plus<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_unary_plus_operator_v {has_nothrow_unary_plus_operator<T>::value};
+inline constexpr auto has_nothrow_unary_plus_operator_v {has_nothrow_unary_plus_operator<T>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_plus_assignment_operator : decltype(__dsa::test_plus_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_plus_assignment_operator_v {has_plus_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_plus_assignment_operator_v {has_plus_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_plus_assignment_operator : decltype(__dsa::test_nothrow_plus_assignment<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_plus_assignment_operator_v {has_nothrow_plus_assignment_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_plus_assignment_operator_v {has_nothrow_plus_assignment_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_subscript_operator : decltype(__dsa::test_subscript<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_subscript_operator_v {has_subscript_operator<LHS, RHS>::value};
+inline constexpr auto has_subscript_operator_v {has_subscript_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_subscript_operator : decltype(__dsa::test_nothrow_subscript<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_subscript_operator_v {has_nothrow_subscript_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_subscript_operator_v {has_nothrow_subscript_operator<LHS, RHS>::value};
 
 template <typename T>
 struct has_pre_increment_operator : decltype(__dsa::test_pre_increment<T>(0)) {};
 template <typename T>
-constexpr inline auto has_pre_increment_operator_v {has_pre_increment_operator<T>::value};
+inline constexpr auto has_pre_increment_operator_v {has_pre_increment_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_pre_increment_operator : decltype(__dsa::test_nothrow_pre_increment<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_pre_increment_operator_v {has_nothrow_pre_increment_operator<T>::value};
+inline constexpr auto has_nothrow_pre_increment_operator_v {has_nothrow_pre_increment_operator<T>::value};
 
 template <typename T>
 struct has_post_increment_operator : decltype(__dsa::test_post_increment<T>(0)) {};
 template <typename T>
-constexpr inline auto has_post_increment_operator_v {has_post_increment_operator<T>::value};
+inline constexpr auto has_post_increment_operator_v {has_post_increment_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_post_increment_operator : decltype(__dsa::test_nothrow_post_increment<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_post_increment_operator_v {has_nothrow_post_increment_operator<T>::value};
+inline constexpr auto has_nothrow_post_increment_operator_v {has_nothrow_post_increment_operator<T>::value};
 
 template <typename T>
 struct has_pre_decrement_operator : decltype(__dsa::test_pre_decrement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_pre_decrement_operator_v {has_pre_decrement_operator<T>::value};
+inline constexpr auto has_pre_decrement_operator_v {has_pre_decrement_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_pre_decrement_operator : decltype(__dsa::test_nothrow_pre_decrement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_pre_decrement_operator_v {has_nothrow_pre_decrement_operator<T>::value};
+inline constexpr auto has_nothrow_pre_decrement_operator_v {has_nothrow_pre_decrement_operator<T>::value};
 
 template <typename T>
 struct has_post_decrement_operator : decltype(__dsa::test_post_decrement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_post_decrement_operator_v {has_post_decrement_operator<T>::value};
+inline constexpr auto has_post_decrement_operator_v {has_post_decrement_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_post_decrement_operator : decltype(__dsa::test_nothrow_post_decrement<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_post_decrement_operator_v {has_nothrow_post_decrement_operator<T>::value};
+inline constexpr auto has_nothrow_post_decrement_operator_v {has_nothrow_post_decrement_operator<T>::value};
 
 template <typename T>
 struct has_member_access_by_pointer_operator : decltype(__dsa::test_member_access_by_pointer<T>(0)) {};
 template <typename T>
-constexpr inline auto has_member_access_by_pointer_operator_v {has_member_access_by_pointer_operator<T>::value};
+inline constexpr auto has_member_access_by_pointer_operator_v {has_member_access_by_pointer_operator<T>::value};
 
 template <typename T>
 struct has_nothrow_member_access_by_pointer_operator :
         decltype(__dsa::test_nothrow_member_access_by_pointer<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_member_access_by_pointer_operator_v {
+inline constexpr auto has_nothrow_member_access_by_pointer_operator_v {
         has_nothrow_member_access_by_pointer_operator<T>::value
 };
 
@@ -1786,7 +1817,7 @@ template <typename T>
 struct has_member_access_by_pointer_dereference_operator :
         decltype(__dsa::test_member_access_by_pointer_dereference<T>(0)) {};
 template <typename T>
-constexpr inline auto has_member_access_by_pointer_dereference_operator_v {
+inline constexpr auto has_member_access_by_pointer_dereference_operator_v {
         has_member_access_by_pointer_dereference_operator<T>::value
 };
 
@@ -1794,73 +1825,73 @@ template <typename T>
 struct has_nothrow_member_access_by_pointer_dereference_operator :
         decltype(__dsa::test_nothrow_member_access_by_pointer_dereference<T>(0)) {};
 template <typename T>
-constexpr inline auto has_nothrow_member_access_by_pointer_dereference_operator_v {
+inline constexpr auto has_nothrow_member_access_by_pointer_dereference_operator_v {
         has_nothrow_member_access_by_pointer_dereference_operator<T>::value
 };
 
 template <typename T, typename ...Args>
 struct has_new_operator : decltype(__dsa::test_new_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_new_operator_v {has_new_operator<T, Args...>::value};
+inline constexpr auto has_new_operator_v {has_new_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_nothrow_new_operator : decltype(__dsa::test_nothrow_new_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_nothrow_new_operator_v {has_nothrow_new_operator<T, Args...>::value};
+inline constexpr auto has_nothrow_new_operator_v {has_nothrow_new_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_new_array_operator : decltype(__dsa::test_new_array_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_new_array_operator_v {has_new_array_operator<T, Args...>::value};
+inline constexpr auto has_new_array_operator_v {has_new_array_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_nothrow_new_array_operator : decltype(__dsa::test_nothrow_new_array_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_nothrow_new_array_operator_v {has_nothrow_new_array_operator<T, Args...>::value};
+inline constexpr auto has_nothrow_new_array_operator_v {has_nothrow_new_array_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_delete_operator : decltype(__dsa::test_delete_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_delete_operator_v {has_delete_operator<T, Args...>::value};
+inline constexpr auto has_delete_operator_v {has_delete_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_nothrow_delete_operator : decltype(__dsa::test_nothrow_delete_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_nothrow_delete_operator_v {has_nothrow_delete_operator<T, Args...>::value};
+inline constexpr auto has_nothrow_delete_operator_v {has_nothrow_delete_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_delete_array_operator : decltype(__dsa::test_delete_array_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_delete_array_operator_v {has_delete_array_operator<T, Args...>::value};
+inline constexpr auto has_delete_array_operator_v {has_delete_array_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_nothrow_delete_array_operator : decltype(__dsa::test_nothrow_delete_array_operator<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_nothrow_delete_array_operator_v {
+inline constexpr auto has_nothrow_delete_array_operator_v {
         has_nothrow_delete_array_operator<T, Args...>::value
 };
 
 template <typename T, typename ...Args>
 struct has_function_call_operator : decltype(__dsa::test_function_call<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_function_call_operator_v {has_function_call_operator<T, Args...>::value};
+inline constexpr auto has_function_call_operator_v {has_function_call_operator<T, Args...>::value};
 
 template <typename T, typename ...Args>
 struct has_nothrow_function_call_operator : decltype(__dsa::test_nothrow_function_call<T, Args...>(0)) {};
 template <typename T, typename ...Args>
-constexpr inline auto has_nothrow_function_call_operator_v {
+inline constexpr auto has_nothrow_function_call_operator_v {
         has_nothrow_function_call_operator<T, Args...>::value
 };
 
 template <typename LHS, typename RHS = LHS>
 struct has_comma_operator : decltype(__dsa::test_comma<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_comma_operator_v {has_comma_operator<LHS, RHS>::value};
+inline constexpr auto has_comma_operator_v {has_comma_operator<LHS, RHS>::value};
 
 template <typename LHS, typename RHS = LHS>
 struct has_nothrow_comma_operator : decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
-constexpr inline auto has_nothrow_comma_operator_v {has_nothrow_comma_operator<LHS, RHS>::value};
+inline constexpr auto has_nothrow_comma_operator_v {has_nothrow_comma_operator<LHS, RHS>::value};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(copy something)
@@ -2148,10 +2179,10 @@ struct aligned_storage_find_suitable_type<type_container<>, Align> {
 template <size_t Length, size_t Align1, size_t Align2>
 struct aligned_storage_selector {
 private:
-    constexpr static auto min {Align1 < Align2 ? Align1 : Align2};
-    constexpr static auto max {Align1 < Align2 ? Align2 : Align1};
+    static constexpr auto min {Align1 < Align2 ? Align1 : Align2};
+    static constexpr auto max {Align1 < Align2 ? Align2 : Align1};
 public:
-    constexpr static auto value {Length < max ? min : max};
+    static constexpr auto value {Length < max ? min : max};
 };
 template <typename, size_t>
 struct aligned_storage_find_max_align;
@@ -2294,17 +2325,17 @@ __DATA_STRUCTURE_START(other)
 template <typename T>
 struct size_of : constant<size_t, sizeof(T)> {};
 template <typename T>
-constexpr inline auto size_of_v {sizeof(T)};
+inline constexpr auto size_of_v {sizeof(T)};
 
 template <typename T>
 struct alignment_of : constant<size_t, alignof(T)> {};
 template <typename T>
-constexpr inline auto alignment_of_v {alignof(T)};
+inline constexpr auto alignment_of_v {alignof(T)};
 
 template <typename T>
 struct rank : constant<size_t, 0> {};
 template <typename T>
-constexpr inline auto rank_v {rank<T>::value};
+inline constexpr auto rank_v {rank<T>::value};
 template <typename T>
 struct rank<T []> : constant<size_t, rank_v<T> + 1> {};
 template <typename T, size_t N>
@@ -2321,7 +2352,7 @@ struct extent<T [Size], 0> : constant<size_t, Size> {};
 template <typename T, size_t Size, size_t N>
 struct extent<T [Size], N> : extent<T, N - 1> {};
 template <typename T, size_t N>
-constexpr inline auto extent_v {extent<T, N>::value};
+inline constexpr auto extent_v {extent<T, N>::value};
 
 template <typename T>
 struct decay {
