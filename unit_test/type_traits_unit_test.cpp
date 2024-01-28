@@ -4488,6 +4488,11 @@ static_assert(not is_convertible_v<int, const volatile int &>);
 static_assert(is_convertible_v<int, const int &&>);
 static_assert(is_convertible_v<int, volatile int &&>);
 static_assert(is_convertible_v<int, const volatile int &&>);
+static_assert(not is_convertible_v<int, int *>);
+static_assert(not is_convertible_v<int &, int *>);
+static_assert(not is_convertible_v<int &&, int *>);
+static_assert(not is_convertible_v<int, void *>);
+static_assert(not is_convertible_v<int, char *>);
 static_assert(is_convertible_v<int &, int>);
 static_assert(is_convertible_v<int &, int &>);
 static_assert(not is_convertible_v<int &, int &&>);
@@ -4687,6 +4692,40 @@ static_assert(not is_convertible_v<void (*)(), void (&&)()>);
 static_assert(not is_convertible_v<void (*const)(), void ()>);
 static_assert(not is_convertible_v<void (*const)(), void (&)()>);
 static_assert(not is_convertible_v<void (*const)(), void (&&)()>);
+static_assert(is_convertible_v<int *, void *>);
+static_assert(is_convertible_v<int *, void *const>);
+static_assert(is_convertible_v<int *, const void *>);
+static_assert(is_convertible_v<int *, const void *const >);
+static_assert(is_convertible_v<int *const, void *>);
+static_assert(not is_convertible_v<const int *, void *>);
+static_assert(is_convertible_v<int [], void *>);
+static_assert(is_convertible_v<int [], void *const>);
+static_assert(is_convertible_v<int [], const void *>);
+static_assert(is_convertible_v<int [], const void *const>);
+static_assert(is_convertible_v<int [42], void *>);
+static_assert(is_convertible_v<int [42], void *const>);
+static_assert(is_convertible_v<int [42], const void *>);
+static_assert(is_convertible_v<int [42], const void *const>);
+static_assert(not is_convertible_v<const int [], void *>);
+static_assert(is_convertible_v<const int [], const void *>);
+static_assert(is_convertible_v<const int [42], const void *>);
+static_assert(is_convertible_v<int (&)[], void *>);
+static_assert(is_convertible_v<int (&)[], void *const>);
+static_assert(is_convertible_v<int (&)[], const void *>);
+static_assert(is_convertible_v<int (&)[], const void *const>);
+static_assert(is_convertible_v<int (&)[42], void *>);
+static_assert(is_convertible_v<int (&)[42], void *const>);
+static_assert(is_convertible_v<int (&)[42], const void *>);
+static_assert(is_convertible_v<int (&)[42], const void *const>);
+static_assert(not is_convertible_v<void (), void *>);
+static_assert(not is_convertible_v<void (*)(), void *>);
+static_assert(not is_convertible_v<void (A::*)(), void *>);
+static_assert(is_convertible_v<__int128_t, int>);
+static_assert(is_convertible_v<__uint128_t, int>);
+static_assert(is_convertible_v<__int128_t, unsigned>);
+static_assert(is_convertible_v<__uint128_t, unsigned>);
+static_assert(is_convertible_v<__int128_t, double>);
+static_assert(is_convertible_v<__uint128_t, double>);
 static_assert(not is_convertible_v<int, C>);
 static_assert(not is_convertible_v<int, D>);
 static_assert(not is_convertible_v<C, int>);
@@ -4796,10 +4835,634 @@ static_assert(not is_convertible_v<double, unit_test_is_list_constructible>);
 static_assert(not is_convertible_v<long double, const unit_test_is_list_constructible &>);
 static_assert(not is_convertible_v<int **, unit_test_is_list_constructible>);        // prefer to operator int **&()
 static_assert(not is_convertible_v<int **&&, unit_test_is_list_constructible>);      // still prefer to operator int **&()
-static_assert(is_convertible_v<__int128_t, int>);
-static_assert(is_convertible_v<__uint128_t, int>);
-static_assert(is_convertible_v<__int128_t, unsigned>);
-static_assert(is_convertible_v<__uint128_t, unsigned>);
-static_assert(is_convertible_v<__int128_t, double>);
-static_assert(is_convertible_v<__uint128_t, double>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_swappable)
+struct unit_test_is_swappable_not_copyable_and_not_movable {
+    unit_test_is_swappable_not_copyable_and_not_movable(const unit_test_is_swappable_not_copyable_and_not_movable &) = delete;
+    unit_test_is_swappable_not_copyable_and_not_movable(unit_test_is_swappable_not_copyable_and_not_movable &&) = delete;
+    unit_test_is_swappable_not_copyable_and_not_movable &operator=(const unit_test_is_swappable_not_copyable_and_not_movable &) = delete;
+    unit_test_is_swappable_not_copyable_and_not_movable &operator=(unit_test_is_swappable_not_copyable_and_not_movable &&) = delete;
+};
+struct unit_test_is_swappable_copy_constructible_only {
+    unit_test_is_swappable_copy_constructible_only(const unit_test_is_swappable_copy_constructible_only &);
+    unit_test_is_swappable_copy_constructible_only(unit_test_is_swappable_copy_constructible_only &&) = delete;
+    unit_test_is_swappable_copy_constructible_only &operator=(const unit_test_is_swappable_copy_constructible_only &) = delete;
+    unit_test_is_swappable_copy_constructible_only &operator=(unit_test_is_swappable_copy_constructible_only &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_only {
+    unit_test_is_swappable_nothrow_copy_constructible_only(const unit_test_is_swappable_nothrow_copy_constructible_only &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_only(unit_test_is_swappable_nothrow_copy_constructible_only &&) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_only &operator=(const unit_test_is_swappable_nothrow_copy_constructible_only &) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_only &operator=(unit_test_is_swappable_nothrow_copy_constructible_only &&) = delete;
+};
+struct unit_test_is_swappable_copy_assignable_only {
+    unit_test_is_swappable_copy_assignable_only(const unit_test_is_swappable_copy_assignable_only &) = delete;
+    unit_test_is_swappable_copy_assignable_only(unit_test_is_swappable_copy_assignable_only &&) = delete;
+    unit_test_is_swappable_copy_assignable_only &operator=(const unit_test_is_swappable_copy_assignable_only &);
+    unit_test_is_swappable_copy_assignable_only &operator=(unit_test_is_swappable_copy_assignable_only &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_assignable_only {
+    unit_test_is_swappable_nothrow_copy_assignable_only(const unit_test_is_swappable_nothrow_copy_assignable_only &) = delete;
+    unit_test_is_swappable_nothrow_copy_assignable_only(unit_test_is_swappable_nothrow_copy_assignable_only &&) = delete;
+    unit_test_is_swappable_nothrow_copy_assignable_only &operator=(const unit_test_is_swappable_nothrow_copy_assignable_only &) noexcept;
+    unit_test_is_swappable_nothrow_copy_assignable_only &operator=(unit_test_is_swappable_nothrow_copy_assignable_only &&) = delete;
+};
+struct unit_test_is_swappable_copyable {
+    unit_test_is_swappable_copyable(const unit_test_is_swappable_copyable &);
+    unit_test_is_swappable_copyable(unit_test_is_swappable_copyable &&) = delete;
+    unit_test_is_swappable_copyable &operator=(const unit_test_is_swappable_copyable &);
+    unit_test_is_swappable_copyable &operator=(unit_test_is_swappable_copyable &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &&) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &);
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &&) = delete;
+};
+struct unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable {
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &&) = delete;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &operator=(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &operator=(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copyable {
+    unit_test_is_swappable_nothrow_copyable(const unit_test_is_swappable_nothrow_copyable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable(unit_test_is_swappable_nothrow_copyable &&) = delete;
+    unit_test_is_swappable_nothrow_copyable &operator=(const unit_test_is_swappable_nothrow_copyable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable &operator=(unit_test_is_swappable_nothrow_copyable &&) = delete;
+};
+struct unit_test_is_swappable_move_constructible_only {
+    unit_test_is_swappable_move_constructible_only(const unit_test_is_swappable_move_constructible_only &) = delete;
+    unit_test_is_swappable_move_constructible_only(unit_test_is_swappable_move_constructible_only &&);
+    unit_test_is_swappable_move_constructible_only &operator=(const unit_test_is_swappable_move_constructible_only &) = delete;
+    unit_test_is_swappable_move_constructible_only &operator=(unit_test_is_swappable_move_constructible_only &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_move_constructible_only {
+    unit_test_is_swappable_nothrow_move_constructible_only(const unit_test_is_swappable_nothrow_move_constructible_only &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_only(unit_test_is_swappable_nothrow_move_constructible_only &&) noexcept;
+    unit_test_is_swappable_nothrow_move_constructible_only &operator=(const unit_test_is_swappable_nothrow_move_constructible_only &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_only &operator=(unit_test_is_swappable_nothrow_move_constructible_only &&) = delete;
+};
+struct unit_test_is_swappable_move_assignable_only {
+    unit_test_is_swappable_move_assignable_only(const unit_test_is_swappable_move_assignable_only &) = delete;
+    unit_test_is_swappable_move_assignable_only(unit_test_is_swappable_move_assignable_only &&) = delete;
+    unit_test_is_swappable_move_assignable_only &operator=(const unit_test_is_swappable_move_assignable_only &) = delete;
+    unit_test_is_swappable_move_assignable_only &operator=(unit_test_is_swappable_move_assignable_only &&);
+};
+struct unit_test_is_swappable_nothrow_move_assignable_only {
+    unit_test_is_swappable_nothrow_move_assignable_only(const unit_test_is_swappable_nothrow_move_assignable_only &) = delete;
+    unit_test_is_swappable_nothrow_move_assignable_only(unit_test_is_swappable_nothrow_move_assignable_only &&) = delete;
+    unit_test_is_swappable_nothrow_move_assignable_only &operator=(const unit_test_is_swappable_nothrow_move_assignable_only &) = delete;
+    unit_test_is_swappable_nothrow_move_assignable_only &operator=(unit_test_is_swappable_nothrow_move_assignable_only &&) noexcept;
+};
+struct unit_test_is_swappable_movable {
+    unit_test_is_swappable_movable(const unit_test_is_swappable_movable &) = delete;
+    unit_test_is_swappable_movable(unit_test_is_swappable_movable &&);
+    unit_test_is_swappable_movable &operator=(const unit_test_is_swappable_movable &) = delete;
+    unit_test_is_swappable_movable &operator=(unit_test_is_swappable_movable &&);
+};
+struct unit_test_is_swappable_nothrow_move_constructible_and_move_assignable {
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable(const unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable(unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &operator=(unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_move_constructible_and_nothrow_move_assignable {
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable(const unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable(unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &operator=(unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_movable {
+    unit_test_is_swappable_nothrow_movable(const unit_test_is_swappable_nothrow_movable &) = delete;
+    unit_test_is_swappable_nothrow_movable(unit_test_is_swappable_nothrow_movable &&) noexcept;
+    unit_test_is_swappable_nothrow_movable &operator=(const unit_test_is_swappable_nothrow_movable &) = delete;
+    unit_test_is_swappable_nothrow_movable &operator=(unit_test_is_swappable_nothrow_movable &&) noexcept;
+};
+struct unit_test_is_swappable_copy_constructible_and_move_consructible {
+    unit_test_is_swappable_copy_constructible_and_move_consructible(const unit_test_is_swappable_copy_constructible_and_move_consructible &);
+    unit_test_is_swappable_copy_constructible_and_move_consructible(unit_test_is_swappable_copy_constructible_and_move_consructible &&);
+    unit_test_is_swappable_copy_constructible_and_move_consructible &operator=(const unit_test_is_swappable_copy_constructible_and_move_consructible &) = delete;
+    unit_test_is_swappable_copy_constructible_and_move_consructible &operator=(unit_test_is_swappable_copy_constructible_and_move_consructible &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible {
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible(const unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible(unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &&);
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible {
+    unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible(const unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &);
+    unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible(unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &&) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &operator=(const unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &) = delete;
+    unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &operator=(unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible {
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &&) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_copy_constructible_and_move_assignable {
+    unit_test_is_swappable_copy_constructible_and_move_assignable(const unit_test_is_swappable_copy_constructible_and_move_assignable &);
+    unit_test_is_swappable_copy_constructible_and_move_assignable(unit_test_is_swappable_copy_constructible_and_move_assignable &&) = delete;
+    unit_test_is_swappable_copy_constructible_and_move_assignable &operator=(const unit_test_is_swappable_copy_constructible_and_move_assignable &) = delete;
+    unit_test_is_swappable_copy_constructible_and_move_assignable &operator=(unit_test_is_swappable_copy_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable(const unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable(unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &&) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &&) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_move_constructible_and_copy_assignable {
+    unit_test_is_swappable_move_constructible_and_copy_assignable(const unit_test_is_swappable_move_constructible_and_copy_assignable &) = delete;
+    unit_test_is_swappable_move_constructible_and_copy_assignable(unit_test_is_swappable_move_constructible_and_copy_assignable &&);
+    unit_test_is_swappable_move_constructible_and_copy_assignable &operator=(const unit_test_is_swappable_move_constructible_and_copy_assignable &);
+    unit_test_is_swappable_move_constructible_and_copy_assignable &operator=(unit_test_is_swappable_move_constructible_and_copy_assignable &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable {
+    unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable(const unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable(unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &&) noexcept = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &operator=(const unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &);
+    unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &operator=(unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable {
+    unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable(const unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable(unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &operator=(const unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &operator=(unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &&) = delete;
+};
+struct unit_test_is_swappable_copyable_and_move_constructible {
+    unit_test_is_swappable_copyable_and_move_constructible(const unit_test_is_swappable_copyable_and_move_constructible &);
+    unit_test_is_swappable_copyable_and_move_constructible(unit_test_is_swappable_copyable_and_move_constructible &&);
+    unit_test_is_swappable_copyable_and_move_constructible &operator=(const unit_test_is_swappable_copyable_and_move_constructible &);
+    unit_test_is_swappable_copyable_and_move_constructible &operator=(unit_test_is_swappable_copyable_and_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible {
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &&);
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &);
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible {
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &&);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &operator=(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &operator=(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &&) = delete;
+};
+struct unit_test_is_swappable_copyable_and_nothrow_move_constructible {
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible(const unit_test_is_swappable_copyable_and_nothrow_move_constructible &);
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible(unit_test_is_swappable_copyable_and_nothrow_move_constructible &&) noexcept;
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible &operator=(const unit_test_is_swappable_copyable_and_nothrow_move_constructible &);
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible &operator=(unit_test_is_swappable_copyable_and_nothrow_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_move_constructible {
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible(const unit_test_is_swappable_nothrow_copyable_and_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible(unit_test_is_swappable_nothrow_copyable_and_move_constructible &&);
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible &operator=(const unit_test_is_swappable_nothrow_copyable_and_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible &operator=(unit_test_is_swappable_nothrow_copyable_and_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible {
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &&) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &operator=(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &operator=(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &&) = delete;
+};
+struct unit_test_is_swappable_copyable_and_move_assignable {
+    unit_test_is_swappable_copyable_and_move_assignable(const unit_test_is_swappable_copyable_and_move_assignable &);
+    unit_test_is_swappable_copyable_and_move_assignable(unit_test_is_swappable_copyable_and_move_assignable &&);
+    unit_test_is_swappable_copyable_and_move_assignable &operator=(const unit_test_is_swappable_copyable_and_move_assignable &) = delete;
+    unit_test_is_swappable_copyable_and_move_assignable &operator=(unit_test_is_swappable_copyable_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable {
+    unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable(const unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable(unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &&);
+    unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &&);
+};
+struct unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible {
+    unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible(const unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &);
+    unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible(unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &&);
+    unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &operator=(const unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &) = delete;
+    unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &operator=(unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &&) noexcept;
+};
+struct unit_test_is_swappable_copyable_and_nothrow_move_assignable {
+    unit_test_is_swappable_copyable_and_nothrow_move_assignable(const unit_test_is_swappable_copyable_and_nothrow_move_assignable &);
+    unit_test_is_swappable_copyable_and_nothrow_move_assignable(unit_test_is_swappable_copyable_and_nothrow_move_assignable &&) noexcept;
+    unit_test_is_swappable_copyable_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_copyable_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_copyable_and_nothrow_move_assignable &operator=(unit_test_is_swappable_copyable_and_nothrow_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copyable_and_move_assignable {
+    unit_test_is_swappable_nothrow_copyable_and_move_assignable(const unit_test_is_swappable_nothrow_copyable_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_move_assignable(unit_test_is_swappable_nothrow_copyable_and_move_assignable &&);
+    unit_test_is_swappable_nothrow_copyable_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copyable_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copyable_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copyable_and_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable {
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &operator=(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_movable_and_copy_assignable {
+    unit_test_is_swappable_movable_and_copy_assignable(const unit_test_is_swappable_movable_and_copy_assignable &) = delete;
+    unit_test_is_swappable_movable_and_copy_assignable(unit_test_is_swappable_movable_and_copy_assignable &&);
+    unit_test_is_swappable_movable_and_copy_assignable &operator=(const unit_test_is_swappable_movable_and_copy_assignable &);
+    unit_test_is_swappable_movable_and_copy_assignable &operator=(unit_test_is_swappable_movable_and_copy_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable {
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable(const unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &) = delete;
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable(unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &operator=(const unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &);
+    unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &operator=(unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &&);
+};
+struct unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable {
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable(const unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &) = delete;
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable(unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &&);
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &operator=(const unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &);
+    unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &operator=(unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_movable_and_nothrow_copy_assignable {
+    unit_test_is_swappable_movable_and_nothrow_copy_assignable(const unit_test_is_swappable_movable_and_nothrow_copy_assignable &) = delete;
+    unit_test_is_swappable_movable_and_nothrow_copy_assignable(unit_test_is_swappable_movable_and_nothrow_copy_assignable &&);
+    unit_test_is_swappable_movable_and_nothrow_copy_assignable &operator=(const unit_test_is_swappable_movable_and_nothrow_copy_assignable &) noexcept;
+    unit_test_is_swappable_movable_and_nothrow_copy_assignable &operator=(unit_test_is_swappable_movable_and_nothrow_copy_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_movable_and_copy_assignable {
+    unit_test_is_swappable_nothrow_movable_and_copy_assignable(const unit_test_is_swappable_nothrow_movable_and_copy_assignable &) = delete;
+    unit_test_is_swappable_nothrow_movable_and_copy_assignable(unit_test_is_swappable_nothrow_movable_and_copy_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_movable_and_copy_assignable &operator=(const unit_test_is_swappable_nothrow_movable_and_copy_assignable &);
+    unit_test_is_swappable_nothrow_movable_and_copy_assignable &operator=(unit_test_is_swappable_nothrow_movable_and_copy_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable {
+    unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable(const unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable(unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable {
+    unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable(const unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &) = delete;
+    unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable(unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable {
+    unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable(const unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &) = delete;
+    unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable(unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &operator=(const unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &operator=(unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_copyable_and_movable {
+    unit_test_is_swappable_copyable_and_movable(const unit_test_is_swappable_copyable_and_movable &);
+    unit_test_is_swappable_copyable_and_movable(unit_test_is_swappable_copyable_and_movable &&);
+    unit_test_is_swappable_copyable_and_movable &operator=(const unit_test_is_swappable_copyable_and_movable &);
+    unit_test_is_swappable_copyable_and_movable &operator=(unit_test_is_swappable_copyable_and_movable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &&);
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &);
+    unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &&);
+};
+struct unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable {
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &&);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &operator=(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &operator=(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &&);
+};
+struct unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable {
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable(const unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &);
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable(unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &operator=(const unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &);
+    unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &operator=(unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable {
+    unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable(const unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &);
+    unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable(unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &);
+    unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &operator=(unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_movable {
+    unit_test_is_swappable_nothrow_copyable_and_movable(const unit_test_is_swappable_nothrow_copyable_and_movable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_movable(unit_test_is_swappable_nothrow_copyable_and_movable &&);
+    unit_test_is_swappable_nothrow_copyable_and_movable &operator=(const unit_test_is_swappable_nothrow_copyable_and_movable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_movable &operator=(unit_test_is_swappable_nothrow_copyable_and_movable &&);
+};
+struct unit_test_is_swappable_copyable_and_nothrow_movable {
+    unit_test_is_swappable_copyable_and_nothrow_movable(const unit_test_is_swappable_copyable_and_nothrow_movable &);
+    unit_test_is_swappable_copyable_and_nothrow_movable(unit_test_is_swappable_copyable_and_nothrow_movable &&) noexcept;
+    unit_test_is_swappable_copyable_and_nothrow_movable &operator=(const unit_test_is_swappable_copyable_and_nothrow_movable &);
+    unit_test_is_swappable_copyable_and_nothrow_movable &operator=(unit_test_is_swappable_copyable_and_nothrow_movable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &);
+    unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable {
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable(const unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable(unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &);
+    unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &operator=(unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &&);
+};
+struct unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable {
+    unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable(const unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &);
+    unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable(unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &operator=(const unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &) noexcept;
+    unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &operator=(unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &&);
+};
+struct unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable {
+    unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable(const unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &);
+    unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable(unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &operator=(unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable {
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &&) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &operator=(const unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &operator=(unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &&);
+};
+struct unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable {
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable(const unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable(unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &&);
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &operator=(const unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &operator=(unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &&) noexcept;
+};
+struct unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable {
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &);
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &&) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &operator=(const unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &) noexcept;
+    unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &operator=(unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &&) noexcept;
+};
+struct unit_test_is_swappable_nothrow_copyable_and_nothrow_movable {
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_movable(const unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_movable(unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &&) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &operator=(const unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &) noexcept;
+    unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &operator=(unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &&) noexcept;
+};
+struct unit_test_is_swappable_by_member_function {
+    unit_test_is_swappable_by_member_function(const unit_test_is_swappable_by_member_function &) = delete;
+    unit_test_is_swappable_by_member_function(unit_test_is_swappable_by_member_function &&) = delete;
+    unit_test_is_swappable_by_member_function &operator=(const unit_test_is_swappable_by_member_function &) = delete;
+    unit_test_is_swappable_by_member_function &operator=(unit_test_is_swappable_by_member_function &&) = delete;
+    void swap(unit_test_is_swappable_by_member_function &) &;
+    void swap(unit_test_is_swappable_by_member_function &&) &&;
+};
+struct unit_test_is_swappable_by_global_swap_and_member_function {
+    unit_test_is_swappable_by_global_swap_and_member_function(const unit_test_is_swappable_by_global_swap_and_member_function &);
+    unit_test_is_swappable_by_global_swap_and_member_function(unit_test_is_swappable_by_global_swap_and_member_function &&);
+    unit_test_is_swappable_by_global_swap_and_member_function &operator=(const unit_test_is_swappable_by_global_swap_and_member_function &);
+    unit_test_is_swappable_by_global_swap_and_member_function &operator=(unit_test_is_swappable_by_global_swap_and_member_function &&);
+    void swap(unit_test_is_swappable_by_global_swap_and_member_function &) {}
+};
+void swap(unit_test_is_swappable_by_global_swap_and_member_function &, unit_test_is_swappable_by_global_swap_and_member_function &) {}
+struct unit_test_is_swappable_base {};
+struct unit_test_is_swappable_derived : unit_test_is_swappable_base {};
+void swap(unit_test_is_swappable_base &, unit_test_is_swappable_base &);
+struct unit_test_is_swappable_polymorphic_base {
+    virtual ~unit_test_is_swappable_polymorphic_base();
+};
+struct unit_test_is_swappable_polymorphic_derived : unit_test_is_swappable_polymorphic_base {};
+void swap(unit_test_is_swappable_polymorphic_base &, unit_test_is_swappable_polymorphic_base &);
+struct unit_test_is_swappable_with_D;
+struct unit_test_is_swappable_with_A {
+    void swap(unit_test_is_swappable_with_D &);
+};
+struct unit_test_is_swappable_with_B {};
+void swap(unit_test_is_swappable_with_A &, unit_test_is_swappable_with_B &);
+struct unit_test_is_swappable_with_C {
+    void swap(unit_test_is_swappable_with_A &);
+};
+void swap(unit_test_is_swappable_with_B &, unit_test_is_swappable_with_C &);
+void swap(unit_test_is_swappable_with_C &, unit_test_is_swappable_with_B &);
+struct unit_test_is_swappable_with_D {
+    void swap(unit_test_is_swappable_with_A &);
+};
+static_assert(not is_swappable_with_v<int, int>);
+static_assert(not is_swappable_with_v<int &, int>);
+static_assert(not is_swappable_with_v<int, int &>);
+static_assert(is_swappable_with_v<int &, int &>);
+static_assert(not is_swappable_with_v<int &, int &&>);
+static_assert(not is_swappable_with_v<int &, char &>);
+static_assert(not is_swappable_with_v<const int &, const int &>);
+static_assert(is_swappable_with_v<volatile int &, volatile int &>);
+static_assert(not is_swappable_with_v<const volatile int &, const volatile int &>);
+static_assert(not is_swappable_with_v<int &&, int>);
+static_assert(not is_swappable_with_v<int &&, int &&>);
+static_assert(not is_swappable_with_v<int &&, int &>);
+static_assert(not is_swappable_with_v<void *&, char *&>);
+static_assert(not is_swappable_with_v<int (&)[], int (&)[]>);
+static_assert(is_swappable_with_v<int (&)[42], int (&)[42]>);
+static_assert(not is_swappable_with_v<int (&)[42], int (&)[]>);
+static_assert(not is_swappable_with_v<int (&)[1], int (&)[2]>);
+static_assert(not is_swappable_with_v<void (&)(), void (&)()>);
+static_assert(is_swappable_with_v<void (A::*&)(), void (A::*&)()>);
+static_assert(not is_swappable_with_v<void (A::*&)(), void (A::*&&)()>);
+static_assert(is_swappable_with_v<A &, A &>);
+//static_assert(not is_swappable_with_v<B &, B &>);       // B is incomplete
+static_assert(is_swappable_with_v<C &, C &>);
+static_assert(is_swappable_with_v<D &, D &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_not_copyable_and_not_movable &, unit_test_is_swappable_not_copyable_and_not_movable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_copy_constructible_only &, unit_test_is_swappable_copy_constructible_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_only &, unit_test_is_swappable_nothrow_copy_constructible_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_copy_assignable_only &, unit_test_is_swappable_copy_assignable_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_assignable_only &, unit_test_is_swappable_nothrow_copy_assignable_only &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable &, unit_test_is_swappable_copyable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &, unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &, unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable &, unit_test_is_swappable_nothrow_copyable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_move_constructible_only &, unit_test_is_swappable_move_constructible_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_move_constructible_only &, unit_test_is_swappable_nothrow_move_constructible_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_move_assignable_only &, unit_test_is_swappable_move_assignable_only &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_move_assignable_only &, unit_test_is_swappable_nothrow_move_assignable_only &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_movable &, unit_test_is_swappable_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &, unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &, unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_movable &, unit_test_is_swappable_nothrow_movable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_move_consructible &, unit_test_is_swappable_copy_constructible_and_move_consructible &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &, unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &, unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &, unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_move_assignable &, unit_test_is_swappable_copy_constructible_and_move_assignable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &, unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &, unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_move_constructible_and_copy_assignable &, unit_test_is_swappable_move_constructible_and_copy_assignable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &, unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &, unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_move_constructible &, unit_test_is_swappable_copyable_and_move_constructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &, unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &, unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_nothrow_move_constructible &, unit_test_is_swappable_copyable_and_nothrow_move_constructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_move_constructible &, unit_test_is_swappable_nothrow_copyable_and_move_constructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &, unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_move_assignable &, unit_test_is_swappable_copyable_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &, unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &, unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_nothrow_move_assignable &, unit_test_is_swappable_copyable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_move_assignable &, unit_test_is_swappable_nothrow_copyable_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &, unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_movable_and_copy_assignable &, unit_test_is_swappable_movable_and_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &, unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &, unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_movable_and_nothrow_copy_assignable &, unit_test_is_swappable_movable_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_movable_and_copy_assignable &, unit_test_is_swappable_nothrow_movable_and_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &, unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &, unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &, unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_movable &, unit_test_is_swappable_copyable_and_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &, unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &, unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &, unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &, unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_movable &, unit_test_is_swappable_nothrow_copyable_and_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copyable_and_nothrow_movable &, unit_test_is_swappable_copyable_and_nothrow_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &, unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &, unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &, unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &, unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &, unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &, unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &, unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &, unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_by_member_function &, unit_test_is_swappable_by_member_function &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_by_global_swap_and_member_function &, unit_test_is_swappable_by_global_swap_and_member_function &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_derived &, unit_test_is_swappable_derived &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_derived &, unit_test_is_swappable_base &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_base &, unit_test_is_swappable_derived &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_polymorphic_derived &, unit_test_is_swappable_polymorphic_derived &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_polymorphic_derived &, unit_test_is_swappable_polymorphic_base &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_polymorphic_base &, unit_test_is_swappable_polymorphic_derived &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_with_A &, unit_test_is_swappable_with_B &>);       // swap(A &, B &) is allowed but swap(B &, A &) is not allowed
+static_assert(not is_swappable_with_v<unit_test_is_swappable_with_B &, unit_test_is_swappable_with_A &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_with_A &, unit_test_is_swappable_with_C &>);
+static_assert(not is_swappable_with_v<unit_test_is_swappable_with_C &, unit_test_is_swappable_with_A &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_with_B &, unit_test_is_swappable_with_C &>);
+static_assert(is_swappable_with_v<unit_test_is_swappable_with_C &, unit_test_is_swappable_with_B &>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_swappable)
+static_assert(is_swappable_v<int>);
+static_assert(is_swappable_v<int &>);
+static_assert(is_swappable_v<int>);
+static_assert(is_swappable_v<int &>);
+static_assert(is_swappable_v<int &>);
+static_assert(is_swappable_v<int &>);
+static_assert(not is_swappable_v<const int &>);
+static_assert(is_swappable_v<volatile int &>);
+static_assert(not is_swappable_v<const volatile int &>);
+static_assert(is_swappable_v<int &&>);
+static_assert(is_swappable_v<int &&>);
+static_assert(is_swappable_v<int &&>);
+static_assert(is_swappable_v<void *&>);
+static_assert(not is_swappable_v<int (&)[]>);
+static_assert(is_swappable_v<int (&)[42]>);
+static_assert(is_swappable_v<int (&)[42]>);
+static_assert(is_swappable_v<int (&)[1]>);
+static_assert(not is_swappable_v<void (&)()>);
+static_assert(is_swappable_v<void (A::*&)()>);
+static_assert(is_swappable_v<void (A::*&)()>);
+static_assert(is_swappable_v<A &>);
+//static_assert(not is_swappable_v<B &>);     // B is incomplete
+static_assert(is_swappable_v<C &>);
+static_assert(is_swappable_v<D &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_not_copyable_and_not_movable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_copy_constructible_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_copy_assignable_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_assignable_only &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_move_constructible_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_move_constructible_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_move_assignable_only &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_move_assignable_only &>);
+static_assert(is_swappable_v<unit_test_is_swappable_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_movable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_copy_constructible_and_move_consructible &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_copy_constructible_and_nothrow_move_constructible &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_constructible &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_copy_constructible_and_move_assignable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_assignable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_move_assignable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_move_constructible_and_copy_assignable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_move_constructible_and_copy_assignable &>);
+static_assert(not is_swappable_v<unit_test_is_swappable_nothrow_move_constructible_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_move_constructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_move_constructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_move_consructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_nothrow_move_constructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_move_constructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_assignable_and_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_assignable_and_nothrow_copy_assignable_and_move_consructible &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_movable_and_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_move_constructible_and_move_assignable_and_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_move_constructible_and_nothrow_move_assignable_and_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_movable_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_movable_and_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_assignable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_assignable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_movable_and_nothrow_copy_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_copy_assignable_and_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_and_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copyable_and_nothrow_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_nothrow_and_move_constructible_and_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copy_constructible_and_move_constructible_and_copy_assignable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_consructible_and_nothrow_move_constructible_and_nothrow_copy_assignable_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_constructible_and_move_constructible_and_nothrow_copy_assignable_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_move_constructible_and_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_move_constructible_and_nothrow_move_assignable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_copy_constructible_and_nothrow_copy_assignable_nothrow_movable &>);
+static_assert(is_swappable_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &>);
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_swappable_by_member_function)
+static_assert(not is_swappable_by_member_function_with_v<int &, int &>);
+static_assert(not is_swappable_by_member_function_with_v<A &, A &>);
+static_assert(not is_swappable_by_member_function_with_v<B &, B &>);
+static_assert(not is_swappable_by_member_function_with_v<C &, C &>);
+static_assert(not is_swappable_by_member_function_with_v<D &, D &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &, unit_test_is_swappable_nothrow_copyable_and_nothrow_movable &>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function, unit_test_is_swappable_by_member_function>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &, unit_test_is_swappable_by_member_function &>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &&, unit_test_is_swappable_by_member_function &&>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function, unit_test_is_swappable_by_member_function &&>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &&, unit_test_is_swappable_by_member_function>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function, unit_test_is_swappable_by_member_function &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &, unit_test_is_swappable_by_member_function>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &&, unit_test_is_swappable_by_member_function &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_member_function &, unit_test_is_swappable_by_member_function &&>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function &, unit_test_is_swappable_by_global_swap_and_member_function &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function, unit_test_is_swappable_by_global_swap_and_member_function>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function &&, unit_test_is_swappable_by_global_swap_and_member_function &&>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function &, unit_test_is_swappable_by_global_swap_and_member_function &&>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function &, unit_test_is_swappable_by_global_swap_and_member_function>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function, unit_test_is_swappable_by_global_swap_and_member_function &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_by_global_swap_and_member_function &&, unit_test_is_swappable_by_global_swap_and_member_function &>);
+static_assert(not is_swappable_by_member_function_with_v<unit_test_is_swappable_with_A &, unit_test_is_swappable_with_C &>);        // (A &).swap(C &) is allowed but (C &).swap(A &) is not allowed
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_with_A &, unit_test_is_swappable_with_D &>);
+static_assert(is_swappable_by_member_function_with_v<unit_test_is_swappable_with_D &, unit_test_is_swappable_with_A &>);
 __DATA_STRUCTURE_END
