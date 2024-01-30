@@ -18,10 +18,10 @@ The project is being refactored.
 ## Status ##
 
 ### Apple Mac mini M2 ###
-<table style="border: 2px solid #000">
+<table style="border: 3px solid #000">
 <thead>
-    <tr style="text-align: center; border-bottom: 1.5px solid #000;">
-        <th colspan="9">Mac mini (2023) macOS Sonoma</th>
+    <tr style="text-align: center; border-bottom: 2px solid #000;">
+        <th colspan="9">Mac mini (2023) with macOS Sonoma</th>
     </tr>
     <tr>
         <th>Version</th>
@@ -31,50 +31,46 @@ The project is being refactored.
         <th colspan="2">Hard Disk</th>
     </tr>
 </thead>
-<tr style="text-align: center; border-bottom: 1.5px solid #000;">
-    <td>14.1.1</td>
+<tr style="text-align: center; border-bottom: 2px solid #000;">
+    <td>14.2.1</td>
     <td colspan="2">Apple M2</td>
     <td colspan="2">8 GB</td>
     <td colspan="2">Apple M2</td>
-    <td colspan="2">APPLE SSD AP0256Z</td>
+    <td colspan="2">Apple SSD AP0256Z</td>
 </tr>
 <thead>
     <tr>
         <th rowspan="4">Header</th>
         <th rowspan="4">Unit Test</th>
         <th rowspan="4">Benchmark</th>
-        <th colspan="6">Compiler Support</th>
+        <th colspan="5">Compiler Support</th>
     </tr>
     <tr>
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th>ICC</th>
         <th rowspan="3">Other Compiler</th>
     </tr>
     <tr style="text-align: center;">
-        <td>15.0.0</td>
-        <td></td>
+        <td>1500.1.0.2.5</td>
         <td></td>
         <td></td>
         <td></td>
     </tr>
     <tr style="text-align: center;">
         <td><code>-std=c++2b</code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
+        <td><code>-std=c++2c</code></td>
+        <td><code>-std=c++23</code></td>
+        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
     <th><code>__config.hpp</code></th>
-    <td><img src="https://img.shields.io/badge/Pass-brightgreen" alt="Pass" /></td>
-    <td>Report</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
     <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
     <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Failed-red" alt="Failed"></td>
     <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
     <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
     <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
@@ -82,10 +78,10 @@ The project is being refactored.
 </table>
 
 ### Apple MacBook Pro M3 Max ###
-<table style="border: 2px solid #000">
+<table style="border: 3px solid #000">
 <thead>
-    <tr style="text-align: center; border-bottom: 1.5px solid #000;">
-        <th colspan="9">MacBook Pro (2023) macOS Sonoma</th>
+    <tr style="text-align: center; border-bottom: 2px solid #000;">
+        <th colspan="9">MacBook Pro (2023) with macOS Sonoma</th>
     </tr>
     <tr>
         <th>Version</th>
@@ -95,61 +91,57 @@ The project is being refactored.
         <th colspan="2">Hard Disk</th>
     </tr>
 </thead>
-<tr style="text-align: center; border-bottom: 1.5px solid #000;">
-    <td>14.1.1</td>
+<tr style="text-align: center; border-bottom: 2px solid #000;">
+    <td>14.2.1</td>
     <td colspan="2">Apple M3 Max</td>
     <td colspan="2">128 GB</td>
     <td colspan="2">Apple M3 Max</td>
-    <td colspan="2">APPLE SSD AP1024Z</td>
+    <td colspan="2">Apple SSD AP1024Z</td>
 </tr>
 <thead>
     <tr>
         <th rowspan="4">Header</th>
         <th rowspan="4">Unit Test</th>
         <th rowspan="4">Benchmark</th>
-        <th colspan="6">Compiler Support</th>
+        <th colspan="5">Compiler Support</th>
     </tr>
     <tr>
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th>ICC</th>
         <th rowspan="3">Other Compiler</th>
     </tr>
     <tr style="text-align: center;">
-        <td>15.0.0</td>
-        <td></td>
+        <td>1500.1.0.2.5</td>
         <td></td>
         <td></td>
         <td></td>
     </tr>
     <tr style="text-align: center;">
         <td><code>-std=c++2b</code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
+        <td><code>-std=c++2c</code></td>
+        <td><code>-std=c++23</code></td>
+        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
     <th><code>__config.hpp</code></th>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
 </tr>
 </table>
 
 ### Apple MacBook Pro Intel ###
-<table style="border: 2px solid #000">
+<table style="border: 3px solid #000">
 <thead>
-    <tr style="text-align: center; border-bottom: 1.5px solid #000;">
-        <th colspan="9">MacBook Pro (2019) macOS Sonoma</th>
+    <tr style="text-align: center; border-bottom: 2px solid #000;">
+        <th colspan="9">MacBook Pro (2019) with macOS Sonoma</th>
     </tr>
     <tr>
         <th>Version</th>
@@ -159,61 +151,57 @@ The project is being refactored.
         <th colspan="2">Hard Disk</th>
     </tr>
 </thead>
-<tr style="text-align: center; border-bottom: 1.5px solid #000;">
-    <td>14.1.1</td>
+<tr style="text-align: center; border-bottom: 2px solid #000;">
+    <td>14.2.1</td>
     <td colspan="2">Intel Core i7 9750H</td>
     <td colspan="2">16 GB</td>
-    <td colspan="2">Intel UHD Graphics 630<br />AMD Radeon Pro 555X</td>
-    <td colspan="2">APPLE SSD AP0256M</td>
+    <td colspan="2">Intel UHD Graphics 630 &<br />AMD Radeon Pro 555X</td>
+    <td colspan="2">Apple SSD AP0256M</td>
 </tr>
 <thead>
     <tr>
         <th rowspan="4">Header</th>
         <th rowspan="4">Unit Test</th>
         <th rowspan="4">Benchmark</th>
-        <th colspan="6">Compiler Support</th>
+        <th colspan="5">Compiler Support</th>
     </tr>
     <tr>
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th>ICC</th>
         <th rowspan="3">Other Compiler</th>
     </tr>
     <tr style="text-align: center;">
-        <td>15.0.0</td>
-        <td></td>
+        <td>1500.1.0.2.5</td>
         <td></td>
         <td></td>
         <td></td>
     </tr>
     <tr style="text-align: center;">
         <td><code>-std=c++2b</code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
+        <td><code>-std=c++2c</code></td>
+        <td><code>-std=c++23</code></td>
+        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
     <th><code>__config.hpp</code></th>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
 </tr>
 </table>
 
 ### Apple MacBook Pro Intel ###
-<table style="border: 2px solid #000">
+<table style="border: 3px solid #000">
 <thead>
-    <tr style="text-align: center; border-bottom: 1.5px solid #000;">
-        <th colspan="9">MacBook Pro (2019) Windows 11 with BootCamp</th>
+    <tr style="text-align: center; border-bottom: 2px solid #000;">
+        <th colspan="9">MacBook Pro (2019) with Windows 11 (BootCamp)</th>
     </tr>
     <tr>
         <th>Version</th>
@@ -223,52 +211,48 @@ The project is being refactored.
         <th colspan="2">Hard Disk</th>
     </tr>
 </thead>
-<tr style="text-align: center; border-bottom: 1.5px solid #000;">
-    <td>22H2</td>
+<tr style="text-align: center; border-bottom: 2px solid #000;">
+    <td>14.2.1</td>
     <td colspan="2">Intel Core i7 9750H</td>
     <td colspan="2">16 GB</td>
-    <td colspan="2">Intel UHD Graphics 630<br />AMD Radeon Pro 555X</td>
-    <td colspan="2">APPLE SSD AP0256M</td>
+    <td colspan="2">Intel UHD Graphics 630 &<br />AMD Radeon Pro 555X</td>
+    <td colspan="2">Samsung 990 Pro 4T driven by Konyead</td>
 </tr>
 <thead>
     <tr>
         <th rowspan="4">Header</th>
         <th rowspan="4">Unit Test</th>
         <th rowspan="4">Benchmark</th>
-        <th colspan="6">Compiler Support</th>
+        <th colspan="5">Compiler Support</th>
     </tr>
     <tr>
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th>ICC</th>
         <th rowspan="3">Other Compiler</th>
     </tr>
     <tr style="text-align: center;">
-        <td>15.0.0</td>
+        <td>1500.1.0.2.5</td>
         <td></td>
         <td></td>
-        <td>x64 v19.latest</td>
         <td></td>
     </tr>
     <tr style="text-align: center;">
         <td><code>-std=c++2b</code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
-        <td><code></code></td>
+        <td><code>-std=c++2c</code></td>
+        <td><code>-std=c++23</code></td>
+        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
     <th><code>__config.hpp</code></th>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
 </tr>
 </table>
