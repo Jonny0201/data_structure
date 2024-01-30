@@ -167,15 +167,6 @@ template <typename> struct is_nothrow_move_constructible;
 template <typename> struct is_nothrow_move_assignable;
 
 namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_TEST_OPERATION(static_castable, static_cast<To>(declval<From>()),
-                                typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION(dynamic_castable, dynamic_cast<To>(declval<From>()),
-                                typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION(const_castable, const_cast<To>(declval<From>()),
-                                typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION(reinterpret_castable, reinterpret_cast<To>(declval<From>()),
-                                typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION(castable, (To)declval<From>(), typename From, typename To);
 __DATA_STRUCTURE_TEST_OPERATION(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(address_of, declval<T>().operator&(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(bit_and, declval<LHS>() bitand declval<RHS>(),
@@ -1191,28 +1182,58 @@ struct is_swappable_by_member_function : conditional_t<decltype(__dsa::test_lval
 template<typename T>
 inline constexpr auto is_swappable_by_member_function_v {is_swappable_by_member_function<T>::value};
 
+namespace __data_structure_auxiliary {
 template <typename From, typename To>
-struct is_static_castable : decltype(__dsa::test_static_castable<From, To>(0)) {};
+select_second_t<decltype(static_cast<To>(declval<From>())), true_type> test_static_cast(int) noexcept;
+template <typename, typename>
+false_type test_static_cast(...) noexcept;
+}
+template <typename From, typename To>
+struct is_static_castable : decltype(__dsa::test_static_cast<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_static_castable_v {is_static_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
 template <typename From, typename To>
-struct is_dynamic_castable : decltype(__dsa::test_dynamic_castable<From, To>(0)) {};
+select_second_t<decltype(dynamic_cast<To>(declval<From>())), true_type> test_dynamic_cast(int) noexcept;
+template <typename, typename>
+false_type test_dynamic_cast(...) noexcept;
+}
+template <typename From, typename To>
+struct is_dynamic_castable : decltype(__dsa::test_dynamic_cast<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_dynamic_castable_v {is_dynamic_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
 template <typename From, typename To>
-struct is_const_castable : decltype(__dsa::test_const_castable<From, To>(0)) {};
+select_second_t<decltype(const_cast<To>(declval<From>())), true_type> test_const_cast(int) noexcept;
+template <typename, typename>
+false_type test_const_cast(...) noexcept;
+}
+template <typename From, typename To>
+struct is_const_castable : decltype(__dsa::test_const_cast<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_const_castable_v {is_const_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
 template <typename From, typename To>
-struct is_reinterpret_castable : decltype(__dsa::test_reinterpret_castable<From, To>(0)) {};
+select_second_t<decltype(reinterpret_cast<To>(declval<From>())), true_type> test_reinterpret_cast(int) noexcept;
+template <typename, typename>
+false_type test_reinterpret_cast(...) noexcept;
+}
+template <typename From, typename To>
+struct is_reinterpret_castable : decltype(__dsa::test_reinterpret_cast<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_reinterpret_castable_v {is_reinterpret_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
 template <typename From, typename To>
-struct is_castable : decltype(__dsa::test_castable<From, To>(0)) {};
+select_second_t<decltype((To)declval<From>()), true_type> test_c_style_cast(int) noexcept;
+template <typename, typename>
+false_type test_c_style_cast(...) noexcept;
+}
+template <typename From, typename To>
+struct is_castable : decltype(__dsa::test_c_style_cast<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_castable_v {is_castable<From, To>::value};
 
