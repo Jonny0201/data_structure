@@ -122,16 +122,6 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(detail)
 namespace __data_structure_auxiliary {
-template <typename T>
-static constexpr void test_noexcept(T) noexcept;
-
-template <typename T>
-static constexpr bool_constant<noexcept(test_noexcept<T>())> test_nothrow_convertible() noexcept;
-
-template <typename, typename = void>
-struct is_invocable_auxiliary : false_type {};
-template <typename Result>
-struct is_invocable_auxiliary<Result, void_t<typename Result::type>> : true_type {};
 
 template <bool, bool, typename ...>
 struct result_of_nothrow_auxiliary : false_type {};
@@ -167,7 +157,6 @@ template <typename> struct is_nothrow_move_constructible;
 template <typename> struct is_nothrow_move_assignable;
 
 namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_TEST_OPERATION(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(address_of, declval<T>().operator&(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION(bit_and, declval<LHS>() bitand declval<RHS>(),
                                 typename LHS, typename RHS);
@@ -253,19 +242,6 @@ __DATA_STRUCTURE_TEST_OPERATION(function_call, declval<T>()(declval<Args>()...),
                                 typename T, typename ...Args);
 __DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>().operator,(declval<Arg>())), typename T, typename Arg);
 
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(destructible, declval<T &>().~T(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(list_constructible, T {declval<Args>()...},
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(static_castable, static_cast<To>(declval<From>()),
-                                        typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(dynamic_castable, dynamic_cast<To>(declval<From>()),
-                                        typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(const_castable, const_cast<To>(declval<From>()),
-                                        typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(reinterpret_castable, reinterpret_cast<To>(declval<From>()),
-                                        typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(castable, (To)declval<From>(), typename From, typename To);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(swap_memfun, declval<T &>().swap(declval<T &>()), typename T);
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(address_of, declval<T>().operator&(), typename T);
 __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and, declval<LHS>() bitand declval<RHS>(),
                                         typename LHS, typename RHS);
@@ -386,16 +362,16 @@ struct add_rvalue_reference : __dsa::add_rvalue_reference_auxiliary<T> {};
 template <typename T>
 using add_rvalue_reference_t = typename add_rvalue_reference<T>::type;
 
-template <typename> struct is_reference;
+template <typename> struct is_void;
 template <typename> struct remove_reference;
 namespace __data_structure_auxiliary {
-template <typename T, bool = is_reference<T>::value>
+template <typename T, bool = decltype(__dsa::test_lvalue_reference<T>(0))::value or is_void<T>::value>
 struct add_pointer_auxiliary {
-    using type = T *;
+    using type = typename remove_reference<T>::type *;
 };
 template <typename T>
-struct add_pointer_auxiliary<T, true> {
-    using type = typename remove_reference<T>::type *;
+struct add_pointer_auxiliary<T, false> {
+    using type = T;
 };
 }
 template <typename T>
@@ -1238,15 +1214,24 @@ template <typename From, typename To>
 inline constexpr auto is_castable_v {is_castable<From, To>::value};
 
 template <typename, typename ...> struct invoke_result;
+template <typename> struct decay;
+namespace __data_structure_auxiliary {
+template <typename, typename = void>
+struct is_invocable_auxiliary : false_type {};
+template <typename Result>
+struct is_invocable_auxiliary<Result, void_t<typename Result::type>> : true_type {};
+}
 template <typename F, typename ...Args>
-struct is_invocable : __dsa::is_invocable_auxiliary<invoke_result<F, Args...>> {};
+struct is_invocable : conditional_t<is_function_v<F>,
+        __dsa::is_invocable_auxiliary<invoke_result<typename decay<F>::type, Args...>>,
+        conditional_t<is_complete_v<F>, __dsa::is_invocable_auxiliary<invoke_result<remove_reference_t<F>, Args...>>,
+                false_type>> {};
 template <typename F, typename ...Args>
 inline constexpr auto is_invocable_v {is_invocable<F, Args...>::value};
 
 template <typename R, typename F, typename ...Args>
-struct is_invocable_r : conditional_t<is_invocable_v<F, Args...>,
-        conditional_t<is_convertible_v<typename invoke_result<F, Args...>::type, R>, true_type, false_type>,
-        false_type> {};
+struct is_invocable_r : bool_constant<is_invocable_v<F, Args...> and
+        is_convertible_v<typename invoke_result<F, Args...>::type, R>> {};
 template <typename R, typename F, typename ...Args>
 inline constexpr auto is_invocable_r_v {is_invocable_r<R, F, Args...>::value};
 
@@ -1270,9 +1255,15 @@ struct is_nothrow_move_constructible : is_nothrow_constructible<T, add_rvalue_re
 template <typename T>
 inline constexpr auto is_nothrow_move_constructible_v {is_nothrow_move_constructible<T>::value};
 
+namespace __data_structure_auxiliary {
 template <typename T, typename ...Args>
-struct is_nothrow_list_constructible :
-        decltype(__dsa::test_nothrow_list_constructible<T, Args...>()) {};
+select_second_t<decltype(T {declval<Args>()...}), bool_constant<noexcept(T {declval<Args>()...})>>
+test_nothrow_list_constructible(int) noexcept;
+template <typename, typename ...>
+false_type test_nothrow_list_constructible(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_nothrow_list_constructible : decltype(__dsa::test_nothrow_list_constructible<T, Args...>(0)) {};
 template <typename T, typename ...Args>
 inline constexpr auto is_nothrow_list_constructible_v {is_nothrow_list_constructible<T, Args...>::value};
 
@@ -1293,14 +1284,27 @@ struct is_nothrow_move_assignable :
 template <typename T>
 inline constexpr auto is_nothrow_move_assignable_v {is_nothrow_move_assignable<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().~T()), bool_constant<noexcept(declval<T>().~T())>>
+test_nothrow_destructible(int) noexcept;
+template <typename>
+false_type test_nothrow_destructible(...) noexcept;
+}
 template <typename T>
 struct is_nothrow_destructible : decltype(__dsa::test_nothrow_destructible<T>(0)) {};
 template <typename T>
 inline constexpr auto is_nothrow_destructible_v {is_nothrow_destructible<T>::value};
 
+namespace __data_structure_auxiliary {
 template <typename LHS, typename RHS>
-struct is_nothrow_swappable_with : bool_constant<is_swappable_with_v<LHS, RHS> and
-        noexcept(ds::swap(declval<LHS>(), declval<RHS>())) and noexcept(ds::swap(declval<RHS>(), declval<LHS>()))> {};
+select_second_t<decltype(swap(declval<LHS>(), declval<RHS>())),
+        bool_constant<noexcept(ds::swap(declval<LHS>(), declval<RHS>()))>> test_nothrow_swappable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_swappable(...) noexcept;
+}
+template <typename LHS, typename RHS>
+struct is_nothrow_swappable_with : decltype(__dsa::test_nothrow_swappable<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS>
 inline constexpr auto is_nothrow_swappable_with_v {is_nothrow_swappable_with<LHS, RHS>::value};
 
@@ -1316,10 +1320,18 @@ struct is_nothrow_invocable :
 template <typename Ptr, typename ...Args>
 inline constexpr auto is_nothrow_invocable_v {is_nothrow_invocable<Ptr, Args...>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T>
+void test_convertible(T) noexcept;
+template <typename From, typename To>
+select_second_t<decltype(test_convertible<To>(declval<From>())),
+        bool_constant<noexcept(test_convertible<To>(declval<From>()))>> test_nothrow_convertible(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_convertible(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_convertible : conditional_t<is_void_v<From> and is_void_v<To>, true_type,
-        conditional_t<is_convertible_v<From, To>,
-                decltype(__dsa::test_nothrow_convertible<To>(declval<From>())), false_type>> {};
+        bool_constant<is_convertible_v<From, To> and decltype(__dsa::test_nothrow_convertible<From, To>(0))::value>> {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_convertible_v {is_nothrow_convertible<From, To>::value};
 
@@ -1327,47 +1339,88 @@ template <typename R, typename Ptr, typename ...Args>
 struct is_nothrow_invocable_r : bool_constant<is_nothrow_invocable_v<Ptr, Args...> and
         is_nothrow_convertible_v<typename invoke_result<Ptr, Args...>::type, R>> {};
 
+namespace __data_structure_auxiliary {
+template <typename From, typename To>
+select_second_t<decltype(static_cast<To>(declval<From>())), bool_constant<noexcept(static_cast<To>(declval<From>()))>>
+test_nothrow_static_castable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_static_castable(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_static_castable : decltype(__dsa::test_nothrow_static_castable<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_static_castable_v {is_nothrow_static_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
+template <typename From, typename To>
+select_second_t<decltype(dynamic_cast<To>(declval<From>())),
+        bool_constant<noexcept(dynamic_cast<To>(declval<From>()))>> test_nothrow_dynamic_castable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_dynamic_castable(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_dynamic_castable : decltype(__dsa::test_nothrow_dynamic_castable<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_dynamic_castable_v {is_nothrow_dynamic_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
+template <typename From, typename To>
+select_second_t<decltype(const_cast<To>(declval<From>())),
+        bool_constant<noexcept(const_cast<To>(declval<From>()))>> test_nothrow_const_castable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_const_castable(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_const_castable : decltype(__dsa::test_nothrow_const_castable<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_const_castable_v {is_nothrow_const_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
+template <typename From, typename To>
+select_second_t<decltype(reinterpret_cast<To>(declval<From>())),
+        bool_constant<noexcept(reinterpret_cast<To>(declval<From>()))>> test_nothrow_reinterpret_castable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_reinterpret_castable(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_reinterpret_castable :
         decltype(__dsa::test_nothrow_reinterpret_castable<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_reinterpret_castable_v {is_nothrow_reinterpret_castable<From, To>::value};
 
+namespace __data_structure_auxiliary {
+template <typename From, typename To>
+select_second_t<decltype((To)declval<From>()), bool_constant<noexcept((To)declval<From>())>>
+test_nothrow_castable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_castable(...) noexcept;
+}
 template <typename From, typename To>
 struct is_nothrow_castable : decltype(__dsa::test_nothrow_castable<From, To>(0)) {};
 template <typename From, typename To>
 inline constexpr auto is_nothrow_castable_v {is_nothrow_castable<From, To>::value};
 
 template <typename T>
-struct is_stateless : conditional_t<is_trivially_default_constructible_v<T> and
-        is_trivially_copy_constructible_v<T> and is_trivially_assignable_v<T> and
-        is_trivially_destructible_v<T> and is_empty_v<T>, true_type, false_type> {};
+struct is_stateless : bool_constant<is_trivially_default_constructible_v<T> and
+        is_trivially_copy_constructible_v<T> and is_trivially_copy_assignable_v<T> and
+        is_trivially_destructible_v<T> and is_empty_v<T>> {};
 template <typename T>
 inline constexpr auto is_stateless_v {is_stateless<T>::value};
 
 template <typename Base, typename Derived>
 struct is_virtual_base_of : bool_constant<is_base_of_v<Base, Derived> and
-        is_castable_v<Derived, Base> and not is_castable_v<Base, Derived>> {};
+        is_castable_v<Derived *, Base *> and not is_castable_v<Base *, Derived *>> {};
 template <typename Base, typename Derived>
 inline constexpr auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
 
+namespace __data_structure_auxiliary {
+template <typename E, bool IsEnum = is_enum_v<E>>
+struct is_scoped_enum_auxiliary : is_convertible<E, __underlying_type(E)> {};
+template <typename T>
+struct is_scoped_enum_auxiliary<T, false> : true_type {};
+}
 template <typename E>
-struct is_scoped_enum : bool_constant<is_enum_v<E> and is_convertible_v<E, int>> {};
+struct is_scoped_enum : bool_constant<not __dsa::is_scoped_enum_auxiliary<E>::value> {};
 template <typename E>
 inline constexpr auto is_scoped_enum_v {is_scoped_enum<E>::value};
 __DATA_STRUCTURE_END
@@ -1383,16 +1436,6 @@ struct has_unique_object_representations :
         conditional_t<__has_unique_object_representations(T), true_type, false_type> {};
 template <typename T>
 inline constexpr auto has_unique_object_representations_v {has_unique_object_representations<T>::value};
-
-template <typename T>
-struct has_swap_member_function : decltype(__dsa::test_swap_memfun<T>(0)) {};
-template <typename T>
-inline constexpr auto has_swap_member_function_v {has_swap_member_function<T>::value};
-
-template <typename T>
-struct has_nothrow_swap_member_function : decltype(__dsa::test_nothrow_swap_memfun<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_swap_member_function_v {has_nothrow_swap_member_function<T>::value};
 
 template <typename T>
 struct has_address_of_operator : decltype(__dsa::test_address_of<T>(0)) {};
@@ -1978,7 +2021,7 @@ template <typename ...> struct common_type;
 template <typename> struct alignment_of;
 namespace __data_structure_auxiliary {
 using signed_integral = type_container<signed char, signed short, signed int,
-        signed long,signed long long, __int128_t>;
+        signed long, signed long long, __int128_t>;
 using unsigned_integral = type_container<unsigned char, unsigned short, unsigned int,
         unsigned long, unsigned long long, __uint128_t>;
 using floating_point = type_container<float, double, long double>;
@@ -2385,12 +2428,20 @@ struct decay {
 template <typename T>
 using decay_t = typename decay<T>::type;
 
-template <typename T>
-struct underlying_type {
-    using type = __underlying_type(T);
+namespace __data_structure_auxiliary {
+template <typename E, bool IsEnum = is_enum_v<E>>
+struct underlying_type_auxiliary {
+    using type = __underlying_type(E);
 };
 template <typename T>
-using underlying_type_t = typename underlying_type<T>::type;
+struct underlying_type_auxiliary<T, false> {
+    using type = T;
+};
+}
+template <typename E>
+struct underlying_type : __dsa::underlying_type_auxiliary<E> {};
+template <typename E>
+using underlying_type_t = typename underlying_type<E>::type;
 
 template <typename ...>
 struct common_type {};
