@@ -1297,21 +1297,44 @@ template <typename T>
 inline constexpr auto is_nothrow_destructible_v {is_nothrow_destructible<T>::value};
 
 namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS, bool = is_swappable_with_v<LHS, RHS>>
+struct is_nothrow_swappable_with_auxiliary : bool_constant<noexcept(swap(declval<LHS>(), declval<RHS>())) and
+        noexcept(swap(declval<RHS>(), declval<LHS>()))> {};
 template <typename LHS, typename RHS>
-select_second_t<decltype(swap(declval<LHS>(), declval<RHS>())),
-        bool_constant<noexcept(ds::swap(declval<LHS>(), declval<RHS>()))>> test_nothrow_swappable(int) noexcept;
-template <typename, typename>
-false_type test_nothrow_swappable(...) noexcept;
+struct is_nothrow_swappable_with_auxiliary<LHS, RHS, false> : false_type {};
 }
 template <typename LHS, typename RHS>
-struct is_nothrow_swappable_with : decltype(__dsa::test_nothrow_swappable<LHS, RHS>(0)) {};
+struct is_nothrow_swappable_with : __dsa::is_nothrow_swappable_with_auxiliary<LHS, RHS> {};
 template <typename LHS, typename RHS>
 inline constexpr auto is_nothrow_swappable_with_v {is_nothrow_swappable_with<LHS, RHS>::value};
 
 template <typename T>
-struct is_nothrow_swappable : is_nothrow_swappable_with<T, T> {};
+struct is_nothrow_swappable : conditional_t<decltype(__dsa::test_lvalue_reference<T>(0))::value,
+        is_nothrow_swappable_with<add_lvalue_reference_t<T>, add_lvalue_reference_t<T>>, false_type> {};
 template <typename T>
 inline constexpr auto is_nothrow_swappable_v {is_nothrow_swappable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS, bool = is_swappable_by_member_function_with_v<LHS, RHS>>
+struct is_nothrow_swappable_by_member_function_with_auxiliary : bool_constant<
+        noexcept(declval<LHS>().swap(declval<RHS>())) and noexcept(declval<RHS>().swap(declval<LHS>()))> {};
+template <typename LHS, typename RHS>
+struct is_nothrow_swappable_by_member_function_with_auxiliary<LHS, RHS, false> : false_type {};
+}
+template <typename LHS, typename RHS>
+struct is_nothrow_swappable_by_member_function_with :
+        __dsa::is_nothrow_swappable_by_member_function_with_auxiliary<LHS, RHS> {};
+template <typename LHS, typename RHS>
+inline constexpr auto is_nothrow_swappable_by_member_function_with_v {
+    is_nothrow_swappable_by_member_function_with<LHS, RHS>::value
+};
+
+template <typename T>
+struct is_nothrow_swappable_by_member_function : conditional_t<decltype(__dsa::test_lvalue_reference<T>(0))::value,
+        is_nothrow_swappable_by_member_function_with<add_lvalue_reference_t<T>, add_lvalue_reference_t<T>>,
+        false_type> {};
+template <typename T>
+inline constexpr auto is_nothrow_swappable_by_member_function_v {is_nothrow_swappable_by_member_function<T>::value};
 
 template <typename Ptr, typename ...Args>
 struct is_nothrow_invocable :
@@ -1414,7 +1437,7 @@ template <typename Base, typename Derived>
 inline constexpr auto is_virtual_base_of_v {is_virtual_base_of<Base, Derived>::value};
 
 namespace __data_structure_auxiliary {
-template <typename E, bool IsEnum = is_enum_v<E>>
+template <typename E, bool = is_enum_v<E>>
 struct is_scoped_enum_auxiliary : is_convertible<E, __underlying_type(E)> {};
 template <typename T>
 struct is_scoped_enum_auxiliary<T, false> : true_type {};
@@ -1423,6 +1446,20 @@ template <typename E>
 struct is_scoped_enum : bool_constant<not __dsa::is_scoped_enum_auxiliary<E>::value> {};
 template <typename E>
 inline constexpr auto is_scoped_enum_v {is_scoped_enum<E>::value};
+
+template <typename T>
+struct is_implicit_lifetime : bool_constant<is_scalar_v<T> or is_array_v<T> or
+        (is_aggregate_v<T> and is_trivially_destructible_v<T>) or ((is_trivially_default_constructible_v<T> or
+                        is_trivially_copy_constructible_v<T> or is_trivially_move_constructible_v<T>) and
+                is_trivially_destructible_v<T>)> {};
+template <typename T>
+inline constexpr auto is_implicit_lifetime_v {is_implicit_lifetime<T>::value};
+
+template <typename T>
+struct is_layout_compatible;
+
+template <typename Base, typename Derived>
+struct is_pointer_interconvertible_base_of;
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(has something)
@@ -2429,7 +2466,7 @@ template <typename T>
 using decay_t = typename decay<T>::type;
 
 namespace __data_structure_auxiliary {
-template <typename E, bool IsEnum = is_enum_v<E>>
+template <typename E, bool = is_enum_v<E>>
 struct underlying_type_auxiliary {
     using type = __underlying_type(E);
 };
