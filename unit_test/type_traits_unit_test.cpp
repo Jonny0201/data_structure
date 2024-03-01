@@ -12998,3 +12998,147 @@ static_assert(is_scoped_enum_v<unit_test_is_scoped_enum_3>);
 static_assert(not is_scoped_enum_v<unit_test_is_scoped_enum_4>);
 static_assert(is_scoped_enum_v<unit_test_is_scoped_enum_5>);
 __DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(unit test for ds::is_implicit_lifetime)
+struct unit_test_is_implicit_lifetime_trivial {
+    int a;
+    char b;
+    long c;
+    void *d;
+    double f;
+};
+struct unit_test_is_implicit_lifetime_non_trivially_destructible {
+    int a;
+    char b;
+    long c;
+    void *d;
+    double f;
+    ~unit_test_is_implicit_lifetime_non_trivially_destructible() {}
+};
+#include <string>
+struct unit_test_is_implicit_lifetime_non_trivial {
+    int a;
+    char b;
+    std::string c;
+};
+struct unit_test_is_implicit_lifetime_non_trivial_with_non_trivially_destructible {
+    int a;
+    char b;
+    std::string c;
+    ~unit_test_is_implicit_lifetime_non_trivial_with_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_trivially_default_constructible_and_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_default_constructible_and_trivially_destructible() = default;
+    ~unit_test_is_implicit_lifetime_trivially_default_constructible_and_trivially_destructible() = default;
+};
+struct unit_test_is_implicit_lifetime_trivially_default_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_default_constructible_and_non_trivially_destructible() = default;
+    ~unit_test_is_implicit_lifetime_trivially_default_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_non_trivially_default_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_non_trivially_default_constructible_and_non_trivially_destructible() {}
+    ~unit_test_is_implicit_lifetime_non_trivially_default_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_trivially_copy_constructible_and_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_copy_constructible_and_trivially_destructible(const unit_test_is_implicit_lifetime_trivially_copy_constructible_and_trivially_destructible &) = default;
+    ~unit_test_is_implicit_lifetime_trivially_copy_constructible_and_trivially_destructible() = default;
+};
+struct unit_test_is_implicit_lifetime_trivially_copy_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_copy_constructible_and_non_trivially_destructible(const unit_test_is_implicit_lifetime_trivially_copy_constructible_and_non_trivially_destructible &) = default;
+    ~unit_test_is_implicit_lifetime_trivially_copy_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_non_trivially_copy_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_non_trivially_copy_constructible_and_non_trivially_destructible(const unit_test_is_implicit_lifetime_non_trivially_copy_constructible_and_non_trivially_destructible &) {}
+    ~unit_test_is_implicit_lifetime_non_trivially_copy_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_trivially_move_constructible_and_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_move_constructible_and_trivially_destructible(unit_test_is_implicit_lifetime_trivially_move_constructible_and_trivially_destructible &&) = default;
+    ~unit_test_is_implicit_lifetime_trivially_move_constructible_and_trivially_destructible() = default;
+};
+struct unit_test_is_implicit_lifetime_trivially_move_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_move_constructible_and_non_trivially_destructible(unit_test_is_implicit_lifetime_trivially_move_constructible_and_non_trivially_destructible &&) = default;
+    ~unit_test_is_implicit_lifetime_trivially_move_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_non_trivially_move_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_non_trivially_move_constructible_and_non_trivially_destructible(unit_test_is_implicit_lifetime_non_trivially_move_constructible_and_non_trivially_destructible &&) {}
+    ~unit_test_is_implicit_lifetime_non_trivially_move_constructible_and_non_trivially_destructible() {}
+};
+struct unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible() = default;
+    unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible(const unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible &) = default;
+    unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible(unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible &&) = default;
+    ~unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible() = default;
+};
+struct unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible {
+    unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible() = default;
+    unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible(const unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible &) = default;
+    unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible(unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible &&) = default;
+    ~unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible() {}
+};
+static_assert(is_implicit_lifetime_v<int>);
+static_assert(is_implicit_lifetime_v<const int>);
+static_assert(is_implicit_lifetime_v<volatile int>);
+static_assert(is_implicit_lifetime_v<const volatile int>);
+static_assert(is_implicit_lifetime_v<int *>);
+static_assert(is_implicit_lifetime_v<int A::*>);
+static_assert(is_implicit_lifetime_v<void (A::*)()>);
+static_assert(is_implicit_lifetime_v<int &>);
+static_assert(is_implicit_lifetime_v<int []>);
+static_assert(is_implicit_lifetime_v<const int []>);
+static_assert(is_implicit_lifetime_v<volatile int []>);
+static_assert(is_implicit_lifetime_v<const volatile int []>);
+static_assert(is_implicit_lifetime_v<int [42]>);
+static_assert(is_implicit_lifetime_v<int [][42]>);
+static_assert(is_implicit_lifetime_v<int [][42][1][2][3][4]>);
+static_assert(not is_implicit_lifetime_v<int ()>);
+static_assert(is_implicit_lifetime_v<int *[]>);
+static_assert(is_implicit_lifetime_v<int (*)[]>);
+static_assert(is_implicit_lifetime_v<int (&)[]>);
+static_assert(is_implicit_lifetime_v<void (*[])()>);
+static_assert(is_implicit_lifetime_v<void (*(&)[])()>);
+static_assert(is_implicit_lifetime_v<A>);
+static_assert(is_implicit_lifetime_v<C>);
+static_assert(is_implicit_lifetime_v<D>);
+//static_assert(not is_implicit_lifetime_v<E>);       // undefined behavior
+static_assert(is_implicit_lifetime_v<bool>);
+static_assert(is_implicit_lifetime_v<char>);
+static_assert(is_implicit_lifetime_v<signed char>);
+static_assert(is_implicit_lifetime_v<unsigned char>);
+static_assert(is_implicit_lifetime_v<char8_t>);
+static_assert(is_implicit_lifetime_v<char16_t>);
+static_assert(is_implicit_lifetime_v<char32_t>);
+static_assert(is_implicit_lifetime_v<wchar_t>);
+static_assert(is_implicit_lifetime_v<short>);
+static_assert(is_implicit_lifetime_v<signed short>);
+static_assert(is_implicit_lifetime_v<unsigned short>);
+static_assert(is_implicit_lifetime_v<signed>);
+static_assert(is_implicit_lifetime_v<signed int>);
+static_assert(is_implicit_lifetime_v<unsigned>);
+static_assert(is_implicit_lifetime_v<unsigned int>);
+static_assert(is_implicit_lifetime_v<long>);
+static_assert(is_implicit_lifetime_v<unsigned long>);
+static_assert(is_implicit_lifetime_v<long long>);
+static_assert(is_implicit_lifetime_v<unsigned long long>);
+static_assert(is_implicit_lifetime_v<__int128_t>);
+static_assert(is_implicit_lifetime_v<__uint128_t>);
+static_assert(is_implicit_lifetime_v<float>);
+static_assert(is_implicit_lifetime_v<double>);
+static_assert(is_implicit_lifetime_v<long double>);
+static_assert(not is_implicit_lifetime_v<void>);
+static_assert(is_implicit_lifetime_v<decltype(nullptr)>);
+static_assert(is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivial>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivial>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivial_with_non_trivially_destructible>);
+static_assert(is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_default_constructible_and_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_default_constructible_and_non_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivially_default_constructible_and_non_trivially_destructible>);
+static_assert(is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_copy_constructible_and_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_copy_constructible_and_non_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivially_copy_constructible_and_non_trivially_destructible>);
+static_assert(is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_move_constructible_and_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_move_constructible_and_non_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_non_trivially_move_constructible_and_non_trivially_destructible>);
+static_assert(is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_constructible_and_trivially_destructible>);
+static_assert(not is_implicit_lifetime_v<unit_test_is_implicit_lifetime_trivially_constructible_and_non_trivially_destructible>);
+__DATA_STRUCTURE_END
