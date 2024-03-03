@@ -103,39 +103,51 @@ struct type_container;
 template <>
 struct type_container<> {
     using type = type_container<>;
-    using remaining = type_container<>;
+    using next = type_container<>;
 };
 template <typename T>
 struct type_container<T> {
     using type = T;
-    using remaining = type_container<>;
+    using next = type_container<>;
 };
 template <typename T, typename ...Args>
 struct type_container<T, Args...> {
     using type = T;
-    using remaining = type_container<Args...>;
+    using next = type_container<Args...>;
 };
 
 template <void () = [] {}>
 struct unique_type {};
 __DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(detail)
+__DATA_STRUCTURE_START(functions)
 namespace __data_structure_auxiliary {
-
-template <bool, bool, typename ...>
-struct result_of_nothrow_auxiliary : false_type {};
+template <typename T>
+static constexpr T &&declval_auxiliary(int) noexcept;
+template <typename T>
+static constexpr T declval_auxiliary(...) noexcept;
 }
-#define __DATA_STRUCTURE_TEST_OPERATION(name, expression, ...) \
-    template <__VA_ARGS__> \
-    static constexpr select_second_t<decltype(expression), true_type> test_##name(int) noexcept; \
-    template <__VA_ARGS__> \
-    static constexpr false_type test_##name(...) noexcept
-#define __DATA_STRUCTURE_TEST_OPERATION_NOTHROW(name, expression, ...) \
-    template <__VA_ARGS__> \
-    static constexpr bool_constant<noexcept(expression)> test_nothrow_##name(int) noexcept; \
-    template <__VA_ARGS__> \
-    static constexpr false_type test_nothrow_##name(...) noexcept
+template <typename T>
+consteval decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
+
+template <typename S, typename M>
+consteval bool is_pointer_interconvertible_with_class(M S::*) noexcept;
+
+template <typename S1, typename S2, typename M1, typename M2>
+consteval bool is_corresponding_member(M1 S1::*, M2 S2::*) noexcept;
+
+constexpr bool is_constant_evaluated() noexcept {
+    if consteval {
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+consteval bool is_within_lifetime(const T *) noexcept;
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(add something)
 namespace __data_structure_auxiliary {
 template <typename, typename T>
 struct select_second {
@@ -144,194 +156,6 @@ struct select_second {
 template <typename T, typename U>
 using select_second_t = typename select_second<T, U>::type;
 
-template <typename T>
-static constexpr T &&declval_auxiliary(int) noexcept;
-template <typename T>
-static constexpr T declval_auxiliary(...) noexcept;
-}
-
-template <typename T>
-constexpr decltype(__dsa::declval_auxiliary<T>(0)) declval() noexcept;
-
-template <typename> struct is_nothrow_move_constructible;
-template <typename> struct is_nothrow_move_assignable;
-
-namespace __data_structure_auxiliary {
-__DATA_STRUCTURE_TEST_OPERATION(address_of, declval<T>().operator&(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(bit_and, declval<LHS>() bitand declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(bit_or, declval<LHS>() | declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(bit_or_assignment, declval<LHS>() or_eq declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(bit_xor, declval<LHS>() xor declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(bit_xor_assignment, declval<LHS>() xor_eq declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(complement, compl declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(dereference, *declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(divide, declval<LHS>() / declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(divide_assignment, declval<LHS>() /= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(equal_to, declval<LHS>() == declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(greater, declval<LHS>() > declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(greater_equal_to, declval<LHS>() >= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(left_shift, declval<LHS>() << declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(left_shift_assignment, declval<LHS>() <<= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(right_shift, declval<LHS>() >> declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(right_shift_assignment, declval<LHS>() >>= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(less, declval<LHS>() < declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(less_equal_to, declval<LHS>() <= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(logical_and, declval<LHS>() and declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(logical_or, declval<LHS>() or declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(logical_not, not declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(unary_minus, -declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(minus, declval<LHS>() - declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(minus_assignment, declval<LHS>() -= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(modules, declval<LHS>() % declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(modules_assignment, declval<LHS>() %= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(multiply, declval<LHS>() * declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(multiply_assignment, declval<LHS>() *= declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(three_way, declval<LHS>() <=> declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(not_equal_to, declval<LHS>() not_eq declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(plus, declval<LHS>() + declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(unary_plus, +declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(plus_assignment, declval<LHS>() += declval<RHS>(),
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(subscript, declval<LHS>()[declval<RHS>()],
-                                typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION(pre_increment, ++declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(post_increment, declval<T>()++, typename T);
-__DATA_STRUCTURE_TEST_OPERATION(pre_decrement, --declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(post_decrement, declval<T>()--, typename T);
-__DATA_STRUCTURE_TEST_OPERATION(member_access_by_pointer, declval<T>().operator->(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(member_access_by_pointer_dereference,
-                                declval<T>().operator->*(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION(new_operator, T::operator new(declval<Args>()...),
-                                typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION(new_array_operator, T::operator new[](declval<Args>()...),
-                                typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION(delete_operator, T::operator delete(declval<Args>()...),
-                                typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION(delete_array_operator, T::operator delete[](declval<Args>()...),
-                                typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION(function_call, declval<T>()(declval<Args>()...),
-                                typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION(comma, (declval<T>().operator,(declval<Arg>())), typename T, typename Arg);
-
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(address_of, declval<T>().operator&(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and, declval<LHS>() bitand declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_and_assignment, declval<LHS>() and_eq declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_or, declval<LHS>() | declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_or_assignment, declval<LHS>() or_eq declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_xor, declval<LHS>() xor declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(bit_xor_assignment, declval<LHS>() xor_eq declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(complement, compl declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(dereference, *declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(divide, declval<LHS>() / declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(divide_assignment, declval<LHS>() /= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(equal_to, declval<LHS>() == declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(greater, declval<LHS>() > declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(greater_equal_to, declval<LHS>() >= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(left_shift, declval<LHS>() << declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(left_shift_assignment, declval<LHS>() <<= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(right_shift, declval<LHS>() >> declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(right_shift_assignment, declval<LHS>() >>= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(less, declval<LHS>() < declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(less_equal_to, declval<LHS>() <= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_and, declval<LHS>() and declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_or, declval<LHS>() or declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(logical_not, not declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(unary_minus, -declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(minus, declval<LHS>() - declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(minus_assignment, declval<LHS>() -= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(modules, declval<LHS>() % declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(modules_assignment, declval<LHS>() %= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(multiply, declval<LHS>() * declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(multiply_assignment, declval<LHS>() *= declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(three_way, declval<LHS>() <=> declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(not_equal_to, declval<LHS>() not_eq declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(plus, declval<LHS>() + declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(unary_plus, +declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(plus_assignment, declval<LHS>() += declval<RHS>(),
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(subscript, declval<LHS>()[declval<RHS>()],
-                                        typename LHS, typename RHS);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(pre_increment, ++declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(post_increment, declval<T>()++, typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(pre_decrement, --declval<T>(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(post_decrement, declval<T>()--, typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(member_access_by_pointer, declval<T>().operator->(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(member_access_by_pointer_dereference,
-                                        declval<T>().operator->*(), typename T);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(new_operator, T::operator new(declval<Args>()...),
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(new_array_operator, T::operator new[](declval<Args>()...),
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(delete_operator, T::operator delete(declval<Args>()...),
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(delete_array_operator, T::operator delete[](declval<Args>()...),
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(function_call, declval<T>()(declval<Args>()...),
-                                        typename T, typename ...Args);
-__DATA_STRUCTURE_TEST_OPERATION_NOTHROW(comma, (declval<T>().operator,(declval<Arg>())),
-                                        typename T, typename Arg);
-}
-__DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(add something)
-namespace __data_structure_auxiliary {
 template <typename T>
 static constexpr select_second_t<T &, true_type> test_lvalue_reference(int) noexcept;
 template <typename T>
@@ -1336,6 +1160,10 @@ struct is_nothrow_swappable_by_member_function : conditional_t<decltype(__dsa::t
 template <typename T>
 inline constexpr auto is_nothrow_swappable_by_member_function_v {is_nothrow_swappable_by_member_function<T>::value};
 
+namespace __data_structure_auxiliary {
+template <bool, bool, typename ...>
+struct result_of_nothrow_auxiliary : false_type {};
+}
 template <typename Ptr, typename ...Args>
 struct is_nothrow_invocable :
         __dsa::result_of_nothrow_auxiliary<is_member_object_pointer_v<remove_reference_t<Ptr>>,
@@ -1460,6 +1288,1084 @@ struct is_layout_compatible;
 
 template <typename Base, typename Derived>
 struct is_pointer_interconvertible_base_of;
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() + declval<RHS>()), true_type> test_addable(int) noexcept;
+template <typename, typename>
+false_type test_addable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_addable : decltype(__dsa::test_addable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_addable_v {is_addable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() + declval<RHS>()), bool_constant<noexcept(declval<LHS>() + declval<RHS>())>>
+test_nothrow_addable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_addable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_addable : decltype(__dsa::test_nothrow_addable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_addable_v {is_nothrow_addable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(+declval<T>()), true_type> test_positivible(int) noexcept;
+template <typename>
+false_type test_positivible(...) noexcept;
+}
+template <typename T>
+struct is_positivible : decltype(__dsa::test_positivible<T>(0)) {};
+template <typename T>
+inline constexpr auto is_positivible_v {is_positivible<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(+declval<T>()), bool_constant<noexcept(+declval<T>())>> test_nothrow_positivible(int) noexcept;
+template <typename>
+false_type test_nothrow_positivible(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_positivible : decltype(__dsa::test_nothrow_positivible<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_positivible_v {is_nothrow_positivible<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() - declval<RHS>()), true_type> test_subtractable(int) noexcept;
+template <typename, typename>
+false_type test_subtractable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_subtractable : decltype(__dsa::test_subtractable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_subtractable_v {is_subtractable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() - declval<RHS>()), bool_constant<noexcept(declval<LHS>() - declval<RHS>())>>
+test_nothrow_subtractable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_subtractable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_subtractable : decltype(__dsa::test_nothrow_subtractable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_subtractable_v {is_nothrow_subtractable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(-declval<T>()), true_type> test_negtivible(int) noexcept;
+template <typename>
+false_type test_negtivible(...) noexcept;
+}
+template <typename T>
+struct is_negtivible : decltype(__dsa::test_negtivible<T>(0)) {};
+template <typename T>
+inline constexpr auto is_negtivible_v {is_negtivible<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(-declval<T>()), bool_constant<noexcept(-declval<T>())>> test_nothrow_negtivible(int) noexcept;
+template <typename>
+false_type test_nothrow_negtivible(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_negtivible : decltype(__dsa::test_nothrow_negtivible<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_negtivible_v {is_nothrow_negtivible<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() * declval<RHS>()), true_type> test_multipliable(int) noexcept;
+template <typename, typename>
+false_type test_multipliable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_multipliable : decltype(__dsa::test_multipliable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_multipliable_v {is_multipliable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() * declval<RHS>()), bool_constant<noexcept(declval<LHS>() * declval<RHS>())>>
+test_nothrow_multipliable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_multipliable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_multipliable : decltype(__dsa::test_nothrow_multipliable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_multipliable_v {is_nothrow_multipliable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(*declval<T>()), true_type> test_dereferenceable(int) noexcept;
+template <typename>
+false_type test_dereferenceable(...) noexcept;
+}
+template <typename T>
+struct is_dereferenceable : decltype(__dsa::test_dereferenceable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_dereferenceable_v {is_dereferenceable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(*declval<T>()), bool_constant<noexcept(*declval<T>())>>
+test_nothrow_dereferenceable(int) noexcept;
+template <typename>
+false_type test_nothrow_dereferenceable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_dereferenceable : decltype(__dsa::test_nothrow_dereferenceable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_dereferenceable_v {is_nothrow_dereferenceable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() / declval<RHS>()), true_type> test_divisible(int) noexcept;
+template <typename, typename>
+false_type test_divisible(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_divisible : decltype(__dsa::test_divisible<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_divisible_v {is_divisible<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() / declval<RHS>()), bool_constant<noexcept(declval<LHS>() / declval<RHS>())>>
+test_nothrow_divisible(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_divisible(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_divisible : decltype(__dsa::test_nothrow_divisible<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_divisible_v {is_nothrow_divisible<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() % declval<RHS>()), true_type> test_muldable(int) noexcept;
+template <typename, typename>
+false_type test_muldable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_muldable : decltype(__dsa::test_muldable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_muldable_v {is_muldable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() % declval<RHS>()), bool_constant<noexcept(declval<LHS>() % declval<RHS>())>>
+test_nothrow_muldable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_muldable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_muldable : decltype(__dsa::test_nothrow_muldable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_muldable_v {is_nothrow_muldable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() ^ declval<RHS>()), true_type> test_bitwise_xorable(int) noexcept;
+template <typename, typename>
+false_type test_bitwise_xorable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_bitwise_xorable : decltype(__dsa::test_bitwise_xorable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_bitwise_xorable_v {is_bitwise_xorable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() ^ declval<RHS>()), bool_constant<noexcept(declval<LHS>() ^ declval<RHS>())>>
+test_nothrow_bitwise_xorable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_bitwise_xorable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_bitwise_xorable : decltype(__dsa::test_nothrow_bitwise_xorable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_bitwise_xorable_v {is_nothrow_bitwise_xorable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() | declval<RHS>()), true_type> test_bitwise_orable(int) noexcept;
+template <typename, typename>
+false_type test_bitwise_orable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_bitwise_orable : decltype(__dsa::test_bitwise_orable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_bitwise_orable_v {is_bitwise_orable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() | declval<RHS>()), bool_constant<noexcept(declval<LHS>() | declval<RHS>())>>
+test_nothrow_bitwise_orable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_bitwise_orable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_bitwise_orable : decltype(__dsa::test_nothrow_bitwise_orable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_bitwise_orable_v {is_nothrow_bitwise_orable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(~declval<T>()), true_type> test_bitwise_notable(int) noexcept;
+template <typename>
+false_type test_bitwise_notable(...) noexcept;
+}
+template <typename T>
+struct is_bitwise_notable : decltype(__dsa::test_bitwise_notable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_bitwise_notable_v {is_bitwise_notable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(~declval<T>()), bool_constant<noexcept(~declval<T>())>>
+test_nothrow_bitwise_notable(int) noexcept;
+template <typename>
+false_type test_nothrow_bitwise_notable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_bitwise_notable : decltype(__dsa::test_nothrow_bitwise_notable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_bitwise_notable_v {is_nothrow_bitwise_notable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(!declval<T>()), true_type> test_logical_notable(int) noexcept;
+template <typename>
+false_type test_logical_notable(...) noexcept;
+}
+template <typename T>
+struct is_logical_notable : decltype(__dsa::test_logical_notable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_logical_notable_v {is_logical_notable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(!declval<T>()), bool_constant<noexcept(!declval<T>())>>
+test_nothrow_logical_notable(int) noexcept;
+template <typename>
+false_type test_nothrow_logical_notable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_logical_notable : decltype(__dsa::test_nothrow_logical_notable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_logical_notable_v {is_nothrow_logical_notable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() < declval<RHS>()), true_type> test_less_comparable(int) noexcept;
+template <typename, typename>
+false_type test_less_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_less_comparable : decltype(__dsa::test_less_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_less_comparable_v {is_less_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() < declval<RHS>()), bool_constant<noexcept(declval<LHS>() < declval<RHS>())>>
+test_nothrow_less_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_less_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_less_comparable : decltype(__dsa::test_nothrow_less_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_less_comparable_v {is_nothrow_less_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() > declval<RHS>()), true_type> test_greater_comparable(int) noexcept;
+template <typename, typename>
+false_type test_greater_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_greater_comparable : decltype(__dsa::test_greater_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_greater_comparable_v {is_greater_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() > declval<RHS>()), bool_constant<noexcept(declval<LHS>() > declval<RHS>())>>
+test_nothrow_greater_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_greater_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_greater_comparable : decltype(__dsa::test_nothrow_greater_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_greater_comparable_v {is_nothrow_greater_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() += declval<RHS>()), true_type> test_addition_assignable(int) noexcept;
+template <typename, typename>
+false_type test_addition_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_addition_assignable : decltype(__dsa::test_addition_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_addition_assignable_v {is_addition_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() += declval<RHS>()), bool_constant<noexcept(declval<LHS>() += declval<RHS>())>>
+test_nothrow_addition_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_addition_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_addition_assignable : decltype(__dsa::test_nothrow_addition_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_addition_assignable_v {is_nothrow_addition_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() -= declval<RHS>()), true_type> test_subtraction_assignable(int) noexcept;
+template <typename, typename>
+false_type test_subtraction_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_subtraction_assignable : decltype(__dsa::test_subtraction_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_subtraction_assignable_v {is_subtraction_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() -= declval<RHS>()), bool_constant<noexcept(declval<LHS>() -= declval<RHS>())>>
+test_nothrow_subtraction_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_subtraction_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_subtraction_assignable : decltype(__dsa::test_nothrow_subtraction_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_subtraction_assignable_v {is_nothrow_subtraction_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() *= declval<RHS>()), true_type> test_multiple_assignable(int) noexcept;
+template <typename, typename>
+false_type test_multiple_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_multiple_assignable : decltype(__dsa::test_multiple_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_multiple_assignable_v {is_multiple_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() *= declval<RHS>()), bool_constant<noexcept(declval<LHS>() *= declval<RHS>())>>
+test_nothrow_multiple_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_multiple_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_multiple_assignable : decltype(__dsa::test_nothrow_multiple_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_multiple_assignable_v {is_nothrow_multiple_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() /= declval<RHS>()), true_type> test_division_assignable(int) noexcept;
+template <typename, typename>
+false_type test_division_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_division_assignable : decltype(__dsa::test_division_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_division_assignable_v {is_division_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() /= declval<RHS>()), bool_constant<noexcept(declval<LHS>() /= declval<RHS>())>>
+test_nothrow_division_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_division_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_division_assignable : decltype(__dsa::test_nothrow_division_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_division_assignable_v {is_nothrow_division_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() %= declval<RHS>()), true_type> test_modulus_assignable(int) noexcept;
+template <typename, typename>
+false_type test_modulus_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_modulus_assignable : decltype(__dsa::test_modulus_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_modulus_assignable_v {is_modulus_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() %= declval<RHS>()), bool_constant<noexcept(declval<LHS>() %= declval<RHS>())>>
+test_nothrow_modulus_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_modulus_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_modulus_assignable : decltype(__dsa::test_nothrow_modulus_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_modulus_assignable_v {is_nothrow_modulus_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() ^= declval<RHS>()), true_type> test_bitwise_xor_assignable(int) noexcept;
+template <typename, typename>
+false_type test_bitwise_xor_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_bitwise_xor_assignable : decltype(__dsa::test_bitwise_xor_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_bitwise_xor_assignable_v {is_bitwise_xor_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() ^= declval<RHS>()), bool_constant<noexcept(declval<LHS>() ^= declval<RHS>())>>
+test_nothrow_bitwise_xor_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_bitwise_xor_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_bitwise_xor_assignable : decltype(__dsa::test_nothrow_bitwise_xor_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_bitwise_xor_assignable_v {is_nothrow_bitwise_xor_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() &= declval<RHS>()), true_type> test_bitwise_and_assignable(int) noexcept;
+template <typename, typename>
+false_type test_bitwise_and_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_bitwise_and_assignable : decltype(__dsa::test_bitwise_and_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_bitwise_and_assignable_v {is_bitwise_and_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() &= declval<RHS>()), bool_constant<noexcept(declval<LHS>() &= declval<RHS>())>>
+test_nothrow_bitwise_and_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_bitwise_and_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_bitwise_and_assignable : decltype(__dsa::test_nothrow_bitwise_and_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_bitwise_and_assignable_v {is_nothrow_bitwise_and_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() |= declval<RHS>()), true_type> test_bitwise_or_assignable(int) noexcept;
+template <typename, typename>
+false_type test_bitwise_or_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_bitwise_or_assignable : decltype(__dsa::test_bitwise_or_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_bitwise_or_assignable_v {is_bitwise_or_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() |= declval<RHS>()), bool_constant<noexcept(declval<LHS>() |= declval<RHS>())>>
+test_nothrow_bitwise_or_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_bitwise_or_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_bitwise_or_assignable : decltype(__dsa::test_nothrow_bitwise_or_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_bitwise_or_assignable_v {is_nothrow_bitwise_or_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() << declval<RHS>()), true_type> test_left_shiftable(int) noexcept;
+template <typename, typename>
+false_type test_left_shiftable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_left_shiftable : decltype(__dsa::test_left_shiftable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_left_shiftable_v {is_left_shiftable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() << declval<RHS>()), bool_constant<noexcept(declval<LHS>() << declval<RHS>())>>
+test_nothrow_left_shiftable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_left_shiftable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_left_shiftable : decltype(__dsa::test_nothrow_left_shiftable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_left_shiftable_v {is_nothrow_left_shiftable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >> declval<RHS>()), true_type> test_right_shiftable(int) noexcept;
+template <typename, typename>
+false_type test_right_shiftable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_right_shiftable : decltype(__dsa::test_right_shiftable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_right_shiftable_v {is_right_shiftable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >> declval<RHS>()), bool_constant<noexcept(declval<LHS>() >> declval<RHS>())>>
+test_nothrow_right_shiftable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_right_shiftable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_right_shiftable : decltype(__dsa::test_nothrow_right_shiftable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_right_shiftable_v {is_nothrow_right_shiftable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >>= declval<RHS>()), true_type>
+test_right_shift_assignable(int) noexcept;
+template <typename, typename>
+false_type test_right_shift_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_right_shift_assignable : decltype(__dsa::test_right_shift_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_right_shift_assignable_v {is_right_shift_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >>= declval<RHS>()), bool_constant<noexcept(declval<LHS>() >>= declval<RHS>())>>
+test_nothrow_right_shift_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_right_shift_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_right_shift_assignable : decltype(__dsa::test_nothrow_right_shift_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_right_shift_assignable_v {
+    is_nothrow_right_shift_assignable<LHS, RHS>::value
+};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <<= declval<RHS>()), true_type> test_left_shift_assignable(int) noexcept;
+template <typename, typename>
+false_type test_left_shift_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_left_shift_assignable : decltype(__dsa::test_left_shift_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_left_shift_assignable_v {is_left_shift_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <<= declval<RHS>()), bool_constant<noexcept(declval<LHS>() <<= declval<RHS>())>>
+test_nothrow_left_shift_assignable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_left_shift_assignable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_left_shift_assignable : decltype(__dsa::test_nothrow_left_shift_assignable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_left_shift_assignable_v {is_nothrow_left_shift_assignable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() == declval<RHS>()), true_type> test_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_equal_to_comparable : decltype(__dsa::test_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_equal_to_comparable_v {is_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() == declval<RHS>()), bool_constant<noexcept(declval<LHS>() == declval<RHS>())>>
+test_nothrow_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_equal_to_comparable : decltype(__dsa::test_nothrow_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_equal_to_comparable_v {is_nothrow_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() != declval<RHS>()), true_type> test_not_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_not_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_not_equal_to_comparable : decltype(__dsa::test_not_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_not_equal_to_comparable_v {is_not_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() != declval<RHS>()), bool_constant<noexcept(declval<LHS>() != declval<RHS>())>>
+test_nothrow_not_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_not_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_not_equal_to_comparable : decltype(__dsa::test_nothrow_not_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_not_equal_to_comparable_v {is_nothrow_not_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <= declval<RHS>()), true_type> test_less_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_less_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_less_equal_to_comparable : decltype(__dsa::test_less_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_less_equal_to_comparable_v {is_less_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <= declval<RHS>()), bool_constant<noexcept(declval<LHS>() <= declval<RHS>())>>
+test_nothrow_less_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_less_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_less_equal_to_comparable : decltype(__dsa::test_nothrow_less_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_less_equal_to_comparable_v {is_nothrow_less_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >= declval<RHS>()), true_type> test_greater_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_greater_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_greater_equal_to_comparable : decltype(__dsa::test_greater_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_greater_equal_to_comparable_v {is_greater_equal_to_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() >= declval<RHS>()), bool_constant<noexcept(declval<LHS>() >= declval<RHS>())>>
+test_nothrow_greater_equal_to_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_greater_equal_to_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_greater_equal_to_comparable :
+        decltype(__dsa::test_nothrow_greater_equal_to_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_greater_equal_to_comparable_v {
+    is_nothrow_greater_equal_to_comparable<LHS, RHS>::value
+};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <=> declval<RHS>()), true_type> test_three_way_comparable(int) noexcept;
+template <typename, typename>
+false_type test_three_way_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_three_way_comparable : decltype(__dsa::test_three_way_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_three_way_comparable_v {is_three_way_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() <=> declval<RHS>()), bool_constant<noexcept(declval<LHS>() <=> declval<RHS>())>>
+test_nothrow_three_way_comparable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_three_way_comparable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_three_way_comparable : decltype(__dsa::test_nothrow_three_way_comparable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_three_way_comparable_v {is_nothrow_three_way_comparable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() && declval<RHS>()), true_type> test_logical_andable(int) noexcept;
+template <typename, typename>
+false_type test_logical_andable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_logical_andable : decltype(__dsa::test_logical_andable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_logical_andable_v {is_logical_andable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() && declval<RHS>()), bool_constant<noexcept(declval<LHS>() && declval<RHS>())>>
+test_nothrow_logical_andable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_logical_andable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_logical_andable : decltype(__dsa::test_nothrow_logical_andable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_logical_andable_v {is_nothrow_logical_andable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() || declval<RHS>()), true_type> test_logical_orable(int) noexcept;
+template <typename, typename>
+false_type test_logical_orable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_logical_orable : decltype(__dsa::test_logical_orable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_logical_orable_v {is_logical_orable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>() || declval<RHS>()), bool_constant<noexcept(declval<LHS>() || declval<RHS>())>>
+test_nothrow_logical_orable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_logical_orable(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_logical_orable : decltype(__dsa::test_nothrow_logical_orable<LHS, RHS>(0)) {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_logical_orable_v {is_nothrow_logical_orable<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(++declval<T>()), true_type> test_prefix_increasable(int) noexcept;
+template <typename>
+false_type test_prefix_increasable(...) noexcept;
+}
+template <typename T>
+struct is_prefix_increasable : decltype(__dsa::test_prefix_increasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_prefix_increasable_v {is_prefix_increasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(++declval<T>()), bool_constant<noexcept(++declval<T>())>>
+test_nothrow_prefix_increasable(int) noexcept;
+template <typename>
+false_type test_nothrow_prefix_increasable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_prefix_increasable : decltype(__dsa::test_nothrow_prefix_increasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_prefix_increasable_v {is_nothrow_prefix_increasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>()++), true_type> test_postfix_increasable(int) noexcept;
+template <typename>
+false_type test_postfix_increasable(...) noexcept;
+}
+template <typename T>
+struct is_postfix_increasable : decltype(__dsa::test_postfix_increasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_postfix_increasable_v {is_postfix_increasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>()++), bool_constant<noexcept(declval<T>()++)>>
+test_nothrow_postfix_increasable(int) noexcept;
+template <typename>
+false_type test_nothrow_postfix_increasable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_postfix_increasable : decltype(__dsa::test_nothrow_postfix_increasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_postfix_increasable_v {is_nothrow_postfix_increasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(--declval<T>()), true_type> test_prefix_decreasable(int) noexcept;
+template <typename>
+false_type test_prefix_decreasable(...) noexcept;
+}
+template <typename T>
+struct is_prefix_decreasable : decltype(__dsa::test_prefix_decreasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_prefix_decreasable_v {is_prefix_decreasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(--declval<T>()), bool_constant<noexcept(--declval<T>())>>
+test_nothrow_prefix_decreasable(int) noexcept;
+template <typename>
+false_type test_nothrow_prefix_decreasable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_prefix_decreasable : decltype(__dsa::test_nothrow_prefix_decreasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_prefix_decreasable_v {is_nothrow_prefix_decreasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>()--), true_type> test_postfix_decreasable(int) noexcept;
+template <typename>
+false_type test_postfix_decreasable(...) noexcept;
+}
+template <typename T>
+struct is_postfix_decreasable : decltype(__dsa::test_postfix_decreasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_postfix_decreasable_v {is_postfix_decreasable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>()--), bool_constant<noexcept(declval<T>()--)>>
+test_nothrow_postfix_decreasable(int) noexcept;
+template <typename>
+false_type test_nothrow_postfix_decreasable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_postfix_decreasable : decltype(__dsa::test_nothrow_postfix_decreasable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_postfix_decreasable_v {is_nothrow_postfix_decreasable<T>::value};
+
+// todo : how to implement this?
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>(), declval<RHS>()), true_type> test_comma(int) noexcept;
+template <typename, typename>
+false_type test_comma(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_comma_overloaded : conditional_t<is_class_v<LHS> or is_class_v<RHS>,
+        decltype(__dsa::test_comma<LHS, RHS>(0)), false_type> {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_comma_overloaded_v {is_comma_overloaded<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename LHS, typename RHS>
+select_second_t<decltype(declval<LHS>(), declval<RHS>()), bool_constant<noexcept(declval<LHS>(), declval<RHS>())>>
+test_nothrow_comma(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_comma(...) noexcept;
+}
+template <typename LHS, typename RHS = LHS>
+struct is_nothrow_comma_overloaded : conditional_t<is_class_v<LHS> or is_class_v<RHS>,
+        decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)), false_type> {};
+template <typename LHS, typename RHS = LHS>
+inline constexpr auto is_nothrow_comma_overloaded_v {is_nothrow_comma_overloaded<LHS, RHS>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename O>
+select_second_t<decltype(declval<T>()->*declval<O>()), true_type> test_pointer_to_member_accessible(int) noexcept;
+template <typename, typename>
+false_type test_pointer_to_member_accessible(...) noexcept;
+}
+template <typename T, typename O>
+struct is_pointer_to_member_accessible : decltype(__dsa::test_pointer_to_member_accessible<T, O>(0)) {};
+template <typename T, typename O>
+inline constexpr auto is_pointer_to_member_accessible_v {is_pointer_to_member_accessible<T, O>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename O>
+select_second_t<decltype(declval<T>()->*declval<O>()), bool_constant<noexcept(declval<T>()->*declval<O>())>>
+test_nothrow_pointer_to_member_accessible(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_pointer_to_member_accessible(...) noexcept;
+}
+template <typename T, typename O>
+struct is_nothrow_pointer_to_member_accessible : decltype(__dsa::test_nothrow_pointer_to_member_accessible<T, O>(0)) {};
+template <typename T, typename O>
+inline constexpr auto is_nothrow_pointer_to_member_accessible_v {is_nothrow_pointer_to_member_accessible<T, O>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().operator->()), true_type> test_member_accessible_by_pointer(int) noexcept;
+template <typename>
+false_type test_member_accessible_by_pointer(...) noexcept;
+}
+template <typename T>
+struct is_member_accessible_by_pointer : decltype(__dsa::test_member_accessible_by_pointer<T>(0)) {};
+template <typename T>
+inline constexpr auto is_member_accessible_by_pointer_v {is_member_accessible_by_pointer<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().operator->()), bool_constant<noexcept(declval<T>().operator->())>>
+test_nothrow_member_accessible_by_pointer(int) noexcept;
+template <typename>
+false_type test_not0hrow_member_accessible_by_pointer(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_member_accessible_by_pointer : decltype(__dsa::test_nothrow_member_accessible_by_pointer<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_member_accessible_by_pointer_v {is_nothrow_member_accessible_by_pointer<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename I>
+select_second_t<decltype(declval<T>()[declval<I>()]), true_type> test_indexable(int) noexcept;
+template <typename, typename>
+false_type test_indexable(...) noexcept;
+}
+template <typename T, typename I>
+struct is_indexable : decltype(__dsa::test_indexable<T, I>(0)) {};
+template <typename T, typename I>
+inline constexpr auto is_indexable_v {is_indexable<T, I>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename I>
+select_second_t<decltype(declval<T>()[declval<I>()]), bool_constant<noexcept(declval<T>()[declval<I>()])>>
+test_nothrow_indexable(int) noexcept;
+template <typename, typename>
+false_type test_nothrow_indexable(...) noexcept;
+}
+template <typename T, typename I>
+struct is_nothrow_indexable : decltype(__dsa::test_nothrow_indexable<T, I>(0)) {};
+template <typename T, typename I>
+inline constexpr auto is_nothrow_indexable_v {is_nothrow_indexable<T, I>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator new(declval<Args>()...)), true_type> test_operator_new(int) noexcept;
+template <typename, typename ...>
+false_type test_operator_new(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_operator_new_overloaded : decltype(__dsa::test_operator_new<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_operator_new_overloaded_v {is_operator_new_overloaded<T, Args...>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator new(declval<Args>()...)),
+        bool_constant<noexcept(T::operator new(declval<Args>()...))>>
+test_nothrow_operator_new_overloaded(int) noexcept;
+template <typename, typename ...>
+false_type test_nothrow_operator_new_overloaded(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_nothrow_operator_new_overloaded : decltype(__dsa::test_nothrow_operator_new_overloaded<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_nothrow_operator_new_overloaded_v {is_nothrow_operator_new_overloaded<T, Args...>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator delete(declval<Args>()...)), true_type> test_operator_delete(int) noexcept;
+template <typename, typename ...>
+false_type test_operator_delete(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_operator_delete_overloaded : decltype(__dsa::test_operator_delete<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_operator_delete_overloaded_v {is_operator_delete_overloaded<T, Args...>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator delete(declval<Args>()...)),
+        bool_constant<noexcept(T::operator delete(declval<Args>()...))>>
+test_nothrow_operator_delete_overloaded(int) noexcept;
+template <typename, typename ...>
+false_type test_nothrow_operator_delete_overloaded(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_nothrow_operator_delete_overloaded :
+        decltype(__dsa::test_nothrow_operator_delete_overloaded<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_nothrow_operator_delete_overloaded_v {
+    is_nothrow_operator_delete_overloaded<T, Args...>::value
+};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator new[](declval<Args>()...)), true_type> test_operator_new_array(int) noexcept;
+template <typename, typename ...>
+false_type test_operator_new_array(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_operator_new_array_overloaded : decltype(__dsa::test_operator_new_array<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_operator_new_array_overloaded_v {is_operator_new_array_overloaded<T, Args...>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator new[](declval<Args>()...)),
+        bool_constant<noexcept(T::operator new[](declval<Args>()...))>>
+test_nothrow_operator_new_array_overloaded(int) noexcept;
+template <typename, typename ...>
+false_type test_nothrow_operator_new_array_overloaded(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_nothrow_operator_new_array_overloaded :
+        decltype(__dsa::test_nothrow_operator_new_array_overloaded<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_nothrow_operator_new_array_overloaded_v {
+    is_nothrow_operator_new_array_overloaded<T, Args...>::value
+};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator delete[](declval<Args>()...)), true_type> test_operator_delete_array(int) noexcept;
+template <typename, typename ...>
+false_type test_operator_delete_array(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_operator_delete_array_overloaded : decltype(__dsa::test_operator_delete_array<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_operator_delete_array_overloaded_v {is_operator_delete_array_overloaded<T, Args...>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, typename ...Args>
+select_second_t<decltype(T::operator delete[](declval<Args>()...)),
+        bool_constant<noexcept(T::operator delete[](declval<Args>()...))>>
+test_nothrow_operator_delete_array_overloaded(int) noexcept;
+template <typename, typename ...>
+false_type test_nothrow_operator_delete_array_overloaded(...) noexcept;
+}
+template <typename T, typename ...Args>
+struct is_nothrow_operator_delete_array_overloaded :
+        decltype(__dsa::test_nothrow_operator_delete_array_overloaded<T, Args...>(0)) {};
+template <typename T, typename ...Args>
+inline constexpr auto is_nothrow_operator_delete_array_overloaded_v {
+        is_nothrow_operator_delete_array_overloaded<T, Args...>::value
+};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().operator co_await()), true_type> test_coroutine_awaitable(int) noexcept;
+template <typename>
+false_type test_coroutine_awaitable(...) noexcept;
+}
+template <typename T>
+struct is_coroutine_awaitable : decltype(__dsa::test_coroutine_awaitable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_coroutine_awaitable_v {is_coroutine_awaitable<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T>
+select_second_t<decltype(declval<T>().operator co_await()), bool_constant<noexcept(declval<T>().operator co_await())>>
+test_nothrow_coroutine_awaitable(int) noexcept;
+template <typename>
+false_type test_nothrow_coroutine_awaitable(...) noexcept;
+}
+template <typename T>
+struct is_nothrow_coroutine_awaitable : decltype(__dsa::test_nothrow_coroutine_awaitable<T>(0)) {};
+template <typename T>
+inline constexpr auto is_nothrow_coroutine_awaitable_v {is_nothrow_coroutine_awaitable<T>::value};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(has something)
@@ -1473,526 +2379,6 @@ struct has_unique_object_representations :
         conditional_t<__has_unique_object_representations(T), true_type, false_type> {};
 template <typename T>
 inline constexpr auto has_unique_object_representations_v {has_unique_object_representations<T>::value};
-
-template <typename T>
-struct has_address_of_operator : decltype(__dsa::test_address_of<T>(0)) {};
-template <typename T>
-inline constexpr auto has_address_of_operator_v {has_address_of_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_address_of_operator : decltype(__dsa::test_nothrow_address_of<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_address_of_operator_v {has_nothrow_address_of_operator<T>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_and_operator : decltype(__dsa::test_bit_and<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_and_operator_v {has_bit_and_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_and_operator : decltype(__dsa::test_nothrow_bit_and<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_and_operator_v {has_nothrow_bit_and_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_and_assignment_operator : decltype(__dsa::test_bit_and_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_and_assignment_operator_v {has_bit_and_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_and_assignment_operator :
-        decltype(__dsa::test_nothrow_bit_and_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_and_assignment_operator_v {
-        has_nothrow_bit_and_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_or_operator : decltype(__dsa::test_bit_or<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_or_operator_v {has_bit_or_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_or_operator : decltype(__dsa::test_nothrow_bit_or<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_or_operator_v {has_nothrow_bit_or_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_or_assignment_operator : decltype(__dsa::test_bit_or_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_or_assignment_operator_v {has_bit_or_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_or_assignment_operator :
-        decltype(__dsa::test_nothrow_bit_or_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_or_assignment_operator_v {
-        has_nothrow_bit_or_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_xor_operator : decltype(__dsa::test_bit_xor<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_xor_operator_v {has_bit_xor_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_xor_operator : decltype(__dsa::test_nothrow_bit_xor<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_xor_operator_v {has_nothrow_bit_xor_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_bit_xor_assignment_operator : decltype(__dsa::test_bit_xor_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_bit_xor_assignment_operator_v {has_bit_xor_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_bit_xor_assignment_operator :
-        decltype(__dsa::test_nothrow_bit_xor_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_bit_xor_assignment_operator_v {
-        has_nothrow_bit_xor_assignment_operator<LHS, RHS>::value
-};
-
-template <typename T>
-struct has_complement_operator : decltype(__dsa::test_complement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_complement_operator_v {has_complement_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_complement_operator : decltype(__dsa::test_nothrow_complement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_complement_operator_v {has_nothrow_complement_operator<T>::value};
-
-template <typename T>
-struct has_dereference_operator : decltype(__dsa::test_dereference<T>(0)) {};
-template <typename T>
-inline constexpr auto has_dereference_operator_v {has_dereference_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_dereference_operator : decltype(__dsa::test_nothrow_dereference<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_dereference_operator_v {has_nothrow_dereference_operator<T>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_divide_operator : decltype(__dsa::test_divide<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_divide_operator_v {has_divide_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_divide_operator : decltype(__dsa::test_nothrow_divide<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_divide_operator_v {has_nothrow_divide_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_divide_assignment_operator : decltype(__dsa::test_divide_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_divide_assignment_operator_v {has_divide_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_divide_assignment_operator :
-        decltype(__dsa::test_nothrow_divide_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_divide_assignment_operator_v {
-        has_nothrow_divide_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_equal_to_operator : decltype(__dsa::test_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_equal_to_operator_v {has_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_equal_to_operator : decltype(__dsa::test_nothrow_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_equal_to_operator_v {has_nothrow_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_greater_operator : decltype(__dsa::test_greater<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_greater_operator_v {has_greater_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_greater_operator : decltype(__dsa::test_nothrow_greater<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_greater_operator_v {has_nothrow_greater_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_greater_equal_to_operator : decltype(__dsa::test_greater_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_greater_equal_to_operator_v {has_greater_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_greater_equal_to_operator : decltype(__dsa::test_nothrow_greater_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_greater_equal_to_operator_v {
-        has_nothrow_greater_equal_to_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_left_shift_operator : decltype(__dsa::test_left_shift<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_left_shift_operator_v {has_left_shift_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_left_shift_operator : decltype(__dsa::test_nothrow_left_shift<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_left_shift_operator_v {has_nothrow_left_shift_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_left_shift_assignment_operator : decltype(__dsa::test_left_shift_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_left_shift_assignment_operator_v {has_left_shift_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_left_shift_assignment_operator :
-        decltype(__dsa::test_nothrow_left_shift_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_left_shift_assignment_operator_v {
-        has_nothrow_left_shift_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_right_shift_operator : decltype(__dsa::test_right_shift<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_right_shift_operator_v {has_right_shift_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_right_shift_operator : decltype(__dsa::test_nothrow_right_shift<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_right_shift_operator_v {has_nothrow_right_shift_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_right_shift_assignment_operator :
-        decltype(__dsa::test_right_shift_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_right_shift_assignment_operator_v {has_right_shift_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_right_shift_assignment_operator :
-        decltype(__dsa::test_nothrow_right_shift_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_right_shift_assignment_operator_v {
-        has_nothrow_right_shift_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_less_operator : decltype(__dsa::test_less<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_less_operator_v {has_less_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_less_operator : decltype(__dsa::test_nothrow_less<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_less_operator_v {has_nothrow_less_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_less_equal_to_operator : decltype(__dsa::test_less_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_less_equal_to_operator_v {has_less_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_less_equal_to_operator : decltype(__dsa::test_nothrow_less_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_less_equal_to_operator_v {has_nothrow_less_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_logical_and_operator : decltype(__dsa::test_logical_and<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_logical_and_operator_v {has_logical_and_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_logical_and_operator : decltype(__dsa::test_nothrow_logical_and<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_logical_and_operator_v {has_nothrow_logical_and_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_logical_or_operator : decltype(__dsa::test_logical_or<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_logical_or_operator_v {has_logical_or_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_logical_or_operator : decltype(__dsa::test_nothrow_logical_or<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_logical_or_operator_v {has_nothrow_logical_or_operator<LHS, RHS>::value};
-
-template <typename T>
-struct has_logical_not_operator : decltype(__dsa::test_logical_not<T>(0)) {};
-template <typename T>
-inline constexpr auto has_logical_not_operator_v {has_logical_not_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_logical_not_operator : decltype(__dsa::test_nothrow_logical_not<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_logical_not_operator_v {has_nothrow_logical_not_operator<T>::value};
-
-template <typename T>
-struct has_unary_minus_operator : decltype(__dsa::test_unary_minus<T>(0)) {};
-template <typename T>
-inline constexpr auto has_unary_minus_operator_v {has_unary_minus_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_unary_minus_operator : decltype(__dsa::test_nothrow_unary_minus<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_unary_minus_operator_v {has_nothrow_unary_minus_operator<T>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_minus_operator : decltype(__dsa::test_minus<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_minus_operator_v {has_minus_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_minus_operator : decltype(__dsa::test_nothrow_minus<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_minus_operator_v {has_nothrow_minus_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_minus_assignment_operator : decltype(__dsa::test_minus_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_minus_assignment_operator_v {has_minus_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_minus_assignment_operator : decltype(__dsa::test_nothrow_minus_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_minus_assignment_operator_v {
-        has_nothrow_minus_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_modules_operator : decltype(__dsa::test_modules<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_modules_operator_v {has_modules_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_modules_operator : decltype(__dsa::test_nothrow_modules<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_modules_operator_v {has_nothrow_modules_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_modules_assignment_operator : decltype(__dsa::test_modules_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_modules_assignment_operator_v {has_modules_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_modules_assignment_operator : decltype(__dsa::test_nothrow_modules_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_modules_assignment_operator_v {
-        has_nothrow_modules_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_multiply_operator : decltype(__dsa::test_multiply<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_multiply_operator_v {has_multiply_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_multiply_operator : decltype(__dsa::test_nothrow_multiply<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_multiply_operator_v {has_nothrow_multiply_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_multiply_assignment_operator : decltype(__dsa::test_multiply_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_multiply_assignment_operator_v {has_multiply_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_multiply_assignment_operator : decltype(__dsa::test_nothrow_multiply_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_multiply_assignment_operator_v {
-        has_nothrow_multiply_assignment_operator<LHS, RHS>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_three_way_operator : decltype(__dsa::test_three_way<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_three_way_operator_v {has_three_way_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_three_way_operator : decltype(__dsa::test_nothrow_three_way<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_three_way_operator_v {has_nothrow_three_way_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_not_equal_to_operator : decltype(__dsa::test_not_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_not_equal_to_operator_v {has_not_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_not_equal_to_operator : decltype(__dsa::test_nothrow_not_equal_to<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_not_equal_to_operator_v {has_nothrow_not_equal_to_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_plus_operator : decltype(__dsa::test_plus<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_plus_operator_v {has_plus_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_plus_operator : decltype(__dsa::test_nothrow_plus<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_plus_operator_v {has_nothrow_plus_operator<LHS, RHS>::value};
-
-template <typename T>
-struct has_unary_plus_operator : decltype(__dsa::test_unary_plus<T>(0)) {};
-template <typename T>
-inline constexpr auto has_unary_plus_operator_v {has_unary_plus_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_unary_plus_operator : decltype(__dsa::test_nothrow_unary_plus<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_unary_plus_operator_v {has_nothrow_unary_plus_operator<T>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_plus_assignment_operator : decltype(__dsa::test_plus_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_plus_assignment_operator_v {has_plus_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_plus_assignment_operator : decltype(__dsa::test_nothrow_plus_assignment<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_plus_assignment_operator_v {has_nothrow_plus_assignment_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_subscript_operator : decltype(__dsa::test_subscript<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_subscript_operator_v {has_subscript_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_subscript_operator : decltype(__dsa::test_nothrow_subscript<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_subscript_operator_v {has_nothrow_subscript_operator<LHS, RHS>::value};
-
-template <typename T>
-struct has_pre_increment_operator : decltype(__dsa::test_pre_increment<T>(0)) {};
-template <typename T>
-inline constexpr auto has_pre_increment_operator_v {has_pre_increment_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_pre_increment_operator : decltype(__dsa::test_nothrow_pre_increment<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_pre_increment_operator_v {has_nothrow_pre_increment_operator<T>::value};
-
-template <typename T>
-struct has_post_increment_operator : decltype(__dsa::test_post_increment<T>(0)) {};
-template <typename T>
-inline constexpr auto has_post_increment_operator_v {has_post_increment_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_post_increment_operator : decltype(__dsa::test_nothrow_post_increment<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_post_increment_operator_v {has_nothrow_post_increment_operator<T>::value};
-
-template <typename T>
-struct has_pre_decrement_operator : decltype(__dsa::test_pre_decrement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_pre_decrement_operator_v {has_pre_decrement_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_pre_decrement_operator : decltype(__dsa::test_nothrow_pre_decrement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_pre_decrement_operator_v {has_nothrow_pre_decrement_operator<T>::value};
-
-template <typename T>
-struct has_post_decrement_operator : decltype(__dsa::test_post_decrement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_post_decrement_operator_v {has_post_decrement_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_post_decrement_operator : decltype(__dsa::test_nothrow_post_decrement<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_post_decrement_operator_v {has_nothrow_post_decrement_operator<T>::value};
-
-template <typename T>
-struct has_member_access_by_pointer_operator : decltype(__dsa::test_member_access_by_pointer<T>(0)) {};
-template <typename T>
-inline constexpr auto has_member_access_by_pointer_operator_v {has_member_access_by_pointer_operator<T>::value};
-
-template <typename T>
-struct has_nothrow_member_access_by_pointer_operator :
-        decltype(__dsa::test_nothrow_member_access_by_pointer<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_member_access_by_pointer_operator_v {
-        has_nothrow_member_access_by_pointer_operator<T>::value
-};
-
-template <typename T>
-struct has_member_access_by_pointer_dereference_operator :
-        decltype(__dsa::test_member_access_by_pointer_dereference<T>(0)) {};
-template <typename T>
-inline constexpr auto has_member_access_by_pointer_dereference_operator_v {
-        has_member_access_by_pointer_dereference_operator<T>::value
-};
-
-template <typename T>
-struct has_nothrow_member_access_by_pointer_dereference_operator :
-        decltype(__dsa::test_nothrow_member_access_by_pointer_dereference<T>(0)) {};
-template <typename T>
-inline constexpr auto has_nothrow_member_access_by_pointer_dereference_operator_v {
-        has_nothrow_member_access_by_pointer_dereference_operator<T>::value
-};
-
-template <typename T, typename ...Args>
-struct has_new_operator : decltype(__dsa::test_new_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_new_operator_v {has_new_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_nothrow_new_operator : decltype(__dsa::test_nothrow_new_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_nothrow_new_operator_v {has_nothrow_new_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_new_array_operator : decltype(__dsa::test_new_array_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_new_array_operator_v {has_new_array_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_nothrow_new_array_operator : decltype(__dsa::test_nothrow_new_array_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_nothrow_new_array_operator_v {has_nothrow_new_array_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_delete_operator : decltype(__dsa::test_delete_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_delete_operator_v {has_delete_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_nothrow_delete_operator : decltype(__dsa::test_nothrow_delete_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_nothrow_delete_operator_v {has_nothrow_delete_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_delete_array_operator : decltype(__dsa::test_delete_array_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_delete_array_operator_v {has_delete_array_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_nothrow_delete_array_operator : decltype(__dsa::test_nothrow_delete_array_operator<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_nothrow_delete_array_operator_v {
-        has_nothrow_delete_array_operator<T, Args...>::value
-};
-
-template <typename T, typename ...Args>
-struct has_function_call_operator : decltype(__dsa::test_function_call<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_function_call_operator_v {has_function_call_operator<T, Args...>::value};
-
-template <typename T, typename ...Args>
-struct has_nothrow_function_call_operator : decltype(__dsa::test_nothrow_function_call<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto has_nothrow_function_call_operator_v {
-        has_nothrow_function_call_operator<T, Args...>::value
-};
-
-template <typename LHS, typename RHS = LHS>
-struct has_comma_operator : decltype(__dsa::test_comma<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_comma_operator_v {has_comma_operator<LHS, RHS>::value};
-
-template <typename LHS, typename RHS = LHS>
-struct has_nothrow_comma_operator : decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)) {};
-template <typename LHS, typename RHS = LHS>
-inline constexpr auto has_nothrow_comma_operator_v {has_nothrow_comma_operator<LHS, RHS>::value};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(copy something)
@@ -2086,7 +2472,7 @@ using promotion_index_t = typename promotion_index<T, Container>::type;
 template <typename T, typename Container>
 struct promotion_index {
 private:
-    using next_type = typename Container::remaining;
+    using next_type = typename Container::next;
     using this_type = typename Container::type;
 public:
     using type = conditional_t<is_same_v<T, this_type>, Container, promotion_index_t<T, next_type>>;
@@ -2104,13 +2490,13 @@ template <typename T>
 struct integral_promotion_auxiliary<T, enable_if_t<is_signed_v<T>>> {
     using type = conditional_t<
             is_same_v<typename promotion_index<T, signed_integral>::type::type, __int128_t>,
-            __int128_t, typename promotion_index<T, signed_integral>::type::remaining::type>;
+            __int128_t, typename promotion_index<T, signed_integral>::type::next::type>;
 };
 template <typename T>
 struct integral_promotion_auxiliary<T, enable_if_t<is_unsigned_v<T>>> {
     using type = conditional_t<
             is_same_v<typename promotion_index<T, unsigned_integral>::type::type, __uint128_t>,
-            __uint128_t, typename promotion_index<T, unsigned_integral>::type::remaining::type>;
+            __uint128_t, typename promotion_index<T, unsigned_integral>::type::next::type>;
 };
 
 template <typename T, typename = void>
@@ -2121,7 +2507,7 @@ template <typename T>
 struct floating_point_promotion_auxiliary<T, enable_if_t<is_floating_point_v<T>>> {
     using type = conditional_t<
             is_same_v<typename promotion_index<T, floating_point>::type::type, long double>,
-            long double, typename promotion_index<T, floating_point>::type::remaining::type>;
+            long double, typename promotion_index<T, floating_point>::type::next::type>;
 };
 
 template <typename T, typename = void>
@@ -2132,7 +2518,7 @@ template <typename T>
 struct character_promotion_auxiliary<T, enable_if_t<is_character_v<T>>> {
     using type = conditional_t<
             is_same_v<typename promotion_index<T, character>::type::type, char32_t>,
-            char32_t, typename promotion_index<T, character>::type::remaining::type>;
+            char32_t, typename promotion_index<T, character>::type::next::type>;
 };
 
 template <typename T, typename = void>
@@ -2511,14 +2897,14 @@ struct common_reference<T, U, Ts...> : common_reference<common_reference_t<T, U>
 template <typename T>
 struct make_signed {
     using type = copy_cv_t<T, typename __dsa::make_signed_or_unsigned_auxiliary<remove_cv_t<T>,
-            signed char, typename __dsa::signed_integral::remaining>::type>;
+            signed char, typename __dsa::signed_integral::next>::type>;
 };
 template <typename T>
 using make_signed_t = typename make_signed<T>::type;
 template <typename T>
 struct make_unsigned {
     using type = copy_cv_t<T, typename __dsa::make_signed_or_unsigned_auxiliary<remove_cv_t<T>,
-            unsigned char, typename __dsa::unsigned_integral::remaining>::type>;
+            unsigned char, typename __dsa::unsigned_integral::next>::type>;
 };
 template <typename T>
 using make_unsigned_t = typename make_unsigned<T>::type;
@@ -2608,13 +2994,5 @@ using type_with_alignment_t = typename type_with_alignment<Align>::type;
 __DATA_STRUCTURE_END
 
 }       // namespace data_structure
-
-__DATA_STRUCTURE_START(undefine useless macros)
-#undef __DATA_STRUCTURE_REMOVE_CV_HELPER_MAIN
-#undef __DATA_STRUCTURE_REMOVE_CV_HELPER_SPECIALIZATION
-#undef __DATA_STRUCTURE_TEST_OPERATION
-#undef __DATA_STRUCTURE_HAS_NESTED_TYPE_IMPL
-#undef __DATA_STRUCTURE_TEST_OPERATION_NOTHROW
-__DATA_STRUCTURE_END
 
 #endif //DATA_STRUCTURE_TYPE_TRAITS_HPP
