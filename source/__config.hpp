@@ -86,7 +86,7 @@ inline void abort() noexcept {
 }
 [[noreturn]]
 inline void terminate() noexcept {
-    std::terminate();
+    terminate();
 }
 [[noreturn]]
 inline void exit(int code) {
