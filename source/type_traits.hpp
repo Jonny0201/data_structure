@@ -2144,29 +2144,31 @@ struct is_nothrow_postfix_decreasable : decltype(__dsa::test_nothrow_postfix_dec
 template <typename T>
 inline constexpr auto is_nothrow_postfix_decreasable_v {is_nothrow_postfix_decreasable<T>::value};
 
-// todo : how to implement this?
 namespace __data_structure_auxiliary {
 template <typename LHS, typename RHS>
-select_second_t<decltype(declval<LHS>(), declval<RHS>()), true_type> test_comma(int) noexcept;
+select_second_t<decltype(declval<LHS>().operator,(declval<RHS>())), true_type> test_comma(int) noexcept;
+template <typename LHS, typename RHS>
+select_second_t<decltype(operator,(declval<LHS>(), declval<RHS>())), true_type> test_comma(long) noexcept;
 template <typename, typename>
 false_type test_comma(...) noexcept;
 }
 template <typename LHS, typename RHS = LHS>
-struct is_comma_overloaded : conditional_t<is_class_v<LHS> or is_class_v<RHS>,
-        decltype(__dsa::test_comma<LHS, RHS>(0)), false_type> {};
+struct is_comma_overloaded : decltype(__dsa::test_comma<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
 inline constexpr auto is_comma_overloaded_v {is_comma_overloaded<LHS, RHS>::value};
 
 namespace __data_structure_auxiliary {
 template <typename LHS, typename RHS>
-select_second_t<decltype(declval<LHS>(), declval<RHS>()), bool_constant<noexcept(declval<LHS>(), declval<RHS>())>>
-test_nothrow_comma(int) noexcept;
+select_second_t<decltype(declval<LHS>().operator,(declval<RHS>())),
+        bool_constant<noexcept(declval<LHS>().operator,(declval<RHS>()))>> test_nothrow_comma(int) noexcept;
+template <typename LHS, typename RHS>
+select_second_t<decltype(operator,(declval<LHS>(), declval<RHS>())),
+        bool_constant<noexcept(operator,(declval<LHS>(), declval<RHS>()))>> test_nothrow_comma(long) noexcept;
 template <typename, typename>
 false_type test_nothrow_comma(...) noexcept;
 }
 template <typename LHS, typename RHS = LHS>
-struct is_nothrow_comma_overloaded : conditional_t<is_class_v<LHS> or is_class_v<RHS>,
-        decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)), false_type> {};
+struct is_nothrow_comma_overloaded : decltype(__dsa::test_nothrow_comma<LHS, RHS>(0)) {};
 template <typename LHS, typename RHS = LHS>
 inline constexpr auto is_nothrow_comma_overloaded_v {is_nothrow_comma_overloaded<LHS, RHS>::value};
 
@@ -2200,7 +2202,9 @@ template <typename>
 false_type test_member_accessible_by_pointer(...) noexcept;
 }
 template <typename T>
-struct is_member_accessible_by_pointer : decltype(__dsa::test_member_accessible_by_pointer<T>(0)) {};
+struct is_member_accessible_by_pointer : conditional_t<is_pointer_v<remove_reference_t<T>>,
+        bool_constant<is_class_v<remove_pointer_t<typename decay<T>::type>>>,
+        decltype(__dsa::test_member_accessible_by_pointer<T>(0))> {};
 template <typename T>
 inline constexpr auto is_member_accessible_by_pointer_v {is_member_accessible_by_pointer<T>::value};
 
@@ -2209,10 +2213,12 @@ template <typename T>
 select_second_t<decltype(declval<T>().operator->()), bool_constant<noexcept(declval<T>().operator->())>>
 test_nothrow_member_accessible_by_pointer(int) noexcept;
 template <typename>
-false_type test_not0hrow_member_accessible_by_pointer(...) noexcept;
+false_type test_nothrow_member_accessible_by_pointer(...) noexcept;
 }
 template <typename T>
-struct is_nothrow_member_accessible_by_pointer : decltype(__dsa::test_nothrow_member_accessible_by_pointer<T>(0)) {};
+struct is_nothrow_member_accessible_by_pointer : conditional_t<is_pointer_v<remove_reference_t<T>>,
+        bool_constant<is_class_v<remove_pointer_t<typename decay<T>::type>>>,
+        decltype(__dsa::test_nothrow_member_accessible_by_pointer<T>(0))> {};
 template <typename T>
 inline constexpr auto is_nothrow_member_accessible_by_pointer_v {is_nothrow_member_accessible_by_pointer<T>::value};
 
