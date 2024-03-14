@@ -2246,111 +2246,6 @@ template <typename T, typename I>
 inline constexpr auto is_nothrow_indexable_v {is_nothrow_indexable<T, I>::value};
 
 namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator new(declval<Args>()...)), true_type> test_operator_new(int) noexcept;
-template <typename, typename ...>
-false_type test_operator_new(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_operator_new_overloaded : decltype(__dsa::test_operator_new<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_operator_new_overloaded_v {is_operator_new_overloaded<T, Args...>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator new(declval<Args>()...)),
-        bool_constant<noexcept(T::operator new(declval<Args>()...))>>
-test_nothrow_operator_new_overloaded(int) noexcept;
-template <typename, typename ...>
-false_type test_nothrow_operator_new_overloaded(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_nothrow_operator_new_overloaded : decltype(__dsa::test_nothrow_operator_new_overloaded<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_nothrow_operator_new_overloaded_v {is_nothrow_operator_new_overloaded<T, Args...>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator delete(declval<Args>()...)), true_type> test_operator_delete(int) noexcept;
-template <typename, typename ...>
-false_type test_operator_delete(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_operator_delete_overloaded : decltype(__dsa::test_operator_delete<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_operator_delete_overloaded_v {is_operator_delete_overloaded<T, Args...>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator delete(declval<Args>()...)),
-        bool_constant<noexcept(T::operator delete(declval<Args>()...))>>
-test_nothrow_operator_delete_overloaded(int) noexcept;
-template <typename, typename ...>
-false_type test_nothrow_operator_delete_overloaded(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_nothrow_operator_delete_overloaded :
-        decltype(__dsa::test_nothrow_operator_delete_overloaded<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_nothrow_operator_delete_overloaded_v {
-    is_nothrow_operator_delete_overloaded<T, Args...>::value
-};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator new[](declval<Args>()...)), true_type> test_operator_new_array(int) noexcept;
-template <typename, typename ...>
-false_type test_operator_new_array(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_operator_new_array_overloaded : decltype(__dsa::test_operator_new_array<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_operator_new_array_overloaded_v {is_operator_new_array_overloaded<T, Args...>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator new[](declval<Args>()...)),
-        bool_constant<noexcept(T::operator new[](declval<Args>()...))>>
-test_nothrow_operator_new_array_overloaded(int) noexcept;
-template <typename, typename ...>
-false_type test_nothrow_operator_new_array_overloaded(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_nothrow_operator_new_array_overloaded :
-        decltype(__dsa::test_nothrow_operator_new_array_overloaded<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_nothrow_operator_new_array_overloaded_v {
-    is_nothrow_operator_new_array_overloaded<T, Args...>::value
-};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator delete[](declval<Args>()...)), true_type> test_operator_delete_array(int) noexcept;
-template <typename, typename ...>
-false_type test_operator_delete_array(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_operator_delete_array_overloaded : decltype(__dsa::test_operator_delete_array<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_operator_delete_array_overloaded_v {is_operator_delete_array_overloaded<T, Args...>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename ...Args>
-select_second_t<decltype(T::operator delete[](declval<Args>()...)),
-        bool_constant<noexcept(T::operator delete[](declval<Args>()...))>>
-test_nothrow_operator_delete_array_overloaded(int) noexcept;
-template <typename, typename ...>
-false_type test_nothrow_operator_delete_array_overloaded(...) noexcept;
-}
-template <typename T, typename ...Args>
-struct is_nothrow_operator_delete_array_overloaded :
-        decltype(__dsa::test_nothrow_operator_delete_array_overloaded<T, Args...>(0)) {};
-template <typename T, typename ...Args>
-inline constexpr auto is_nothrow_operator_delete_array_overloaded_v {
-        is_nothrow_operator_delete_array_overloaded<T, Args...>::value
-};
-
-namespace __data_structure_auxiliary {
 template <typename T>
 select_second_t<decltype(declval<T>().operator co_await()), true_type> test_coroutine_awaitable(int) noexcept;
 template <typename>
@@ -2418,7 +2313,7 @@ using copy_lvalue_reference_t = typename copy_lvalue_reference<Original, To>::ty
 
 template <typename Original, typename To>
 struct copy_rvalue_reference {
-    using type = conditional_t<is_rvalue_reference_v<Original>, add_rvalue_reference_t<To>, To>;
+    using type = conditional_t<is_rvalue_reference_v<Original>, add_rvalue_reference_t<remove_reference_t<To>>, To>;
 };
 template <typename Original, typename To>
 using copy_rvalue_reference_t = typename copy_rvalue_reference<Original, To>::type;
@@ -2430,18 +2325,6 @@ struct copy_reference {
 };
 template <typename Original, typename To>
 using copy_reference_t = typename copy_reference<Original, To>::type;
-
-template <typename Original, typename To>
-struct copy_const_reference {
-    using type = conditional_t<is_const_reference_v<Original>, add_const_reference_t<To>, To>;
-};
-template <typename Original, typename To>
-using copy_const_reference_t = typename copy_const_reference<Original, To>::type;
-
-template <typename Original, typename To>
-struct copy_cvref {
-    using type = copy_cv_t<Original, copy_reference_t<Original, To>>;
-};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other auxliary)
