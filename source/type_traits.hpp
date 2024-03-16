@@ -2698,15 +2698,27 @@ struct common_reference_auxiliary<T, U, 5, void> {};
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(other)
+namespace __data_structure_auxiliary {
+template <typename T, bool = is_complete_v<T>>
+struct size_of_auxiliary : constant<size_t, sizeof(T)> {};
 template <typename T>
-struct size_of : constant<size_t, sizeof(T)> {};
+struct size_of_auxiliary<T, false> : constant<size_t, 0> {};
+}
 template <typename T>
-inline constexpr auto size_of_v {sizeof(T)};
+struct size_of : __dsa::size_of_auxiliary<T> {};
+template <typename T>
+inline constexpr auto size_of_v {size_of<T>::value};
 
+namespace __data_structure_auxiliary {
+template <typename T, bool = is_complete_v<T> or is_unbounded_array_v<T>>
+struct alignment_of_auxiliary : constant<size_t, alignof(T)> {};
 template <typename T>
-struct alignment_of : constant<size_t, alignof(T)> {};
+struct alignment_of_auxiliary<T, false> : constant<size_t, 0> {};
+}
 template <typename T>
-inline constexpr auto alignment_of_v {alignof(T)};
+struct alignment_of : __dsa::alignment_of_auxiliary<T> {};
+template <typename T>
+inline constexpr auto alignment_of_v {alignment_of<T>::value};
 
 template <typename T>
 struct rank : constant<size_t, 0> {};
@@ -2717,25 +2729,26 @@ struct rank<T []> : constant<size_t, rank_v<T> + 1> {};
 template <typename T, size_t N>
 struct rank<T [N]> : constant<size_t, rank_v<T> + 1> {};
 
-template <typename T, size_t = 0>
+template <typename T, size_t Index = 0>
 struct extent : constant<size_t, 0> {};
 template <typename T>
 struct extent<T [], 0> : constant<size_t, 0> {};
-template <typename T, size_t N>
-struct extent<T [], N> : extent<T, N - 1> {};
+template <typename T, size_t Index>
+struct extent<T [], Index> : extent<T, Index - 1> {};
 template <typename T, size_t Size>
 struct extent<T [Size], 0> : constant<size_t, Size> {};
-template <typename T, size_t Size, size_t N>
-struct extent<T [Size], N> : extent<T, N - 1> {};
-template <typename T, size_t N>
-inline constexpr auto extent_v {extent<T, N>::value};
+template <typename T, size_t Size, size_t Index>
+struct extent<T [Size], Index> : extent<T, Index - 1> {};
+template <typename T, size_t Index = 0>
+inline constexpr auto extent_v {extent<T, Index>::value};
 
 template <typename T>
 struct decay {
-    using type = conditional_t<is_array_v<remove_reference_t<T>>,
-            add_pointer_t<remove_extent_t<remove_reference_t<T>>>,
-            conditional_t<is_function_v<remove_reference_t<T>>, add_pointer_t<remove_reference_t<T>>,
-                    remove_cv_t<remove_reference_t<T>>>>;
+private:
+    using real_type = remove_reference_t<T>;
+public:
+    using type = conditional_t<is_array_v<real_type>, add_pointer_t<remove_extent_t<real_type>>,
+            conditional_t<is_function_v<real_type>, add_pointer_t<real_type>, remove_cv_t<real_type>>>;
 };
 template <typename T>
 using decay_t = typename decay<T>::type;
@@ -2759,16 +2772,33 @@ template <typename ...>
 struct common_type {};
 template <typename ...Ts>
 using common_type_t = typename common_type<Ts...>::type;
-template <typename T>
-struct common_type<T> {
-    using type = common_type_t<T, T>;
-};
+namespace __data_structure_auxiliary {
+template <typename T, typename U, typename = void>
+struct common_type_const_reference {};
 template <typename T, typename U>
-struct common_type<T, U> {
-    using type = decltype(make_true<T, U> ? declval<decay_t<T>>() : declval<decay_t<U>>());
+struct common_type_const_reference<T, U,
+        void_t<decay_t<decltype(true ? declval<const T &>() : declval<const U &>())>>> {
+    using type = decay_t<decltype(true ? declval<const T &>() : declval<const U &>())>;
 };
+template <typename T, typename U, typename = void>
+struct common_type_two_types : common_type_const_reference<T, U> {};
+template <typename T, typename U>
+struct common_type_two_types<T, U, void_t<decay_t<decltype(true ? declval<T>() : declval<U>())>>> {
+    using type = decay_t<decltype(true ? declval<T>() : declval<U>())>;
+};
+template <typename T, typename U, typename = void_t<common_type_t<T, U>>>
+struct common_type_auxiliary : false_type {};
+template <typename T, typename U>
+struct common_type_auxiliary<T, U, void> : true_type {};
+}
+template <typename T>
+struct common_type<T> : common_type<T, T> {};
+template <typename T, typename U>
+struct common_type<T, U> : conditional_t<is_same_v<decay_t<T>, T> and is_same_v<decay_t<U>, U>,
+        __dsa::common_type_two_types<T, U>, common_type<decay_t<T>, decay_t<U>>> {};
 template <typename T, typename U, typename V, typename ...Ts>
-struct common_type<T, U, V, Ts...> : common_type<common_type_t<T, U>, V, Ts...> {};
+struct common_type<T, U, V, Ts...> : conditional_t<__dsa::common_type_auxiliary<T, U>::value,
+        common_type<common_type_t<T, U>, V, Ts...>, common_type<>> {};
 
 template <typename ...>
 struct common_reference {};
