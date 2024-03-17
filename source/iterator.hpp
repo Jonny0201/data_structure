@@ -118,6 +118,29 @@ template <typename Iterator>
 inline constexpr auto is_contiguous_iterator_v {IsContiguousIterator<Iterator>};
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(iterator functions)
+template <IsRandomAccessIterator RandomAccessIterator>
+inline typename iterator_traits<RandomAccessIterator>::difference_type distance(RandomAccessIterator begin,
+        RandomAccessIterator end) noexcept(is_nothrow_subtractable_v<RandomAccessIterator>) {
+    return end - begin;
+}
+template <typename InputIterator>
+inline typename iterator_traits<InputIterator>::difference_type distance(InputIterator begin, InputIterator end)
+        noexcept(is_nothrow_prefix_increasable_v<InputIterator> and
+                is_nothrow_constructible_v<typename iterator_traits<InputIterator>::difference_type, int> and
+                is_nothrow_prefix_increasable_v<typename iterator_traits<InputIterator>::difference_type>) {
+    typename iterator_traits<InputIterator>::difference_type difference {0};
+    while(begin not_eq end) {
+        ++begin;
+        ++difference;
+    }
+    return difference;
+}
+inline ptrdiff_t distance(void *begin, void *end) noexcept {
+    return static_cast<char *>(end) - static_cast<char *>(begin);
+}
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(move_iterator)
 template <IsInputIterator Iterator>
 class move_iterator {
