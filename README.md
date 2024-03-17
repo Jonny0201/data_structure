@@ -15,244 +15,189 @@ Data structures provide a means to manage large amounts of data efficiently for 
 
 The project is being refactored.
 
-## Status ##
+## Enviorment ##
 
-### Apple Mac mini M2 ###
 <table style="border: 3px solid #000">
 <thead>
     <tr style="text-align: center; border-bottom: 2px solid #000;">
-        <th colspan="9">Mac mini (2023) with macOS Sonoma</th>
-    </tr>
-    <tr>
-        <th>Version</th>
-        <th colspan="2">CPU</th>
-        <th colspan="2">Memory</th>
-        <th colspan="2">GPU</th>
-        <th colspan="2">Hard Disk</th>
-    </tr>
-</thead>
-<tr style="text-align: center; border-bottom: 2px solid #000;">
-    <td>14.2.1</td>
-    <td colspan="2">Apple M2</td>
-    <td colspan="2">8 GB</td>
-    <td colspan="2">Apple M2</td>
-    <td colspan="2">Apple SSD AP0256Z</td>
-</tr>
-<thead>
-    <tr>
-        <th rowspan="4">Header</th>
-        <th rowspan="4">Unit Test</th>
-        <th rowspan="4">Benchmark</th>
-        <th colspan="5">Compiler Support</th>
-    </tr>
-    <tr>
-        <th>Apple Clang</th>
-        <th>Clang</th>
-        <th>GCC</th>
-        <th>MSVC</th>
-        <th rowspan="3">Other Compiler</th>
-    </tr>
-    <tr style="text-align: center;">
-        <td>1500.1.0.2.5</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr style="text-align: center;">
-        <td><code>-std=c++2b</code></td>
-        <td><code>-std=c++2c</code></td>
-        <td><code>-std=c++23</code></td>
-        <td><code>/std:c++latest</code></td>
+        <th style="border-right:2px solid #000">Device</th>
+        <th>CPU</th>
+        <th>Memory</th>
+        <th>GPU</th>
+        <th>Hard Disk</th>
+        <th>System</th>
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <th><code>__config.hpp</code></th>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <th rowspan="2" style="border-right:2px solid #000">Apple Mac mini M2</th>
+    <td rowspan="2">Apple M2</td>
+    <td rowspan="2">8 GB</td>
+    <td rowspan="2">Apple M2</td>
+    <td rowspan="2">Apple SSD AP0256Z</td>
+    <td>macOS Sonoma 14.4</td>
+</tr>
+<tr style="text-align: center; border-bottom: 1.5px solid #000;">
+    <td><img src="https://img.shields.io/badge/Virtual-black" alt="Virtual" />Windows 11 Arm 23H2</td>
+</tr>
+<tr style="text-align: center;">
+    <th rowspan="2" style="border-right:2px solid #000">Apple MacBook Pro M3 Max</th>
+    <td rowspan="2">Apple M3 Max</td>
+    <td rowspan="2">128 GB</td>
+    <td rowspan="2">Apple M3 Max</td>
+    <td rowspan="2">Apple SSD AP1024Z</td>
+    <td>macOS Sonoma 14.4</td>
+</tr>
+<tr style="text-align: center; border-bottom: 1.5px solid #000;">
+    <td><img src="https://img.shields.io/badge/Virtual-black" alt="Virtual" />CentOS 9 Stream</td>
+</tr>
+<tr style="text-align: center;">
+    <th rowspan="2" style="border-right:2px solid #000">Apple MacBook Pro Intel</th>
+    <td rowspan="2">Intel Core i7 9750H</td>
+    <td rowspan="2">16 GB</td>
+    <td rowspan="2">Intel UHD Graphics 630 & AMD Radeon Pro 555X</td>
+    <td>Apple SSD AP0256M</td>
+    <td>macOS Sonoma 14.4</td>
+</tr>
+<tr style="text-align: center;">
+    <td>Samsung 980 500GB driven by UGREEN</td>
+    <td><img src="https://img.shields.io/badge/BootCamp-black" alt="BootCamp" />Windows 11 23H2</td>
 </tr>
 </table>
 
-### Apple MacBook Pro M3 Max ###
+## Development ##
+
+### Status ###
+
 <table style="border: 3px solid #000">
 <thead>
     <tr style="text-align: center; border-bottom: 2px solid #000;">
-        <th colspan="9">MacBook Pro (2023) with macOS Sonoma</th>
-    </tr>
-    <tr>
-        <th>Version</th>
-        <th colspan="2">CPU</th>
-        <th colspan="2">Memory</th>
-        <th colspan="2">GPU</th>
-        <th colspan="2">Hard Disk</th>
-    </tr>
-</thead>
-<tr style="text-align: center; border-bottom: 2px solid #000;">
-    <td>14.2.1</td>
-    <td colspan="2">Apple M3 Max</td>
-    <td colspan="2">128 GB</td>
-    <td colspan="2">Apple M3 Max</td>
-    <td colspan="2">Apple SSD AP1024Z</td>
-</tr>
-<thead>
-    <tr>
-        <th rowspan="4">Header</th>
-        <th rowspan="4">Unit Test</th>
-        <th rowspan="4">Benchmark</th>
-        <th colspan="5">Compiler Support</th>
-    </tr>
-    <tr>
-        <th>Apple Clang</th>
-        <th>Clang</th>
-        <th>GCC</th>
-        <th>MSVC</th>
-        <th rowspan="3">Other Compiler</th>
-    </tr>
-    <tr style="text-align: center;">
-        <td>1500.1.0.2.5</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr style="text-align: center;">
-        <td><code>-std=c++2b</code></td>
-        <td><code>-std=c++2c</code></td>
-        <td><code>-std=c++23</code></td>
-        <td><code>/std:c++latest</code></td>
+        <th>Name</th>
+        <th>Structure</th>
+        <th>Status</th>
+        <th>Header</th>
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <th><code>__config.hpp</code></th>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td>Config</td>
+    <td>Basic</td>
+    <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
+    <td><code>__config.hpp</code></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Meta</td>
+    <td>Extra</td>
+    <td><img src="https://img.shields.io/badge/Development-Under-blue" alt="Done" /></td>
+    <td><code>meta.hpp</code></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Type Traits</td>
+    <td>Infrastructure</td>
+    <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
+    <td><code>type_traits.hpp</code></td>
 </tr>
 </table>
 
-### Apple MacBook Pro Intel ###
+### Unit Test ###
+
 <table style="border: 3px solid #000">
-<thead>
-    <tr style="text-align: center; border-bottom: 2px solid #000;">
-        <th colspan="9">MacBook Pro (2019) with macOS Sonoma</th>
+<thead style="border-bottom: 2px solid #000;">
+    <tr style="text-align: center;">
+        <th rowspan="2" style="border-right:2px solid #000">Name</th>
+        <th rowspan="2">System</th>
+        <th colspan="4">Compiler</th>
     </tr>
-    <tr>
-        <th>Version</th>
-        <th colspan="2">CPU</th>
-        <th colspan="2">Memory</th>
-        <th colspan="2">GPU</th>
-        <th colspan="2">Hard Disk</th>
-    </tr>
-</thead>
-<tr style="text-align: center; border-bottom: 2px solid #000;">
-    <td>14.2.1</td>
-    <td colspan="2">Intel Core i7 9750H</td>
-    <td colspan="2">16 GB</td>
-    <td colspan="2">Intel UHD Graphics 630 &<br />AMD Radeon Pro 555X</td>
-    <td colspan="2">Apple SSD AP0256M</td>
-</tr>
-<thead>
-    <tr>
-        <th rowspan="4">Header</th>
-        <th rowspan="4">Unit Test</th>
-        <th rowspan="4">Benchmark</th>
-        <th colspan="5">Compiler Support</th>
-    </tr>
-    <tr>
+    <tr style="text-align: center;">
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th rowspan="3">Other Compiler</th>
-    </tr>
-    <tr style="text-align: center;">
-        <td>1500.1.0.2.5</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr style="text-align: center;">
-        <td><code>-std=c++2b</code></td>
-        <td><code>-std=c++2c</code></td>
-        <td><code>-std=c++23</code></td>
-        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <th><code>__config.hpp</code></th>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td rowspan="4" style="border-right:2px solid #000"><code>buffer</code></td>
+    <td>macOS</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows Arm</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
 </tr>
 </table>
 
-### Apple MacBook Pro Intel ###
+### Benchmark ###
+
 <table style="border: 3px solid #000">
-<thead>
-    <tr style="text-align: center; border-bottom: 2px solid #000;">
-        <th colspan="9">MacBook Pro (2019) with Windows 11 (BootCamp)</th>
+<thead style="border-bottom: 2px solid #000;">
+    <tr style="text-align: center;">
+        <th rowspan="2" style="border-right:2px solid #000">Name</th>
+        <th rowspan="2">Enviorment</th>
+        <th colspan="4">Compiler</th>
     </tr>
-    <tr>
-        <th>Version</th>
-        <th colspan="2">CPU</th>
-        <th colspan="2">Memory</th>
-        <th colspan="2">GPU</th>
-        <th colspan="2">Hard Disk</th>
-    </tr>
-</thead>
-<tr style="text-align: center; border-bottom: 2px solid #000;">
-    <td>14.2.1</td>
-    <td colspan="2">Intel Core i7 9750H</td>
-    <td colspan="2">16 GB</td>
-    <td colspan="2">Intel UHD Graphics 630 &<br />AMD Radeon Pro 555X</td>
-    <td colspan="2">Samsung 990 Pro 4T driven by Konyead</td>
-</tr>
-<thead>
-    <tr>
-        <th rowspan="4">Header</th>
-        <th rowspan="4">Unit Test</th>
-        <th rowspan="4">Benchmark</th>
-        <th colspan="5">Compiler Support</th>
-    </tr>
-    <tr>
+    <tr style="text-align: center;">
         <th>Apple Clang</th>
         <th>Clang</th>
         <th>GCC</th>
         <th>MSVC</th>
-        <th rowspan="3">Other Compiler</th>
-    </tr>
-    <tr style="text-align: center;">
-        <td>1500.1.0.2.5</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr style="text-align: center;">
-        <td><code>-std=c++2b</code></td>
-        <td><code>-std=c++2c</code></td>
-        <td><code>-std=c++23</code></td>
-        <td><code>/std:c++latest</code></td>
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <th><code>__config.hpp</code></th>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
-    <td><img src="https://img.shields.io/badge/Build-Supported-blue" alt="Supported"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/Build-Unknown-lightgrey" alt="Unknown"></td>
-    <td><img src="https://img.shields.io/badge/None-gray" alt="Pass" /></td>
+    <td rowspan="6" style="border-right:2px solid #000"><code>buffer</code></td>
+    <td>macOS (M3 Max)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>macOS (M2)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>macOS (Intel)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows 11 (BootCamp in Intel)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows 11 Arm (Virtual in M2)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS (Virtual in M3 Max)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
 </tr>
 </table>
