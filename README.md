@@ -350,6 +350,7 @@ The project is being refactored.
         <th rowspan="2" style="border-right:2px solid #000">Name</th>
         <th rowspan="2">System</th>
         <th colspan="4">Compiler</th>
+        <th rowspan="2">Coverage</th>
     </tr>
     <tr style="text-align: center;">
         <th>Apple Clang</th>
