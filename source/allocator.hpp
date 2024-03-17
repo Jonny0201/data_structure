@@ -22,6 +22,16 @@
 
 namespace data_structure {
 
+/*
+ * The allocator in data structure project is different from std::allocator. If you want
+ * to customize your own allocator, it's essential to follow the detailed specifications :
+ * (1) The nothrow attribution of member function `allocate` is determined by the first
+ *     non-type template parameter `NoThrow`, the default value of `NoThrow` is false;
+ * (2) The allocator should support reallocation by providing member function `reallocate`;
+ * (3) The member function `deallocate` should be marked as noexcept, and if there exists
+ *     deallocating memory in other member functions, the operation should also be nothrow;
+ * (4) The move operation of allocator should be nothrow.
+*/
 __DATA_STRUCTURE_START(allocator)
 template <typename T>
 class allocator {
@@ -38,39 +48,39 @@ public:
     consteval allocator &operator=(const allocator &) noexcept = default;
     consteval allocator &operator=(allocator &&) noexcept = default;
 public:
+    template <bool NoThrow = false>
     [[nodiscard]]
-    static constexpr T *allocate(size_type n) {
+    static constexpr T *allocate(size_type n) noexcept(NoThrow) {
         if constexpr(is_trivially_copyable_v<T>) {
             auto memory {static_cast<T *>(memory_allocation(n * sizeof(T)))};
-            if(not memory) {
-                throw std::bad_alloc {};
+            if constexpr(not NoThrow) {
+                if(not memory) {
+                    throw std::bad_alloc {};
+                }
             }
             return memory;
         }
+        if constexpr(NoThrow) {
+            return static_cast<T *>(::operator new(n * sizeof(T), ds::nothrow));
+        }
         return static_cast<T *>(::operator new(n * sizeof(T)));
     }
+    template <bool NoThrow = false>
     [[nodiscard]]
-    static constexpr T *allocate(size_type n, meta::dynamic) noexcept {
-        if constexpr(is_trivially_copyable_v<T>) {
-            return static_cast<T *>(memory_allocation(n * sizeof(T)));
+    static constexpr T *reallocate(void *source, size_type n) noexcept(NoThrow) requires is_trivially_copyable_v<T> {
+        auto memory {static_cast<T *>(memory_reallocation(source, n * sizeof(T)))};
+        if constexpr(not NoThrow) {
+            if(not memory) {
+                throw std::bad_alloc {};
+            }
         }
-        return static_cast<T *>(::operator new(n * sizeof(T), std::nothrow));
-    }
-    [[nodiscard]]
-    static constexpr T *reallocate(void *source, size_type n) requires is_trivially_copyable_v<T> {
-        return static_cast<T *>(memory_reallocation(source, n * sizeof(T)));
+        return memory;
     }
     static constexpr void deallocate(void *p, size_type) noexcept {
         if constexpr(is_trivially_copyable_v<T>) {
             return free(p);
         }
-        ::operator delete(p);
-    }
-    static constexpr void deallocate(void *p, size_type, meta::dynamic) noexcept {
-        if constexpr(is_trivially_copyable_v<T>) {
-            return free(p);
-        }
-        ::operator delete(p, std::nothrow);
+        ::operator delete(p, ds::nothrow);
     }
 };
 template <typename T, typename U>
