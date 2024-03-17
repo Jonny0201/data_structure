@@ -119,223 +119,223 @@ The project is being refactored.
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <td>Config</td>
+    <th>Config</th>
     <td>Basic</td>
     <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
     <td><code>__config.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Meta</td>
+    <th>Meta</th>
     <td>Extra</td>
     <td><img src="https://img.shields.io/badge/Development-Under-blue" alt="Done" /></td>
     <td><code>meta.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Type Traits</td>
+    <th>Type Traits</th>
     <td>Infrastructure</td>
     <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
     <td><code>type_traits.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Allocator</td>
+    <th>Allocator</th>
     <td>Infrastructure</td>
     <td><img src="https://img.shields.io/badge/Development-Unconfirmed-EE3F4D" alt="Done" /></td>
     <td><code>allocator.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Memory Pool</td>
+    <th>Memory Pool</th>
     <td>Infrastructure</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>memory.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Buffer</td>
+    <th>Buffer</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>buffer.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Vector</td>
+    <th>Vector</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>vector.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Array</td>
+    <th>Array</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>array.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Forward List</td>
+    <th>Forward List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>forward_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>List</td>
+    <th>List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Deque</td>
+    <th>Deque</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>deque.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Stack</td>
+    <th>Stack</th>
     <td>Adaptor</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>stack.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Queue</td>
+    <th>Queue</th>
     <td>Adaptor</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>queue.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Priority Queue</td>
+    <th>Priority Queue</th>
     <td>Adaptor</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>priority_queue.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Skip List</td>
+    <th>Skip List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>skip_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Hash Table</td>
+    <th>Hash Table</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>hash_table.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Hash Array</td>
+    <th>Hash Array</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>hash_array.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Contiguous Forward List</td>
+    <th>Contiguous Forward List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>contiguous_forward_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Contiguous List</td>
+    <th>Contiguous List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>contiguous_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Bits</td>
+    <th>Bits</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>bits.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Matrix</td>
+    <th>Matrix</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>matrix.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>String</td>
+    <th>String</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>string.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Generalized List</td>
+    <th>Generalized List</th>
     <td>Linear</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>generalized_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Tree</td>
+    <th>Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Binary Tree</td>
+    <th>Binary Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>binary_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Leftist Tree</td>
+    <th>Leftist Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>leftist_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Winner Tree</td>
+    <th>Winner Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>winner_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Loser Tree</td>
+    <th>Loser Tree</th>
     <td>Alias</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>loser_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Huffman Tree</td>
+    <th>Huffman Tree</th>
     <td>Application</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>huffman_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Binary Search Tree</td>
+    <th>Binary Search Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>binary_search_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Adelson-Velsky and Landis Tree</td>
+    <th>Adelson-Velsky and Landis Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>avl_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Red-Black Tree</td>
+    <th>Red-Black Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>red_black_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Splay Tree</td>
+    <th>Splay Tree</th>
     <td>Adaptor</td>
     <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
     <td><code>splay_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>B Tree</td>
+    <th>B Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>b_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>B<sup>+</sup> Tree</td>
+    <th>B<sup>+</sup> Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>b_plus_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>B<sup>*</sup> Tree</td>
+    <th>B<sup>*</sup> Tree</th>
     <td>Tree</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>b_star_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
-    <td>Graph</td>
+    <th>Graph</th>
     <td>Graph</td>
     <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>graph.hpp</code></td>
@@ -359,7 +359,7 @@ The project is being refactored.
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <td rowspan="4" style="border-right:2px solid #000"><code>buffer</code></td>
+    <th rowspan="4" style="border-right:2px solid #000"><code>buffer</code></th>
     <td>macOS</td>
     <td></td>
     <td></td>
@@ -406,7 +406,7 @@ The project is being refactored.
     </tr>
 </thead>
 <tr style="text-align: center;">
-    <td rowspan="6" style="border-right:2px solid #000"><code>buffer</code></td>
+    <th rowspan="6" style="border-right:2px solid #000"><code>buffer</code></th>
     <td>macOS (M3 Max)</td>
     <td></td>
     <td></td>
