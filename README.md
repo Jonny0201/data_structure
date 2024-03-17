@@ -187,10 +187,12 @@ The project is being refactored.
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
     <td></td>
     <td></td>
+    <td></td>
 </tr>
 <tr style="text-align: center;">
     <td>Windows 11 Arm (Virtual in M2)</td>
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
     <td></td>
     <td></td>
 </tr>
@@ -199,5 +201,6 @@ The project is being refactored.
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
     <td></td>
     <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
 </tr>
 </table>
