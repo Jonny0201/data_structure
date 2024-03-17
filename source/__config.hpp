@@ -48,6 +48,10 @@ using weak_ordering = std::weak_ordering;
 using partial_ordering = std::partial_ordering;
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(nothrow tag for ::operator new or ::operator delete)
+constexpr auto nothrow {decltype(std::nothrow) {}};
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(reserved helper namespace for data_structure)
 namespace __data_structure_helper {}
 namespace __data_structure_auxiliary {}
