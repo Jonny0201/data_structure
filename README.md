@@ -366,6 +366,7 @@ The project is being refactored.
     <td></td>
     <td></td>
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
 </tr>
 <tr style="text-align: center;">
     <td>Windows</td>
