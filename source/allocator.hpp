@@ -31,6 +31,9 @@ namespace data_structure {
  * (3) The member function `deallocate` should be marked as noexcept, and if there exists
  *     deallocating memory in other member functions, the operation should also be nothrow;
  * (4) The move operation of allocator should be nothrow.
+ * (5) If the allocation size is zero, no memory should be allocated and nullptr is the
+ *     returning value. Especially note that if the reallocation size is zero, the source
+ *     memory should be deallocated.
 */
 __DATA_STRUCTURE_START(allocator)
 template <typename T>
@@ -51,6 +54,9 @@ public:
     template <bool NoThrow = false>
     [[nodiscard]]
     static constexpr T *allocate(size_type n) noexcept(NoThrow) {
+        if(n == 0) {
+            return nullptr;
+        }
         if constexpr(is_trivially_copyable_v<T>) {
             auto memory {static_cast<T *>(memory_allocation(n * sizeof(T)))};
             if constexpr(not NoThrow) {
@@ -68,6 +74,10 @@ public:
     template <bool NoThrow = false>
     [[nodiscard]]
     static constexpr T *reallocate(void *source, size_type n) noexcept(NoThrow) requires is_trivially_copyable_v<T> {
+        if(n == 0) {
+            free(source);
+            return nullptr;
+        }
         auto memory {static_cast<T *>(memory_reallocation(source, n * sizeof(T)))};
         if constexpr(not NoThrow) {
             if(not memory) {
