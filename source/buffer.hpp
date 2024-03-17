@@ -188,19 +188,26 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
     auto &buffer_size {this->buffer_size()};
     auto &allocator {this->buffer_size.allocator()};
     constexpr auto nothrow_moveable {is_nothrow_constructible_v<T, remove_reference_t<decltype(*begin)> &&>};
+    constexpr auto trivially_copyable {is_trivially_copyable_v<T>};
     if constexpr(nothrow_moveable or is_nothrow_constructible_v<T, decltype(*begin)>) {
         for(; begin not_eq end; ++i) {
             if(i == buffer_size) {
                 buffer_size *= 2;
                 T *new_first {};
                 try {
-                    new_first = allocator.allocate(buffer_size);
+                    if constexpr(trivially_copyable) {
+                        this->first = allocator.reallocate(this->first, buffer_size);
+                    }else {
+                        new_first = allocator.allocate(buffer_size);
+                    }
                 }catch(...) {
                     ds::destroy(this->first, this->first + i);
                     allocator.deallocate(this->first, i);
                     throw;
                 }
-                this->move_to(new_first, i);
+                if constexpr(not trivially_copyable) {
+                    this->move_to(new_first, i);
+                }
             }
             ds::construct(this->first + i, ds::move_if<nothrow_moveable>(*begin++));
         }
@@ -230,13 +237,19 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
     if(i < buffer_size) {
         T *new_first {};
         try {
-            new_first = allocator.allocate(i);
+            if constexpr(trivially_copyable) {
+                this->first = allocator.reallocate(this->first, buffer_size);
+            }else {
+                new_first = allocator.allocate(buffer_size);
+            }
         }catch(...) {
             ds::destroy(this->first, this->first + i);
             allocator.deallocate(this->first, buffer_size);
             throw;
         }
-        this->move_to(new_first, i);
+        if constexpr(not trivially_copyable) {
+            this->move_to(new_first, i);
+        }
         buffer_size = i;
     }
 }
