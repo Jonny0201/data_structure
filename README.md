@@ -26,6 +26,7 @@ The project is being refactored.
         <th>GPU</th>
         <th>Hard Disk</th>
         <th>System</th>
+        <th>Compiler</th>
     </tr>
 </thead>
 <tr style="text-align: center;">
@@ -35,9 +36,23 @@ The project is being refactored.
     <td rowspan="2">Apple M2</td>
     <td rowspan="2">Apple SSD AP0256Z</td>
     <td>macOS Sonoma 14.4</td>
+    <td>
+        <img src="https://img.shields.io/badge/Apple Clang-1500.3.9.4-815C94" alt="Apple Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+    </td>
 </tr>
 <tr style="text-align: center; border-bottom: 1.5px solid #000;">
     <td><img src="https://img.shields.io/badge/Virtual-black" alt="Virtual" />Windows 11 Arm 23H2</td>
+    <td>
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+        <br />
+        <img src="https://img.shields.io/badge/MSVC--815C94" alt="MSVC" />
+    </td>
 </tr>
 <tr style="text-align: center;">
     <th rowspan="2" style="border-right:2px solid #000">Apple MacBook Pro M3 Max</th>
@@ -46,9 +61,21 @@ The project is being refactored.
     <td rowspan="2">Apple M3 Max</td>
     <td rowspan="2">Apple SSD AP1024Z</td>
     <td>macOS Sonoma 14.4</td>
+    <td>
+        <img src="https://img.shields.io/badge/Apple Clang-1500.3.9.4-815C94" alt="Apple Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+    </td>
 </tr>
 <tr style="text-align: center; border-bottom: 1.5px solid #000;">
     <td><img src="https://img.shields.io/badge/Virtual-black" alt="Virtual" />CentOS 9 Stream</td>
+    <td>
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+    </td>
 </tr>
 <tr style="text-align: center;">
     <th rowspan="2" style="border-right:2px solid #000">Apple MacBook Pro Intel</th>
@@ -57,10 +84,24 @@ The project is being refactored.
     <td rowspan="2">Intel UHD Graphics 630 & AMD Radeon Pro 555X</td>
     <td>Apple SSD AP0256M</td>
     <td>macOS Sonoma 14.4</td>
+    <td>
+        <img src="https://img.shields.io/badge/Apple Clang-1500.3.9.4-815C94" alt="Apple Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+    </td>
 </tr>
 <tr style="text-align: center;">
     <td>Samsung 980 500GB driven by UGREEN</td>
     <td><img src="https://img.shields.io/badge/BootCamp-black" alt="BootCamp" />Windows 11 23H2</td>
+    <td>
+        <img src="https://img.shields.io/badge/Clang--815C94" alt="Clang" />
+        <br />
+        <img src="https://img.shields.io/badge/GCC--815C94" alt="GCC" />
+        <br />
+        <img src="https://img.shields.io/badge/MSVC--815C94" alt="MSVC" />
+    </td>
 </tr>
 </table>
 
@@ -99,7 +140,7 @@ The project is being refactored.
     <td>Allocator</td>
     <td>Infrastructure</td>
     <td><img src="https://img.shields.io/badge/Development-Unconfirmed-EE3F4D" alt="Done" /></td>
-    <td><code>type_traits.hpp</code></td>
+    <td><code>allocator.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
     <td>Memory Pool</td>
