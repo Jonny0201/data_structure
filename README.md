@@ -313,7 +313,7 @@ The project is being refactored.
 <tr style="text-align: center;">
     <th>Splay Tree</th>
     <td>Adaptor</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Pending-BE7E4A" alt="Done" /></td>
     <td><code>splay_tree.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
