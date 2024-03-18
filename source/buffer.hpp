@@ -100,21 +100,23 @@ public:
     using reference = T &;
     using const_reference = const T &;
     using rvalue_reference = T &&;
-    using pointer = T *;
-    using const_pointer = const T *;
-    using iterator = T *;
-    using const_iterator = const T *;
-    using move_iterator = ds::move_iterator<T *>;
+    using pointer = typename Allocator::pointer;
+    using const_pointer = typename Allocator::const_pointer;
+    using iterator = pointer;
+    using const_iterator = const_pointer;
+    using move_iterator = ds::move_iterator<pointer>;
+    static_assert(is_same_v<T, typename Allocator::value_type>,
+            "The value type of buffer should same as the allocator's value_type!");
 private:
     __dsa::buffer_compressed_pair<Allocator> buffer_size;
-    T *first;
+    pointer first;
 private:
     template <typename InputIterator>
     buffer(InputIterator, InputIterator, const Allocator &, false_type);
     template <typename ForwardIterator>
     buffer(ForwardIterator, ForwardIterator, const Allocator &, true_type);
 private:
-    void move_to(T *, size_type);
+    void move_to(pointer, size_type);
 public:
     buffer() = delete;
     explicit constexpr buffer(size_type, const Allocator & = {});
@@ -130,11 +132,11 @@ public:
     buffer &operator=(buffer &&) = delete;
 public:
     [[nodiscard]]
-    constexpr const T *begin() const & noexcept;
+    constexpr const_pointer begin() const & noexcept;
     [[nodiscard]]
-    constexpr const T *end() const & noexcept;
+    constexpr const_pointer end() const & noexcept;
     [[nodiscard]]
-    constexpr T *release() noexcept;
+    constexpr pointer release() noexcept;
     [[nodiscard]]
     constexpr move_iterator mbegin() noexcept;
     [[nodiscard]]
@@ -151,7 +153,7 @@ public:
 namespace data_structure {
 /* private functions */
 template <typename T, typename Allocator>
-void buffer<T, Allocator>::move_to(T *new_buffer, size_type old_size) {
+void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_size) {
     auto &allocator {this->buffer_size.allocator()};
     if constexpr(is_trivially_copy_assignable_v<T>) {
         ds::memory_copy(new_buffer, this->first, sizeof(T) * old_size);
@@ -193,7 +195,7 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
         for(; begin not_eq end; ++i) {
             if(i == buffer_size) {
                 buffer_size *= 2;
-                T *new_first {};
+                pointer new_first {};
                 try {
                     if constexpr(trivially_copyable) {
                         this->first = allocator.reallocate(this->first, buffer_size);
@@ -215,7 +217,7 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
         for(; begin not_eq end; ++i) {
             if(i == buffer_size) {
                 buffer_size *= 2;
-                T *new_first {};
+                pointer new_first {};
                 try {
                     new_first = allocator.allocate(buffer_size);
                 }catch(...) {
@@ -235,7 +237,7 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
         }
     }
     if(i < buffer_size) {
-        T *new_first {};
+        pointer new_first {};
         try {
             if constexpr(trivially_copyable) {
                 this->first = allocator.reallocate(this->first, buffer_size);
@@ -343,15 +345,15 @@ constexpr buffer<T, Allocator>::~buffer() noexcept {
     this->buffer_size.allocator().deallocate(this->first, buffer_size);
 }
 template <typename T, typename Allocator>
-constexpr const T *buffer<T, Allocator>::begin() const & noexcept {
+constexpr typename buffer<T, Allocator>::const_pointer buffer<T, Allocator>::begin() const & noexcept {
     return this->first;
 }
 template <typename T, typename Allocator>
-constexpr const T *buffer<T, Allocator>::end() const & noexcept {
+constexpr typename buffer<T, Allocator>::const_pointer buffer<T, Allocator>::end() const & noexcept {
     return this->first + this->buffer_size();
 }
 template <typename T, typename Allocator>
-constexpr T *buffer<T, Allocator>::release() noexcept {
+constexpr typename buffer<T, Allocator>::pointer buffer<T, Allocator>::release() noexcept {
     auto result {this->first};
     this->first = nullptr;
     return result;
