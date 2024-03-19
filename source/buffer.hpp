@@ -26,7 +26,7 @@ namespace data_structure::__data_structure_auxiliary {
 
 template <typename Allocator, bool>
 struct allocator_compressor {
-    size_t buffer_size;
+    size_t buffer_size {0};
     Allocator alloc;
 public:
     constexpr allocator_compressor() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
@@ -56,7 +56,7 @@ public:
 };
 template <typename Allocator>
 struct allocator_compressor<Allocator, true> : Allocator {
-    size_t buffer_size;
+    size_t buffer_size {0};
 public:
     constexpr allocator_compressor() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit allocator_compressor(size_t size) noexcept(is_nothrow_default_constructible_v<Allocator>) :
