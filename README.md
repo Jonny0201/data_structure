@@ -133,7 +133,7 @@ The project is being refactored.
 <tr style="text-align: center;">
     <th>Type Traits</th>
     <td>Infrastructure</td>
-    <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>type_traits.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
