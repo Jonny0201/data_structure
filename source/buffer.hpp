@@ -167,7 +167,7 @@ void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_size) {
             size_type i {0};
             try {
                 for(; i < old_size; ++i) {
-                    ds::construct(new_buffer + i, this->first[i]);
+                    ds::construct(new_buffer + i, ds::move(this->first[i]));
                 }
             }catch(...) {
                 ds::destroy(this->first, this->first + old_size);
@@ -228,7 +228,7 @@ buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Alloc
                 this->move_to(new_first, i);
             }
             try {
-                ds::construct(this->first + i, *begin++);
+                ds::construct(this->first + i, ds::move(*begin++));
             }catch(...) {
                 ds::destroy(this->first, this->first + i);
                 allocator.deallocate(this->first, buffer_size);
