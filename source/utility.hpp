@@ -42,6 +42,39 @@ inline constexpr T &&forward(remove_reference_t<T> &&value) noexcept {
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(transaction tool)
+template <typename Rollback>
+class transaction {
+private:
+    Rollback rollback_block;
+    bool done;
+public:
+    explicit transaction(Rollback rollback_block) noexcept(is_nothrow_move_constructible_v<Rollback>) :
+            rollback_block {ds::move(rollback_block)}, done {} {}
+    transaction(const transaction &) = delete;
+    transaction(transaction &&rhs) noexcept(is_nothrow_move_constructible_v<Rollback>) :
+            rollback_block {ds::move(rhs.rollback_block)}, done {} {
+        rhs.done = true;
+    }
+    ~transaction() noexcept {
+        if(not this->done) {
+            this->rollback_block();
+        }
+    }
+public:
+    transaction &operator=(const transaction &) = delete;
+    transaction &operator=(transaction &&) = delete;
+public:
+    void complete() noexcept {
+        this->done = true;
+    }
+    void rollback() noexcept {
+        this->rollback_block();
+        this->done = true;
+    }
+};
+__DATA_STRUCTURE_END
+
 }       // namespace data_structure
 
 #endif //DATA_STRUCTURE_UTILITY_HPP
