@@ -21,74 +21,6 @@
 #include "iterator.hpp"
 #include "memory.hpp"
 
-__DATA_STRUCTURE_START(compressed pair with allocator for ds::buffer)
-namespace data_structure::__data_structure_auxiliary {
-
-template <typename Allocator, bool>
-struct allocator_compressor {
-    size_t buffer_size {0};
-    Allocator alloc;
-public:
-    constexpr allocator_compressor() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
-    explicit constexpr allocator_compressor(size_t size) noexcept(is_nothrow_default_constructible_v<Allocator>) :
-            buffer_size {size}, alloc {} {}
-    explicit constexpr allocator_compressor(const Allocator &allocator)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : buffer_size {}, alloc {allocator} {}
-    constexpr allocator_compressor(size_t size, const Allocator &allocator)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : buffer_size {size}, alloc {allocator} {}
-    constexpr allocator_compressor(const allocator_compressor &rhs)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : buffer_size(rhs.buffer_size), alloc {rhs.alloc} {}
-    constexpr allocator_compressor(allocator_compressor &&rhs) noexcept :
-            buffer_size(rhs.buffer_size), alloc {ds::move(rhs.alloc)} {}
-public:
-    size_t &operator()() noexcept {
-        return this->buffer_size;
-    }
-    const size_t &operator()() const noexcept {
-        return this->buffer_size;
-    }
-    Allocator &allocator() noexcept {
-        return this->alloc;
-    }
-    const Allocator &allocator() const noexcept {
-        return this->alloc;
-    }
-};
-template <typename Allocator>
-struct allocator_compressor<Allocator, true> : Allocator {
-    size_t buffer_size {0};
-public:
-    constexpr allocator_compressor() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
-    explicit allocator_compressor(size_t size) noexcept(is_nothrow_default_constructible_v<Allocator>) :
-            Allocator(), buffer_size {size} {}
-    explicit allocator_compressor(const Allocator &allocator) noexcept(is_nothrow_copy_constructible_v<Allocator>) :
-            Allocator(allocator), buffer_size {} {}
-    allocator_compressor(size_t size, const Allocator &allocator) noexcept(is_nothrow_copy_constructible_v<Allocator>) :
-            Allocator(allocator), buffer_size {size} {}
-    allocator_compressor(const allocator_compressor &rhs) noexcept(is_nothrow_copy_constructible_v<Allocator>) :
-            Allocator(rhs.allocator()), buffer_size {rhs.buffer_size} {}
-    allocator_compressor(allocator_compressor &&rhs) noexcept :
-            Allocator(ds::move(rhs.allocator())), buffer_size {rhs.buffer_size} {}
-public:
-    size_t &operator()() noexcept {
-        return this->buffer_size;
-    }
-    const size_t &operator()() const noexcept {
-        return this->buffer_size;
-    }
-    Allocator &allocator() noexcept {
-        return static_cast<Allocator &>(*this);
-    }
-    const Allocator &allocator() const noexcept {
-        return static_cast<const Allocator &>(*this);
-    }
-};
-template <typename Allocator>
-using buffer_compressed_pair = allocator_compressor<Allocator, is_empty_v<Allocator> and not is_final_v<Allocator>>;
-
-}       // namespace data_structure::__data_structure_auxiliary
-__DATA_STRUCTURE_END
-
 namespace data_structure {
 
 __DATA_STRUCTURE_START(buffer declaration)
@@ -113,7 +45,7 @@ private:
     struct exception_handler;
     friend struct exception_handler;
 private:
-    __dsa::buffer_compressed_pair<Allocator> buffer_size;
+    __dsa::allocator_compressor<size_type, Allocator> buffer_size;
     pointer first;
 private:
     template <bool CopyFromValue = true>
