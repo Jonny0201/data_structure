@@ -72,6 +72,9 @@ public:
         this->rollback_block();
         this->done = true;
     }
+    Rollback &get_rollback() & noexcept {
+        return this->rollback_block;
+    }
 };
 __DATA_STRUCTURE_END
 
