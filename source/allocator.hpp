@@ -42,14 +42,16 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using value_type = T;
+    using pointer = T *;
+    using const_pointer = const T *;
 public:
-    consteval allocator() noexcept = default;
-    consteval allocator(const allocator &) noexcept = default;
-    consteval allocator(allocator &&) noexcept = default;
+    constexpr allocator() noexcept = default;
+    constexpr allocator(const allocator &) noexcept = default;
+    constexpr allocator(allocator &&) noexcept = default;
     constexpr ~allocator() noexcept = default;
 public:
-    consteval allocator &operator=(const allocator &) noexcept = default;
-    consteval allocator &operator=(allocator &&) noexcept = default;
+    constexpr allocator &operator=(const allocator &) noexcept = default;
+    constexpr allocator &operator=(allocator &&) noexcept = default;
 public:
     template <bool NoThrow = false>
     [[nodiscard]]
