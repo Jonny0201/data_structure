@@ -27,7 +27,8 @@ void buffer_unit_test() {
     auto correctness {new buffer_correctness {}};
     //correctness->test_constructor_1();
     //correctness->test_constructor_2();
-    correctness->test_constructor_3();
+    //correctness->test_constructor_3();
+    correctness->test_constructor_4();
     delete correctness;
 }
 
@@ -639,5 +640,677 @@ void buffer_correctness::test_constructor_3() {
         }
     }
 
-    std::cout << "Start checking buffer(InputIterator, InputIterator, const Allocator &), size, empty and iterator!" << std::endl;
+    std::cout << "Checking buffer(InputIterator, InputIterator, const Allocator &), size, empty and iterator finished!" << std::endl;
+}
+
+void buffer_correctness::test_constructor_4() {
+    std::cout << "Start checking buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator!" << std::endl;
+
+    // forward iterator
+    {
+        std::cout << "\tStart checking forward_iterator version!" << std::endl;
+        // empty
+        {
+            buffer<int> b(int_forward_iterator {}, {});
+            assert(b.size() == 0);
+            assert(b.empty());
+            assert(b.begin() == b.end());
+            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::forward_list<int> l {42};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 1);
+            assert(not b.empty());
+            assert(b.begin() not_eq b.end());
+            assert(b.begin() + 1 == b.end());
+            assert(*b.begin() == 42);
+            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 10);
+            assert(not b.empty());
+            assert(b.begin() + 10 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 42);
+            assert(not b.empty());
+            assert(b.begin() + 42 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 64);
+            assert(not b.empty());
+            assert(b.begin() + 64 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 128);
+            assert(not b.empty());
+            assert(b.begin() + 128 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 1024);
+            assert(not b.empty());
+            assert(b.begin() + 1024 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_FORWARD_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 10000);
+            assert(not b.empty());
+            assert(b.begin() + 10000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_FORWARD_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_FORWARD_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 100000);
+            assert(not b.empty());
+            assert(b.begin() + 100000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_FORWARD_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_FORWARD_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 1000000);
+            assert(not b.empty());
+            assert(b.begin() + 1000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_FORWARD_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_FORWARD_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 10000000);
+            assert(not b.empty());
+            assert(b.begin() + 10000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_FORWARD_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_FORWARD_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == 100000000);
+            assert(not b.empty());
+            assert(b.begin() + 100000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_FORWARD_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_FORWARD_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto l {this->to_forward_iterator(numbers)};
+            buffer<int> b(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(b.size() == size);
+            assert(not b.empty());
+            assert(b.begin() + size == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_FORWARD_RANDOM;
+            }
+        }
+        std::cout << "\tChecking forward iterator version finished!" << std::endl;
+    }
+
+    // bidirectional iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+        // empty
+        {
+            buffer<int> b(int_bidirectional_iterator {}, {});
+            assert(b.size() == 0);
+            assert(b.empty());
+            assert(b.begin() == b.end());
+            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::list<int> l {42};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 1);
+            assert(not b.empty());
+            assert(b.begin() not_eq b.end());
+            assert(b.begin() + 1 == b.end());
+            assert(*b.begin() == 42);
+            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 10);
+            assert(not b.empty());
+            assert(b.begin() + 10 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 42);
+            assert(not b.empty());
+            assert(b.begin() + 42 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 64);
+            assert(not b.empty());
+            assert(b.begin() + 64 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 128);
+            assert(not b.empty());
+            assert(b.begin() + 128 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 1024);
+            assert(not b.empty());
+            assert(b.begin() + 1024 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 10000);
+            assert(not b.empty());
+            assert(b.begin() + 10000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_BIDIRECTIONAL_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 100000);
+            assert(not b.empty());
+            assert(b.begin() + 100000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_BIDIRECTIONAL_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 1000000);
+            assert(not b.empty());
+            assert(b.begin() + 1000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_BIDIRECTIONAL_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 10000000);
+            assert(not b.empty());
+            assert(b.begin() + 10000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_BIDIRECTIONAL_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == 100000000);
+            assert(not b.empty());
+            assert(b.begin() + 100000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_BIDIRECTIONAL_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            buffer<int> b(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(b.size() == size);
+            assert(not b.empty());
+            assert(b.begin() + size == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_BIDIRECTIONAL_RANDOM;
+            }
+        }
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    // bidirectional iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+        // empty
+        {
+            buffer<int> b(int_random_access_iterator {}, {});
+            assert(b.size() == 0);
+            assert(b.empty());
+            assert(b.begin() == b.end());
+            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::deque<int> d {42};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 1);
+            assert(not b.empty());
+            assert(b.begin() not_eq b.end());
+            assert(b.begin() + 1 == b.end());
+            assert(*b.begin() == 42);
+            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 10);
+            assert(not b.empty());
+            assert(b.begin() + 10 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 42);
+            assert(not b.empty());
+            assert(b.begin() + 42 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 64);
+            assert(not b.empty());
+            assert(b.begin() + 64 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 128);
+            assert(not b.empty());
+            assert(b.begin() + 128 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 1024);
+            assert(not b.empty());
+            assert(b.begin() + 1024 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 10000);
+            assert(not b.empty());
+            assert(b.begin() + 10000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_RANDOM_ACCESS_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 100000);
+            assert(not b.empty());
+            assert(b.begin() + 100000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_RANDOM_ACCESS_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 1000000);
+            assert(not b.empty());
+            assert(b.begin() + 1000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_RANDOM_ACCESS_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 10000000);
+            assert(not b.empty());
+            assert(b.begin() + 10000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_RANDOM_ACCESS_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == 100000000);
+            assert(not b.empty());
+            assert(b.begin() + 100000000 == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_RANDOM_ACCESS_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto d {this->to_random_access_iterator(numbers)};
+            buffer<int> b(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(b.size() == size);
+            assert(not b.empty());
+            assert(b.begin() + size == b.end());
+            const auto begin {b.begin()};
+            for(auto i {0}; i < numbers.size(); ++i) {
+                assert(begin[i] == numbers[i]);
+            }
+            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_RANDOM_ACCESS_RANDOM;
+            }
+        }
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    std::cout << "Checking buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator finished!" << std::endl;
 }
