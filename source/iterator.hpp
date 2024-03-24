@@ -36,86 +36,104 @@ template <typename Iterator>
 struct iterator_traits {
     using size_type = typename Iterator::size_type;
     using difference_type = typename Iterator::difference_type;
+    using value_type = typename Iterator::value_type;
     using iterator_category = typename Iterator::iterator_category;
 };
 template <typename T>
 struct iterator_traits<T *> {
     using size_type = size_t;
     using difference_type = ptrdiff_t;
+    using value_type = T;
     using iterator_category = contiguous_iterator_tag;
 };
 
+namespace __data_structure_auxiliary {
+template <typename T, bool = is_pointer_v<T>, typename = void>
+struct has_iterator_category_auxiliary : false_type {
+    using is_iterator = false_type;
+    using is_input_iterator = false_type;
+    using is_output_iterator = false_type;
+    using is_forward_iterator = false_type;
+    using is_bidirectional_iterator = false_type;
+    using is_random_access_iterator = false_type;
+    using is_contiguous_iterator = false_type;
+};
 template <typename T>
-concept HasIteratorCategory = requires {
-    typename iterator_traits<T>::iterator_category;
+struct has_iterator_category_auxiliary<T, false, void_t<typename T::iterator_category>> : true_type {
+    using is_iterator = is_base_of<iterator_tag, typename T::iterator_category>;
+    using is_input_iterator = is_base_of<input_iterator_tag, typename T::iterator_category>;
+    using is_output_iterator = is_same<output_iterator_tag, typename T::iterator_category>;
+    using is_forward_iterator = is_base_of<forward_iterator_tag, typename T::iterator_category>;
+    using is_bidirectional_iterator = is_base_of<bidirectional_iterator_tag, typename T::iterator_category>;
+    using is_random_access_iterator = is_base_of<random_access_iterator_tag, typename T::iterator_category>;
+    using is_contiguous_iterator = is_same<contiguous_iterator_tag, typename T::iterator_category>;
 };
-template <typename Iterator>
-struct has_iterator_category : bool_constant<HasIteratorCategory<Iterator>> {};
-template <typename Iterator>
-inline constexpr auto has_iterator_category_v {HasIteratorCategory<Iterator>};
+template <typename T>
+struct has_iterator_category_auxiliary<T, true, void> : true_type {
+    using is_iterator = true_type;
+    using is_input_iterator = true_type;
+    using is_output_iterator = true_type;
+    using is_forward_iterator = true_type;
+    using is_bidirectional_iterator = true_type;
+    using is_random_access_iterator = true_type;
+    using is_contiguous_iterator = true_type;
+};
+}
+template <typename T>
+struct has_iterator_category : __dsa::has_iterator_category_auxiliary<T> {};
+template <typename T>
+inline constexpr auto has_iterator_category_v {has_iterator_category<T>::value};
+template <typename T>
+concept HasIteratorCategory = has_iterator_category_v<T>;
 
 template <typename Iterator>
-concept IsIterator = requires {
-    is_base_of_v<iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_iterator {};
 template <typename Iterator>
-struct is_iterator : bool_constant<IsIterator<Iterator>> {};
+inline constexpr auto is_iterator_v {is_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_iterator_v {IsIterator<Iterator>};
+concept IsIterator = is_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsInputIterator = requires {
-    is_base_of_v<input_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_input_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_input_iterator {};
 template <typename Iterator>
-struct is_input_iterator : bool_constant<IsInputIterator<Iterator>> {};
+inline constexpr auto is_input_iterator_v {is_input_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_input_iterator_v {IsInputIterator<Iterator>};
+concept IsInputIterator = is_input_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsOutputIterator = requires {
-    is_base_of_v<output_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_output_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_output_iterator {};
 template <typename Iterator>
-struct is_output_iterator : bool_constant<IsOutputIterator<Iterator>> {};
+inline constexpr auto is_output_iterator_v {is_output_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_output_iterator_v {IsOutputIterator<Iterator>};
+concept IsOutputIterator = is_output_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsForwardIterator = requires {
-    is_base_of_v<forward_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_forward_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_forward_iterator {};
 template <typename Iterator>
-struct is_forward_iterator : bool_constant<IsForwardIterator<Iterator>> {};
+inline constexpr auto is_forward_iterator_v {is_forward_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_forward_iterator_v {IsForwardIterator<Iterator>};
+concept IsForwardIterator = is_forward_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsBidirectionalIterator = requires {
-    is_base_of_v<bidirectional_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_bidirectional_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_bidirectional_iterator {};
 template <typename Iterator>
-struct is_bidirectional_iterator : bool_constant<IsBidirectionalIterator<Iterator>> {};
+inline constexpr auto is_bidirectional_iterator_v {is_bidirectional_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_bidirectional_iterator_v {IsBidirectionalIterator<Iterator>};
+concept IsBidirectionalIterator = is_bidirectional_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsRandomAccessIterator = requires {
-    is_base_of_v<random_access_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_random_access_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_random_access_iterator {};
 template <typename Iterator>
-struct is_random_access_iterator : bool_constant<IsRandomAccessIterator<Iterator>> {};
+inline constexpr auto is_random_access_iterator_v {is_random_access_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_random_access_iterator_v {IsRandomAccessIterator<Iterator>};
+concept IsRandomAccessIterator = is_random_access_iterator_v<Iterator>;
 
 template <typename Iterator>
-concept IsContiguousIterator = requires {
-    is_same_v<contiguous_iterator_tag, typename iterator_traits<Iterator>::iterator_category>;
-};
+struct is_contiguous_iterator : __dsa::has_iterator_category_auxiliary<Iterator>::is_contiguous_iterator {};
 template <typename Iterator>
-struct is_contiguous_iterator : bool_constant<IsContiguousIterator<Iterator>> {};
+inline constexpr auto is_contiguous_iterator_v {is_contiguous_iterator<Iterator>::value};
 template <typename Iterator>
-inline constexpr auto is_contiguous_iterator_v {IsContiguousIterator<Iterator>};
+concept IsContiguousIterator = is_contiguous_iterator_v<Iterator>;
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(iterator functions)
