@@ -103,22 +103,13 @@ std::stringstream unit_test_correctness::to_input_iterator(const std::vector<int
     }
     return std::move(result);
 }
-std::tuple<std::forward_list<int>, typename unit_test_correctness::int_forward_iterator,
-        typename unit_test_correctness::int_forward_iterator>
-unit_test_correctness::to_forward_iterator(const std::vector<int> &source) {
-    std::forward_list<int> result(source.cbegin(), source.cend());
-    return {result, {result.begin()}, {result.end()}};
+std::forward_list<int> unit_test_correctness::to_forward_iterator(const std::vector<int> &source) {
+    return {source.cbegin(), source.cend()};
 }
-std::tuple<std::list<int>, typename unit_test_correctness::int_bidirectional_iterator,
-        typename unit_test_correctness::int_bidirectional_iterator>
-unit_test_correctness::to_bidirectional_iterator(const std::vector<int> &source) {
-    std::list<int> result(source.cbegin(), source.cend());
-    return {result, {result.begin()}, {result.end()}};
+std::list<int> unit_test_correctness::to_bidirectional_iterator(const std::vector<int> &source) {
+    return {source.cbegin(), source.cend()};
 }
-std::tuple<std::deque<int>, typename unit_test_correctness::int_random_access_iterator,
-        typename unit_test_correctness::int_random_access_iterator>
-unit_test_correctness::to_random_access_iterator(const std::vector<int> &source) {
-    std::deque<int> result(source.cbegin(), source.cend());
-    return {result, {result.begin()}, {result.end()}};
+std::deque<int> unit_test_correctness::to_random_access_iterator(const std::vector<int> &source) {
+    return {source.cbegin(), source.cend()};
 }
 __DATA_STRUCTURE_END

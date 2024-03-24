@@ -37,6 +37,9 @@ public:
         }
     };
     struct int_forward_iterator {
+        using difference_type = typename std::forward_list<int>::iterator::difference_type;
+        using size_type = size_t;
+        using value_type = int;
         using iterator_category = ds::forward_iterator_tag;
         typename std::forward_list<int>::iterator it;
         operator std::forward_list<int>::iterator() const noexcept {
@@ -59,6 +62,9 @@ public:
         }
     };
     struct int_bidirectional_iterator {
+        using difference_type = typename std::list<int>::iterator::difference_type;
+        using size_type = size_t;
+        using value_type = int;
         using iterator_category = ds::bidirectional_iterator_tag;
         typename std::list<int>::iterator it;
         operator std::list<int>::iterator() const noexcept {
@@ -81,6 +87,9 @@ public:
         }
     };
     struct int_random_access_iterator {
+        using difference_type = typename std::deque<int>::iterator::difference_type;
+        using size_type = size_t;
+        using value_type = int;
         using iterator_category = ds::random_access_iterator_tag;
         typename std::deque<int>::iterator it;
         operator std::deque<int>::iterator() const noexcept {
@@ -100,6 +109,9 @@ public:
             auto tmp {*this};
             ++*this;
             return tmp;
+        }
+        difference_type operator-(const int_random_access_iterator &rhs) const noexcept {
+            return this->it - rhs.it;
         }
     };
 protected:
@@ -128,12 +140,9 @@ protected:
     virtual std::vector<int> generate_negative_sequence();
     virtual std::vector<int> generate_negative_sequence(int count);
     virtual std::stringstream to_input_iterator(const std::vector<int> &);
-    virtual std::tuple<std::forward_list<int>, int_forward_iterator, int_forward_iterator>
-    to_forward_iterator(const std::vector<int> &);
-    virtual std::tuple<std::list<int>, int_bidirectional_iterator, int_bidirectional_iterator>
-    to_bidirectional_iterator(const std::vector<int> &);
-    virtual std::tuple<std::deque<int>, int_random_access_iterator, int_random_access_iterator>
-    to_random_access_iterator(const std::vector<int> &);
+    virtual std::forward_list<int> to_forward_iterator(const std::vector<int> &);
+    virtual std::list<int> to_bidirectional_iterator(const std::vector<int> &);
+    virtual std::deque<int> to_random_access_iterator(const std::vector<int> &);
 public:
     virtual ~unit_test_correctness() noexcept = default;
 };
@@ -149,6 +158,10 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(memory testing base class)
 class unit_test_memory;
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(stability testing base class)
+class unit_test_stability;
 __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(thread testing base class)
