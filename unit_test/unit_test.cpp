@@ -1,27 +1,38 @@
 #include <random>
+#include <sstream>
+#include <iterator>
 #include "unit_test.hpp"
 
 __DATA_STRUCTURE_START(correctness testing base class implementation)
 int unit_test_correctness::generate_count() {
-    std::uniform_int_distribution u(0, std::numeric_limits<int>::max());
+    return this->generate_count(std::numeric_limits<int>::max());
+}
+int unit_test_correctness::generate_count(int max) {
+    std::uniform_int_distribution u(0, max);
+    std::random_device d {};
+    std::default_random_engine e(d());
+    return u(e);
+}
+int unit_test_correctness::generate_a_random_number(int min, int max) {
+    std::uniform_int_distribution u(min, max);
     std::random_device d {};
     std::default_random_engine e(d());
     return u(e);
 }
 std::vector<int> unit_test_correctness::generate_random_sequence() {
     return this->generate_random_sequence(std::numeric_limits<int>::min(),
-                                          std::numeric_limits<int>::max(), this->generate_count());
+            std::numeric_limits<int>::max(), this->generate_count());
 }
 std::vector<int> unit_test_correctness::generate_random_sequence(int count) {
     return this->generate_random_sequence(std::numeric_limits<int>::min(),
-                                          std::numeric_limits<int>::max(), count);
+            std::numeric_limits<int>::max(), count);
 }
 std::vector<int> unit_test_correctness::generate_random_sequence(int min, int max) {
     std::uniform_int_distribution u(0, std::numeric_limits<int>::max());
     std::random_device d {};
     std::default_random_engine e(d());
     return this->generate_random_sequence(std::numeric_limits<int>::min(),
-                                          std::numeric_limits<int>::max(), this->generate_count());
+            std::numeric_limits<int>::max(), this->generate_count());
 }
 std::vector<int> unit_test_correctness::generate_random_sequence(int min, int max, int count) {
     std::uniform_int_distribution u(min, max);
@@ -84,5 +95,30 @@ std::vector<int> unit_test_correctness::generate_negative_sequence() {
 }
 std::vector<int> unit_test_correctness::generate_negative_sequence(int count) {
     return this->generate_random_sequence(std::numeric_limits<int>::min(), 0, count);
+}
+std::stringstream unit_test_correctness::to_input_iterator(const std::vector<int> &source) {
+    std::stringstream result {};
+    for(auto i {0}; i < source.size(); ++i) {
+        result << std::to_string(source[i]) + ' ';
+    }
+    return std::move(result);
+}
+std::tuple<std::forward_list<int>, typename unit_test_correctness::int_forward_iterator,
+        typename unit_test_correctness::int_forward_iterator>
+unit_test_correctness::to_forward_iterator(const std::vector<int> &source) {
+    std::forward_list<int> result(source.cbegin(), source.cend());
+    return {result, {result.begin()}, {result.end()}};
+}
+std::tuple<std::list<int>, typename unit_test_correctness::int_bidirectional_iterator,
+        typename unit_test_correctness::int_bidirectional_iterator>
+unit_test_correctness::to_bidirectional_iterator(const std::vector<int> &source) {
+    std::list<int> result(source.cbegin(), source.cend());
+    return {result, {result.begin()}, {result.end()}};
+}
+std::tuple<std::deque<int>, typename unit_test_correctness::int_random_access_iterator,
+        typename unit_test_correctness::int_random_access_iterator>
+unit_test_correctness::to_random_access_iterator(const std::vector<int> &source) {
+    std::deque<int> result(source.cbegin(), source.cend());
+    return {result, {result.begin()}, {result.end()}};
 }
 __DATA_STRUCTURE_END
