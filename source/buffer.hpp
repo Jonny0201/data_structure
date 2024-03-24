@@ -59,10 +59,10 @@ public:
     buffer() = delete;
     explicit constexpr buffer(size_type, const Allocator & = {});
     constexpr buffer(size_type, const T &, const Allocator & = {});
-    template <size_type DefaultSize = 64, typename InputIterator> requires (is_input_iterator_v<InputIterator> and
-            not is_forward_iterator_v<InputIterator>)
+    template <size_type DefaultSize = 64, IsInputIterator InputIterator>
+            requires (not is_forward_iterator_v<InputIterator>)
     constexpr buffer(InputIterator, InputIterator, const Allocator & = {});
-    template <typename ForwardIterator> requires is_forward_iterator_v<ForwardIterator>
+    template <IsForwardIterator ForwardIterator>
     constexpr buffer(ForwardIterator, ForwardIterator, const Allocator & = {});
     constexpr buffer(initializer_list<T>, const Allocator & = {});
     buffer(const buffer &) = delete;
@@ -100,7 +100,7 @@ struct buffer<T, Allocator>::exception_handler {
     explicit constexpr exception_handler(buffer &b, size_type i = 0) noexcept : b {b}, i {i} {}
     constexpr void operator()() noexcept {
         auto &allocator {this->b.buffer_size.allocator()};
-        ds::destroy(this->b.first, this->i);
+        ds::destroy(this->b.first, this->b.first + this->i);
         allocator.deallocate(this->b.first, this->b.buffer_size());
     }
 };
@@ -154,6 +154,7 @@ template <typename T, typename Allocator>
 template <typename InputIterator>
 constexpr void buffer<T, Allocator>::initialize(InputIterator begin, InputIterator end, false_type) {
     auto &size {this->buffer_size()};
+    this->first = this->buffer_size.allocator().allocate(size);
     auto &allocator {this->buffer_size.allocator()};
     auto trans {transaction {exception_handler(*this)}};
     auto &i {trans.get_rollback().i};
@@ -205,11 +206,17 @@ constexpr buffer<T, Allocator>::buffer(size_type n, const T &value, const Alloca
     this->initialize(value);
 }
 template <typename T, typename Allocator>
-template <typename buffer<T, Allocator>::size_type DefaultSize, typename InputIterator>
-requires (is_input_iterator_v<InputIterator> and not is_forward_iterator_v<InputIterator>)
+template <typename buffer<T, Allocator>::size_type DefaultSize, IsInputIterator InputIterator>
+        requires (not is_forward_iterator_v<InputIterator>)
 constexpr buffer<T, Allocator>::buffer(InputIterator begin, InputIterator end, const Allocator &allocator) :
         buffer_size(DefaultSize, allocator), first {} {
     this->initialize(begin, end, false_type {});
+}
+template <typename T, typename Allocator>
+template <IsForwardIterator ForwardIterator>
+constexpr buffer<T, Allocator>::buffer(ForwardIterator begin, ForwardIterator end, const Allocator &allocator) :
+        buffer_size(ds::distance(begin, end), allocator), first {} {
+    this->initialize(begin, end, true_type {});
 }
 template <typename T, typename Allocator>
 constexpr buffer<T, Allocator>::buffer(initializer_list<T> init_list, const Allocator &allocator) :
