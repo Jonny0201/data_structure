@@ -185,8 +185,8 @@ constexpr void buffer<T, Allocator>::initialize(ForwardIterator begin, ForwardIt
     const auto size {this->buffer_size()};
     this->first = this->buffer_size.allocator().allocate(size);
     auto trans {transaction {exception_handler(*this)}};
-    if constexpr(is_trivially_default_constructible_v<T>) {
-        ds::memory_default_initialization(this->first, sizeof(T) * size);
+    if constexpr(is_pointer_v<ForwardIterator> and is_trivially_copyable_v<T>) {
+        ds::memory_copy(this->first, begin, sizeof(T) * this->buffer_size());
     }else {
         for(auto &i {trans.get_rollback().i}; i < size; ++i) {
             ds::construct(this->first + i, *begin++);
