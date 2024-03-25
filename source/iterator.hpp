@@ -18,6 +18,7 @@
 #define DATA_STRUCTURE_ITERATOR_HPP
 
 #include "type_traits.hpp"
+#include "utility.hpp"
 
 namespace data_structure {
 
@@ -191,11 +192,11 @@ public:
     }
 public:
     decltype(auto) operator*() const noexcept(is_nothrow_dereferenceable_v<Iterator>) {
-        return move(*this->iterator);
+        return ds::move(*this->iterator);
     }
     decltype(auto) operator[](difference_type n) noexcept(is_nothrow_indexable_v<Iterator, difference_type>)
             requires is_random_access_iterator_v<Iterator> {
-        return move(this->iterator[n]);
+        return ds::move(this->iterator[n]);
     }
     move_iterator &operator++() & noexcept(is_nothrow_prefix_increasable_v<Iterator>) {
         ++this->iterator;
