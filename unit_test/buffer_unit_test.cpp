@@ -17,7 +17,6 @@ public:
     void test_constructor_4();
     // buffer(initializer_list<T>, const Allocator &), size, empty and iterator
     void test_constructor_5();
-    void test_destructor();
     void test_release();
     void test_move_iterator();
     void test_allocator();
@@ -28,7 +27,11 @@ void buffer_unit_test() {
     //correctness->test_constructor_1();
     //correctness->test_constructor_2();
     //correctness->test_constructor_3();
-    correctness->test_constructor_4();
+    //correctness->test_constructor_4();
+    //correctness->test_constructor_5();
+    //correctness->test_release();
+    correctness->test_move_iterator();
+    correctness->test_allocator();
     delete correctness;
 }
 
@@ -47,7 +50,7 @@ void buffer_correctness::test_constructor_1() {
         static_assert(noexcept(b.empty()));
         static_assert(noexcept(b.allocator()));
         static_assert(noexcept(b.~buffer()));
-        std::cout << "\tBuffer member functions nothrow checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/Buffer member functions nothrow checking done." << std::endl;
     }
     // empty
     {
@@ -55,7 +58,7 @@ void buffer_correctness::test_constructor_1() {
         assert(b.size() == 0);
         assert(b.empty());
         assert(b.begin() == b.end());
-        std::cout << "\tEmpty buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/Empty buffer checking done." << std::endl;
     }
 
     // single element
@@ -66,7 +69,7 @@ void buffer_correctness::test_constructor_1() {
         assert(b.begin() not_eq b.end());
         assert(b.begin() + 1 == b.end());
         assert(*b.begin() == 0);
-        std::cout << "\tSingle element buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/Single element buffer checking done." << std::endl;
     }
 
     // size == 10
@@ -78,7 +81,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/10 elements buffer checking done." << std::endl;
     }
 
     // size == 42
@@ -90,7 +93,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t42 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/42 elements buffer checking done." << std::endl;
     }
 
     // size == 64
@@ -102,7 +105,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t64 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/64 elements buffer checking done." << std::endl;
     }
 
     // size == 128
@@ -114,7 +117,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t128 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/128 elements buffer checking done." << std::endl;
     }
 
     // size == 1024
@@ -126,7 +129,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t1024 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/1024 elements buffer checking done." << std::endl;
     }
 
     // random size, size <= 10000
@@ -140,7 +143,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 100) {
             goto RESTART_10000;
         }
@@ -157,7 +160,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 50) {
             goto RESTART_100000;
         }
@@ -174,7 +177,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 10) {
             goto RESTART_1000000;
         }
@@ -191,7 +194,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 5) {
             goto RESTART_10000000;
         }
@@ -208,7 +211,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_100000000;
         }
@@ -225,7 +228,7 @@ void buffer_correctness::test_constructor_1() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_1/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_RANDOM;
         }
@@ -242,7 +245,7 @@ void buffer_correctness::test_constructor_2() {
         assert(b.size() == 0);
         assert(b.empty());
         assert(b.begin() == b.end());
-        std::cout << "\tEmpty buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/Empty buffer checking done." << std::endl;
     }
 
     // single element
@@ -253,7 +256,7 @@ void buffer_correctness::test_constructor_2() {
         assert(b.begin() not_eq b.end());
         assert(b.begin() + 1 == b.end());
         assert(*b.begin() == 0);
-        std::cout << "\tSingle element buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/Single element buffer checking done." << std::endl;
     }
 
     // size == 10
@@ -265,7 +268,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/10 elements buffer checking done." << std::endl;
     }
 
     // size == 42
@@ -277,7 +280,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t42 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/42 elements buffer checking done." << std::endl;
     }
 
     // size == 64
@@ -289,7 +292,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t64 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/64 elements buffer checking done." << std::endl;
     }
 
     // size == 128
@@ -301,7 +304,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t128 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/128 elements buffer checking done." << std::endl;
     }
 
     // size == 1024
@@ -313,7 +316,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t1024 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_2/1024 elements buffer checking done." << std::endl;
     }
 
     // random size, size <= 10000
@@ -327,7 +330,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 100) {
             goto RESTART_10000;
         }
@@ -344,7 +347,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 50) {
             goto RESTART_100000;
         }
@@ -361,7 +364,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 10) {
             goto RESTART_1000000;
         }
@@ -378,7 +381,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 5) {
             goto RESTART_10000000;
         }
@@ -395,7 +398,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_100000000;
         }
@@ -412,7 +415,7 @@ void buffer_correctness::test_constructor_2() {
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_2/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_RANDOM;
         }
@@ -429,7 +432,7 @@ void buffer_correctness::test_constructor_3() {
         assert(b.size() == 0);
         assert(b.empty());
         assert(b.begin() == b.end());
-        std::cout << "\tEmpty buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/Empty buffer checking done." << std::endl;
     }
 
     // single element
@@ -441,7 +444,7 @@ void buffer_correctness::test_constructor_3() {
         assert(b.begin() not_eq b.end());
         assert(b.begin() + 1 == b.end());
         assert(*b.begin() == 42);
-        std::cout << "\tSingle element buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/Single element buffer checking done." << std::endl;
     }
 
     // size == 10
@@ -456,7 +459,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t10 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/10 elements buffer checking done." << std::endl;
     }
 
     // size == 42
@@ -471,7 +474,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t42 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/42 elements buffer checking done." << std::endl;
     }
 
     // size == 64
@@ -486,7 +489,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t64 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/64 elements buffer checking done." << std::endl;
     }
 
     // size == 128
@@ -501,7 +504,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t128 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/128 elements buffer checking done." << std::endl;
     }
 
     // size == 1024
@@ -516,7 +519,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t1024 elements buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_3/1024 elements buffer checking done." << std::endl;
     }
 
     // size == 10000
@@ -533,7 +536,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 100) {
             goto RESTART_10000;
         }
@@ -553,7 +556,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 50) {
             goto RESTART_100000;
         }
@@ -573,7 +576,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 10) {
             goto RESTART_1000000;
         }
@@ -593,7 +596,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 5) {
             goto RESTART_10000000;
         }
@@ -613,7 +616,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_100000000;
         }
@@ -634,7 +637,7 @@ void buffer_correctness::test_constructor_3() {
         for(auto i {0}; i < numbers.size(); ++i) {
             assert(begin[i] == numbers[i]);
         }
-        std::cout << "\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_constructor_3/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_RANDOM;
         }
@@ -655,7 +658,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.size() == 0);
             assert(b.empty());
             assert(b.begin() == b.end());
-            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/Empty buffer checking done." << std::endl;
         }
 
         // single element
@@ -667,7 +670,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.begin() not_eq b.end());
             assert(b.begin() + 1 == b.end());
             assert(*b.begin() == 42);
-            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/Single element buffer checking done." << std::endl;
         }
 
         // size == 10
@@ -682,7 +685,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/10 elements buffer checking done." << std::endl;
         }
 
         // size == 42
@@ -697,7 +700,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/42 elements buffer checking done." << std::endl;
         }
 
         // size == 64
@@ -712,7 +715,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/64 elements buffer checking done." << std::endl;
         }
 
         // size == 128
@@ -727,7 +730,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/128 elements buffer checking done." << std::endl;
         }
 
         // size == 1024
@@ -742,7 +745,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/1024 elements buffer checking done." << std::endl;
         }
 
         // size == 10000
@@ -759,7 +762,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 100) {
                 goto RESTART_FORWARD_10000;
             }
@@ -779,7 +782,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 50) {
                 goto RESTART_FORWARD_100000;
             }
@@ -799,7 +802,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 10) {
                 goto RESTART_FORWARD_1000000;
             }
@@ -819,7 +822,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 5) {
                 goto RESTART_FORWARD_10000000;
             }
@@ -839,7 +842,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_FORWARD_100000000;
             }
@@ -860,7 +863,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/forward iterator/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_FORWARD_RANDOM;
             }
@@ -877,7 +880,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.size() == 0);
             assert(b.empty());
             assert(b.begin() == b.end());
-            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/Empty buffer checking done." << std::endl;
         }
 
         // single element
@@ -889,7 +892,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.begin() not_eq b.end());
             assert(b.begin() + 1 == b.end());
             assert(*b.begin() == 42);
-            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/Single element buffer checking done." << std::endl;
         }
 
         // size == 10
@@ -904,7 +907,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/10 elements buffer checking done." << std::endl;
         }
 
         // size == 42
@@ -919,7 +922,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/42 elements buffer checking done." << std::endl;
         }
 
         // size == 64
@@ -934,7 +937,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/64 elements buffer checking done." << std::endl;
         }
 
         // size == 128
@@ -949,7 +952,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/128 elements buffer checking done." << std::endl;
         }
 
         // size == 1024
@@ -964,7 +967,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/1024 elements buffer checking done." << std::endl;
         }
 
         // size == 10000
@@ -981,7 +984,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 100) {
                 goto RESTART_BIDIRECTIONAL_10000;
             }
@@ -1001,7 +1004,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 50) {
                 goto RESTART_BIDIRECTIONAL_100000;
             }
@@ -1021,7 +1024,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 10) {
                 goto RESTART_BIDIRECTIONAL_1000000;
             }
@@ -1041,7 +1044,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 5) {
                 goto RESTART_BIDIRECTIONAL_10000000;
             }
@@ -1061,7 +1064,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_BIDIRECTIONAL_100000000;
             }
@@ -1082,7 +1085,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/bidirectional iterator/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_BIDIRECTIONAL_RANDOM;
             }
@@ -1090,7 +1093,7 @@ void buffer_correctness::test_constructor_4() {
         std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
     }
 
-    // bidirectional iterator
+    // random access iterator
     {
         std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
         // empty
@@ -1099,7 +1102,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.size() == 0);
             assert(b.empty());
             assert(b.begin() == b.end());
-            std::cout << "\t\tEmpty buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/Empty buffer checking done." << std::endl;
         }
 
         // single element
@@ -1111,7 +1114,7 @@ void buffer_correctness::test_constructor_4() {
             assert(b.begin() not_eq b.end());
             assert(b.begin() + 1 == b.end());
             assert(*b.begin() == 42);
-            std::cout << "\t\tSingle element buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/Single element buffer checking done." << std::endl;
         }
 
         // size == 10
@@ -1126,7 +1129,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/10 elements buffer checking done." << std::endl;
         }
 
         // size == 42
@@ -1141,7 +1144,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t42 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/42 elements buffer checking done." << std::endl;
         }
 
         // size == 64
@@ -1156,7 +1159,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t64 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/64 elements buffer checking done." << std::endl;
         }
 
         // size == 128
@@ -1171,7 +1174,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t128 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/128 elements buffer checking done." << std::endl;
         }
 
         // size == 1024
@@ -1186,7 +1189,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1024 elements buffer checking done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/1024 elements buffer checking done." << std::endl;
         }
 
         // size == 10000
@@ -1203,7 +1206,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 100) {
                 goto RESTART_RANDOM_ACCESS_10000;
             }
@@ -1223,7 +1226,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 50) {
                 goto RESTART_RANDOM_ACCESS_100000;
             }
@@ -1243,7 +1246,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 10) {
                 goto RESTART_RANDOM_ACCESS_1000000;
             }
@@ -1263,7 +1266,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 5) {
                 goto RESTART_RANDOM_ACCESS_10000000;
             }
@@ -1283,7 +1286,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\t100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_RANDOM_ACCESS_100000000;
             }
@@ -1304,7 +1307,7 @@ void buffer_correctness::test_constructor_4() {
             for(auto i {0}; i < numbers.size(); ++i) {
                 assert(begin[i] == numbers[i]);
             }
-            std::cout << "\t\tRandom sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+            std::cout << "\t\ttest_constructor_4/random access iterator/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
             if(++next < 3) {
                 goto RESTART_RANDOM_ACCESS_RANDOM;
             }
@@ -1313,4 +1316,298 @@ void buffer_correctness::test_constructor_4() {
     }
 
     std::cout << "Checking buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator finished!" << std::endl;
+}
+void buffer_correctness::test_constructor_5() {
+    std::cout << "Start checking buffer(initializer_list<T>), size, empty and iterator!" << std::endl;
+    const std::initializer_list<int> empty_list = {};
+    const auto single_list = {42};
+    const auto list = {-5, -2, 0, 1, 4, 6, 8, 111};
+
+    // empty from initializer_list
+    {
+        buffer<int> b1(empty_list);
+        assert(b1.size() == 0);
+        assert(b1.empty());
+        assert(b1.begin() == b1.end());
+
+        buffer<int> b2({});
+        assert(b2.size() == 0);
+        assert(b2.empty());
+        assert(b2.begin() == b2.end());
+        std::cout << "\ttest_constructor_5/Empty buffer from initializer_list checking done." << std::endl;
+    }
+
+    // single element
+    {
+        buffer<int> b1 {42};
+        assert(b1.size() == 1);
+        assert(not b1.empty());
+        assert(b1.begin() not_eq b1.end());
+        assert(b1.begin() + 1 == b1.end());
+        assert(*b1.begin() == 42);
+
+        buffer<int> b2(single_list);
+        assert(b2.size() == 1);
+        assert(not b2.empty());
+        assert(b2.begin() not_eq b2.end());
+        assert(b2.begin() + 1 == b2.end());
+        assert(*b2.begin() == 42);
+        std::cout << "\ttest_constructor_5/Single element buffer checking done." << std::endl;
+    }
+
+    // other test
+    {
+        buffer<int> b(list);
+        assert(b.size() == 8);
+        assert(not b.empty());
+        assert(b.begin() + 8 == b.end());
+        for(auto i {0}; i < list.size(); ++i) {
+            assert(*(b.begin() + i) == *(list.begin() + i));
+        }
+        std::cout << "\ttest_constructor_5/Buffer other test checking done." << std::endl;
+    }
+
+    std::cout << "Checking buffer(initializer_list<T>), size, empty and iterator finished!" << std::endl;
+}
+void buffer_correctness::test_release() {
+    std::cout << "Start checking buffer::release!" << std::endl;
+
+    // empty
+    {
+        buffer<int> b(int_input_iterator {}, {});
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 0);
+        std::cout << "\ttest_release/Empty buffer checking done." << std::endl;
+    }
+
+    // single element
+    {
+        buffer<int> b(1);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 1);
+        assert(*p == 0);
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/Single element buffer checking done." << std::endl;
+    }
+
+    // size == 10
+    {
+        buffer<int> b(10);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 10);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/10 elements buffer checking done." << std::endl;
+    }
+
+    // size == 42
+    {
+        buffer<int> b(42);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 42);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/42 elements buffer checking done." << std::endl;
+    }
+
+    // size == 64
+    {
+        buffer<int> b(64);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 64);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/64 elements buffer checking done." << std::endl;
+    }
+
+    // size == 128
+    {
+        buffer<int> b(128);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 128);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/128 elements buffer checking done." << std::endl;
+    }
+
+    // size == 1024
+    {
+        buffer<int> b(1024);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 1024);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/1024 elements buffer checking done." << std::endl;
+    }
+
+    // size == 10000
+    {
+        int next {};
+        RESTART_10000:
+        buffer<int> b(10000);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 10000);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 100) {
+            goto RESTART_10000;
+        }
+    }
+
+    // size == 100000
+    {
+        int next {};
+        RESTART_100000:
+        buffer<int> b(100000);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 100000);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 50) {
+            goto RESTART_100000;
+        }
+    }
+
+    // size == 1000000
+    {
+        int next {};
+        RESTART_1000000:
+        buffer<int> b(1000000);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 1000000);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 10) {
+            goto RESTART_1000000;
+        }
+    }
+
+    // size == 10000000
+    {
+        int next {};
+        RESTART_10000000:
+        buffer<int> b(10000000);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 10000000);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 5) {
+            goto RESTART_10000000;
+        }
+    }
+
+    // size == 100000000
+    {
+        int next {};
+        RESTART_100000000:
+        buffer<int> b(100000000);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == 100000000);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_100000000;
+        }
+    }
+
+    // random size
+    {
+        int next {};
+        RESTART_RANDOM:
+        const auto size {this->generate_count()};
+        buffer<int> b(size);
+        auto p {b.release()};
+        assert(b.empty());
+        assert(b.size() == size);
+        for(auto i {0}; i < b.size(); ++i) {
+            assert(p[i] == 0);
+        }
+        b.allocator().deallocate(p, b.size());
+        std::cout << "\ttest_release/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_RANDOM;
+        }
+    }
+
+    std::cout << "Checking buffer::release finished!" << std::endl;
+}
+void buffer_correctness::test_move_iterator() {
+    std::cout << "Start checking buffer's move iterator!" << std::endl;
+
+    struct moveable {
+        bool copy {};
+        bool move {};
+        moveable() noexcept = default;
+        moveable(moveable &rhs) noexcept : copy {}, move {} {
+            rhs.copy = true;
+        }
+        moveable(moveable &&rhs) noexcept : copy {}, move {} {
+            rhs.move = true;
+        }
+        moveable &operator=(moveable &rhs) noexcept {
+            rhs.copy = true;
+            return *this;
+        }
+        moveable &operator=(moveable &&rhs) noexcept {
+            rhs.move = true;
+            return *this;
+        }
+    };
+
+    buffer<moveable> b(this->generate_count());
+    const auto end {b.mend()};
+    for(auto it {b.mbegin()}; it not_eq end; ++it) {
+        auto p {*it};
+        const auto it_base {it.base()};
+        assert(it_base->move and not it_base->copy);
+    }
+
+    std::cout << "Checking buffer's move iterator finished!" << std::endl;
+}
+void buffer_correctness::test_allocator() {
+    std::cout << "Start checking buffer::allocator!" << std::endl;
+
+    buffer<int> b {1, 2, 3};
+    auto allocator {b.allocator()};
+    static_assert(allocator == typename buffer<int>::allocator_type {});
+    static_assert(allocator == typename buffer<char>::allocator_type {});
+
+    std::cout << "Checking buffer::allocator finished!" << std::endl;
 }
