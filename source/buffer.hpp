@@ -256,7 +256,7 @@ constexpr typename buffer<T, Allocator>::size_type buffer<T, Allocator>::size() 
 }
 template <typename T, typename Allocator>
 constexpr bool buffer<T, Allocator>::empty() const noexcept {
-    return this->buffer_size() == 0;
+    return this->first == nullptr;
 }
 template <typename T, typename Allocator>
 constexpr Allocator buffer<T, Allocator>::allocator() const noexcept {
