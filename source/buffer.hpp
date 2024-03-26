@@ -112,17 +112,26 @@ constexpr void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_s
     if constexpr(is_trivially_copy_assignable_v<T>) {
         ds::memory_copy(new_buffer, this->first, sizeof(T) * old_size);
     }else {
-        const auto exception_handler {[](pointer old_buffer, size_type old_size, pointer new_buffer,
-                size_type new_size, size_type i, Allocator &allocator) constexpr noexcept -> void {
-            ds::destroy(old_buffer, old_buffer + old_size);
-            ds::destroy(new_buffer, new_buffer + i);
-            allocator.deallocate(old_buffer, old_size);
-            allocator.deallocate(new_buffer, new_size);
-        }};
-        size_type i {0};
+        struct exception_handler {
+            pointer old_buffer;
+            pointer new_buffer;
+            size_type old_size;
+            size_type new_size;
+            size_type i;
+            Allocator &allocator;
+            constexpr exception_handler(pointer old_buffer, size_type old_size, pointer new_buffer, size_type new_size,
+                    Allocator &allocator) : old_buffer {old_buffer}, new_buffer {new_buffer}, old_size {old_size},
+                    new_size {new_size}, i {0}, allocator {allocator} {}
+            constexpr void operator()() noexcept {
+                ds::destroy(this->old_buffer, this->old_buffer + this->old_size);
+                ds::destroy(this->new_buffer, this->new_buffer + this->i);
+                allocator.deallocate(this->old_buffer, this->old_size);
+                allocator.deallocate(this->new_buffer, this->new_size);
+            }
+        };
         auto trans {transaction {exception_handler(this->first, old_size, new_buffer,
-                this->buffer_size(), i, allocator)}};
-        for(; i < old_size; ++i) {
+                this->buffer_size(), allocator)}};
+        for(auto &i {trans.get_rollback().i}; i < old_size; ++i) {
             ds::construct(new_buffer + i, ds::move(this->first[i]));
         }
         trans.complete();
