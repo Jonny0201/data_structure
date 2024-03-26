@@ -36,6 +36,28 @@ public:
             return tmp;
         }
     };
+    struct std_string_input_iterator {
+        using iterator_category = ds::input_iterator_tag;
+        std::istream_iterator<std::string> it;
+        operator std::istream_iterator<std::string>() const noexcept {
+            return this->it;
+        }
+        bool operator==(const std_string_input_iterator &rhs) const noexcept {
+            return this->it == rhs.it;
+        }
+        const std::string &operator*() const noexcept {
+            return *this->it;
+        }
+        std_string_input_iterator &operator++() noexcept {
+            ++this->it;
+            return *this;
+        }
+        std_string_input_iterator operator++(int) noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+    };
     struct int_forward_iterator {
         using difference_type = typename std::forward_list<int>::iterator::difference_type;
         using size_type = size_t;
@@ -114,6 +136,34 @@ public:
             return this->it - rhs.it;
         }
     };
+    struct std_string_random_access_iterator {
+        using difference_type = typename std::deque<std::string>::iterator::difference_type;
+        using size_type = size_t;
+        using value_type = int;
+        using iterator_category = ds::random_access_iterator_tag;
+        typename std::deque<std::string>::iterator it;
+        operator std::deque<std::string>::iterator() const noexcept {
+            return this->it;
+        }
+        bool operator==(const std_string_random_access_iterator &rhs) const noexcept {
+            return this->it == rhs.it;
+        }
+        const std::string &operator*() const noexcept {
+            return *this->it;
+        }
+        std_string_random_access_iterator &operator++() noexcept {
+            ++this->it;
+            return *this;
+        }
+        std_string_random_access_iterator operator++(int) noexcept {
+            auto tmp {*this};
+            ++*this;
+            return tmp;
+        }
+        difference_type operator-(const std_string_random_access_iterator &rhs) const noexcept {
+            return this->it - rhs.it;
+        }
+    };
 protected:
     virtual int generate_count();
     virtual int generate_count(int max);
@@ -140,9 +190,11 @@ protected:
     virtual std::vector<int> generate_negative_sequence();
     virtual std::vector<int> generate_negative_sequence(int count);
     virtual std::stringstream to_input_iterator(const std::vector<int> &);
+    virtual std::stringstream to_input_iterator(const std::vector<std::string> &);
     virtual std::forward_list<int> to_forward_iterator(const std::vector<int> &);
     virtual std::list<int> to_bidirectional_iterator(const std::vector<int> &);
     virtual std::deque<int> to_random_access_iterator(const std::vector<int> &);
+    virtual std::deque<std::string> to_random_access_iterator(const std::vector<std::string> &);
 public:
     virtual ~unit_test_correctness() noexcept = default;
 };

@@ -103,6 +103,15 @@ std::stringstream unit_test_correctness::to_input_iterator(const std::vector<int
     }
     return std::move(result);
 }
+std::stringstream unit_test_correctness::to_input_iterator(const std::vector<std::string> &source) {
+    std::stringstream result {};
+    for(const auto &element : source) {
+        if(element.find(' ') == std::string::npos) {
+            result << element << ' ';
+        }
+    }
+    return std::move(result);
+}
 std::forward_list<int> unit_test_correctness::to_forward_iterator(const std::vector<int> &source) {
     return {source.cbegin(), source.cend()};
 }
@@ -111,5 +120,14 @@ std::list<int> unit_test_correctness::to_bidirectional_iterator(const std::vecto
 }
 std::deque<int> unit_test_correctness::to_random_access_iterator(const std::vector<int> &source) {
     return {source.cbegin(), source.cend()};
+}
+std::deque<std::string> unit_test_correctness::to_random_access_iterator(const std::vector<std::string> &source) {
+    std::deque<std::string> result {};
+    for(const auto &element : source) {
+        if(element.find(' ') == std::string::npos) {
+            result.emplace_back(element);
+        }
+    }
+    return result;
 }
 __DATA_STRUCTURE_END
