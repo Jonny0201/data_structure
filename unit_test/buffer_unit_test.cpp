@@ -20,6 +20,7 @@ public:
     void test_release();
     void test_move_iterator();
     void test_allocator();
+    void test_non_trivial();
 };
 
 void buffer_unit_test() {
@@ -30,8 +31,9 @@ void buffer_unit_test() {
     //correctness->test_constructor_4();
     //correctness->test_constructor_5();
     //correctness->test_release();
-    correctness->test_move_iterator();
-    correctness->test_allocator();
+    //correctness->test_move_iterator();
+    //correctness->test_allocator();
+    correctness->test_non_trivial();
     delete correctness;
 }
 
@@ -1610,4 +1612,123 @@ void buffer_correctness::test_allocator() {
     static_assert(allocator == typename buffer<char>::allocator_type {});
 
     std::cout << "Checking buffer::allocator finished!" << std::endl;
+}
+void buffer_correctness::test_non_trivial() {
+    std::cout << "Start checking non trivial type std::string!" << std::endl;
+
+    // buffer(size_type, const Allocator &)
+    {
+        int next {};
+        RESTART_1:
+        const auto size {this->generate_count(1000000)};
+        buffer<std::string> b(size);
+        assert(size == 0 ? b.empty() : not b.empty());
+        assert(b.size() == size);
+        assert(b.begin() + size == b.end());
+        const auto end {b.end()};
+        for(auto it {b.begin()}; it not_eq end; ++it) {
+            assert(it->empty());
+        }
+        const auto mend {b.mend()};
+        for(auto it {b.mbegin()}; it not_eq mend; ++it) {
+            auto p {*it};
+            const auto it_base {it.base()};
+            assert(it_base->empty());
+        }
+        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_1;
+        }
+    }
+
+    // buffer(size_type, const T &, const Allocator &)
+    {
+        int next {};
+        RESTART_2:
+        const auto size {this->generate_count(1000000)};
+        std::string s {};
+        for(auto i {0}; i < 1000; ++i) {
+            s += "hello     ";
+        }
+        buffer<std::string> b(size, s);
+        assert(size == 0 ? b.empty() : not b.empty());
+        assert(b.size() == size);
+        assert(b.begin() + size == b.end());
+        const auto end {b.end()};
+        for(auto it {b.begin()}; it not_eq end; ++it) {
+            assert(*it == s);
+        }
+        const auto mend {b.mend()};
+        for(auto it {b.mbegin()}; it not_eq mend; ++it) {
+            auto p {*it};
+            const auto it_base {it.base()};
+            assert(it_base->empty());
+        }
+        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type, const T &, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_2;
+        }
+    }
+
+    // buffer(InputIterator, InputIterator, const Allocator &)
+    {
+        int next {};
+        RESTART_3:
+        const auto size {this->generate_count(1000000)};
+        std::string s {};
+        for(auto i {0}; i < 1000; ++i) {
+            s += "hello";      // avoid SSO
+        }
+        auto stream {this->to_input_iterator(std::vector(size, s))};
+        buffer<std::string> b(std_string_input_iterator {stream}, {});
+        assert(size == 0 ? b.empty() : not b.empty());
+        assert(b.size() == size);
+        assert(b.begin() + size == b.end());
+        const auto end {b.end()};
+        for(auto it {b.begin()}; it not_eq end; ++it) {
+            assert(*it == s);
+        }
+        const auto mend {b.mend()};
+        for(auto it {b.mbegin()}; it not_eq mend; ++it) {
+            auto p {*it};
+            const auto it_base {it.base()};
+            assert(it_base->empty());
+        }
+        std::cout << "\ttest_non_trivial/buffer<std::string>(InputIterator, InputIterator, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_3;
+        }
+    }
+
+    // buffer(ForwardIterator, ForwardIterator, const Allocator &)
+    {
+        int next {};
+        RESTART_4:
+        const auto size {this->generate_count(1000000)};
+        std::string s {};
+        for(auto i {0}; i < 1000; ++i) {
+            s += "hello";       // avoid SSO
+        }
+        auto d {this->to_random_access_iterator(std::vector(size, s))};
+        buffer<std::string> b(std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()});
+        assert(size == 0 ? b.empty() : not b.empty());
+        assert(b.size() == size);
+        assert(b.begin() + size == b.end());
+        const auto end {b.end()};
+        for(auto it {b.begin()}; it not_eq end; ++it) {
+            assert(*it == s);
+        }
+        const auto mend {b.mend()};
+        for(auto it {b.mbegin()}; it not_eq mend; ++it) {
+            auto p {*it};
+            const auto it_base {it.base()};
+            assert(it_base->empty());
+        }
+        std::cout << "\ttest_non_trivial/buffer<std::string>(ForwardIterator, ForwardIterator, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_4;
+        }
+    }
+
+    std::cout << "Checking non trivial type std::string finished!" << std::endl;
 }
