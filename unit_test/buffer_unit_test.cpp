@@ -1647,7 +1647,7 @@ void buffer_correctness::test_non_trivial() {
         RESTART_2:
         const auto size {this->generate_count(1000000)};
         std::string s {};
-        for(auto i {0}; i < 1000; ++i) {
+        for(auto i {0}; i < 1000; ++i) {        // avoid SSO
             s += "hello     ";
         }
         buffer<std::string> b(size, s);
@@ -1676,8 +1676,8 @@ void buffer_correctness::test_non_trivial() {
         RESTART_3:
         const auto size {this->generate_count(1000000)};
         std::string s {};
-        for(auto i {0}; i < 1000; ++i) {
-            s += "hello";      // avoid SSO
+        for(auto i {0}; i < 1000; ++i) {        // avoid SSO
+            s += "hello";
         }
         auto stream {this->to_input_iterator(std::vector(size, s))};
         buffer<std::string> b(std_string_input_iterator {stream}, {});
@@ -1706,8 +1706,8 @@ void buffer_correctness::test_non_trivial() {
         RESTART_4:
         const auto size {this->generate_count(1000000)};
         std::string s {};
-        for(auto i {0}; i < 1000; ++i) {
-            s += "hello";       // avoid SSO
+        for(auto i {0}; i < 1000; ++i) {        // avoid SSO
+            s += "hello";
         }
         auto d {this->to_random_access_iterator(std::vector(size, s))};
         buffer<std::string> b(std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()});
