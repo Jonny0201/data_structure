@@ -25,14 +25,14 @@ public:
 
 void buffer_unit_test() {
     auto correctness {new buffer_correctness {}};
-    //correctness->test_constructor_1();
-    //correctness->test_constructor_2();
-    //correctness->test_constructor_3();
-    //correctness->test_constructor_4();
-    //correctness->test_constructor_5();
-    //correctness->test_release();
-    //correctness->test_move_iterator();
-    //correctness->test_allocator();
+    correctness->test_constructor_1();
+    correctness->test_constructor_2();
+    correctness->test_constructor_3();
+    correctness->test_constructor_4();
+    correctness->test_constructor_5();
+    correctness->test_release();
+    correctness->test_move_iterator();
+    correctness->test_allocator();
     correctness->test_non_trivial();
     delete correctness;
 }
