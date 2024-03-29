@@ -17,8 +17,7 @@
 #ifndef DATA_STRUCTURE_ITERATOR_HPP
 #define DATA_STRUCTURE_ITERATOR_HPP
 
-#include "type_traits.hpp"
-#include "utility.hpp"
+#include "memory.hpp"
 
 namespace data_structure {
 
@@ -139,13 +138,13 @@ __DATA_STRUCTURE_END
 
 __DATA_STRUCTURE_START(iterator functions)
 template <IsRandomAccessIterator RandomAccessIterator>
-inline typename iterator_traits<RandomAccessIterator>::difference_type distance(RandomAccessIterator begin,
+inline constexpr typename iterator_traits<RandomAccessIterator>::difference_type distance(RandomAccessIterator begin,
         RandomAccessIterator end) noexcept(is_nothrow_subtractable_v<RandomAccessIterator>) {
     return end - begin;
 }
 template <typename InputIterator>
-inline typename iterator_traits<InputIterator>::difference_type distance(InputIterator begin, InputIterator end)
-        noexcept(is_nothrow_prefix_increasable_v<InputIterator> and
+inline constexpr typename iterator_traits<InputIterator>::difference_type distance(InputIterator begin,
+        InputIterator end) noexcept(is_nothrow_prefix_increasable_v<InputIterator> and
                 is_nothrow_constructible_v<typename iterator_traits<InputIterator>::difference_type, int> and
                 is_nothrow_prefix_increasable_v<typename iterator_traits<InputIterator>::difference_type>) {
     typename iterator_traits<InputIterator>::difference_type difference {0};
@@ -155,12 +154,273 @@ inline typename iterator_traits<InputIterator>::difference_type distance(InputIt
     }
     return difference;
 }
-inline ptrdiff_t distance(void *begin, void *end) noexcept {
+inline constexpr ptrdiff_t distance(void *begin, void *end) noexcept {
     return static_cast<char *>(end) - static_cast<char *>(begin);
 }
 __DATA_STRUCTURE_END
 
-__DATA_STRUCTURE_START(move_iterator)
+__DATA_STRUCTURE_START(wrap iterator)
+template <typename Iterator> requires is_pointer_v<Iterator>
+class wrap_iterator {
+public:
+    using iterator_type = Iterator;
+    using size_type = typename iterator_traits<Iterator>::size_type;
+    using difference_type = typename iterator_traits<Iterator>::difference_type;
+    using value_type = typename iterator_traits<Iterator>::value_type;
+    using iterator_category = typename iterator_traits<Iterator>::iterator_category;
+private:
+    Iterator iterator {};
+public:
+    constexpr wrap_iterator() noexcept = default;
+    explicit constexpr wrap_iterator(Iterator iterator) noexcept : iterator {iterator} {}
+    constexpr wrap_iterator(const wrap_iterator &) noexcept = default;
+    constexpr wrap_iterator(wrap_iterator &&) noexcept = default;
+    constexpr ~wrap_iterator() noexcept = default;
+public:
+    constexpr wrap_iterator &operator=(const wrap_iterator &) noexcept = default;
+    constexpr wrap_iterator &operator=(wrap_iterator &&) noexcept = default;
+    [[nodiscard]]
+    constexpr decltype(auto) operator*() noexcept {
+        return *this->iterator;
+    }
+    [[nodiscard]]
+    constexpr decltype(auto) operator*() const noexcept {
+        return *this->iterator;
+    }
+    [[nodiscard]]
+    constexpr auto operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr auto operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr decltype(auto) operator[](difference_type n) noexcept {
+        return this->iterator[n];
+    };
+    constexpr wrap_iterator &operator++() & noexcept {
+        ++this->iterator;
+        return *this;
+    }
+    constexpr wrap_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    constexpr wrap_iterator &operator--() & noexcept {
+        --this->iterator;
+        return *this;
+    }
+    constexpr wrap_iterator operator--(int) & noexcept {
+        auto backup {*this};
+        --*this;
+        return backup;
+    }
+    constexpr wrap_iterator &operator+=(difference_type n) & noexcept {
+        this->iterator += n;
+        return *this;
+    }
+    constexpr wrap_iterator &operator-=(difference_type n) & noexcept {
+        this->iterator += -n;
+        return *this;
+    }
+    constexpr wrap_iterator operator+(difference_type n) noexcept {
+        auto backup {*this};
+        return backup += n;
+    }
+    constexpr wrap_iterator operator-(difference_type n) noexcept {
+        auto backup {*this};
+        return backup += -n;
+    }
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept {
+        return static_cast<bool>(this->iterator);
+    }
+public:
+    [[nodiscard]]
+    constexpr Iterator base() const noexcept {
+        return this->iterator;
+    }
+};
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator==(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return lhs.base() == rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator!=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return lhs.base() - rhs.base() < 0;
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return rhs < lhs;
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return not(lhs > rhs);
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+    return not(lhs < rhs);
+}
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(reverse iterator)
+template <IsIterator Iterator>
+class reverse_iterator {
+public:
+    using iterator_type = Iterator;
+    using size_type = typename iterator_traits<Iterator>::size_type;
+    using difference_type = typename iterator_traits<Iterator>::difference_type;
+    using value_type = typename iterator_traits<Iterator>::value_type;
+    using iterator_category = typename iterator_traits<Iterator>::iterator_category;
+private:
+    Iterator iterator {};
+public:
+    constexpr reverse_iterator() = default;
+    explicit constexpr reverse_iterator(Iterator iterator)
+            noexcept(is_nothrow_copy_constructible_v<Iterator>) : iterator {iterator} {}
+    constexpr reverse_iterator(const reverse_iterator &) = default;
+    constexpr reverse_iterator(reverse_iterator &&) = default;
+    constexpr ~reverse_iterator() noexcept = default;
+public:
+    constexpr reverse_iterator &operator=(const reverse_iterator &) = default;
+    constexpr reverse_iterator &operator=(reverse_iterator &&) = default;
+public:
+    [[nodiscard]]
+    constexpr decltype(auto) operator*() noexcept(is_nothrow_dereferenceable_v<Iterator>) {
+        return *this->iterator;
+    }
+    [[nodiscard]]
+    constexpr decltype(auto) operator*() const noexcept(is_nothrow_dereferenceable_v<Iterator>) {
+        return *this->iterator;
+    }
+    [[nodiscard]]
+    constexpr auto operator->() noexcept(is_nothrow_dereferenceable_v<Iterator>) {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr auto operator->() const noexcept(is_nothrow_dereferenceable_v<Iterator>) {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr decltype(auto) operator[](difference_type n) noexcept(is_nothrow_indexable_v<Iterator, difference_type>) {
+        return this->iterator[n];
+    }
+    constexpr reverse_iterator &operator++() & noexcept(is_nothrow_prefix_decreasable_v<Iterator>) {
+        --this->iterator;
+        return *this;
+    }
+    constexpr reverse_iterator operator++(int) & noexcept(is_nothrow_prefix_decreasable_v<Iterator> and
+            is_nothrow_copy_constructible_v<Iterator>) {
+        auto backup {*this};
+        --this->iterator;
+        return backup;
+    }
+    constexpr reverse_iterator &operator--() & noexcept(is_nothrow_prefix_increasable_v<Iterator>)
+            requires is_bidirectional_iterator_v<Iterator> {
+        ++this->iterator;
+        return *this;
+    }
+    constexpr reverse_iterator operator--(int) & noexcept(is_nothrow_prefix_increasable_v<Iterator> and
+            is_nothrow_copy_constructible_v<Iterator>) requires is_bidirectional_iterator_v<Iterator> {
+        auto backup {*this};
+        ++this->iterator;
+        return backup;
+    }
+    constexpr reverse_iterator &operator+=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type>) requires is_random_access_iterator_v<Iterator> {
+        this->iterator += -n;
+        return *this;
+    }
+    constexpr reverse_iterator &operator-=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type>) requires is_random_access_iterator_v<Iterator> {
+        this->iterator += n;
+        return *this;
+    }
+    [[nodiscard]]
+    constexpr reverse_iterator operator+(difference_type n) noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type> and is_nothrow_copy_constructible_v<Iterator>)
+            requires is_random_access_iterator_v<Iterator> {
+        auto backup {*this};
+        backup += -n;
+        return backup;
+    }
+    [[nodiscard]]
+    constexpr reverse_iterator operator-(difference_type n) noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type> and is_nothrow_copy_constructible_v<Iterator>)
+            requires is_random_access_iterator_v<Iterator> {
+        auto backup {*this};
+        backup += n;
+        return backup;
+    }
+    [[nodiscard]]
+    constexpr operator Iterator() noexcept {
+        return this->iterator;
+    }
+    [[nodiscard]]
+    constexpr operator Iterator() const noexcept {
+        return this->iterator;
+    }
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept(is_nothrow_static_castable_v<Iterator, bool>) {
+        return static_cast<bool>(this->iterator);
+    }
+public:
+    [[nodiscard]]
+    constexpr Iterator base() noexcept {
+        return this->iterator;
+    }
+};
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator==(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_equal_to_comparable_v<Iterator>)  {
+    return rhs.base() == lhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr bool operator!=(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_not_equal_to_comparable_v<Iterator>) {
+    return lhs.base() not_eq rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_less_comparable_v<Iterator>) {
+    return lhs.base() < rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<=(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_less_equal_to_comparable_v<Iterator>) {
+    return lhs.base() <= rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_greater_comparable_v<Iterator>) {
+    return lhs.base() > rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>=(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
+    return lhs.base() >= rhs.base();
+}
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(move iterator)
 template <IsInputIterator Iterator>
 class move_iterator {
 public:
@@ -170,121 +430,120 @@ public:
     using value_type = typename iterator_traits<Iterator>::value_type;
     using iterator_category = typename iterator_traits<Iterator>::iterator_category;
 private:
-    Iterator iterator;
+    Iterator iterator {};
 public:
     constexpr move_iterator() = default;
     explicit constexpr move_iterator(Iterator iterator) noexcept(is_nothrow_copy_constructible_v<Iterator>) :
             iterator {iterator} {}
-    template <typename IteratorRHS>
-    explicit constexpr move_iterator(const move_iterator<IteratorRHS> &rhs)
-            noexcept(is_nothrow_constructible_v<Iterator, IteratorRHS>) : move_iterator(rhs.base()) {}
     constexpr move_iterator(const move_iterator &) = default;
     constexpr move_iterator(move_iterator &&) = default;
     constexpr ~move_iterator() noexcept = default;
 public:
     constexpr move_iterator &operator=(const move_iterator &) = default;
     constexpr move_iterator &operator=(move_iterator &&) = default;
-    template <typename IteratorRHS>
-    constexpr move_iterator &operator=(const move_iterator<IteratorRHS> &rhs)
-            noexcept(is_nothrow_assignable_v<Iterator, IteratorRHS>) {
-        this->iterator = rhs.base();
-        return *this;
-    }
 public:
-    decltype(auto) operator*() const noexcept(is_nothrow_dereferenceable_v<Iterator>) {
+    [[nodiscard]]
+    constexpr decltype(auto) operator*() const noexcept(is_nothrow_dereferenceable_v<Iterator>) {
         return ds::move(*this->iterator);
     }
-    decltype(auto) operator[](difference_type n) noexcept(is_nothrow_indexable_v<Iterator, difference_type>)
+    [[nodiscard]]
+    constexpr decltype(auto) operator[](difference_type n) noexcept(is_nothrow_indexable_v<Iterator, difference_type>)
             requires is_random_access_iterator_v<Iterator> {
         return ds::move(this->iterator[n]);
     }
-    move_iterator &operator++() & noexcept(is_nothrow_prefix_increasable_v<Iterator>) {
+    constexpr move_iterator &operator++() & noexcept(is_nothrow_prefix_increasable_v<Iterator>) {
         ++this->iterator;
         return *this;
     }
-    move_iterator operator++(int) & noexcept(is_nothrow_prefix_increasable_v<Iterator>) {
+    constexpr move_iterator operator++(int) & noexcept(is_nothrow_prefix_increasable_v<Iterator>) {
         auto backup {*this};
         ++this->iterator;
         return backup;
     }
-    move_iterator &operator--() & noexcept(is_nothrow_prefix_decreasable_v<Iterator>)
+    constexpr move_iterator &operator--() & noexcept(is_nothrow_prefix_decreasable_v<Iterator>)
             requires is_bidirectional_iterator_v<Iterator> {
         --this->iterator;
         return *this;
     }
-    move_iterator operator--(int) & noexcept(is_nothrow_prefix_decreasable_v<Iterator>)
+    constexpr move_iterator operator--(int) & noexcept(is_nothrow_prefix_decreasable_v<Iterator>)
             requires is_bidirectional_iterator_v<Iterator> {
         auto backup {*this};
         --this->iterator;
         return backup;
     }
-    move_iterator &operator+=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<iterator_type,
+    constexpr move_iterator &operator+=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
             difference_type>) requires is_random_access_iterator_v<Iterator> {
         this->iterator += n;
         return *this;
     }
-    move_iterator &operator-=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<iterator_type,
+    constexpr move_iterator &operator-=(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
             difference_type>) requires is_random_access_iterator_v<Iterator> {
         this->iterator += -n;
         return *this;
     }
-    move_iterator operator+(difference_type n) & noexcept(is_nothrow_addition_assignable_v<iterator_type,
-            difference_type>) requires is_random_access_iterator_v<Iterator> {
+    constexpr move_iterator operator+(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type> and is_nothrow_copy_constructible_v<Iterator>)
+            requires is_random_access_iterator_v<Iterator> {
         auto backup {*this};
         backup += n;
         return backup;
     }
-    move_iterator operator-(difference_type n) & noexcept(is_nothrow_addition_assignable_v<iterator_type,
-            difference_type>) requires is_random_access_iterator_v<Iterator> {
+    constexpr move_iterator operator-(difference_type n) & noexcept(is_nothrow_addition_assignable_v<Iterator,
+            difference_type> and is_nothrow_copy_constructible_v<Iterator>)
+            requires is_random_access_iterator_v<Iterator> {
         auto backup {*this};
         backup += -n;
         return backup;
     }
-    operator Iterator() const noexcept {
+    [[nodiscard]]
+    constexpr operator Iterator() const noexcept {
         return this->iterator;
     }
-    explicit operator bool() const noexcept(is_nothrow_static_castable_v<Iterator, bool>)
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept(is_nothrow_static_castable_v<Iterator, bool>)
             requires is_static_castable_v<Iterator, bool> {
         return static_cast<bool>(this->iterator);
     }
 public:
-    Iterator base() const noexcept {
+    [[nodiscard]]
+    constexpr Iterator base() const noexcept {
         return this->iterator;
     }
 };
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator-(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_subtractable_v<IteratorLHS, IteratorRHS>) {
-    return rhs.base() - lhs.base();
-}
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator==(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_equal_to_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator==(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_equal_to_comparable_v<Iterator>)  {
     return rhs.base() == lhs.base();
 }
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator!=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_not_equal_to_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr bool operator!=(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_not_equal_to_comparable_v<Iterator>) {
     return lhs.base() not_eq rhs.base();
 }
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator<(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_less_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_less_comparable_v<Iterator>) {
     return lhs.base() < rhs.base();
 }
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator<=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_less_equal_to_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator<=(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_less_equal_to_comparable_v<Iterator>) {
     return lhs.base() <= rhs.base();
 }
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator>(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_greater_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_greater_comparable_v<Iterator>) {
     return lhs.base() > rhs.base();
 }
-template <typename IteratorLHS, typename IteratorRHS = IteratorLHS>
-auto operator>=(const move_iterator<IteratorLHS> &lhs, const move_iterator<IteratorRHS> &rhs)
-        noexcept(is_nothrow_greater_equal_to_comparable_v<IteratorLHS, IteratorRHS>) {
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator>=(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
     return lhs.base() >= rhs.base();
 }
 __DATA_STRUCTURE_END
