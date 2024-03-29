@@ -21,6 +21,13 @@
 
 namespace data_structure {
 
+__DATA_STRUCTURE_START(memory functions)
+template <typename T>
+inline constexpr T *address_of(T &arg) noexcept {
+    return reinterpret_cast<T *>(&const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
+}
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(object construction and destruction)
 template <typename T, typename ...Args>
 inline constexpr T *construct(T *p, Args &&...args) noexcept(is_nothrow_constructible_v<T, Args...>) {
