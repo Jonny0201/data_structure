@@ -18,7 +18,6 @@
 #define DATA_STRUCTURE_ALLOCATOR_HPP
 
 #include "type_traits.hpp"
-#include "meta.hpp"
 
 namespace data_structure {
 
