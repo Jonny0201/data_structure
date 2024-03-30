@@ -48,7 +48,7 @@ private:
     __dsa::allocator_compressor<size_type, Allocator> buffer_size;
     pointer first;
 private:
-    template <bool CopyFromValue = true>
+    template <bool = true>
     constexpr void initialize(const T &);
     constexpr void move_to(pointer, size_type);
     template <typename InputIterator>
@@ -59,8 +59,7 @@ public:
     buffer() = delete;
     explicit constexpr buffer(size_type, const Allocator & = {});
     constexpr buffer(size_type, const T &, const Allocator & = {});
-    template <size_type DefaultSize = 64, IsInputIterator InputIterator>
-            requires (not is_forward_iterator_v<InputIterator>)
+    template <size_type = 64, IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr buffer(InputIterator, InputIterator, const Allocator & = {});
     template <IsForwardIterator ForwardIterator>
     constexpr buffer(ForwardIterator, ForwardIterator, const Allocator & = {});
