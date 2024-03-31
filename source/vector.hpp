@@ -19,6 +19,7 @@
 
 #include "allocator.hpp"
 #include "iterator.hpp"
+#include "buffer.hpp"
 
 namespace data_structure {
 
@@ -42,27 +43,21 @@ public:
     static_assert(is_same_v<T, typename Allocator::value_type>,
             "The value type of vector should same as the allocator's value_type!");
 private:
-    struct exception_handler;
-    friend struct exception_handler;
+    struct resize_handler;
+    friend struct resize_handler;
 private:
     pointer first {};
     pointer cursor {};
     __dsa::allocator_compressor<pointer, Allocator> last {};
 private:
-    template <bool = true>
-    constexpr void initialize(const T &);
-    template <typename InputIterator>
-    constexpr void initialize(InputIterator, InputIterator, false_type);
-    template <typename ForwardIterator>
-    constexpr void initialize(ForwardIterator, ForwardIterator, true_type);
+    constexpr void assign_with_iterator(buffer<T, Allocator> &b);
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
     explicit constexpr vector(size_type, const Allocator & = {});
     constexpr vector(size_type, const T &, const Allocator & = {});
-    template <size_type = 64, IsInputIterator InputIterator>
-            requires (not is_forward_iterator_v<InputIterator>)
-    constexpr vector(InputIterator, InputIterator, const Allocator & = {});
+    template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
+    constexpr vector(InputIterator, InputIterator, const Allocator & = {}, size_type = 64);
     template <IsForwardIterator ForwardIterator>
     constexpr vector(ForwardIterator, ForwardIterator, const Allocator & = {});
     constexpr vector(initializer_list<T>, const Allocator & = {});
@@ -82,7 +77,7 @@ public:
 public:
     constexpr void assign(size_type, const T & = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
-    constexpr void assign(InputIterator, InputIterator);
+    constexpr void assign(InputIterator, InputIterator, size_type = 64);
     template <IsForwardIterator ForwardIterator>
     constexpr void assign(ForwardIterator, ForwardIterator);
     constexpr void assign(initializer_list<T>);
@@ -118,8 +113,9 @@ public:
     constexpr size_type capacity() const noexcept;
     [[nodiscard]]
     constexpr size_type spare() const noexcept;
-    constexpr void reverse(size_type);
+    constexpr void reserve(size_type);
     constexpr void shrink_to_fit();
+    constexpr void resize(size_type);
     constexpr void resize(size_type, const T & = {});
     [[nodiscard]]
     constexpr T &front() noexcept;
@@ -163,6 +159,211 @@ public:
     constexpr iterator erase(const_iterator);
     constexpr iterator erase(const_iterator, const_iterator);
 };
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(vector implementation)
+/* private types */
+template <typename T, typename Allocator>
+struct vector<T, Allocator>::resize_handler {
+    vector &v;
+    pointer &new_place;
+    size_type i {0};
+    explicit constexpr resize_handler(vector &v, pointer &new_place) noexcept : v {v}, new_place {new_place} {}
+    constexpr void operator()() noexcept {
+        ds::destroy(this->b.first, this->b.cursor);
+        this->v.last.allocator().deallocate(this->v.first, this->v.size());
+    }
+};
+
+/* public functions */
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(const Allocator &allocator) noexcept : first {}, cursor {}, last(allocator) {}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(size_type n, const Allocator &allocator) : first {}, cursor {}, last(allocator) {
+    buffer b(n, allocator);
+    this->first = b.release();
+    this->cursor = this->last() = this->first + b.size();
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(size_type n, const T &value, const Allocator &allocator) :
+        first {}, cursor {}, last(allocator) {
+    buffer b(n, value, allocator);
+    this->first = b.release();
+    this->cursor = this->last() = this->first + b.size();
+}
+template <typename T, typename Allocator>
+template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
+constexpr vector<T, Allocator>::vector(InputIterator begin, InputIterator end, const Allocator &allocator,
+        size_type default_size) : first {}, cursor {}, last(allocator) {
+    buffer<T, Allocator> b(begin, end, allocator, default_size);
+    this->cursor = this->first = b.release();
+    this->last = this->first + b.size();
+}
+template <typename T, typename Allocator>
+template <IsForwardIterator ForwardIterator>
+constexpr vector<T, Allocator>::vector(ForwardIterator begin, ForwardIterator end, const Allocator &allocator) :
+        first {}, cursor {}, last(allocator) {
+    buffer<T, Allocator> b(begin, end, allocator);
+    this->cursor = this->first = b.release();
+    this->last = this->first + b.size();
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(initializer_list<T> init_list, const Allocator &allocator) :
+        vector(init_list.begin(), init_list.end(), allocator) {}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(const vector &rhs) : vector(rhs.cbegin(), rhs.cend(), rhs.allocator()) {}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(const vector &rhs, const Allocator &allocator) :
+        vector(rhs.cbegin(), rhs.cend(), allocator) {}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(vector &&rhs) noexcept : first {ds::move(rhs.first)},
+        cursor {ds::move(rhs.cursor)}, last {ds::move(rhs.last)} {
+    rhs.first = rhs.cursor = rhs.last() = nullptr;
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(vector &&rhs, const Allocator &allocator) noexcept : first {ds::move(rhs.first)},
+        cursor {ds::move(rhs.cursor)}, last(ds::move(rhs.last()), allocator) {
+    rhs.first = rhs.cursor = rhs.last() = nullptr;
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::~vector() noexcept {
+    ds::destroy(this->first, this->cursor);
+    this->last.allocator().deallocate(this->first, this->cursor - this->first);
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(const vector<T, Allocator> &rhs) {
+    if(this not_eq &rhs) {
+        this->assign(rhs.cbegin(), rhs.cend());
+    }
+    return *this;
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(vector<T, Allocator> &&rhs) noexcept {
+    if(this not_eq &rhs) {
+        this->~vector();
+        this->first = ds::move(rhs.first);
+        this->cursor = ds::move(rhs.cusror);
+        this->last = ds::move(rhs.last);
+        rhs.first = rhs.cusror = rhs.last() = nullptr;
+    }
+    return *this;
+}
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(initializer_list<T> init_list) {
+    this->assign(init_list.begin(), init_list.end());
+    return *this;
+}
+template <typename T, typename Allocator>
+constexpr T &vector<T, Allocator>::operator[](difference_type n)
+        noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
+    return this->first[n];
+}
+template <typename T, typename Allocator>
+constexpr const T &vector<T, Allocator>::operator[](difference_type n) const
+        noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
+    return this->first[n];
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::assign(size_type n, const T &value) {
+    if(n > this->capacity()) {
+        buffer b(n, value, this->last.allocator());
+        this->first = b.release();
+        this->cursor = this->last() = this->first + b.size();
+    }else {
+        auto it {this->first};
+        for(; it not_eq this->cursor and n not_eq 0; ++it, static_cast<void>(--n)) {
+            *it = value;
+        }
+        if(n == 0) {
+            if(it not_eq this->cursor) {
+                ds::destroy(it, this->cursor);
+                this->cursor = it;
+            }
+        }else for(; n not_eq 0; ++this->cursor, static_cast<void>(--n)) {
+            ds::construct(this->cursor, value);
+        }
+    }
+}
+template <typename T, typename Allocator>
+template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
+constexpr void vector<T, Allocator>::assign(InputIterator begin, InputIterator end, size_type default_size) {
+    buffer<T, Allocator> b(begin, end, this->last.allocator(), default_size);
+    this->assign_with_iterator(b);
+}
+template <typename T, typename Allocator>
+template <IsForwardIterator ForwardIterator>
+constexpr void vector<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
+    buffer<T, Allocator> b(begin, end, this->last.allocator());
+    this->assign_with_iterator(b);
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::assign(initializer_list<T> init_list) {
+    this->assign(init_list.begin(), init_list.end());
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::begin() noexcept {
+    return iterator {this->first};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_iterator vector<T, Allocator>::begin() const noexcept {
+    return const_iterator {this->first};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_iterator vector<T, Allocator>::cbegin() const noexcept {
+    return const_iterator {this->first};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::end() noexcept {
+    return iterator {this->cursor};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_iterator vector<T, Allocator>::end() const noexcept {
+    return const_iterator {this->cursor};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_iterator vector<T, Allocator>::cend() const noexcept {
+    return const_iterator {this->cursor};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rbegin() noexcept {
+    return reverse_iterator {this->cursor - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rbegin() const noexcept {
+    return const_reverse_iterator {this->cursor - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::crbegin() const noexcept {
+    return const_reverse_iterator {this->cursor - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rend() noexcept {
+    return reverse_iterator {this->first - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend() const noexcept {
+    return const_reverse_iterator {this->first - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::crend() const noexcept {
+    return const_reverse_iterator {this->first - 1};
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::size() const noexcept {
+    return static_cast<size_type>(this->cursor - this->first);
+}
+template <typename T, typename Allocator>
+constexpr bool vector<T, Allocator>::empty() const noexcept {
+    return this->first == this->cursor;
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::capacity() const noexcept {
+    return static_cast<size_type>(this->last - this->first);
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::spare() const noexcept {
+    return static_cast<size_type>(this->last - this->cursor);
+}
 __DATA_STRUCTURE_END
 
 }       // namespace data_structure
