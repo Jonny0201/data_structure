@@ -95,12 +95,11 @@ __DATA_STRUCTURE_START(buffer implementation)
 template <typename T, typename Allocator>
 struct buffer<T, Allocator>::exception_handler {
     buffer &b;
-    size_type i;
-    explicit constexpr exception_handler(buffer &b, size_type i = 0) noexcept : b {b}, i {i} {}
+    size_type i {0};
+    explicit constexpr exception_handler(buffer &b) noexcept : b {b} {}
     constexpr void operator()() noexcept {
-        auto &allocator {this->b.buffer_size.allocator()};
         ds::destroy(this->b.first, this->b.first + this->i);
-        allocator.deallocate(this->b.first, this->b.buffer_size());
+        this->b.buffer_size.allocator().deallocate(this->b.first, this->b.buffer_size());
     }
 };
 
