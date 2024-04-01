@@ -50,7 +50,7 @@ private:
     pointer cursor {};
     __dsa::allocator_compressor<pointer, Allocator> last {};
 private:
-    constexpr void assign_with_iterator(buffer<T, Allocator> &b);
+    void move_to(pointer new_first);
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
@@ -167,11 +167,13 @@ template <typename T, typename Allocator>
 struct vector<T, Allocator>::resize_handler {
     vector &v;
     pointer &new_place;
+    size_type new_size;
     size_type i {0};
-    explicit constexpr resize_handler(vector &v, pointer &new_place) noexcept : v {v}, new_place {new_place} {}
+    explicit constexpr resize_handler(vector &v, pointer &new_place, size_type new_size) noexcept :
+            v {v}, new_place {new_place}, new_size {new_size} {}
     constexpr void operator()() noexcept {
-        ds::destroy(this->b.first, this->b.cursor);
-        this->v.last.allocator().deallocate(this->v.first, this->v.size());
+        ds::destroy(this->new_place, this->new_place + this->i);
+        this->v.last.allocator().deallocate(this->new_place, this->new_size);
     }
 };
 
@@ -363,6 +365,18 @@ constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::capacit
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::spare() const noexcept {
     return static_cast<size_type>(this->last - this->cursor);
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::reserve(size_type n) {
+    if(n > this->capacity()) {
+        auto &allocator {this->last.allocator()};
+        if constexpr(is_trivially_copyable_v<T>) {
+            this->first = allocator.reallocate(this->first, n);
+        }else {
+            auto new_first {allocator.allocate(n)};
+            this->move_to(new_first);
+        }
+    }
 }
 __DATA_STRUCTURE_END
 
