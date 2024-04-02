@@ -351,6 +351,7 @@ The project is being refactored.
         <th rowspan="2">System</th>
         <th colspan="4">Compiler</th>
         <th rowspan="2">Coverage</th>
+        <th rowspan="2">Debug Assertion</th>
     </tr>
     <tr style="text-align: center;">
         <th>Apple Clang</th>
@@ -366,6 +367,7 @@ The project is being refactored.
     <td></td>
     <td></td>
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
     <td rowspan="4"></td>
 </tr>
 <tr style="text-align: center;">
