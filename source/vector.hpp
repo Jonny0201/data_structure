@@ -50,7 +50,8 @@ private:
     pointer cursor {};
     __dsa::allocator_compressor<pointer, Allocator> last {};
 private:
-    void move_to(pointer new_first);
+    void resize_and_move(size_type);
+    void reallocate_and_move();
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
@@ -116,7 +117,7 @@ public:
     constexpr void reserve(size_type);
     constexpr void shrink_to_fit();
     constexpr void resize(size_type);
-    constexpr void resize(size_type, const T & = {});
+    constexpr void resize(size_type, const T &);
     [[nodiscard]]
     constexpr T &front() noexcept;
     [[nodiscard]]
@@ -267,6 +268,9 @@ constexpr const T &vector<T, Allocator>::operator[](difference_type n) const
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::assign(size_type n, const T &value) {
+    if(n == 0) {
+        return;
+    }
     if(n > this->capacity()) {
         buffer b(n, value, this->last.allocator());
         this->first = b.release();
@@ -374,9 +378,90 @@ constexpr void vector<T, Allocator>::reserve(size_type n) {
             this->first = allocator.reallocate(this->first, n);
         }else {
             auto new_first {allocator.allocate(n)};
-            this->move_to(new_first);
+            this->move_to(new_first, this->cursor);
         }
     }
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::shrink_to_fit() {
+    if(this->cursor not_eq this->last) {
+        this->resize_and_move(this->size());
+    }
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::resize(size_type n) {
+    const auto size {this->size()};
+    if(n not_eq size) {
+        this->resize_and_move(n);
+        if(n > size) {
+            if constexpr(is_trivially_default_constructible_v<T>) {
+                ds::memory_default_initialization(this->cursor, sizeof(T) * (n - size));
+            }else {
+                do {
+                    ds::construct(this->cursor);
+                }while(++this->cursor not_eq this->last);
+            }
+        }
+    }
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::resize(size_type n, const T &value) {
+    const auto size {this->size()};
+    if(n not_eq size) {
+        this->resize_and_move(n);
+        if(n > size) {
+            do {
+                ds::construct(this->cursor, value);
+            }while(++this->cursor not_eq this->last);
+        }
+    }
+}
+template <typename T, typename Allocator>
+constexpr T &vector<T, Allocator>::front() noexcept {
+    return *this->first;
+}
+template <typename T, typename Allocator>
+constexpr const T &vector<T, Allocator>::front() const noexcept {
+    return *this->first;
+}
+template <typename T, typename Allocator>
+constexpr T &vector<T, Allocator>::back() noexcept {
+    return this->cursor[-1];
+}
+template <typename T, typename Allocator>
+constexpr const T &vector<T, Allocator>::back() const noexcept {
+    return this->cursor[-1];
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::pointer vector<T, Allocator>::data() noexcept {
+    return this->first;
+}
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_pointer vector<T, Allocator>::data() const noexcept {
+    return this->first;
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::push_back(const T &value) {
+    this->emplace_back(value);
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::push_back(T &&value) {
+    this->emplace_back(ds::move(value));
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::pop_back() noexcept {
+    ds::destroy(--this->cursor);
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::clear() noexcept {
+    ds::destroy(this->first, this->cursor);
+    this->cursor = this->first;
+}
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::swap(vector &rhs) noexcept {
+    ds::swap(this->first, rhs.first);
+    ds::swap(this->cursor, rhs.cursor);
+    ds::swap(this->last(), rhs.last());
 }
 __DATA_STRUCTURE_END
 
