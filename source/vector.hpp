@@ -45,13 +45,15 @@ public:
 private:
     struct resize_handler;
     friend struct resize_handler;
+    struct insertion_handler;
 private:
     pointer first {};
     pointer cursor {};
     __dsa::allocator_compressor<pointer, Allocator> last {};
 private:
-    void resize_and_move(size_type);
-    void reallocate_and_move();
+    static constexpr void move_to(pointer, const_pointer, const_pointer);
+    constexpr void resize_and_move(size_type);
+    constexpr void reallocate_when_insertion(size_type, size_type, difference_type);
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
@@ -170,11 +172,19 @@ struct vector<T, Allocator>::resize_handler {
     pointer &new_place;
     size_type new_size;
     size_type i {0};
-    explicit constexpr resize_handler(vector &v, pointer &new_place, size_type new_size) noexcept :
+    constexpr resize_handler(vector &v, pointer &new_place, size_type new_size) noexcept :
             v {v}, new_place {new_place}, new_size {new_size} {}
     constexpr void operator()() noexcept {
         ds::destroy(this->new_place, this->new_place + this->i);
         this->v.last.allocator().deallocate(this->new_place, this->new_size);
+    }
+};
+template <typename T, typename Allocator>
+struct vector<T, Allocator>::insertion_handler {
+    pointer begin;
+    pointer end;
+    constexpr void operator()() noexcept {
+        ds::destroy(this->begin + 1, this->end);
     }
 };
 
@@ -231,7 +241,7 @@ constexpr vector<T, Allocator>::vector(vector &&rhs, const Allocator &allocator)
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::~vector() noexcept {
     ds::destroy(this->first, this->cursor);
-    this->last.allocator().deallocate(this->first, this->cursor - this->first);
+    this->last.allocator().deallocate(this->first, static_cast<size_type>(this->cursor - this->first));
 }
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(const vector<T, Allocator> &rhs) {
@@ -277,17 +287,22 @@ constexpr void vector<T, Allocator>::assign(size_type n, const T &value) {
         this->cursor = this->last() = this->first + b.size();
     }else {
         auto it {this->first};
-        for(; it not_eq this->cursor and n not_eq 0; ++it, static_cast<void>(--n)) {
+        for(; it not_eq this->cursor; ++it, static_cast<void>(--n)) {
             *it = value;
+            if(n == 0) {
+                break;
+            }
         }
         if(n == 0) {
             if(it not_eq this->cursor) {
                 ds::destroy(it, this->cursor);
                 this->cursor = it;
             }
-        }else for(; n not_eq 0; ++this->cursor, static_cast<void>(--n)) {
+        }else do {
             ds::construct(this->cursor, value);
-        }
+            ++this->cursor;
+            --n;
+        }while(n not_eq 0);
     }
 }
 template <typename T, typename Allocator>
@@ -447,6 +462,26 @@ constexpr void vector<T, Allocator>::push_back(const T &value) {
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::push_back(T &&value) {
     this->emplace_back(ds::move(value));
+}
+template <typename T, typename Allocator>
+template <typename ...Args>
+constexpr void vector<T, Allocator>::emplace_back(Args &&...args) {
+    if(this->cursor == this->last) {
+        const auto size {this->size()};
+        const auto allocation_size {size == 0 ? 1 : size * 2};
+        if constexpr(is_trivially_copyable_v<T>) {
+            this->last.allocator().reallocate(allocation_size);
+        }else {
+            auto new_first {this->last.allocator().allocate(allocation_size)};
+            this->move_to(new_first, this->first, this->last);
+            this->~vector();
+            this->first = ds::move(new_first);
+            this->cursor = this->first + size;
+            this->last = this->first + allocation_size;
+        }
+    }
+    ds::construct(this->cursor, ds::forward<Args>(args)...);
+    ++this->cursor;
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::pop_back() noexcept {
