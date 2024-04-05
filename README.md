@@ -157,7 +157,7 @@ The project is being refactored.
 <tr style="text-align: center;">
     <th>Vector</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>vector.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
