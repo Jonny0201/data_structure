@@ -163,7 +163,7 @@ The project is being refactored.
 <tr style="text-align: center;">
     <th>Array</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>array.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
