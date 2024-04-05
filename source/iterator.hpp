@@ -548,6 +548,91 @@ inline constexpr auto operator>=(const move_iterator<Iterator> &lhs, const move_
 }
 __DATA_STRUCTURE_END
 
+namespace __data_structure_auxiliary {
+__DATA_STRUCTURE_START(forward list node)
+template <typename ValueNode>
+struct forward_list_base_node {
+    forward_list_base_node *next;
+    decltype(auto) value() noexcept {
+        return static_cast<ValueNode *>(this)->value;
+    }
+};
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(data structure special iterator, forward list iterator)
+template <typename T>
+struct forward_list_node : forward_list_base_node<forward_list_node<T>> {
+    T value;
+};
+template <typename T, bool IsConst = false>
+class forward_list_iterator {
+    friend class forward_list_iterator<T, false>;
+    template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const forward_list_iterator<ValueType, IsConstLHS> &,
+            const forward_list_iterator<ValueType, IsConstRHS> &) noexcept;
+private:
+    using node_type = forward_list_base_node<T> *;
+public:
+    using iterator_type = forward_list_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = forward_iterator_tag;
+private:
+    node_type node {};
+public:
+    constexpr forward_list_iterator() noexcept = default;
+    explicit constexpr forward_list_iterator(forward_list_base_node<T> *node) noexcept : node {node} {}
+    constexpr forward_list_iterator(enable_if_t<IsConst, forward_list_iterator<T, false>> non_const_iterator) :
+            node {non_const_iterator.node} {}
+    constexpr forward_list_iterator(const forward_list_iterator &) noexcept = default;
+    constexpr forward_list_iterator(forward_list_iterator &&) noexcept = default;
+    constexpr ~forward_list_iterator() noexcept = default;
+public:
+    constexpr forward_list_iterator &operator=(const forward_list_iterator &) noexcept = default;
+    constexpr forward_list_iterator &operator=(forward_list_iterator &&) noexcept = default;
+    constexpr conditional_t<IsConst, T &, const T &> operator*() noexcept {
+        return this->node->value();
+    }
+    constexpr const T &operator*() const noexcept {
+        return this->node->value();
+    }
+    constexpr conditional_t<IsConst, T *, const T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr forward_list_iterator &operator++() & noexcept {
+        this->node = this->node->next;
+        return *this;
+    }
+    constexpr forward_list_iterator &operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    explicit operator bool() const noexcept {
+        return this->node;
+    }
+    operator enable_if_t<not IsConst, forward_list_iterator<T, true>>() const noexcept {
+        return forward_list_iterator<T, true>(this->node);
+    }
+};
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+inline constexpr bool operator==(const forward_list_iterator<T, IsConstLHS> &lhs,
+        const forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.node == rhs.node;
 }
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+inline constexpr bool operator!=(const forward_list_iterator<T, IsConstLHS> &lhs,
+        const forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+__DATA_STRUCTURE_END
+
+}       // namespace data_structure::__data_structure_auxiliary
+
+}       // namespace data_structure
 
 #endif //DATA_STRUCTURE_ITERATOR_HPP
