@@ -561,13 +561,13 @@ struct forward_list_base_node {
         return static_cast<ValueNode *>(this)->value;
     }
 };
-__DATA_STRUCTURE_END
-
-__DATA_STRUCTURE_START(data structure special iterator, forward list iterator)
 template <typename T>
 struct forward_list_node : forward_list_base_node<forward_list_node<T>> {
     T value;
 };
+__DATA_STRUCTURE_END
+
+__DATA_STRUCTURE_START(data structure special iterator, forward list iterator)
 template <typename T, bool IsConst = false>
 class forward_list_iterator {
     friend class forward_list_iterator<T, false>;
