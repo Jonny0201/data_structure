@@ -108,7 +108,13 @@ template <typename T, typename Allocator>
 constexpr void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_size) {
     auto &allocator {this->buffer_size.allocator()};
     if constexpr(is_trivially_copy_assignable_v<T>) {
-        ds::memory_copy(new_buffer, this->first, sizeof(T) * old_size);
+        if constexpr(is_pointer_v<pointer>) {
+            ds::memory_copy(new_buffer, this->first, sizeof(T) * old_size);
+        }else {
+            for(auto i {0}; i < old_size; ++i) {
+                ds::construct(new_buffer + i, ds::move(this->first[i]));
+            }
+        }
     }else {
         struct exception_handler {
             pointer old_buffer;
@@ -192,7 +198,7 @@ constexpr void buffer<T, Allocator>::initialize(ForwardIterator begin, ForwardIt
     const auto size {this->buffer_size()};
     this->first = this->buffer_size.allocator().allocate(size);
     auto trans {transaction {exception_handler(*this)}};
-    if constexpr(is_pointer_v<ForwardIterator> and is_trivially_copyable_v<T>) {
+    if constexpr(is_pointer_v<pointer> and is_pointer_v<ForwardIterator> and is_trivially_copyable_v<T>) {
         ds::memory_copy(this->first, begin, sizeof(T) * this->buffer_size());
     }else {
         for(auto &i {trans.get_rollback().i}; i < size; ++i) {
