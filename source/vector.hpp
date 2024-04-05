@@ -1,5 +1,5 @@
 /*
-    * Copyright © [2019 - 2021] [Jonny Charlotte]
+    * Copyright © [2019 - 2024] [Jonny Charlotte]
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -131,6 +131,8 @@ public:
     constexpr pointer data() noexcept;
     [[nodiscard]]
     constexpr const_pointer data() const noexcept;
+    [[nodiscard]]
+    constexpr Allocator allocator() const noexcept;
     constexpr void push_back(const T &);
     constexpr void push_back(T &&);
     template <typename ...Args>
@@ -559,6 +561,10 @@ constexpr typename vector<T, Allocator>::pointer vector<T, Allocator>::data() no
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::const_pointer vector<T, Allocator>::data() const noexcept {
     return this->first;
+}
+template <typename T, typename Allocator>
+constexpr Allocator vector<T, Allocator>::allocator() const noexcept {
+    return this->last.allocator();
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::push_back(const T &value) {
