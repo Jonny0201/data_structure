@@ -931,12 +931,12 @@ template <typename> struct is_nothrow_copy_assignable;
 template <typename> struct is_nothrow_move_constructible;
 template <typename> struct is_nothrow_move_assignable;
 template <typename T>
-enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+constexpr enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
         (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
 swap(T &lhs, T &rhs) noexcept((is_nothrow_move_constructible<T>::value and is_nothrow_move_assignable<T>::value) or
         (is_nothrow_copy_constructible<T>::value and is_nothrow_copy_assignable<T>::value));
 template <typename T, size_t N>
-enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+constexpr enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
         (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
 swap(T (&lhs)[N], T (&rhs)[N]) noexcept((is_move_constructible_v<T> and is_move_assignable_v<T>) or
         (is_copy_constructible_v<T> and is_copy_assignable_v<T>));

@@ -42,6 +42,27 @@ inline constexpr T &&forward(remove_reference_t<T> &&value) noexcept {
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(swap)
+template <typename T>
+inline constexpr enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
+swap(T &lhs, T &rhs) noexcept((is_nothrow_move_constructible<T>::value and is_nothrow_move_assignable<T>::value) or
+        (is_nothrow_copy_constructible<T>::value and is_nothrow_copy_assignable<T>::value)) {
+    T tmp {ds::move_if<is_nothrow_move_constructible_v<T>>(lhs)};
+    lhs = ds::move_if<is_nothrow_move_assignable_v<T>>(rhs);
+    rhs = ds::move_if<is_nothrow_move_assignable_v<T>>(tmp);
+}
+template <typename T, size_t N>
+inline constexpr enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
+swap(T (&lhs)[N], T (&rhs)[N]) noexcept((is_move_constructible_v<T> and is_move_assignable_v<T>) or
+        (is_copy_constructible_v<T> and is_copy_assignable_v<T>)) {
+    for(auto i {0}; i < N; ++i) {
+        ds::swap(lhs[i], rhs[i]);
+    }
+}
+__DATA_STRUCTURE_END
+
 __DATA_STRUCTURE_START(transaction tool)
 template <typename Rollback>
 class transaction {
