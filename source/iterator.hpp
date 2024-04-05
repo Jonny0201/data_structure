@@ -548,6 +548,10 @@ inline constexpr auto operator>=(const move_iterator<Iterator> &lhs, const move_
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(container forward declaration)
+template <typename, typename> class forward_list;
+__DATA_STRUCTURE_END
+
 namespace __data_structure_auxiliary {
 __DATA_STRUCTURE_START(forward list node)
 template <typename ValueNode>
@@ -570,6 +574,7 @@ class forward_list_iterator {
     template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
     friend constexpr bool operator==(const forward_list_iterator<ValueType, IsConstLHS> &,
             const forward_list_iterator<ValueType, IsConstRHS> &) noexcept;
+    template <typename, typename> friend class forward_list;
 private:
     using node_type = forward_list_base_node<T> *;
 public:
