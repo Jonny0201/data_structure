@@ -107,6 +107,20 @@ inline consteval bool operator!=(const allocator<T> &, const allocator<U> &) noe
 }
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(allocator traits)
+template <typename Allocator>
+struct allocator_traits {
+    using size_type = typename Allocator::size_type;
+    using difference_type = typename Allocator::difference_type;
+    using value_type = typename Allocator::value_type;
+    using reference = typename __dsa::traits_reference<Allocator, value_type &>::type;
+    using const_reference = typename __dsa::traits_const_reference<Allocator, const value_type &>::type;
+    using rvalue_reference = typename __dsa::traits_rvalue_reference<Allocator, value_type &&>::type;
+    using pointer = typename __dsa::traits_pointer<Allocator, value_type *>::type;
+    using const_pointer = typename __dsa::traits_const_pointer<Allocator, const value_type *>::type;
+};
+__DATA_STRUCTURE_END
+
 }       // namespace data_structure
 
 #endif //DATA_STRUCTURE_ALLOCATOR_HPP
