@@ -21,11 +21,11 @@
 
 __DATA_STRUCTURE_START(nested namespace creation)
 namespace data_structure::meta {}
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(nested namespace creation)
 
 __DATA_STRUCTURE_START(meta namespace alias)
 namespace dsmeta = data_structure::meta;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(meta namespace alias)
 
 namespace data_structure::meta {
 
@@ -67,7 +67,7 @@ struct multi_dynamic {
         return {};
     }
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(dynamic)
 
 __DATA_STRUCTURE_START(meta fundamentals)
 struct nil final {};
@@ -102,38 +102,46 @@ struct type_pair {
     using first = First;
     using second = Second;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(meta fundamentals)
 
 __DATA_STRUCTURE_START(meta functions, type operator)
 template <typename T, size_t N>
 struct choose_argument;
 template <size_t N, typename ...Args>
 struct choose_argument<type_container<Args...>, N> {
-using type = typename choose_argument<typename type_container<Args...>::remaining, N - 1>::type;
+    using type = typename choose_argument<typename type_container<Args...>::remaining, N - 1>::type;
 };
-template <typename ...Args>
-struct choose_argument<type_container<Args...>, 0> {
-using type = typename type_container<Args...>::type;
+template <typename T, typename ...Args>
+struct choose_argument<type_container<T, Args...>, 0> {
+    using type = T;
+};
+template <>
+struct choose_argument<type_container<>, 0> {
+    using type = nil;
 };
 template <size_t N, typename T, typename Pair>
 struct choose_argument<type_list<T, Pair>, N> {
-using type = typename choose_argument<Pair, N - 1>::type;
+    using type = typename choose_argument<Pair, N - 1>::type;
 };
 template <typename T, typename Pair>
 struct choose_argument<type_list<T, Pair>, 0> {
-using type = T;
-};
-template <size_t N, typename T>
-struct choose_argument<type_list<T>, N> {
-using type = T;
+    using type = T;
 };
 template <size_t N>
 struct choose_argument<type_list<>, N> {
     using type = nil;
 };
+template <typename First, typename Second>
+struct choose_argument<type_pair<First, Second>, 0> {
+    using type = First;
+};
+template <typename First, typename Second>
+struct choose_argument<type_pair<First, Second>, 1> {
+    using type = Second;
+};
 template <typename T, size_t N>
 using choose_argument_t = typename choose_argument<T, N>::type;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(meta functions, type operator)
 
 __DATA_STRUCTURE_START(meta functions, conditional operator)
 template <typename BooleanExpression>
@@ -166,7 +174,7 @@ struct disjunction<BooleanExpressionLHS, BooleanExpressionRHS, BooleanExpression
         disjunction<disjunction<BooleanExpressionLHS, BooleanExpressionRHS>, BooleanExpressions...> {};
 template <typename BooleanExpression, typename ...Expressions>
 constexpr inline auto disjunction_v {disjunction<BooleanExpression, Expressions...>::value};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(meta functions, conditional operator)
 
 __DATA_STRUCTURE_START(meta functions, max and min)
 template <typename, typename ...>
@@ -198,8 +206,8 @@ struct min<T, U> {
 };
 template <typename T, typename U, typename ...Args>
 struct min<T, U, Args...> : min<min_t<T, U>, Args...> {};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(meta functions, max and min)
 
 }       // namespace data_structure::meta
 
-#endif //DATA_STRUCTURE_META_HPP
+#endif      // DATA_STRUCTURE_META_HPP
