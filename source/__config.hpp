@@ -23,34 +23,34 @@
 #include <exception>
 
 #define __DATA_STRUCTURE_START(x, ...)
-#define __DATA_STRUCTURE_END
+#define __DATA_STRUCTURE_END(x, ...)
 
-namespace data_structure {      // data_structure namespace creation
+namespace data_structure {      // data structure namespace creation
 
 __DATA_STRUCTURE_START(basic type definition)
 using size_t = decltype(sizeof 0);
 using ptrdiff_t = decltype(static_cast<int *>(nullptr) - static_cast<int *>(nullptr));
 using align_val_t = std::align_val_t;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(basic type definition)
 
 __DATA_STRUCTURE_START(exception type definition)
 using exception = std::exception;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(exception type definition)
 
 __DATA_STRUCTURE_START(initializer_list)
 template <typename T>
 using initializer_list = std::initializer_list<T>;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(initializer_list)
 
 __DATA_STRUCTURE_START(three way comparison)
 using strong_ordering = std::strong_ordering;
 using weak_ordering = std::weak_ordering;
 using partial_ordering = std::partial_ordering;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(three way comparison)
 
 __DATA_STRUCTURE_START(nothrow tag for ::operator new or ::operator delete)
 constexpr auto nothrow {decltype(std::nothrow) {}};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(nothrow tag for ::operator new or ::operator delete)
 
 __DATA_STRUCTURE_START(reserved helper namespace for data_structure)
 namespace __data_structure_helper {}
@@ -64,7 +64,7 @@ namespace __dsa = __data_structure_auxiliary;
 namespace __dsi = __data_structure_implement;
 namespace __dst = __data_structure_testing;
 namespace __dsd = __data_structure_detail;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(reserved helper namespace for data_structure)
 
 __DATA_STRUCTURE_START(memory functions)
 inline void *memory_set(void *start, int value, size_t size) noexcept {
@@ -103,7 +103,7 @@ template <typename T = char>
 inline constexpr void *memory_default_initialization(void *start, size_t size) noexcept {
     return __builtin_memset(start, 0, size * sizeof(T));
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(memory functions)
 
 __DATA_STRUCTURE_START(exceptional functions)
 [[noreturn]]
@@ -118,10 +118,10 @@ inline void terminate() noexcept {
 inline void exit(int code) {
     std::exit(code);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(exceptional functions)
 
 }       // namespace data_structure
 
 namespace ds = data_structure;      // ds namespace alias definition
 
-#endif // DATA_STRUCTURE___CONFIG_HPP
+#endif      // DATA_STRUCTURE___CONFIG_HPP

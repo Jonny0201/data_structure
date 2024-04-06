@@ -39,7 +39,7 @@ template <bool Value>
 using bool_constant = constant<bool, Value>;
 using true_type = bool_constant<true>;
 using false_type = bool_constant<false>;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(constant)
 
 __DATA_STRUCTURE_START(conditional and SFINAE)
 template <bool, typename If, typename>
@@ -118,7 +118,7 @@ struct type_container<T, Args...> {
 
 template <void () = [] {}>
 struct unique_type {};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(conditional and SFINAE)
 
 __DATA_STRUCTURE_START(functions)
 namespace __data_structure_auxiliary {
@@ -145,7 +145,7 @@ constexpr bool is_constant_evaluated() noexcept {
 
 template <typename T>
 consteval bool is_within_lifetime(const T *) noexcept;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(functions)
 
 __DATA_STRUCTURE_START(add something)
 namespace __data_structure_auxiliary {
@@ -225,7 +225,7 @@ struct add_const_reference : add_lvalue_reference<add_const_t<
         typename remove_reference<T>::type>> {};
 template <typename T>
 using add_const_reference_t = typename add_const_reference<T>::type;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(add something)
 
 __DATA_STRUCTURE_START(remove something)
 template <typename T>
@@ -315,13 +315,8 @@ using remove_cv_t = typename remove_cv<T>::type;
 template <typename> struct is_reference;
 template <typename> struct is_const;
 template <typename T>
-struct remove_const_reference : conditional_t<
-        is_reference<T>::value,
-        type_identity<conditional_t<
-                is_const<remove_reference_t<T>>::value,
-                remove_const_t<remove_reference_t<T>>,
-                T>>,
-        type_identity<T>> {};
+struct remove_const_reference : conditional_t<is_reference<T>::value, type_identity<conditional_t<
+        is_const<remove_reference_t<T>>::value, remove_const_t<remove_reference_t<T>>, T>>, type_identity<T>> {};
 template <typename T>
 using remove_const_reference_t = typename remove_const_reference<T>::type;
 
@@ -359,7 +354,7 @@ template <typename T, size_t N>
 struct remove_extents<T [N]> {
     using type = remove_extents_t<T>;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(remove something)
 
 __DATA_STRUCTURE_START(is something)
 template <typename, typename>
@@ -940,7 +935,7 @@ constexpr enable_if_t<(is_move_constructible_v<T> and is_move_assignable_v<T>) o
         (is_copy_constructible_v<T> and is_copy_assignable_v<T>)>
 swap(T (&lhs)[N], T (&rhs)[N]) noexcept((is_move_constructible_v<T> and is_move_assignable_v<T>) or
         (is_copy_constructible_v<T> and is_copy_assignable_v<T>));
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(forward declaration for ds::swap)
 namespace __data_structure_auxiliary {
 template <typename LHS, typename RHS>
 select_second_t<decltype(swap(declval<LHS>(), declval<RHS>())), true_type> test_swappable(int) noexcept;
@@ -2267,7 +2262,7 @@ template <typename T>
 struct is_nothrow_coroutine_awaitable : decltype(__dsa::test_nothrow_coroutine_awaitable<T>(0)) {};
 template <typename T>
 inline constexpr auto is_nothrow_coroutine_awaitable_v {is_nothrow_coroutine_awaitable<T>::value};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(is something)
 
 __DATA_STRUCTURE_START(has something)
 template <typename T>
@@ -2280,7 +2275,7 @@ struct has_unique_object_representations :
         conditional_t<__has_unique_object_representations(T), true_type, false_type> {};
 template <typename T>
 inline constexpr auto has_unique_object_representations_v {has_unique_object_representations<T>::value};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(has something)
 
 __DATA_STRUCTURE_START(copy something)
 template <typename Original, typename To>
@@ -2325,7 +2320,7 @@ struct copy_reference {
 };
 template <typename Original, typename To>
 using copy_reference_t = typename copy_reference<Original, To>::type;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(copy something)
 
 __DATA_STRUCTURE_START(other auxliary)
 template <typename> struct decay;
@@ -2695,7 +2690,7 @@ struct common_reference_auxiliary<T, U, 4, void_t<typename common_type<T, U>::ty
 template <typename T, typename U>
 struct common_reference_auxiliary<T, U, 5, void> {};
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(other auxliary)
 
 __DATA_STRUCTURE_START(other)
 namespace __data_structure_auxiliary {
@@ -2910,9 +2905,9 @@ struct type_with_alignment :
         __dsa::type_with_alignment_find_suitable_type<__dsa::type_with_alignment_helper_types, Align> {};
 template <size_t Align>
 using type_with_alignment_t = typename type_with_alignment<Align>::type;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(other)
 
-__DATA_STRUCTURE_START(data structure helper traits)
+__DATA_STRUCTURE_START(inner tools for data structure library)
 namespace __data_structure_auxiliary {
 
 __DATA_STRUCTURE_START(traits helper)
@@ -2956,11 +2951,11 @@ template <typename Traits, typename Default>
 struct traits_const_pointer<Traits, Default, void_t<typename Traits::const_pointer>> {
 using type = typename Traits::const_pointer;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(traits helper)
 
 }       // namespace __data_structure_auxiliary
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(data structure helper traits)
 
 }       // namespace data_structure
 
-#endif //DATA_STRUCTURE_TYPE_TRAITS_HPP
+#endif      // DATA_STRUCTURE_TYPE_TRAITS_HPP

@@ -35,15 +35,13 @@ namespace data_structure {
  *     returning value. Especially note that if the reallocation size is zero, the source
  *     memory should be deallocated.
 */
-__DATA_STRUCTURE_START(allocator)
+__DATA_STRUCTURE_START(universal allocator)
 template <typename T>
 class allocator {
 public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using value_type = T;
-    using pointer = T *;
-    using const_pointer = const T *;
 public:
     constexpr allocator() noexcept = default;
     constexpr allocator(const allocator &) noexcept = default;
@@ -105,7 +103,7 @@ template <typename T, typename U>
 inline consteval bool operator!=(const allocator<T> &, const allocator<U> &) noexcept {
     return false;
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(universal allocator)
 
 __DATA_STRUCTURE_START(allocator traits)
 template <typename Allocator>
@@ -119,8 +117,8 @@ struct allocator_traits {
     using pointer = typename __dsa::traits_pointer<Allocator, value_type *>::type;
     using const_pointer = typename __dsa::traits_const_pointer<Allocator, const value_type *>::type;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(allocator traits)
 
 }       // namespace data_structure
 
-#endif //DATA_STRUCTURE_ALLOCATOR_HPP
+#endif      // DATA_STRUCTURE_ALLOCATOR_HPP

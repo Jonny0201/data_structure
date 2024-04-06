@@ -140,7 +140,7 @@ inline constexpr void swap(forward_list<T, Allocator> &, forward_list<T, Allocat
 /*template <typename T, typename Allocator>
 inline constexpr some_ordering operator<=>(forward_list<T, Allocator> &, forward_list<T, Allocator> &)
         noexcept(is_nothrow_three_way_comparable_v<T>);*/
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(forward_list declaration)
 
 }
 

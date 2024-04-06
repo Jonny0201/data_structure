@@ -29,7 +29,7 @@ struct forward_iterator_tag : input_iterator_tag {};
 struct bidirectional_iterator_tag : forward_iterator_tag {};
 struct random_access_iterator_tag : bidirectional_iterator_tag {};
 struct contiguous_iterator_tag : random_access_iterator_tag {};
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(iterator tag)
 
 __DATA_STRUCTURE_START(iterator traits)
 template <typename Iterator>
@@ -144,7 +144,7 @@ template <typename Iterator>
 inline constexpr auto is_contiguous_iterator_v {is_contiguous_iterator<Iterator>::value};
 template <typename Iterator>
 concept IsContiguousIterator = is_contiguous_iterator_v<Iterator>;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(iterator traits)
 
 __DATA_STRUCTURE_START(iterator functions)
 template <IsRandomAccessIterator RandomAccessIterator>
@@ -167,7 +167,7 @@ inline constexpr typename iterator_traits<InputIterator>::difference_type distan
 inline constexpr ptrdiff_t distance(void *begin, void *end) noexcept {
     return static_cast<char *>(end) - static_cast<char *>(begin);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(iterator functions)
 
 __DATA_STRUCTURE_START(wrap iterator)
 template <typename Iterator> requires is_pointer_v<Iterator>
@@ -283,7 +283,7 @@ template <typename Iterator>
 inline constexpr auto operator>=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
     return not(lhs < rhs);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(wrap iterator)
 
 __DATA_STRUCTURE_START(reverse iterator)
 template <IsIterator Iterator>
@@ -428,7 +428,7 @@ inline constexpr auto operator>=(const reverse_iterator<Iterator> &lhs, const re
         noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
     return lhs.base() >= rhs.base();
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(reverse iterator)
 
 __DATA_STRUCTURE_START(move iterator)
 template <IsInputIterator Iterator>
@@ -556,11 +556,13 @@ inline constexpr auto operator>=(const move_iterator<Iterator> &lhs, const move_
         noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
     return lhs.base() >= rhs.base();
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(move iterator)
+
+__DATA_STRUCTURE_START(inner tools for data structure)
 
 __DATA_STRUCTURE_START(container forward declaration)
 template <typename, typename> class forward_list;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(container forward declaration)
 
 namespace __data_structure_auxiliary {
 __DATA_STRUCTURE_START(forward list node)
@@ -575,7 +577,7 @@ template <typename T>
 struct forward_list_node : forward_list_base_node<forward_list_node<T>> {
     T value;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(forward list node)
 
 __DATA_STRUCTURE_START(data structure special iterator, forward list iterator)
 template <typename T, bool IsConst = false>
@@ -644,10 +646,11 @@ inline constexpr bool operator!=(const forward_list_iterator<T, IsConstLHS> &lhs
         const forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
     return not(lhs == rhs);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(data structure special iterator, forward list iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
+__DATA_STRUCTURE_END(inner tools for data structure)
 
 }       // namespace data_structure
 
-#endif //DATA_STRUCTURE_ITERATOR_HPP
+#endif      //DATA_STRUCTURE_ITERATOR_HPP

@@ -26,7 +26,7 @@ template <typename T>
 inline constexpr T *address_of(T &arg) noexcept {
     return reinterpret_cast<T *>(&const_cast<char &>(reinterpret_cast<const volatile char &>(arg)));
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(memory functions)
 
 __DATA_STRUCTURE_START(object construction and destruction)
 template <typename T, typename ...Args>
@@ -47,8 +47,8 @@ inline constexpr void destroy(T *begin, T *end) noexcept(is_nothrow_destructible
         }
     }
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(object construction and destruction)
 
 }       // namespace data_structure
 
-#endif //DATA_STRUCTURE_MEMORY_HPP
+#endif      // DATA_STRUCTURE_MEMORY_HPP

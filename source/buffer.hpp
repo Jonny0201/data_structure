@@ -88,7 +88,7 @@ public:
     [[nodiscard]]
     constexpr Allocator allocator() const noexcept;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(buffer declaration)
 
 __DATA_STRUCTURE_START(buffer implementation)
 /* private type */
@@ -274,7 +274,7 @@ template <typename T, typename Allocator>
 constexpr Allocator buffer<T, Allocator>::allocator() const noexcept {
     return this->buffer_size.allocator();
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(buffer implementation)
 
 }       // namespace data_structure
 

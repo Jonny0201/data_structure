@@ -40,7 +40,7 @@ inline constexpr T &&forward(remove_reference_t<T> &&value) noexcept {
     static_assert(is_lvalue_reference_v<T>, "Cannot forward an rvalue as an lvalue!");
     return static_cast<T &&>(value);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(move and forward)
 
 __DATA_STRUCTURE_START(swap)
 template <typename T>
@@ -61,7 +61,7 @@ swap(T (&lhs)[N], T (&rhs)[N]) noexcept((is_move_constructible_v<T> and is_move_
         ds::swap(lhs[i], rhs[i]);
     }
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(swap)
 
 __DATA_STRUCTURE_START(transaction tool)
 template <typename Rollback>
@@ -97,10 +97,11 @@ public:
         return this->rollback_block;
     }
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(transaction tool)
 
 }       // namespace data_structure
 
+__DATA_STRUCTURE_START(inner tools for data structure library)
 namespace data_structure::__data_structure_auxiliary {
 
 __DATA_STRUCTURE_START(allocator_compressor for container)
@@ -164,8 +165,9 @@ public:
         return static_cast<const Allocator &>(*this);
     }
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(allocator_compressor for container)
 
 }       // namespace data_structure::__data_structure_auxiliary
+__DATA_STRUCTURE_END(inner tools for data structure library)
 
 #endif //DATA_STRUCTURE_UTILITY_HPP

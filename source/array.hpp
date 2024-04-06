@@ -172,7 +172,7 @@ void swap(array<T, N> &lhs, array<T, N> &rhs) noexcept {
 /*template <typename T, size_t N>
 inline constexpr some_ordering operator<=>(array<T, N> &, array<T, N> &)
         noexcept(is_nothrow_three_way_comparable_v<T>);*/
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(array with non-zero size)
 
 __DATA_STRUCTURE_START(array with zero size)
 template <typename T>
@@ -278,7 +278,7 @@ template <typename T>
 inline consteval strong_ordering operator<=>(array<T, 0> &, array<T, 0> &) noexcept {
     return strong_ordering::equal;
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(array with zero size)
 
 }
 

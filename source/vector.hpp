@@ -170,7 +170,7 @@ inline constexpr void swap(vector<T, Allocator> &, vector<T, Allocator> &) noexc
 /*template <typename T, typename Allocator>
 inline constexpr some_ordering operator<=>(vector<T, Allocator> &, vector<T, Allocator> &)
         noexcept(is_nothrow_three_way_comparable_v<T>);*/
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(vector declaration)
 
 __DATA_STRUCTURE_START(vector implementation)
 /* exceptional helper class */
@@ -832,7 +832,7 @@ template <typename T, typename Allocator>
 constexpr void swap(vector<T, Allocator> &lhs, vector<T, Allocator> &rhs) noexcept {
     lhs.swap(rhs);
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(vector implementation)
 
 }       // namespace data_structure
 
