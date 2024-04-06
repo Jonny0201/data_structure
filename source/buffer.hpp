@@ -31,11 +31,11 @@ public:
     using size_type = typename Allocator::size_type;
     using difference_type = typename Allocator::difference_type;
     using value_type = T;
-    using reference = T &;
-    using const_reference = const T &;
-    using rvalue_reference = T &&;
-    using pointer = typename Allocator::pointer;
-    using const_pointer = typename Allocator::const_pointer;
+    using reference = typename allocator_traits<Allocator>::reference;
+    using const_reference = typename allocator_traits<Allocator>::const_reference;
+    using rvalue_reference = typename allocator_traits<Allocator>::rvalue_reference;
+    using pointer = typename allocator_traits<Allocator>::pointer;
+    using const_pointer = typename allocator_traits<Allocator>::const_pointer;
     using iterator = pointer;
     using const_iterator = const_pointer;
     using move_iterator = ds::move_iterator<pointer>;

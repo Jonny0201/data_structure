@@ -36,11 +36,11 @@ public:
     using size_type = typename Allocator::size_type;
     using difference_type = typename Allocator::difference_type;
     using value_type = T;
-    using reference = T &;
-    using const_reference = const T &;
-    using rvalue_reference = T &&;
-    using pointer = typename Allocator::pointer;
-    using const_pointer = typename Allocator::const_pointer;
+    using reference = typename allocator_traits<Allocator>::reference;
+    using const_reference = typename allocator_traits<Allocator>::const_reference;
+    using rvalue_reference = typename allocator_traits<Allocator>::rvalue_reference;
+    using pointer = typename allocator_traits<Allocator>::pointer;
+    using const_pointer = typename allocator_traits<Allocator>::const_pointer;
     using iterator = __dsa::forward_list_iterator<T>;
     using const_iterator = __dsa::forward_list_iterator<T, true>;
     static_assert(is_same_v<T, typename Allocator::value_type>,
@@ -49,10 +49,10 @@ private:
     begin_node_value_type head {};
     __dsa::allocator_compressor<size_type, Allocator> node_size {};
 public:
-    constexpr forward_list() noexcept(is_nothrow_default_constructible<Allocator>) = default;
+    constexpr forward_list() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr forward_list(const Allocator &) noexcept;
     explicit constexpr forward_list(size_type, const Allocator & = {});
-    constexpr forward_list(size_type, const T &, const Allocator & = {});
+    constexpr forward_list(size_type, const_reference, const Allocator & = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr forward_list(InputIterator, InputIterator, const Allocator & = {}, size_type = 64);
     template <IsForwardIterator ForwardIterator>
@@ -68,7 +68,7 @@ public:
     constexpr forward_list &operator=(forward_list &&) noexcept;
     constexpr forward_list &operator=(initializer_list<T>);
 public:
-    constexpr void assign(size_type, const T & = {});
+    constexpr void assign(size_type, const_reference = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr void assign(InputIterator, InputIterator, size_type = 64);
     template <IsForwardIterator ForwardIterator>
@@ -97,28 +97,28 @@ public:
     [[nodiscard]]
     constexpr bool empty() const noexcept;
     constexpr void resize(size_type);
-    constexpr void resize(size_type, const T &);
+    constexpr void resize(size_type, const_reference);
     [[nodiscard]]
-    constexpr T &front() noexcept;
+    constexpr reference front() noexcept;
     [[nodiscard]]
-    constexpr const T &front() const noexcept;
+    constexpr const_reference front() const noexcept;
     [[nodiscard]]
     constexpr Allocator allocator() const noexcept;
-    constexpr void push_front(const T &);
-    constexpr void push_front(T &&);
+    constexpr void push_front(const_reference);
+    constexpr void push_front(rvalue_reference);
     template <typename ...Args>
     constexpr void emplace_front(Args &&...);
     constexpr void pop_front() noexcept;
     constexpr void clear() noexcept;
     constexpr void swap(forward_list &) noexcept;
-    constexpr iterator insert(difference_type, const T &, size_type = 1);
-    constexpr iterator insert_after(const_iterator, const T &, size_type = 1);
+    constexpr iterator insert(difference_type, const_reference, size_type = 1);
+    constexpr iterator insert_after(const_iterator, const_reference, size_type = 1);
     template <typename ...Args>
     constexpr iterator emplace(difference_type, Args &&...);
     template <typename ...Args>
     constexpr iterator emplace_after(const_iterator, Args &&...);
-    constexpr iterator insert(difference_type, T &&);
-    constexpr iterator insert_after(const_iterator, T &&);
+    constexpr iterator insert(difference_type, rvalue_reference);
+    constexpr iterator insert_after(const_iterator, rvalue_reference);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr iterator insert(difference_type, InputIterator, InputIterator);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)

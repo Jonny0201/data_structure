@@ -31,11 +31,11 @@ public:
     using size_type = typename Allocator::size_type;
     using difference_type = typename Allocator::difference_type;
     using value_type = T;
-    using reference = T &;
-    using const_reference = const T &;
-    using rvalue_reference = T &&;
-    using pointer = typename Allocator::pointer;
-    using const_pointer = typename Allocator::const_pointer;
+    using reference = typename allocator_traits<Allocator>::reference;
+    using const_reference = typename allocator_traits<Allocator>::const_reference;
+    using rvalue_reference = typename allocator_traits<Allocator>::rvalue_reference;
+    using pointer = typename allocator_traits<Allocator>::pointer;
+    using const_pointer = typename allocator_traits<Allocator>::const_pointer;
     using iterator = wrap_iterator<pointer>;
     using const_iterator = wrap_iterator<const_pointer>;
     using reverse_iterator = reverse_iterator<pointer>;
@@ -57,7 +57,7 @@ public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
     explicit constexpr vector(size_type, const Allocator & = {});
-    constexpr vector(size_type, const T &, const Allocator & = {});
+    constexpr vector(size_type, const_reference, const Allocator & = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr vector(InputIterator, InputIterator, const Allocator & = {}, size_type = 64);
     template <IsForwardIterator ForwardIterator>
@@ -73,11 +73,12 @@ public:
     constexpr vector &operator=(vector &&) noexcept;
     constexpr vector &operator=(initializer_list<T>);
     [[nodiscard]]
-    constexpr T &operator[](difference_type) noexcept(is_nothrow_indexable_v<pointer, difference_type>);
+    constexpr reference operator[](difference_type) noexcept(is_nothrow_indexable_v<pointer, difference_type>);
     [[nodiscard]]
-    constexpr const T &operator[](difference_type) const noexcept(is_nothrow_indexable_v<pointer, difference_type>);
+    constexpr const_reference operator[](difference_type) const
+            noexcept(is_nothrow_indexable_v<pointer, difference_type>);
 public:
-    constexpr void assign(size_type, const T & = {});
+    constexpr void assign(size_type, const_reference = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr void assign(InputIterator, InputIterator, size_type = 64);
     template <IsForwardIterator ForwardIterator>
@@ -118,36 +119,36 @@ public:
     constexpr void reserve(size_type);
     constexpr void shrink_to_fit();
     constexpr void resize(size_type);
-    constexpr void resize(size_type, const T &);
+    constexpr void resize(size_type, const_reference);
     [[nodiscard]]
-    constexpr T &front() noexcept;
+    constexpr reference front() noexcept;
     [[nodiscard]]
-    constexpr const T &front() const noexcept;
+    constexpr const_reference front() const noexcept;
     [[nodiscard]]
-    constexpr T &back() noexcept;
+    constexpr reference back() noexcept;
     [[nodiscard]]
-    constexpr const T &back() const noexcept;
+    constexpr const_reference back() const noexcept;
     [[nodiscard]]
     constexpr pointer data() noexcept;
     [[nodiscard]]
     constexpr const_pointer data() const noexcept;
     [[nodiscard]]
     constexpr Allocator allocator() const noexcept;
-    constexpr void push_back(const T &);
-    constexpr void push_back(T &&);
+    constexpr void push_back(const_reference);
+    constexpr void push_back(rvalue_reference);
     template <typename ...Args>
     constexpr void emplace_back(Args &&...);
     constexpr void pop_back() noexcept;
     constexpr void clear() noexcept;
     constexpr void swap(vector &) noexcept;
-    constexpr iterator insert(difference_type, const T &, size_type = 1);
-    constexpr iterator insert(const_iterator, const T &, size_type = 1);
+    constexpr iterator insert(difference_type, const_reference, size_type = 1);
+    constexpr iterator insert(const_iterator, const_reference, size_type = 1);
     template <typename ...Args>
     constexpr iterator emplace(difference_type, Args &&...);
     template <typename ...Args>
     constexpr iterator emplace(const_iterator, Args &&...);
-    constexpr iterator insert(difference_type, T &&);
-    constexpr iterator insert(const_iterator, T &&);
+    constexpr iterator insert(difference_type, rvalue_reference);
+    constexpr iterator insert(const_iterator, rvalue_reference);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr iterator insert(difference_type, InputIterator, InputIterator);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
@@ -301,7 +302,7 @@ constexpr vector<T, Allocator>::vector(size_type n, const Allocator &allocator) 
     this->cursor = this->last() = this->first + b.size();
 }
 template <typename T, typename Allocator>
-constexpr vector<T, Allocator>::vector(size_type n, const T &value, const Allocator &allocator) :
+constexpr vector<T, Allocator>::vector(size_type n, const_reference value, const Allocator &allocator) :
         first {}, cursor {}, last(allocator) {
     buffer b(n, value, allocator);
     this->first = b.release();
@@ -370,17 +371,17 @@ constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(initializer_list
     return *this;
 }
 template <typename T, typename Allocator>
-constexpr T &vector<T, Allocator>::operator[](difference_type n)
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::operator[](difference_type n)
         noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
     return this->first[n];
 }
 template <typename T, typename Allocator>
-constexpr const T &vector<T, Allocator>::operator[](difference_type n) const
+constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::operator[](difference_type n) const
         noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
     return this->first[n];
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::assign(size_type n, const T &value) {
+constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) {
     if(n == 0) {
         return;
     }
@@ -527,7 +528,7 @@ constexpr void vector<T, Allocator>::resize(size_type n) {
     }
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::resize(size_type n, const T &value) {
+constexpr void vector<T, Allocator>::resize(size_type n, const_reference value) {
     const auto size {this->size()};
     if(n not_eq size) {
         this->resize_and_move(n);
@@ -539,19 +540,19 @@ constexpr void vector<T, Allocator>::resize(size_type n, const T &value) {
     }
 }
 template <typename T, typename Allocator>
-constexpr T &vector<T, Allocator>::front() noexcept {
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::front() noexcept {
     return *this->first;
 }
 template <typename T, typename Allocator>
-constexpr const T &vector<T, Allocator>::front() const noexcept {
+constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::front() const noexcept {
     return *this->first;
 }
 template <typename T, typename Allocator>
-constexpr T &vector<T, Allocator>::back() noexcept {
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::back() noexcept {
     return this->cursor[-1];
 }
 template <typename T, typename Allocator>
-constexpr const T &vector<T, Allocator>::back() const noexcept {
+constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::back() const noexcept {
     return this->cursor[-1];
 }
 template <typename T, typename Allocator>
@@ -567,11 +568,11 @@ constexpr Allocator vector<T, Allocator>::allocator() const noexcept {
     return this->last.allocator();
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::push_back(const T &value) {
+constexpr void vector<T, Allocator>::push_back(const_reference value) {
     this->emplace_back(value);
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::push_back(T &&value) {
+constexpr void vector<T, Allocator>::push_back(rvalue_reference value) {
     this->emplace_back(ds::move(value));
 }
 template <typename T, typename Allocator>
@@ -611,7 +612,7 @@ constexpr void vector<T, Allocator>::swap(vector &rhs) noexcept {
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, const T &value, size_type n) {
+vector<T, Allocator>::insert(difference_type pos, const_reference value, size_type n) {
     if(n == 0) {
         return iterator {this->first + pos};
     }
@@ -665,7 +666,7 @@ vector<T, Allocator>::insert(difference_type pos, const T &value, size_type n) {
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(const_iterator pos, const T &value, size_type n) {
+vector<T, Allocator>::insert(const_iterator pos, const_reference value, size_type n) {
     return this->insert(pos - this->begin(), value, n);
 }
 template <typename T, typename Allocator>
@@ -695,11 +696,13 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
     return this->emplace(pos - this->cbegin(), ds::forward<Args>(args)...);
 }
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(difference_type pos, T &&value) {
+constexpr typename vector<T, Allocator>::iterator
+vector<T, Allocator>::insert(difference_type pos, rvalue_reference value) {
     return this->emplace(pos, ds::move(value));
 }
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, T &&value) {
+constexpr typename vector<T, Allocator>::iterator
+vector<T, Allocator>::insert(const_iterator pos, rvalue_reference value) {
     return this->emplace(pos - this->cbegin(), ds::move(value));
 }
 template <typename T, typename Allocator>
