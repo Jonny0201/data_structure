@@ -37,6 +37,11 @@ struct iterator_traits {
     using size_type = typename Iterator::size_type;
     using difference_type = typename Iterator::difference_type;
     using value_type = typename Iterator::value_type;
+    using reference = typename __dsa::traits_reference<Iterator, value_type &>::type;
+    using const_reference = typename __dsa::traits_const_reference<Iterator, const value_type &>::type;
+    using rvalue_reference = typename __dsa::traits_rvalue_reference<Iterator, value_type &&>::type;
+    using pointer = typename __dsa::traits_pointer<Iterator, value_type *>::type;
+    using const_pointer = typename __dsa::traits_const_pointer<Iterator, const value_type *>::type;
     using iterator_category = typename Iterator::iterator_category;
 };
 template <typename T>
@@ -44,6 +49,11 @@ struct iterator_traits<T *> {
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using value_type = T;
+    using reference = T &;
+    using const_reference = const T &;
+    using rvalue_reference = T &&;
+    using pointer = T *;
+    using const_pointer = const T *;
     using iterator_category = contiguous_iterator_tag;
 };
 

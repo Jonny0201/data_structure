@@ -2912,6 +2912,55 @@ template <size_t Align>
 using type_with_alignment_t = typename type_with_alignment<Align>::type;
 __DATA_STRUCTURE_END
 
+__DATA_STRUCTURE_START(data structure helper traits)
+namespace __data_structure_auxiliary {
+
+__DATA_STRUCTURE_START(traits helper)
+template <typename, typename Default, typename = void>
+struct traits_reference {
+    using type = Default;
+};
+template <typename Traits, typename Default>
+struct traits_reference<Traits, Default, void_t<typename Traits::reference>> {
+using type = typename Traits::reference;
+};
+template <typename, typename Default, typename = void>
+struct traits_const_reference {
+    using type = Default;
+};
+template <typename Traits, typename Default>
+struct traits_const_reference<Traits, Default, void_t<typename Traits::const_reference>> {
+using type = typename Traits::const_reference;
+};
+template <typename, typename Default, typename = void>
+struct traits_rvalue_reference {
+    using type = Default;
+};
+template <typename Traits, typename Default>
+struct traits_rvalue_reference<Traits, Default, void_t<typename Traits::rvalue_reference>> {
+using type = typename Traits::rvalue_reference;
+};
+template <typename, typename Default, typename = void>
+struct traits_pointer {
+    using type = Default;
+};
+template <typename Traits, typename Default>
+struct traits_pointer<Traits, Default, void_t<typename Traits::pointer>> {
+using type = typename Traits::pointer;
+};
+template <typename, typename Default, typename = void>
+struct traits_const_pointer {
+    using type = Default;
+};
+template <typename Traits, typename Default>
+struct traits_const_pointer<Traits, Default, void_t<typename Traits::const_pointer>> {
+using type = typename Traits::const_pointer;
+};
+__DATA_STRUCTURE_END
+
+}       // namespace __data_structure_auxiliary
+__DATA_STRUCTURE_END
+
 }       // namespace data_structure
 
 #endif //DATA_STRUCTURE_TYPE_TRAITS_HPP
