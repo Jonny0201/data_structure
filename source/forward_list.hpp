@@ -22,8 +22,12 @@
 
 namespace data_structure {
 
+/*
+ * If the allocator of forward_list has a member tag named linked_after_allocation set to true,
+ * forward_list will allocate a contiguous memory when allocation size greater than 1. Without
+ * this tag or if false, forward_list will allocate n blocks when allocation size greater than 1.
+*/
 __DATA_STRUCTURE_START(forward_list declaration)
-// Todo : enable memory pool
 template <typename T, typename Allocator = allocator<T>>
 class forward_list {
 private:
@@ -48,6 +52,8 @@ public:
 private:
     begin_node_value_type head {};
     __dsa::allocator_compressor<size_type, Allocator> node_size {};
+private:
+    constexpr node_type allocate_n(size_type, node_type);
 public:
     constexpr forward_list() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr forward_list(const Allocator &) noexcept;
