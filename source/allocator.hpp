@@ -58,7 +58,7 @@ public:
             return nullptr;
         }
         if constexpr(is_trivially_copyable_v<T>) {
-            auto memory {static_cast<T *>(memory_allocation(n * sizeof(T)))};
+            auto memory {static_cast<T *>(ds::memory_allocation(n * sizeof(T)))};
             if constexpr(not NoThrow) {
                 if(not memory) {
                     throw std::bad_alloc {};
@@ -75,10 +75,10 @@ public:
     [[nodiscard]]
     static constexpr T *reallocate(void *source, size_type n) noexcept(NoThrow) requires is_trivially_copyable_v<T> {
         if(n == 0) {
-            free(source);
+            ds::memory_free(source);
             return nullptr;
         }
-        auto memory {static_cast<T *>(memory_reallocation(source, n * sizeof(T)))};
+        auto memory {static_cast<T *>(ds::memory_reallocation(source, n * sizeof(T)))};
         if constexpr(not NoThrow) {
             if(not memory) {
                 throw std::bad_alloc {};
@@ -88,7 +88,7 @@ public:
     }
     static constexpr void deallocate(void *p, size_type) noexcept {
         if constexpr(is_trivially_copyable_v<T>) {
-            return free(p);
+            return ds::memory_free(p);
         }
         ::operator delete(p, ds::nothrow);
     }
@@ -118,6 +118,90 @@ struct allocator_traits {
     using const_pointer = typename __dsa::traits_const_pointer<Allocator, const value_type *>::type;
 };
 __DATA_STRUCTURE_END(allocator traits)
+
+__DATA_STRUCTURE_START(inner tools for data structure library)
+namespace __data_structure_auxiliary {
+
+__DATA_STRUCTURE_START(concept for node allocator, tag in class named linked_after_allocation)
+template <typename Allocator>
+concept IsLinkedAfterAllocation = requires {
+    requires Allocator::linked_after_allocation == true;
+};
+__DATA_STRUCTURE_END(concept for node allocator, tag in class named linked_after_allocation)
+
+__DATA_STRUCTURE_START(data structure node-based structure allocator)
+template <typename T, template <typename> typename NodeTemplate, typename Allocator = allocator<NodeTemplate<T>>>
+class node_allocator : public Allocator {
+public:
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+private:
+    struct shared_block {
+        union free_node {
+            NodeTemplate<T> *node;
+            free_node *next;
+        } *free_list;
+        size_t node_size;
+        size_t strong_count;
+        struct recorder_list {
+            struct {
+                NodeTemplate<T> *recorde;
+                size_t size;
+            };
+            recorder_list *next;
+        } *recorder;
+    } *shared_list;
+public:
+    constexpr static bool linked_after_allocation {true};
+private:
+    constexpr void release_this() noexcept;
+public:
+    constexpr node_allocator() : shared_list {new shared_block {.strong_count {1}}} {}
+    constexpr node_allocator(const node_allocator &rhs) noexcept : shared_list {rhs.shared_list} {
+        ++this->shared_list->strong_count;
+    }
+    constexpr node_allocator(node_allocator &&rhs) noexcept : shared_list {rhs.shared_list} {
+        rhs.shared_list = nullptr;
+    }
+    constexpr ~node_allocator() noexcept {
+        this->release_this();
+    }
+public:
+    constexpr node_allocator &operator=(const node_allocator &rhs) noexcept {
+        if(this not_eq &rhs) {
+            this->release_this();
+            this->shared_list = rhs.shared_list;
+            ++this->shared_list->strong_count;
+        }
+        return *this;
+    }
+    constexpr node_allocator &operator=(node_allocator &&rhs) noexcept {
+        if(this not_eq &rhs) {
+            this->release_this();
+            this->shared_list = rhs.shared_list;
+            rhs.shared_list = nullptr;
+        }
+        return *this;
+    }
+public:
+    template <bool NoThrow = false>
+    [[nodiscard]]
+    constexpr NodeTemplate<T> *allocate(size_type n, NodeTemplate<T> *link_to = {}) noexcept(NoThrow);
+    template <bool = false>
+    [[nodiscard]]
+    constexpr void *reallocate(void *source, size_type n) noexcept {
+        if(n == 0) {
+            ds::memory_free(source);
+        }
+        return nullptr;
+    }
+    constexpr void deallocate(void *p, size_type) noexcept;
+};
+__DATA_STRUCTURE_END(inner tools for data structure library)
+
+}       // namespace data_structure::__data_structure_auxiliary
+__DATA_STRUCTURE_START(inner tools for data structure library)
 
 }       // namespace data_structure
 
