@@ -53,7 +53,7 @@ public:
 public:
     template <bool NoThrow = false>
     [[nodiscard]]
-    static constexpr T *allocate(size_type n) noexcept(NoThrow) {
+    static constexpr T *allocate(size_t n) noexcept(NoThrow) {
         if(n == 0) {
             return nullptr;
         }
@@ -73,7 +73,7 @@ public:
     }
     template <bool NoThrow = false>
     [[nodiscard]]
-    static constexpr T *reallocate(void *source, size_type n) noexcept(NoThrow) requires is_trivially_copyable_v<T> {
+    static constexpr T *reallocate(void *source, size_t n) noexcept(NoThrow) requires is_trivially_copyable_v<T> {
         if(n == 0) {
             ds::memory_free(source);
             return nullptr;
@@ -86,11 +86,14 @@ public:
         }
         return memory;
     }
-    static constexpr void deallocate(void *p, size_type) noexcept {
+    static constexpr void deallocate(void *p) noexcept {
         if constexpr(is_trivially_copyable_v<T>) {
             return ds::memory_free(p);
         }
         ::operator delete(p, ds::nothrow);
+    }
+    static constexpr void deallocate(void *p, size_t) noexcept {
+        allocator::deallocate(p);
     }
 };
 template <typename T, typename U>
@@ -132,6 +135,8 @@ __DATA_STRUCTURE_END(concept for node allocator, tag in class named linked_after
 __DATA_STRUCTURE_START(data structure node-based structure allocator)
 template <typename T, template <typename> typename NodeTemplate, typename Allocator = allocator<NodeTemplate<T>>>
 class node_allocator : public Allocator {
+    template <typename U, typename V>
+    friend constexpr bool operator==(const allocator<U> &, const allocator<V> &) noexcept;
 public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
@@ -155,9 +160,18 @@ private:
 public:
     constexpr static bool linked_after_allocation {true};
 private:
-    constexpr void release_this() noexcept;
+    constexpr void release_this() noexcept {
+        if(this->shared_list and --this->shared_list->strong_count == 0) {
+            for(auto it {this->shared_list->recorder}; it;) {
+                auto backup {it};
+                it = it->next;
+                this->Allocator::deallocate(backup->recorde, backup->size);
+            }
+            ::delete this->shared_list;
+        }
+    }
 public:
-    constexpr node_allocator() : shared_list {new shared_block {.strong_count {1}}} {}
+    constexpr node_allocator() : shared_list {::new shared_block {.strong_count {1}}} {}
     constexpr node_allocator(const node_allocator &rhs) noexcept : shared_list {rhs.shared_list} {
         ++this->shared_list->strong_count;
     }
@@ -187,17 +201,122 @@ public:
 public:
     template <bool NoThrow = false>
     [[nodiscard]]
-    constexpr NodeTemplate<T> *allocate(size_type n, NodeTemplate<T> *link_to = {}) noexcept(NoThrow);
+    constexpr NodeTemplate<T> *allocate(size_t n, NodeTemplate<T> *link_to = {}) noexcept(NoThrow) {
+        if(n == 0) {
+            return nullptr;
+        }
+        const auto result {this->shared_list->free_list};
+        if(n < this->shared_list->node_size) {
+            this->shared_list->node_size -= n;
+            auto cursor {result};
+            do {
+                cursor = cursor->next;
+            }while(--n not_eq 0);
+            this->shared_list->free_list = cursor;
+            return reinterpret_cast<NodeTemplate<T> *>(result);
+        }
+        n -= this->shared_list->node_size;
+        this->shared_list->node_size = 0;
+        if(n == 0) {
+            this->shared_list->free_list = nullptr;
+            return reinterpret_cast<NodeTemplate<T> *>(result);
+        }
+        const auto nodes {this->Allocator::allocate(n)};
+        if constexpr(NoThrow) {
+            if(not nodes) {
+                return nullptr;
+            }
+            auto new_record {::new (ds::nothrow) shared_block::recorder_list {{nodes, n}, this->shared_list->recorder}};
+            if(new_record) {
+                this->shared_list->recorder = new_record;
+            }else {
+                this->Allocator::deallocate(nodes, n);
+                return nullptr;
+            }
+        }else {
+            try {
+                auto new_record {::new shared_block::recorder_list {{nodes, n}, this->shared_list->recorder}};
+                this->shared_list->recorder = new_record;
+            }catch(...) {
+                this->Allocator::deallocate(nodes, n);
+                throw;
+            }
+        }
+        const auto last_position {n - 1};
+        for(auto i {0}; i < last_position; ++i) {
+            nodes[i].next = nodes + (i + 1);
+        }
+        nodes[last_position].next = link_to;
+        auto cursor {this->shared_list->free_list};
+        for(; cursor->next; cursor = cursor->next);
+        cursor->next = reinterpret_cast<shared_block::free_node *>(nodes);
+        this->shared_list->free_list = nullptr;
+        return reinterpret_cast<NodeTemplate<T> *>(result);
+    }
     template <bool = false>
     [[nodiscard]]
-    constexpr void *reallocate(void *source, size_type n) noexcept {
+    constexpr void *reallocate(void *source, size_t n) noexcept {
         if(n == 0) {
             ds::memory_free(source);
         }
         return nullptr;
     }
-    constexpr void deallocate(void *p, size_type) noexcept;
+    constexpr void deallocate(void *p) noexcept {
+        this->deallocate(static_cast<NodeTemplate<T> *>(p));
+    }
+    constexpr void deallocate(void *p, size_t n) noexcept {
+        this->deallocate(static_cast<NodeTemplate<T> *>(p), n);
+    }
+    constexpr void deallocate(void *begin, void *end) noexcept {
+        this->deallocate(static_cast<NodeTemplate<T> *>(begin), static_cast<NodeTemplate<T> *>(end));
+    }
+    constexpr void deallocate(void *begin, void *end, size_t n) noexcept {
+        this->deallocate(static_cast<NodeTemplate<T> *>(begin), static_cast<NodeTemplate<T> *>(end), n);
+    }
+    constexpr void deallocate(NodeTemplate<T> *node) noexcept {
+        if(node) {
+            const auto free_node {reinterpret_cast<shared_block::free_node *>(node)};
+            free_node->next = this->shared_list->free_list;
+            this->shared_list->free_list = free_node;
+            ++this->shared_list->node_size;
+        }
+    }
+    constexpr void deallocate(NodeTemplate<T> *node, size_t n) noexcept {
+        if(node) {
+            auto it {node};
+            this->shared_list->node_size += n;
+            for(; n not_eq 1; it = it->next, static_cast<void>(--n));
+            reinterpret_cast<shared_block::free_node *>(it)->next = this->shared_list->free_list;
+            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(node);
+        }
+    }
+    constexpr void deallocate(NodeTemplate<T> *begin, NodeTemplate<T> *end) noexcept {
+        if(begin) {
+            auto n {1uz};
+            for(auto it {begin}; it not_eq end; it = it->next, static_cast<void>(++n));
+            this->shared_list->node_size += n;
+            reinterpret_cast<shared_block::free_node *>(end)->next = this->shared_list->free_list;
+            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(begin);
+        }
+    }
+    constexpr void deallocate(NodeTemplate<T> *begin, NodeTemplate<T> *end, size_t n) noexcept {
+        if(begin and n > 0) {
+            this->shared_list->node_size += n;
+            reinterpret_cast<shared_block::free_node *>(end)->next = this->shared_list->free_list;
+            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(begin);
+        }
+    }
 };
+template <typename T, typename U>
+[[nodiscard]]
+inline constexpr bool operator==(const allocator<T> &lhs, const allocator<U> &rhs) noexcept {
+    return lhs.shared_list == rhs.shared_list;
+}
+template <typename T, typename U>
+[[nodiscard]]
+inline constexpr bool operator!=(const allocator<T> &lhs, const allocator<U> &rhs) noexcept {
+    return not(lhs == rhs);
+}
 __DATA_STRUCTURE_END(inner tools for data structure library)
 
 }       // namespace data_structure::__data_structure_auxiliary

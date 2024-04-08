@@ -28,7 +28,7 @@ namespace data_structure {
  * this tag or if false, forward_list will allocate n blocks when allocation size greater than 1.
 */
 __DATA_STRUCTURE_START(forward_list declaration)
-template <typename T, typename Allocator = allocator<T>>
+template <typename T, typename Allocator = __dsa::node_allocator<T, __dsa::forward_list_node>>
 class forward_list {
 private:
     using begin_node_value_type = __dsa::forward_list_base_node<__dsa::forward_list_node<T>>;
@@ -147,7 +147,6 @@ inline constexpr void swap(forward_list<T, Allocator> &, forward_list<T, Allocat
 inline constexpr some_ordering operator<=>(forward_list<T, Allocator> &, forward_list<T, Allocator> &)
         noexcept(is_nothrow_three_way_comparable_v<T>);*/
 __DATA_STRUCTURE_END(forward_list declaration)
-
 }
 
 #endif      // DATA_STRUCTURE_FORWARD_LIST_HPP
