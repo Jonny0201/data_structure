@@ -119,6 +119,8 @@ struct allocator_traits {
     using rvalue_reference = typename __dsa::traits_rvalue_reference<Allocator, value_type &&>::type;
     using pointer = typename __dsa::traits_pointer<Allocator, value_type *>::type;
     using const_pointer = typename __dsa::traits_const_pointer<Allocator, const value_type *>::type;
+    template <typename U>
+    using rebind = typename class_template_traits<Allocator>::template rebind<U>;
 };
 __DATA_STRUCTURE_END(allocator traits)
 
@@ -133,8 +135,9 @@ concept IsLinkedAfterAllocation = requires {
 __DATA_STRUCTURE_END(concept for node allocator, tag in class named linked_after_allocation)
 
 __DATA_STRUCTURE_START(data structure node-based structure allocator)
-template <typename T, template <typename> typename NodeTemplate, typename Allocator = allocator<NodeTemplate<T>>>
-class node_allocator : public Allocator {
+template <typename T, template <typename> typename NodeTemplate, typename Allocator = allocator<T>,
+        typename NodeAllocator = typename allocator_traits<Allocator>::template rebind<NodeTemplate<T>>>
+class node_allocator : public Allocator, public NodeAllocator {
     template <typename U, typename V>
     friend constexpr bool operator==(const allocator<U> &, const allocator<V> &) noexcept;
 public:
@@ -165,17 +168,21 @@ private:
             for(auto it {this->shared_list->recorder}; it;) {
                 auto backup {it};
                 it = it->next;
-                this->Allocator::deallocate(backup->recorde, backup->size);
+                this->NodeAllocator::deallocate(backup->recorde, backup->size);
             }
             ::delete this->shared_list;
         }
     }
 public:
-    constexpr node_allocator() : shared_list {::new shared_block {.strong_count {1}}} {}
-    constexpr node_allocator(const node_allocator &rhs) noexcept : shared_list {rhs.shared_list} {
+    constexpr node_allocator() : Allocator(), NodeAllocator(), shared_list {::new shared_block {.strong_count {1}}} {}
+    explicit constexpr node_allocator(const Allocator &allocator) : Allocator(allocator), NodeAllocator(),
+            shared_list {::new shared_block {.strong_count {1}}} {}
+    constexpr node_allocator(const node_allocator &rhs) noexcept : Allocator(rhs), NodeAllocator(rhs),
+            shared_list {rhs.shared_list} {
         ++this->shared_list->strong_count;
     }
-    constexpr node_allocator(node_allocator &&rhs) noexcept : shared_list {rhs.shared_list} {
+    constexpr node_allocator(node_allocator &&rhs) noexcept : Allocator(ds::move(rhs)), NodeAllocator(ds::move(rhs)),
+            shared_list {rhs.shared_list} {
         rhs.shared_list = nullptr;
     }
     constexpr ~node_allocator() noexcept {
@@ -187,6 +194,8 @@ public:
             this->release_this();
             this->shared_list = rhs.shared_list;
             ++this->shared_list->strong_count;
+            this->Allocator::operator=(rhs);
+            this->NodeAllocator::operator=(rhs);
         }
         return *this;
     }
@@ -195,6 +204,8 @@ public:
             this->release_this();
             this->shared_list = rhs.shared_list;
             rhs.shared_list = nullptr;
+            this->Allocator::operator=(ds::move(rhs));
+            this->NodeAllocator::operator=(ds::move(rhs));
         }
         return *this;
     }
@@ -221,7 +232,7 @@ public:
             this->shared_list->free_list = nullptr;
             return reinterpret_cast<NodeTemplate<T> *>(result);
         }
-        const auto nodes {this->Allocator::allocate(n)};
+        const auto nodes {this->NodeAllocator::allocate(n)};
         if constexpr(NoThrow) {
             if(not nodes) {
                 return nullptr;
@@ -230,7 +241,7 @@ public:
             if(new_record) {
                 this->shared_list->recorder = new_record;
             }else {
-                this->Allocator::deallocate(nodes, n);
+                this->NodeAllocator::deallocate(nodes, n);
                 return nullptr;
             }
         }else {
@@ -238,7 +249,7 @@ public:
                 auto new_record {::new shared_block::recorder_list {{nodes, n}, this->shared_list->recorder}};
                 this->shared_list->recorder = new_record;
             }catch(...) {
-                this->Allocator::deallocate(nodes, n);
+                this->NodeAllocator::deallocate(nodes, n);
                 throw;
             }
         }
