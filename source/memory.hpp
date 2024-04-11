@@ -31,7 +31,7 @@ __DATA_STRUCTURE_END(memory functions)
 __DATA_STRUCTURE_START(object construction and destruction)
 template <typename T, typename ...Args>
 inline constexpr T *construct(T *p, Args &&...args) noexcept(is_nothrow_constructible_v<T, Args...>) {
-    return new (static_cast<void *>(p)) T {forward<Args>(args)...};
+    return new (static_cast<void *>(ds::address_of(*p))) T {ds::forward<Args>(args)...};
 }
 template <typename T>
 inline constexpr void destroy(T *p) noexcept(is_nothrow_destructible_v<T>) {
