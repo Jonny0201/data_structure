@@ -139,7 +139,7 @@ The project is being refactored.
 <tr style="text-align: center;">
     <th>Allocator</th>
     <td>Infrastructure</td>
-    <td><img src="https://img.shields.io/badge/Development-Confirmed-EE3F4D" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>allocator.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
