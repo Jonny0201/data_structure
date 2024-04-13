@@ -13,7 +13,7 @@ Data structures provide a means to manage large amounts of data efficiently for 
 
 ## Usage ##
 
-The project is being refactored.
+This project is being refactored.
 
 ## Enviorment ##
 
