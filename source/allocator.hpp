@@ -36,6 +36,7 @@ namespace data_structure {
  *     memory should be deallocated.
 */
 __DATA_STRUCTURE_START(universal allocator)
+// Todo : consider the move operation on limited memory range
 template <typename T>
 class allocator {
 public:
