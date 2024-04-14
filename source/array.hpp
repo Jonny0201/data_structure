@@ -159,8 +159,9 @@ public:
         return this->elements;
     }
     constexpr void swap(array &rhs) noexcept {
+        using ds::swap;
         for(auto i {0}; i < N; ++i) {
-            ds::swap(this->elements[i], rhs.elements[i]);
+            swap(this->elements[i], rhs.elements[i]);
         }
     }
 };

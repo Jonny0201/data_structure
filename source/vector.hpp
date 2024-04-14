@@ -606,9 +606,10 @@ constexpr void vector<T, Allocator>::clear() noexcept {
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::swap(vector &rhs) noexcept {
-    ds::swap(this->first, rhs.first);
-    ds::swap(this->cursor, rhs.cursor);
-    ds::swap(this->last(), rhs.last());
+    using ds::swap;
+    swap(this->first, rhs.first);
+    swap(this->cursor, rhs.cursor);
+    swap(this->last(), rhs.last());
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
