@@ -198,34 +198,38 @@ protected:
 public:
     virtual ~unit_test_correctness() noexcept = default;
 };
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(correctness testing base class)
 
 __DATA_STRUCTURE_START(type testing base class)
 class unit_test_type;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(type testing base class)
 
 __DATA_STRUCTURE_START(exception testing base class)
 class unit_test_exception;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(exception testing base class)
 
 __DATA_STRUCTURE_START(memory testing base class)
 class unit_test_memory;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(memory testing base class)
 
 __DATA_STRUCTURE_START(stability testing base class)
 class unit_test_stability;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(stability testing base class)
 
 __DATA_STRUCTURE_START(thread testing base class)
 class unit_test_thread;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(thread testing base class)
 
 __DATA_STRUCTURE_START(data delivery testing base class)
 class unit_test_data_delivery;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(data delivery testing base class)
 
 __DATA_STRUCTURE_START(network testing base class)
 class unit_test_network;
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(network testing base class)
+
+__DATA_STRUCTURE_START(improve unit test coverage)
+class unit_test_coverage_improvement;
+__DATA_STRUCTURE_END(improve unit test coverage)
 
 #endif      //DATA_STRUCTURE_UNIT_TEST_HPP
