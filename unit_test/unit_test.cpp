@@ -130,4 +130,4 @@ std::deque<std::string> unit_test_correctness::to_random_access_iterator(const s
     }
     return result;
 }
-__DATA_STRUCTURE_END
+__DATA_STRUCTURE_END(correctness testing base class implementation)
