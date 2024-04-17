@@ -40,7 +40,7 @@ void buffer_unit_test() {
 void buffer_correctness::test_constructor_1() {
     std::cout << "Start checking buffer(size_type, const Allocator &), size, empty and iterator!" << std::endl;
 
-    // all member should be nothrow
+    // all members should be nothrow
     {
         buffer<int> b(1);
         static_assert(noexcept(b.begin()));
