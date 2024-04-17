@@ -50,3 +50,53 @@ public:
     void test_allocator();
     void test_non_trivial();
 };
+
+void vector_unit_test() {
+    auto correctness {new vector_correctness {}};
+    correctness->test_default_constructor();
+    delete correctness;
+}
+
+void vector_correctness::test_default_constructor() {
+    std::cout << "Start checking default constructor for ds::vector!" << std::endl;
+
+    // the members which should be nothrow
+    {
+        static_assert(noexcept(vector<int> {}));
+        static_assert(noexcept(vector<int> {allocator<int> {}}));
+        static_assert(noexcept(vector<int> {vector<int> {}}));
+        static_assert(noexcept(vector<int> {vector<int> {}, allocator<int> {}}));
+        static_assert(noexcept(vector<int> {} = vector<int> {}));
+        static_assert(noexcept(vector<int> {}[0]));
+        static_assert(noexcept((const vector<int>) {}[0]));
+        static_assert(noexcept(vector<int> {}.begin()));
+        static_assert(noexcept((const vector<int>) {}.begin()));
+        static_assert(noexcept(vector<int> {}.end()));
+        static_assert(noexcept((const vector<int>) {}.end()));
+        static_assert(noexcept(vector<int> {}.rbegin()));
+        static_assert(noexcept((const vector<int>) {}.rbegin()));
+        static_assert(noexcept(vector<int> {}.rend()));
+        static_assert(noexcept((const vector<int>) {}.rend()));
+        static_assert(noexcept(vector<int> {}.cbegin()));
+        static_assert(noexcept(vector<int> {}.cend()));
+        static_assert(noexcept(vector<int> {}.crbegin()));
+        static_assert(noexcept(vector<int> {}.crend()));
+        static_assert(noexcept(vector<int> {}.size()));
+        static_assert(noexcept(vector<int> {}.empty()));
+        static_assert(noexcept(vector<int> {}.capacity()));
+        static_assert(noexcept(vector<int> {}.spare()));
+        static_assert(noexcept(vector<int> {}.front()));
+        static_assert(noexcept((const vector<int>) {}.front()));
+        static_assert(noexcept(vector<int> {}.back()));
+        static_assert(noexcept((const vector<int>) {}.back()));
+        static_assert(noexcept(vector<int> {}.data()));
+        static_assert(noexcept((const vector<int>) {}.data()));
+        static_assert(noexcept(vector<int> {}.allocator()));
+        static_assert(noexcept(vector<int> {}.pop_back()));
+        static_assert(noexcept(vector<int> {}.clear()));
+        static_assert(noexcept(vector<int> {}.swap(declval<vector<int> &>())));
+        std::cout << "\ttest_default_constructor/Checking Vector member functions nothrow checking done." << std::endl;
+    }
+
+    std::cout << "Checking default constructor for ds::vector finished!" << std::endl;
+}
