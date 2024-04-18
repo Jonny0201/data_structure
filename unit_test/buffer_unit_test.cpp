@@ -54,6 +54,7 @@ void buffer_correctness::test_constructor_1() {
         static_assert(noexcept(b.~buffer()));
         std::cout << "\ttest_constructor_1/Buffer member functions nothrow checking done." << std::endl;
     }
+
     // empty
     {
         buffer<int> b(0);
