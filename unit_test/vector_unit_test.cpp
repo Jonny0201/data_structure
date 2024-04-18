@@ -54,6 +54,7 @@ public:
 void vector_unit_test() {
     auto correctness {new vector_correctness {}};
     correctness->test_default_constructor();
+    correctness->test_constructor_1();
     delete correctness;
 }
 
@@ -95,8 +96,59 @@ void vector_correctness::test_default_constructor() {
         static_assert(noexcept(vector<int> {}.pop_back()));
         static_assert(noexcept(vector<int> {}.clear()));
         static_assert(noexcept(vector<int> {}.swap(declval<vector<int> &>())));
-        std::cout << "\ttest_default_constructor/Checking Vector member functions nothrow checking done." << std::endl;
+        std::cout << "\ttest_default_constructor/Member functions nothrow checking done." << std::endl;
+    }
+
+    // empty
+    {
+        vector<int> v {};
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_default_constructor/Empty vector checking done." << std::endl;
     }
 
     std::cout << "Checking default constructor for ds::vector finished!" << std::endl;
+}
+
+void vector_correctness::test_constructor_1() {
+    std::cout << "Start checking vector(const Allocator &)!" << std::endl;
+
+    // ds::allocator<int>
+    {
+        vector<int> v {allocator<int> {}};
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_default_constructor/Empty vector checking done." << std::endl;
+    }
+
+    // std::allocator<int>
+    {
+        vector<int, std::allocator<int>> v {std::allocator<int> {}};
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_default_constructor/Empty vector checking done." << std::endl;
+    }
+
+    std::cout << "Checking vector(const Allocator &) finished!" << std::endl;
 }
