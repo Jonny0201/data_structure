@@ -388,7 +388,7 @@ public:
     }
 public:
     [[nodiscard]]
-    constexpr Iterator base() noexcept {
+    constexpr Iterator base() const noexcept {
         return this->iterator;
     }
 };

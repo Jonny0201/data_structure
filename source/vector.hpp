@@ -483,11 +483,11 @@ constexpr bool vector<T, Allocator>::empty() const noexcept {
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::capacity() const noexcept {
-    return static_cast<size_type>(this->last - this->first);
+    return static_cast<size_type>(this->last() - this->first);
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::spare() const noexcept {
-    return static_cast<size_type>(this->last - this->cursor);
+    return static_cast<size_type>(this->last() - this->cursor);
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::reserve(size_type n) {
