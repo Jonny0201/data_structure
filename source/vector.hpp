@@ -297,14 +297,14 @@ template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(const Allocator &allocator) noexcept : first {}, cursor {}, last(allocator) {}
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(size_type n, const Allocator &allocator) : first {}, cursor {}, last(allocator) {
-    buffer b(n, allocator);
+    buffer<T, Allocator> b(n, allocator);
     this->first = b.release();
     this->cursor = this->last() = this->first + b.size();
 }
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(size_type n, const_reference value, const Allocator &allocator) :
         first {}, cursor {}, last(allocator) {
-    buffer b(n, value, allocator);
+    buffer<T, Allocator> b(n, value, allocator);
     this->first = b.release();
     this->cursor = this->last() = this->first + b.size();
 }
