@@ -132,7 +132,7 @@ void vector_correctness::test_constructor_1() {
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
         assert(v.data() == nullptr);
-        std::cout << "\ttest_default_constructor/Empty vector checking done." << std::endl;
+        std::cout << "\ttest_default_constructor/Empty vector with ds::allocator<int> checking done." << std::endl;
     }
 
     // std::allocator<int>
@@ -147,8 +147,193 @@ void vector_correctness::test_constructor_1() {
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
         assert(v.data() == nullptr);
-        std::cout << "\ttest_default_constructor/Empty vector checking done." << std::endl;
+        std::cout << "\ttest_default_constructor/Empty vector with std::allocator<int> checking done." << std::endl;
     }
 
     std::cout << "Checking vector(const Allocator &) finished!" << std::endl;
+}
+
+void vector_correctness::test_constructor_2() {
+    std::cout << "Start checking vector(size_type, const Allocator &)!" << std::endl;
+
+    // single element
+    {
+        vector<int> v(1);
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 1 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 1 == v.cend());
+        assert(*v.begin() == 0);
+        std::cout << "\ttest_constructor_1/Single element vector checking done." << std::endl;
+    }
+
+    // size == 10
+    {
+        vector<int> v(10);
+        assert(v.size() == 10);
+        assert(not v.empty());
+        assert(v.begin() + 10 == v.end());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/10 elements vector checking done." << std::endl;
+    }
+
+    // size == 42
+    {
+        vector<int> v(42);
+        assert(v.size() == 42);
+        assert(not v.empty());
+        assert(v.begin() + 42 == v.end());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/42 elements vector checking done." << std::endl;
+    }
+
+    // size == 64
+    {
+        vector<int> v(64);
+        assert(v.size() == 64);
+        assert(not v.empty());
+        assert(v.begin() + 64 == v.end());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/64 elements vector checking done." << std::endl;
+    }
+
+    // size == 128
+    {
+        vector<int> v(128);
+        assert(v.size() == 128);
+        assert(not v.empty());
+        assert(v.begin() + 128 == v.end());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/128 elements vector checking done." << std::endl;
+    }
+
+    // size == 1024
+    {
+        vector<int> v(1024);
+        assert(v.size() == 1024);
+        assert(not v.empty());
+        assert(v.begin() + 1024 == v.end());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/1024 elements vector checking done." << std::endl;
+    }
+
+    // random size, size <= 10000
+    {
+        int next {};
+        RESTART_10000:
+        const auto size {this->generate_count(10000)};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 100) {
+            goto RESTART_10000;
+        }
+    }
+
+    // random size, size <= 100000
+    {
+        int next {};
+        RESTART_100000:
+        const auto size {this->generate_count(100000)};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 50) {
+            goto RESTART_100000;
+        }
+    }
+
+    // random size, size <= 1000000
+    {
+        int next {};
+        RESTART_1000000:
+        const auto size {this->generate_count(1000000)};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 10) {
+            goto RESTART_1000000;
+        }
+    }
+
+    // random size, size <= 10000000
+    {
+        int next {};
+        RESTART_10000000:
+        const auto size {this->generate_count(10000000)};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 5) {
+            goto RESTART_10000000;
+        }
+    }
+
+    // random size, size <= 100000000
+    {
+        int next {};
+        RESTART_100000000:
+        const auto size {this->generate_count(100000000)};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_100000000;
+        }
+    }
+
+    // random size
+    {
+        int next {};
+        RESTART_RANDOM:
+        const auto size {this->generate_count()};
+        vector<int> v(size);
+        assert(v.size() == size);
+        assert(size == 0 ? v.empty() : not v.empty());
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_constructor_1/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_RANDOM;
+        }
+    }
+
+    std::cout << "Checking vector(size_type, const Allocator &) finished!" << std::endl;
 }
