@@ -253,34 +253,40 @@ public:
         return this->iterator;
     }
 };
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator==(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator==(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return lhs.base() == rhs.base();
 }
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator!=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator!=(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs == rhs);
 }
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator<(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator<(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return lhs.base() - rhs.base() < 0;
 }
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator>(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator>(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return rhs < lhs;
 }
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator<=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator<=(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs > rhs);
 }
-template <typename Iterator>
+template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator>=(const wrap_iterator<Iterator> &lhs, const wrap_iterator<Iterator> &rhs) noexcept {
+inline constexpr auto operator>=(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs < rhs);
 }
 __DATA_STRUCTURE_END(wrap iterator)
