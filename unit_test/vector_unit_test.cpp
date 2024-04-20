@@ -10,15 +10,15 @@ public:
     void test_default_constructor();
     // vector(const Allocator &)
     void test_constructor_1();
-    // vector(size_type, const Allocator &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(size_type), size, empty, capacity, spare, front, back, data, index and iterator
     void test_constructor_2();
-    // vector(size_type, const T &, const Allocator &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(size_type, const T &), size, empty, capacity, spare, front, back, data, index and iterator
     void test_constructor_3();
-    // vector(InputIterator, InputIterator, const Allocator &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(InputIterator, InputIterator), size, empty, capacity, spare, front, back, data, index and iterator
     void test_constructor_4();
-    // vector(ForwardIterator, ForwardIterator, const Allocator &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(ForwardIterator, ForwardIterator), size, empty, capacity, spare, front, back, data, index and iterator
     void test_constructor_5();
-    // vector(initializer_list<T>, const Allocator &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(initializer_list<T>), size, empty, capacity, spare, front, back, data, index and iterator
     void test_constructor_6();
     // vector(const vector &), size, empty, capacity, spare, front, back, data, index and iterator
     void test_copy_constructor();
@@ -53,8 +53,13 @@ public:
 
 void vector_unit_test() {
     auto correctness {new vector_correctness {}};
-    correctness->test_default_constructor();
-    correctness->test_constructor_1();
+    //correctness->test_default_constructor();
+    //correctness->test_constructor_1();
+    //correctness->test_constructor_2();
+    //correctness->test_constructor_3();
+    //correctness->test_constructor_4();
+    //correctness->test_constructor_5();
+    correctness->test_constructor_6();
     delete correctness;
 }
 
@@ -127,12 +132,12 @@ void vector_correctness::test_constructor_1() {
         assert(v.empty());
         assert(v.capacity() == 0);
         assert(v.spare() == 0);
+        assert(v.data() == nullptr);
         assert(v.begin() == v.end());
         assert(v.cbegin() == v.cend());
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
-        assert(v.data() == nullptr);
-        std::cout << "\ttest_default_constructor/Empty vector with ds::allocator<int> checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/Empty vector with ds::allocator<int> checking done." << std::endl;
     }
 
     // std::allocator<int>
@@ -142,25 +147,43 @@ void vector_correctness::test_constructor_1() {
         assert(v.empty());
         assert(v.capacity() == 0);
         assert(v.spare() == 0);
+        assert(v.data() == nullptr);
         assert(v.begin() == v.end());
         assert(v.cbegin() == v.cend());
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
-        assert(v.data() == nullptr);
-        std::cout << "\ttest_default_constructor/Empty vector with std::allocator<int> checking done." << std::endl;
+        std::cout << "\ttest_constructor_1/Empty vector with std::allocator<int> checking done." << std::endl;
     }
 
     std::cout << "Checking vector(const Allocator &) finished!" << std::endl;
 }
 
 void vector_correctness::test_constructor_2() {
-    std::cout << "Start checking vector(size_type, const Allocator &)!" << std::endl;
+    std::cout << "Start checking vector(size_type)!" << std::endl;
+
+    // empty
+    {
+        vector<int> v(0);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_default_constructor_2/Empty vector checking done." << std::endl;
+    }
 
     // single element
     {
         vector<int> v(1);
         assert(v.size() == 1);
         assert(not v.empty());
+        assert(v.capacity() == 1);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() not_eq v.end());
         assert(v.begin() + 1 == v.end());
         assert(v.cbegin() not_eq v.cend());
@@ -170,7 +193,24 @@ void vector_correctness::test_constructor_2() {
         assert(v.begin() not_eq v.cend());
         assert(v.begin() + 1 == v.cend());
         assert(*v.begin() == 0);
-        std::cout << "\ttest_constructor_1/Single element vector checking done." << std::endl;
+        assert(v.front() == 0);
+        assert(v.back() == 0);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/Single element vector checking done." << std::endl;
     }
 
     // size == 10
@@ -178,11 +218,29 @@ void vector_correctness::test_constructor_2() {
         vector<int> v(10);
         assert(v.size() == 10);
         assert(not v.empty());
+        assert(v.capacity() == 10);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() + 10 == v.end());
+        assert(v.cbegin() + 10 == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/10 elements vector checking done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/10 elements vector checking done." << std::endl;
     }
 
     // size == 42
@@ -190,11 +248,29 @@ void vector_correctness::test_constructor_2() {
         vector<int> v(42);
         assert(v.size() == 42);
         assert(not v.empty());
+        assert(v.capacity() == 42);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() + 42 == v.end());
+        assert(v.cbegin() + 42 == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/42 elements vector checking done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/42 elements vector checking done." << std::endl;
     }
 
     // size == 64
@@ -202,11 +278,29 @@ void vector_correctness::test_constructor_2() {
         vector<int> v(64);
         assert(v.size() == 64);
         assert(not v.empty());
+        assert(v.capacity() == 64);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() + 64 == v.end());
+        assert(v.cbegin() + 64 == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/64 elements vector checking done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/64 elements vector checking done." << std::endl;
     }
 
     // size == 128
@@ -214,11 +308,29 @@ void vector_correctness::test_constructor_2() {
         vector<int> v(128);
         assert(v.size() == 128);
         assert(not v.empty());
+        assert(v.capacity() == 128);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() + 128 == v.end());
+        assert(v.cbegin() + 128 == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/128 elements vector checking done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/128 elements vector checking done." << std::endl;
     }
 
     // size == 1024
@@ -226,11 +338,29 @@ void vector_correctness::test_constructor_2() {
         vector<int> v(1024);
         assert(v.size() == 1024);
         assert(not v.empty());
+        assert(v.capacity() == 1024);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
         assert(v.begin() + 1024 == v.end());
+        assert(v.cbegin() + 1024 == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/1024 elements vector checking done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/1024 elements vector checking done." << std::endl;
     }
 
     // random size, size <= 10000
@@ -240,11 +370,30 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count(10000)};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 100) {
             goto RESTART_10000;
         }
@@ -257,11 +406,30 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count(100000)};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 50) {
             goto RESTART_100000;
         }
@@ -274,11 +442,30 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count(1000000)};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 10) {
             goto RESTART_1000000;
         }
@@ -291,11 +478,30 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count(10000000)};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 5) {
             goto RESTART_10000000;
         }
@@ -308,11 +514,30 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count(100000000)};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_100000000;
         }
@@ -325,15 +550,2774 @@ void vector_correctness::test_constructor_2() {
         const auto size {this->generate_count()};
         vector<int> v(size);
         assert(v.size() == size);
-        assert(size == 0 ? v.empty() : not v.empty());
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
             assert(*it == 0);
         }
-        std::cout << "\ttest_constructor_1/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\ttest_constructor_2/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_RANDOM;
         }
     }
 
-    std::cout << "Checking vector(size_type, const Allocator &) finished!" << std::endl;
+    std::cout << "Checking vector(size_type) finished!" << std::endl;
+}
+void vector_correctness::test_constructor_3() {
+    std::cout << "Start checking vector(size_type, const T &)!" << std::endl;
+
+    // empty
+    {
+        vector<int> v(0, this->generate_a_random_number());
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_constructor_3/Empty vector checking done." << std::endl;
+    }
+
+    // single element
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(1, e);
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.capacity() == 1);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 1 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 1 == v.cend());
+        assert(*v.begin() == e);
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/Single element vector checking done." << std::endl;
+    }
+
+    // size == 10
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(10, e);
+        assert(v.size() == 10);
+        assert(not v.empty());
+        assert(v.capacity() == 10);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 10 == v.end());
+        assert(v.cbegin() + 10 == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/10 elements vector checking done." << std::endl;
+    }
+
+    // size == 42
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(42, e);
+        assert(v.size() == 42);
+        assert(not v.empty());
+        assert(v.capacity() == 42);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 42 == v.end());
+        assert(v.cbegin() + 42 == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/42 elements vector checking done." << std::endl;
+    }
+
+    // size == 64
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(64, e);
+        assert(v.size() == 64);
+        assert(not v.empty());
+        assert(v.capacity() == 64);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 64 == v.end());
+        assert(v.cbegin() + 64 == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/64 elements vector checking done." << std::endl;
+    }
+
+    // size == 128
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(128, e);
+        assert(v.size() == 128);
+        assert(not v.empty());
+        assert(v.capacity() == 128);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 128 == v.end());
+        assert(v.cbegin() + 128 == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/128 elements vector checking done." << std::endl;
+    }
+
+    // size == 1024
+    {
+        auto e {this->generate_a_random_number()};
+        vector<int> v(1024, e);
+        assert(v.size() == 1024);
+        assert(not v.empty());
+        assert(v.capacity() == 1024);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 1024 == v.end());
+        assert(v.cbegin() + 1024 == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/1024 elements vector checking done." << std::endl;
+    }
+
+    // random size, size <= 10000
+    {
+        int next {};
+        RESTART_10000:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count(10000)};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 100) {
+            goto RESTART_10000;
+        }
+    }
+
+    // random size, size <= 100000
+    {
+        int next {};
+        RESTART_100000:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count(100000)};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 50) {
+            goto RESTART_100000;
+        }
+    }
+
+    // random size, size <= 1000000
+    {
+        int next {};
+        RESTART_1000000:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count(1000000)};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 10) {
+            goto RESTART_1000000;
+        }
+    }
+
+    // random size, size <= 10000000
+    {
+        int next {};
+        RESTART_10000000:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count(10000000)};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 5) {
+            goto RESTART_10000000;
+        }
+    }
+
+    // random size, size <= 100000000
+    {
+        int next {};
+        RESTART_100000000:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count(100000000)};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_100000000;
+        }
+    }
+
+    // random size
+    {
+        int next {};
+        RESTART_RANDOM:
+        auto e {this->generate_a_random_number()};
+        const auto size {this->generate_count()};
+        vector<int> v(size, e);
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.front() == e);
+        assert(v.back() == e);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == e);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == e);
+        }
+        std::cout << "\ttest_constructor_3/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_RANDOM;
+        }
+    }
+
+    std::cout << "Checking vector(size_type, const T &) finished!" << std::endl;
+}
+void vector_correctness::test_constructor_4() {
+    std::cout << "Start checking vector(InputIterator, InputIterator)!" << std::endl;
+
+    // empty
+    {
+        vector<int> v(int_input_iterator {}, int_input_iterator {});
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_constructor_4/Empty buffer checking done." << std::endl;
+    }
+
+    // single element
+    {
+        std::stringstream stream("42");
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.capacity() == 1);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 1 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 1 == v.cend());
+        assert(*v.begin() == 42);
+        assert(v.front() == 42);
+        assert(v.back() == 42);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 42);
+        }
+        std::cout << "\ttest_constructor_4/Single element vector checking done." << std::endl;
+    }
+
+    // size == 10
+    {
+        const auto numbers {this->generate_number(10)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 10);
+        assert(not v.empty());
+        assert(v.capacity() == 10);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 10 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 10 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 10 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 10 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/10 elements vector checking done." << std::endl;
+    }
+
+    // size == 42
+    {
+        const auto numbers {this->generate_number(42)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 42);
+        assert(not v.empty());
+        assert(v.capacity() == 42);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 42 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 42 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 42 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 42 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/42 elements vector checking done." << std::endl;
+    }
+
+    // size == 64
+    {
+        const auto numbers {this->generate_number(64)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 64);
+        assert(not v.empty());
+        assert(v.capacity() == 64);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 64 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 64 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 64 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 64 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/64 elements vector checking done." << std::endl;
+    }
+
+    // size == 128
+    {
+        const auto numbers {this->generate_number(128)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 128);
+        assert(not v.empty());
+        assert(v.capacity() == 128);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 128 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 128 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 128 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 128 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/128 elements vector checking done." << std::endl;
+    }
+
+    // size == 1024
+    {
+        const auto numbers {this->generate_number(1024)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 1024);
+        assert(not v.empty());
+        assert(v.capacity() == 1024);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 1024 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 1024 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 1024 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 1024 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/1024 elements vector checking done." << std::endl;
+    }
+
+    // size == 10000
+    {
+        int next {};
+        RESTART_10000:
+        const auto numbers {this->generate_number(10000)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 10000);
+        assert(not v.empty());
+        assert(v.capacity() == 10000);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 10000 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 10000 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 10000 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 10000 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 100) {
+            goto RESTART_10000;
+        }
+    }
+
+    // size == 100000
+    {
+        int next {};
+        RESTART_100000:
+        const auto numbers {this->generate_number(100000)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 100000);
+        assert(not v.empty());
+        assert(v.capacity() == 100000);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 100000 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 100000 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 100000 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 100000 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 50) {
+            goto RESTART_100000;
+        }
+    }
+
+    // size == 1000000
+    {
+        int next {};
+        RESTART_1000000:
+        const auto numbers {this->generate_number(1000000)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 1000000);
+        assert(not v.empty());
+        assert(v.capacity() == 1000000);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 1000000 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 1000000 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 1000000 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 1000000 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 10) {
+            goto RESTART_1000000;
+        }
+    }
+
+    // size == 10000000
+    {
+        int next {};
+        RESTART_10000000:
+        const auto numbers {this->generate_number(10000000)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 10000000);
+        assert(not v.empty());
+        assert(v.capacity() == 10000000);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 10000000 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 10000000 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 10000000 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 10000000 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 5) {
+            goto RESTART_10000000;
+        }
+    }
+
+    // size == 100000000
+    {
+        int next {};
+        RESTART_100000000:
+        const auto numbers {this->generate_number(100000000)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == 100000000);
+        assert(not v.empty());
+        assert(v.capacity() == 100000000);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + 100000000 == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + 100000000 == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + 100000000 == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + 100000000 == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_100000000;
+        }
+    }
+
+    // random size
+    {
+        int next {};
+        RESTART_RANDOM:
+        const auto size {this->generate_count()};
+        const auto numbers {this->generate_number(size)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(int_input_iterator {stream}, {});
+        assert(v.size() == size);
+        assert(not v.empty());
+        assert(v.capacity() == size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() not_eq v.end());
+        assert(v.begin() + size == v.end());
+        assert(v.cbegin() not_eq v.cend());
+        assert(v.cbegin() + size == v.cend());
+        assert(v.cbegin() not_eq v.end());
+        assert(v.cbegin() + size == v.end());
+        assert(v.begin() not_eq v.cend());
+        assert(v.begin() + size == v.cend());
+        assert(*v.begin() == *numbers.begin());
+        assert(v.front() == numbers.front());
+        assert(v.back() == numbers.back());
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        numbers_i = numbers.size() - 1;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i--]);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[i]);
+        }
+        std::cout << "\ttest_constructor_4/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+        if(++next < 3) {
+            goto RESTART_RANDOM;
+        }
+    }
+
+    std::cout << "Checking buffer(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
+}
+void vector_correctness::test_constructor_5() {
+    std::cout << "Start checking vector(ForwardIterator, ForwardIterator)!" << std::endl;
+
+    // forward iterator
+    {
+        std::cout << "\tStart checking forward_iterator version!" << std::endl;
+        // empty
+        {
+            vector<int> v(int_forward_iterator {}, {});
+            assert(v.size() == 0);
+            assert(v.empty());
+            assert(v.capacity() == 0);
+            assert(v.spare() == 0);
+            assert(v.begin() == v.end());
+            assert(v.cbegin() == v.cend());
+            assert(v.rbegin() == v.rend());
+            assert(v.crbegin() == v.crend());
+            assert(v.data() == nullptr);
+            std::cout << "\t\ttest_constructor_5/forward iterator/Empty vector checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::forward_list<int> l {42};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 1);
+            assert(not v.empty());
+            assert(v.capacity() == 1);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1 == v.cend());
+            assert(*v.begin() == 42);
+            assert(v.front() == 42);
+            assert(v.back() == 42);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == 42);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/Single element vector checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 10);
+            assert(not v.empty());
+            assert(v.capacity() == 10);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/10 elements vector checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 42);
+            assert(not v.empty());
+            assert(v.capacity() == 42);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 42 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 42 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 42 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 42 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/42 elements vector checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 64);
+            assert(not v.empty());
+            assert(v.capacity() == 64);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 64 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 64 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 64 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 64 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/64 elements vector checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 128);
+            assert(not v.empty());
+            assert(v.capacity() == 128);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 128 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 128 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 128 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 128 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/128 elements vector checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 1024);
+            assert(not v.empty());
+            assert(v.capacity() == 1024);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1024 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1024 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1024 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1024 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/1024 elements vector checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_FORWARD_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 10000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_FORWARD_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_FORWARD_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 100000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_FORWARD_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_FORWARD_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 1000000);
+            assert(not v.empty());
+            assert(v.capacity() == 1000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_FORWARD_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_FORWARD_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 10000000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_FORWARD_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_FORWARD_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == 100000000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_FORWARD_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_FORWARD_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto l {this->to_forward_iterator(numbers)};
+            vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(v.size() == size);
+            assert(not v.empty());
+            assert(v.capacity() == size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + size == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + size == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + size == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/forward iterator/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_FORWARD_RANDOM;
+            }
+        }
+        std::cout << "\tChecking forward iterator version finished!" << std::endl;
+    }
+
+    // bidirectional iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+        // empty
+        {
+            vector<int> v(int_bidirectional_iterator {}, {});
+            assert(v.size() == 0);
+            assert(v.empty());
+            assert(v.capacity() == 0);
+            assert(v.spare() == 0);
+            assert(v.begin() == v.end());
+            assert(v.cbegin() == v.cend());
+            assert(v.rbegin() == v.rend());
+            assert(v.crbegin() == v.crend());
+            assert(v.data() == nullptr);
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/Empty vector checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::list<int> l {42};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 1);
+            assert(not v.empty());
+            assert(v.capacity() == 1);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1 == v.cend());
+            assert(*v.begin() == 42);
+            assert(v.front() == 42);
+            assert(v.back() == 42);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == 42);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/Single element vector checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 10);
+            assert(not v.empty());
+            assert(v.capacity() == 10);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/10 elements vector checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 42);
+            assert(not v.empty());
+            assert(v.capacity() == 42);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 42 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 42 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 42 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 42 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/42 elements vector checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 64);
+            assert(not v.empty());
+            assert(v.capacity() == 64);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 64 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 64 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 64 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 64 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/64 elements vector checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 128);
+            assert(not v.empty());
+            assert(v.capacity() == 128);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 128 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 128 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 128 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 128 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/128 elements vector checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 1024);
+            assert(not v.empty());
+            assert(v.capacity() == 1024);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1024 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1024 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1024 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1024 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/1024 elements vector checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 10000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_BIDIRECTIONAL_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 100000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_BIDIRECTIONAL_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 1000000);
+            assert(not v.empty());
+            assert(v.capacity() == 1000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_BIDIRECTIONAL_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 10000000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_BIDIRECTIONAL_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == 100000000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_BIDIRECTIONAL_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_BIDIRECTIONAL_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(v.size() == size);
+            assert(not v.empty());
+            assert(v.capacity() == size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + size == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + size == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + size == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_BIDIRECTIONAL_RANDOM;
+            }
+        }
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    // random access iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+        // empty
+        {
+            vector<int> v(int_random_access_iterator {}, {});
+            assert(v.size() == 0);
+            assert(v.empty());
+            assert(v.capacity() == 0);
+            assert(v.spare() == 0);
+            assert(v.begin() == v.end());
+            assert(v.cbegin() == v.cend());
+            assert(v.rbegin() == v.rend());
+            assert(v.crbegin() == v.crend());
+            assert(v.data() == nullptr);
+            std::cout << "\t\ttest_constructor_5/random access iterator/Empty vector checking done." << std::endl;
+        }
+
+        // single element
+        {
+            std::deque<int> d {42};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 1);
+            assert(not v.empty());
+            assert(v.capacity() == 1);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1 == v.cend());
+            assert(*v.begin() == 42);
+            assert(v.front() == 42);
+            assert(v.back() == 42);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == 42);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == 42);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/Single element vector checking done." << std::endl;
+        }
+
+        // size == 10
+        {
+            const auto numbers {this->generate_number(10)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 10);
+            assert(not v.empty());
+            assert(v.capacity() == 10);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/10 elements vector checking done." << std::endl;
+        }
+
+        // size == 42
+        {
+            const auto numbers {this->generate_number(42)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 42);
+            assert(not v.empty());
+            assert(v.capacity() == 42);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 42 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 42 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 42 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 42 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/42 elements vector checking done." << std::endl;
+        }
+
+        // size == 64
+        {
+            const auto numbers {this->generate_number(64)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 64);
+            assert(not v.empty());
+            assert(v.capacity() == 64);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 64 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 64 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 64 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 64 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/64 elements vector checking done." << std::endl;
+        }
+
+        // size == 128
+        {
+            const auto numbers {this->generate_number(128)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 128);
+            assert(not v.empty());
+            assert(v.capacity() == 128);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 128 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 128 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 128 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 128 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/128 elements vector checking done." << std::endl;
+        }
+
+        // size == 1024
+        {
+            const auto numbers {this->generate_number(1024)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 1024);
+            assert(not v.empty());
+            assert(v.capacity() == 1024);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1024 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1024 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1024 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1024 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/1024 elements vector checking done." << std::endl;
+        }
+
+        // size == 10000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_10000:
+            const auto numbers {this->generate_number(10000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 10000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/10000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 100) {
+                goto RESTART_RANDOM_ACCESS_10000;
+            }
+        }
+
+        // size == 100000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_100000:
+            const auto numbers {this->generate_number(100000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 100000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/100000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 50) {
+                goto RESTART_RANDOM_ACCESS_100000;
+            }
+        }
+
+        // size == 1000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_1000000:
+            const auto numbers {this->generate_number(1000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 1000000);
+            assert(not v.empty());
+            assert(v.capacity() == 1000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 1000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 1000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 1000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 1000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/1000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 10) {
+                goto RESTART_RANDOM_ACCESS_1000000;
+            }
+        }
+
+        // size == 10000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_10000000:
+            const auto numbers {this->generate_number(10000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 10000000);
+            assert(not v.empty());
+            assert(v.capacity() == 10000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 10000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 10000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 10000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 10000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/10000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 5) {
+                goto RESTART_RANDOM_ACCESS_10000000;
+            }
+        }
+
+        // size == 100000000
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_100000000:
+            const auto numbers {this->generate_number(100000000)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == 100000000);
+            assert(not v.empty());
+            assert(v.capacity() == 100000000);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + 100000000 == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + 100000000 == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + 100000000 == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + 100000000 == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/100000000 elements vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_RANDOM_ACCESS_100000000;
+            }
+        }
+
+        // random size
+        {
+            int next {};
+            RESTART_RANDOM_ACCESS_RANDOM:
+            const auto size {this->generate_count()};
+            const auto numbers {this->generate_number(size)};
+            auto d {this->to_random_access_iterator(numbers)};
+            vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(v.size() == size);
+            assert(not v.empty());
+            assert(v.capacity() == size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() not_eq v.end());
+            assert(v.begin() + size == v.end());
+            assert(v.cbegin() not_eq v.cend());
+            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() not_eq v.end());
+            assert(v.cbegin() + size == v.end());
+            assert(v.begin() not_eq v.cend());
+            assert(v.begin() + size == v.cend());
+            assert(*v.begin() == *numbers.begin());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            numbers_i = numbers.size() - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            std::cout << "\t\ttest_constructor_5/random access iterator/Random sized elements " << size << " vector checking next = " << next + 1 << " done." << std::endl;
+            if(++next < 3) {
+                goto RESTART_RANDOM_ACCESS_RANDOM;
+            }
+        }
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    std::cout << "Checking vector(ForwardIterator, ForwardIterator) finished!" << std::endl;
+}
+void vector_correctness::test_constructor_6() {
+    std::cout << "Start checking vector(initializer_list<T>,)!" << std::endl;
+    const std::initializer_list<int> empty_list = {};
+    const auto single_list = {42};
+    const auto list = {-5, -2, 0, 1, 4, 6, 8, 111};
+
+    // empty from initializer_list
+    {
+        vector<int> v1(empty_list);
+        assert(v1.size() == 0);
+        assert(v1.empty());
+        assert(v1.begin() == v1.end());
+
+        vector<int> v2({});
+        assert(v2.size() == 0);
+        assert(v2.empty());
+        assert(v2.begin() == v2.end());
+        std::cout << "\ttest_constructor_6/Empty vector from initializer_list checking done." << std::endl;
+    }
+
+    // single element
+    {
+        vector<int> v1 {42};
+        assert(v1.size() == 1);
+        assert(not v1.empty());
+        assert(v1.begin() not_eq v1.end());
+        assert(v1.begin() + 1 == v1.end());
+        assert(*v1.begin() == 42);
+
+        vector<int> v2(single_list);
+        assert(v2.size() == 1);
+        assert(not v2.empty());
+        assert(v2.begin() not_eq v2.end());
+        assert(v2.begin() + 1 == v2.end());
+        assert(*v2.begin() == 42);
+        std::cout << "\ttest_constructor_6/Single element vector checking done." << std::endl;
+    }
+
+    // other test
+    {
+        vector<int> v(list);
+        assert(v.size() == 8);
+        assert(not v.empty());
+        assert(v.begin() + 8 == v.end());
+        for(auto i {0}; i < list.size(); ++i) {
+            assert(*(v.begin() + i) == *(list.begin() + i));
+        }
+        std::cout << "\ttest_constructor_6/vector other test checking done." << std::endl;
+    }
+
+    std::cout << "Checking vector(initializer_list<T>) finished!" << std::endl;
 }
