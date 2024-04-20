@@ -313,16 +313,16 @@ template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<Inp
 constexpr vector<T, Allocator>::vector(InputIterator begin, InputIterator end, const Allocator &allocator,
         size_type default_size) : first {}, cursor {}, last(allocator) {
     buffer<T, Allocator> b(begin, end, allocator, default_size);
-    this->cursor = this->first = b.release();
-    this->last = this->first + b.size();
+    this->first = b.release();
+    this->cursor = this->last() = this->first + b.size();
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr vector<T, Allocator>::vector(ForwardIterator begin, ForwardIterator end, const Allocator &allocator) :
         first {}, cursor {}, last(allocator) {
     buffer<T, Allocator> b(begin, end, allocator);
-    this->cursor = this->first = b.release();
-    this->last = this->first + b.size();
+    this->first = b.release();
+    this->cursor = this->last() = this->first + b.size();
 }
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(initializer_list<T> init_list, const Allocator &allocator) :
