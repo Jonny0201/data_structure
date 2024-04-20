@@ -255,39 +255,45 @@ public:
 };
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator==(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator==(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return lhs.base() == rhs.base();
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator!=(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator!=(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs == rhs);
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator<(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator<(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return lhs.base() - rhs.base() < 0;
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator>(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator>(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return rhs < lhs;
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator<=(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator<=(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs > rhs);
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
-inline constexpr auto operator>=(const wrap_iterator<IteratorLHS> &lhs,
+inline constexpr bool operator>=(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
     return not(lhs < rhs);
+}
+template <typename IteratorLHS, typename IteratorRHS>
+[[nodiscard]]
+inline constexpr ptrdiff_t operator-(const wrap_iterator<IteratorLHS> &lhs,
+        const wrap_iterator<IteratorRHS> &rhs) noexcept {
+    return lhs.base() - rhs.base();
 }
 __DATA_STRUCTURE_END(wrap iterator)
 
@@ -414,25 +420,31 @@ template <typename Iterator>
 [[nodiscard]]
 inline constexpr auto operator<(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
         noexcept(is_nothrow_less_comparable_v<Iterator>) {
-    return lhs.base() < rhs.base();
+    return lhs.base() > rhs.base();
 }
 template <typename Iterator>
 [[nodiscard]]
 inline constexpr auto operator<=(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
         noexcept(is_nothrow_less_equal_to_comparable_v<Iterator>) {
-    return lhs.base() <= rhs.base();
+    return lhs.base() >= rhs.base();
 }
 template <typename Iterator>
 [[nodiscard]]
 inline constexpr auto operator>(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
         noexcept(is_nothrow_greater_comparable_v<Iterator>) {
-    return lhs.base() > rhs.base();
+    return lhs.base() < rhs.base();
 }
 template <typename Iterator>
 [[nodiscard]]
 inline constexpr auto operator>=(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
         noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
-    return lhs.base() >= rhs.base();
+    return lhs.base() <= rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator-(const reverse_iterator<Iterator> &lhs, const reverse_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_subtractable_v<Iterator>) {
+    return rhs.base() - lhs.base();
 }
 __DATA_STRUCTURE_END(reverse iterator)
 
@@ -561,6 +573,12 @@ template <typename Iterator>
 inline constexpr auto operator>=(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
         noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
     return lhs.base() >= rhs.base();
+}
+template <typename Iterator>
+[[nodiscard]]
+inline constexpr auto operator-(const move_iterator<Iterator> &lhs, const move_iterator<Iterator> &rhs)
+        noexcept(is_nothrow_greater_equal_to_comparable_v<Iterator>) {
+    return lhs.base() - rhs.base();
 }
 __DATA_STRUCTURE_END(move iterator)
 
