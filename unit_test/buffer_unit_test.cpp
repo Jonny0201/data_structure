@@ -7,15 +7,15 @@ class buffer_correctness : public unit_test_correctness {
 public:
     ~buffer_correctness() noexcept override = default;
 public:
-    // buffer(size_type, const Allocator &), size, empty and iterator
+    // buffer(size_type), size, empty and iterator
     void test_constructor_1();
-    // buffer(size_type, const T &, const Allocator &), size, empty and iterator
+    // buffer(size_type, const T &), size, empty and iterator
     void test_constructor_2();
-    // buffer(InputIterator, InputIterator, const Allocator &), size, empty and iterator
+    // buffer(InputIterator, InputIterator), size, empty and iterator
     void test_constructor_3();
-    // buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator
+    // buffer(ForwardIterator, ForwardIterator), size, empty and iterator
     void test_constructor_4();
-    // buffer(initializer_list<T>, const Allocator &), size, empty and iterator
+    // buffer(initializer_list<T>), size, empty and iterator
     void test_constructor_5();
     void test_release();
     void test_move_iterator();
@@ -38,7 +38,7 @@ void buffer_unit_test() {
 }
 
 void buffer_correctness::test_constructor_1() {
-    std::cout << "Start checking buffer(size_type, const Allocator &), size, empty and iterator!" << std::endl;
+    std::cout << "Start checking buffer(size_type), size, empty and iterator!" << std::endl;
 
     // all members should be nothrow
     {
@@ -72,6 +72,9 @@ void buffer_correctness::test_constructor_1() {
         assert(b.begin() not_eq b.end());
         assert(b.begin() + 1 == b.end());
         assert(*b.begin() == 0);
+        for(auto it {b.begin()}; it not_eq b.end(); ++it) {
+            assert(*it == 0);
+        }
         std::cout << "\ttest_constructor_1/Single element buffer checking done." << std::endl;
     }
 
@@ -237,10 +240,10 @@ void buffer_correctness::test_constructor_1() {
         }
     }
 
-    std::cout << "Checking buffer(size_type, const Allocator &), size, empty and iterator finished!" << std::endl;
+    std::cout << "Checking buffer(size_type), size, empty and iterator finished!" << std::endl;
 }
 void buffer_correctness::test_constructor_2() {
-    std::cout << "Start checking buffer(size_type, const T &, const Allocator &), size, empty and iterator!" << std::endl;
+    std::cout << "Start checking buffer(size_type, const T &), size, empty and iterator!" << std::endl;
 
     // empty
     {
@@ -253,71 +256,80 @@ void buffer_correctness::test_constructor_2() {
 
     // single element
     {
-        buffer<int> b(1);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(1, e);
         assert(b.size() == 1);
         assert(not b.empty());
         assert(b.begin() not_eq b.end());
         assert(b.begin() + 1 == b.end());
-        assert(*b.begin() == 0);
+        assert(*b.begin() == e);
+        for(auto it {b.begin()}; it not_eq b.end(); ++it) {
+            assert(*it == e);
+        }
         std::cout << "\ttest_constructor_2/Single element buffer checking done." << std::endl;
     }
 
     // size == 10
     {
-        buffer<int> b(10);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(10, e);
         assert(b.size() == 10);
         assert(not b.empty());
         assert(b.begin() + 10 == b.end());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/10 elements buffer checking done." << std::endl;
     }
 
     // size == 42
     {
-        buffer<int> b(42);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(42, e);
         assert(b.size() == 42);
         assert(not b.empty());
         assert(b.begin() + 42 == b.end());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/42 elements buffer checking done." << std::endl;
     }
 
     // size == 64
     {
-        buffer<int> b(64);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(64, e);
         assert(b.size() == 64);
         assert(not b.empty());
         assert(b.begin() + 64 == b.end());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/64 elements buffer checking done." << std::endl;
     }
 
     // size == 128
     {
-        buffer<int> b(128);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(128, e);
         assert(b.size() == 128);
         assert(not b.empty());
         assert(b.begin() + 128 == b.end());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/128 elements buffer checking done." << std::endl;
     }
 
     // size == 1024
     {
-        buffer<int> b(1024);
+        auto e {this->generate_a_random_number()};
+        buffer<int> b(1024, e);
         assert(b.size() == 1024);
         assert(not b.empty());
         assert(b.begin() + 1024 == b.end());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/1024 elements buffer checking done." << std::endl;
     }
@@ -326,12 +338,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_10000:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count(10000)};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/10000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 100) {
@@ -343,12 +356,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_100000:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count(100000)};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/100000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 50) {
@@ -360,12 +374,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_1000000:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count(1000000)};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/1000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 10) {
@@ -377,12 +392,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_10000000:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count(10000000)};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/10000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 5) {
@@ -394,12 +410,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_100000000:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count(100000000)};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/100000000 elements buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
@@ -411,12 +428,13 @@ void buffer_correctness::test_constructor_2() {
     {
         int next {};
         RESTART_RANDOM:
+        auto e {this->generate_a_random_number()};
         const auto size {this->generate_count()};
-        buffer<int> b(size);
+        buffer<int> b(size, e);
         assert(b.size() == size);
         assert(size == 0 ? b.empty() : not b.empty());
         for(auto it {b.begin()}; it not_eq b.end(); ++it) {
-            assert(*it == 0);
+            assert(*it == e);
         }
         std::cout << "\ttest_constructor_2/Random sized elements " << size << " buffer checking next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
@@ -424,10 +442,10 @@ void buffer_correctness::test_constructor_2() {
         }
     }
 
-    std::cout << "Checking buffer(size_type, const T &, const Allocator &), size, empty and iterator finished!" << std::endl;
+    std::cout << "Checking buffer(size_type, const T &), size, empty and iterator finished!" << std::endl;
 }
 void buffer_correctness::test_constructor_3() {
-    std::cout << "Start checking buffer(InputIterator, InputIterator, const Allocator &), size, empty and iterator!" << std::endl;
+    std::cout << "Start checking buffer(InputIterator, InputIterator), size, empty and iterator!" << std::endl;
 
     // empty
     {
@@ -646,11 +664,11 @@ void buffer_correctness::test_constructor_3() {
         }
     }
 
-    std::cout << "Checking buffer(InputIterator, InputIterator, const Allocator &), size, empty and iterator finished!" << std::endl;
+    std::cout << "Checking buffer(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
 }
 
 void buffer_correctness::test_constructor_4() {
-    std::cout << "Start checking buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator!" << std::endl;
+    std::cout << "Start checking buffer(ForwardIterator, ForwardIterator), size, empty and iterator!" << std::endl;
 
     // forward iterator
     {
@@ -1318,7 +1336,7 @@ void buffer_correctness::test_constructor_4() {
         std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
     }
 
-    std::cout << "Checking buffer(ForwardIterator, ForwardIterator, const Allocator &), size, empty and iterator finished!" << std::endl;
+    std::cout << "Checking buffer(ForwardIterator, ForwardIterator), size, empty and iterator finished!" << std::endl;
 }
 void buffer_correctness::test_constructor_5() {
     std::cout << "Start checking buffer(initializer_list<T>), size, empty and iterator!" << std::endl;
@@ -1617,7 +1635,7 @@ void buffer_correctness::test_allocator() {
 void buffer_correctness::test_non_trivial() {
     std::cout << "Start checking non trivial type std::string!" << std::endl;
 
-    // buffer(size_type, const Allocator &)
+    // buffer(size_type)
     {
         int next {};
         RESTART_1:
@@ -1636,13 +1654,13 @@ void buffer_correctness::test_non_trivial() {
             const auto it_base {it.base()};
             assert(it_base->empty());
         }
-        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type) next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_1;
         }
     }
 
-    // buffer(size_type, const T &, const Allocator &)
+    // buffer(size_type, const T &)
     {
         int next {};
         RESTART_2:
@@ -1665,13 +1683,13 @@ void buffer_correctness::test_non_trivial() {
             const auto it_base {it.base()};
             assert(it_base->empty());
         }
-        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type, const T &, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_non_trivial/buffer<std::string>(size_type, const T &) next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_2;
         }
     }
 
-    // buffer(InputIterator, InputIterator, const Allocator &)
+    // buffer(InputIterator, InputIterator)
     {
         int next {};
         RESTART_3:
@@ -1695,13 +1713,13 @@ void buffer_correctness::test_non_trivial() {
             const auto it_base {it.base()};
             assert(it_base->empty());
         }
-        std::cout << "\ttest_non_trivial/buffer<std::string>(InputIterator, InputIterator, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_non_trivial/buffer<std::string>(InputIterator, InputIterator) next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_3;
         }
     }
 
-    // buffer(ForwardIterator, ForwardIterator, const Allocator &)
+    // buffer(ForwardIterator, ForwardIterator)
     {
         int next {};
         RESTART_4:
@@ -1725,7 +1743,7 @@ void buffer_correctness::test_non_trivial() {
             const auto it_base {it.base()};
             assert(it_base->empty());
         }
-        std::cout << "\ttest_non_trivial/buffer<std::string>(ForwardIterator, ForwardIterator, const Allocator &) next = " << next + 1 << " done." << std::endl;
+        std::cout << "\ttest_non_trivial/buffer<std::string>(ForwardIterator, ForwardIterator) next = " << next + 1 << " done." << std::endl;
         if(++next < 3) {
             goto RESTART_4;
         }
