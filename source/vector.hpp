@@ -51,6 +51,8 @@ private:
     __dsa::allocator_compressor<pointer, Allocator> last {};
 private:
     constexpr void move_to(pointer, pointer, pointer, size_type);
+    template <bool = false>
+    constexpr void assign_with_buffer(buffer<T, Allocator> &&b) noexcept;
     constexpr void resize_and_move(size_type);
     constexpr void reallocate_when_insertion(size_type, size_type, difference_type);
 public:
@@ -225,6 +227,15 @@ constexpr void vector<T, Allocator>::move_to(pointer new_place, pointer begin, p
     }
 }
 template <typename T, typename Allocator>
+template <bool ReleaseThis>
+constexpr void vector<T, Allocator>::assign_with_buffer(buffer<T, Allocator> &&b) noexcept {
+    if constexpr(ReleaseThis) {
+        this->~vector();
+    }
+    this->first = b.release();
+    this->cursor = this->last() = this->first + b.size();
+}
+template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::resize_and_move(size_type n) {
     if constexpr(is_trivially_copyable_v<T>) {
         this->first = this->last.allocate().reallocate(this->first, n);
@@ -297,32 +308,24 @@ template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(const Allocator &allocator) noexcept : first {}, cursor {}, last(allocator) {}
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(size_type n, const Allocator &allocator) : first {}, cursor {}, last(allocator) {
-    buffer<T, Allocator> b(n, allocator);
-    this->first = b.release();
-    this->cursor = this->last() = this->first + b.size();
+    this->assign_with_buffer(buffer<T, Allocator>(n, allocator));
 }
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(size_type n, const_reference value, const Allocator &allocator) :
         first {}, cursor {}, last(allocator) {
-    buffer<T, Allocator> b(n, value, allocator);
-    this->first = b.release();
-    this->cursor = this->last() = this->first + b.size();
+    this->assign_with_buffer(buffer<T, Allocator>(n, value, allocator));
 }
 template <typename T, typename Allocator>
 template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
 constexpr vector<T, Allocator>::vector(InputIterator begin, InputIterator end, const Allocator &allocator,
         size_type default_size) : first {}, cursor {}, last(allocator) {
-    buffer<T, Allocator> b(begin, end, allocator, default_size);
-    this->first = b.release();
-    this->cursor = this->last() = this->first + b.size();
+    this->assign_with_buffer(buffer<T, Allocator>(begin, end, allocator, default_size));
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr vector<T, Allocator>::vector(ForwardIterator begin, ForwardIterator end, const Allocator &allocator) :
         first {}, cursor {}, last(allocator) {
-    buffer<T, Allocator> b(begin, end, allocator);
-    this->first = b.release();
-    this->cursor = this->last() = this->first + b.size();
+    this->assign_with_buffer(buffer<T, Allocator>(begin, end, allocator));
 }
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(initializer_list<T> init_list, const Allocator &allocator) :
@@ -359,9 +362,9 @@ constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(vector<T, Alloca
     if(this not_eq &rhs) {
         this->~vector();
         this->first = ds::move(rhs.first);
-        this->cursor = ds::move(rhs.cusror);
+        this->cursor = ds::move(rhs.cursor);
         this->last = ds::move(rhs.last);
-        rhs.first = rhs.cusror = rhs.last() = nullptr;
+        rhs.first = rhs.cursor = rhs.last() = nullptr;
     }
     return *this;
 }
@@ -386,9 +389,7 @@ constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) 
         return;
     }
     if(n > this->capacity()) {
-        buffer b(n, value, this->last.allocator());
-        this->first = b.release();
-        this->cursor = this->last() = this->first + b.size();
+        this->assign_with_buffer<true>(buffer<T, Allocator>(n, value, this->last.allocator()));
     }else {
         auto it {this->first};
         for(; it not_eq this->cursor; ++it, static_cast<void>(--n)) {
@@ -412,14 +413,12 @@ constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) 
 template <typename T, typename Allocator>
 template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
 constexpr void vector<T, Allocator>::assign(InputIterator begin, InputIterator end, size_type default_size) {
-    buffer<T, Allocator> b(begin, end, this->last.allocator(), default_size);
-    this->assign_with_iterator(b);
+    this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator(), default_size));
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr void vector<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
-    buffer<T, Allocator> b(begin, end, this->last.allocator());
-    this->assign_with_iterator(b);
+    this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator()));
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::assign(initializer_list<T> init_list) {

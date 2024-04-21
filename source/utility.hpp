@@ -120,8 +120,19 @@ public:
             noexcept(is_nothrow_copy_constructible_v<Allocator>) : first {first}, alloc {allocator} {}
     constexpr allocator_compressor(const allocator_compressor &rhs)
             noexcept(is_nothrow_copy_constructible_v<Allocator>) : first(rhs.first), alloc {rhs.alloc} {}
-    constexpr allocator_compressor(allocator_compressor &&rhs) noexcept(is_nothrow_move_constructible_v<Allocator>) :
+    constexpr allocator_compressor(allocator_compressor &&rhs) noexcept :
             first(rhs.first), alloc {ds::move(rhs.alloc)} {}
+public:
+    constexpr allocator_compressor &operator=(const allocator_compressor &rhs) noexcept {
+        this->alloc = rhs.alloc;
+        this->first = rhs.first;
+        return *this;
+    }
+    constexpr allocator_compressor &operator=(allocator_compressor &&rhs) noexcept {
+        this->alloc = ds::move(rhs.alloc);
+        this->first = rhs.first;
+        return *this;
+    }
 public:
     constexpr T &operator()() noexcept {
         return this->first;
@@ -136,21 +147,32 @@ public:
         return this->alloc;
     }
 };
-template <typename T, typename Allocator>
+template <typename T, typename Allocator> requires is_trivial_v<T> and is_class_v<Allocator>
 struct allocator_compressor<T, Allocator, true> : Allocator {
     T first {};
 public:
     constexpr allocator_compressor() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr allocator_compressor(T first) noexcept(is_nothrow_default_constructible_v<Allocator>) :
             Allocator(), first {first} {}
-    explicit constexpr allocator_compressor(const Allocator &allocator)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : Allocator(allocator), first {} {}
-    constexpr allocator_compressor(T first, const Allocator &allocator)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : Allocator(allocator), first {first} {}
-    constexpr allocator_compressor(const allocator_compressor &rhs)
-            noexcept(is_nothrow_copy_constructible_v<Allocator>) : Allocator(rhs.allocator()), first {rhs.first} {}
+    explicit constexpr allocator_compressor(const Allocator &allocator) noexcept :
+            Allocator(allocator), first {} {}
+    constexpr allocator_compressor(T first, const Allocator &allocator) noexcept :
+            Allocator(allocator), first {first} {}
+    constexpr allocator_compressor(const allocator_compressor &rhs) noexcept :
+            Allocator(rhs.allocator()), first {rhs.first} {}
     constexpr allocator_compressor(allocator_compressor &&rhs) noexcept :
             Allocator(ds::move(rhs.allocator())), first {rhs.first} {}
+public:
+    constexpr allocator_compressor &operator=(const allocator_compressor &rhs) noexcept {
+        static_cast<Allocator &>(*this) = rhs;
+        this->first = rhs.first;
+        return *this;
+    }
+    constexpr allocator_compressor &operator=(allocator_compressor &&rhs) noexcept {
+        static_cast<Allocator &>(*this) = ds::move(rhs);
+        this->first = rhs.first;
+        return *this;
+    }
 public:
     constexpr T &operator()() noexcept {
         return this->first;
