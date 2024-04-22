@@ -385,18 +385,12 @@ constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::o
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) {
-    if(n == 0) {
-        return;
-    }
     if(n > this->capacity()) {
         this->assign_with_buffer<true>(buffer<T, Allocator>(n, value, this->last.allocator()));
     }else {
         auto it {this->first};
-        for(; it not_eq this->cursor; ++it, static_cast<void>(--n)) {
+        for(; n not_eq 0 and it not_eq this->cursor; ++it, static_cast<void>(--n)) {
             *it = value;
-            if(n == 0) {
-                break;
-            }
         }
         if(n == 0) {
             if(it not_eq this->cursor) {
@@ -413,7 +407,8 @@ constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) 
 template <typename T, typename Allocator>
 template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
 constexpr void vector<T, Allocator>::assign(InputIterator begin, InputIterator end, size_type default_size) {
-    this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator(), default_size));
+    buffer<T, Allocator> b(begin, end, this->last.allocator(), default_size);
+    this->assign(b.mbegin(), b.mend());
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
