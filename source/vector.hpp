@@ -407,13 +407,30 @@ constexpr void vector<T, Allocator>::assign(size_type n, const_reference value) 
 template <typename T, typename Allocator>
 template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
 constexpr void vector<T, Allocator>::assign(InputIterator begin, InputIterator end, size_type default_size) {
-    buffer<T, Allocator> b(begin, end, this->last.allocator(), default_size);
-    this->assign(b.mbegin(), b.mend());
+    this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator(), default_size));
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr void vector<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
-    this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator()));
+    auto n {ds::distance(begin, end)};
+    if(n > this->capacity()) {
+        this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator()));
+    }else {
+        auto it {this->first};
+        for(; n not_eq 0 and it not_eq this->cursor; ++it, static_cast<void>(--n)) {
+            *it = *begin++;
+        }
+        if(n == 0) {
+            if(it not_eq this->cursor) {
+                ds::destroy(it, this->cursor);
+                this->cursor = it;
+            }
+        }else do {
+            ds::construct(this->cursor, *begin++);
+            ++this->cursor;
+            --n;
+        }while(n not_eq 0);
+    }
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::assign(initializer_list<T> init_list) {
