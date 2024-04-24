@@ -1,6 +1,8 @@
 #ifndef DATA_STRUCTURE_UNIT_TEST_HPP
 #define DATA_STRUCTURE_UNIT_TEST_HPP
 
+#define private public
+
 #include <vector>
 #include <random>
 #include <cassert>
