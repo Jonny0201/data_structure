@@ -62,8 +62,9 @@ void vector_unit_test() {
     //correctness->test_constructor_6();
     //correctness->test_copy_constructor();
     //correctness->test_move_constructor();
-    correctness->test_copy_assignment();
-    correctness->test_move_assignment();
+    //correctness->test_copy_assignment();
+    //correctness->test_move_assignment();
+    correctness->test_assign_1();
     delete correctness;
 }
 
@@ -5484,4 +5485,102 @@ void vector_correctness::test_move_assignment() {
     }
 
     std::cout << "Checking move assignment finished!" << std::endl;
+}
+void vector_correctness::test_assign_1() {
+    std::cout << "Start checking void assign(size_type, const_reference) for vector" << std::endl;
+
+    // empty vector to non-empty vector
+    {
+        vector<int> v {};
+        const auto count {this->generate_count()};
+        const auto number {this->generate_a_random_number()};
+        v.assign(count, number);
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+        std::cout << "\ttest_assign_1/Empty vector to non-empty vector done." << std::endl;
+    }
+
+    // non-empty vector to empty vector
+    {
+        const auto count {this->generate_count()};
+        vector<int> v(count);
+        v.assign(0);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == count);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() not_eq nullptr);
+        std::cout << "\ttest_assign_1/Non-empty vector to vector done." << std::endl;
+    }
+
+    // non-empty vector with assigning size greater than capacity
+    {
+        auto count {this->generate_count()};
+        while(count <= 42) {
+            count = this->generate_count();
+        }
+        const auto number {this->generate_a_random_number()};
+        vector<int> v(42);
+        v.assign(count, number);
+        v.assign(count, number);
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+        std::cout << "\ttest_assign_1/Non-empty vector with assigning size greater than capacity done." << std::endl;
+    }
+
+    // non-empty vector with assigning size less than capacity
+    {
+        // greater than size
+
+    }
+
+    std::cout << "Checking void assign(size_type, const_reference) for vector finished!" << std::endl;
 }
