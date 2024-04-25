@@ -412,6 +412,7 @@ constexpr void vector<T, Allocator>::assign(InputIterator begin, InputIterator e
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr void vector<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
+    // Todo : If ForwardIterator is pointer?
     auto n {ds::distance(begin, end)};
     if(n > this->capacity()) {
         this->assign_with_buffer<true>(buffer<T, Allocator>(begin, end, this->last.allocator()));
