@@ -64,7 +64,8 @@ void vector_unit_test() {
     //correctness->test_move_constructor();
     //correctness->test_copy_assignment();
     //correctness->test_move_assignment();
-    correctness->test_assign_1();
+    //correctness->test_assign_1();
+    correctness->test_assign_2();
     delete correctness;
 }
 
@@ -5487,7 +5488,7 @@ void vector_correctness::test_move_assignment() {
     std::cout << "Checking move assignment finished!" << std::endl;
 }
 void vector_correctness::test_assign_1() {
-    std::cout << "Start checking void assign(size_type, const_reference) for vector" << std::endl;
+    std::cout << "Start checking void assign(size_type, const_reference) for vector!" << std::endl;
 
     // empty vector to non-empty vector
     {
@@ -5548,7 +5549,6 @@ void vector_correctness::test_assign_1() {
         const auto number {this->generate_a_random_number()};
         vector<int> v(42);
         v.assign(count, number);
-        v.assign(count, number);
         assert(v.size() == count);
         assert(not v.empty());
         assert(v.capacity() == count);
@@ -5578,9 +5578,361 @@ void vector_correctness::test_assign_1() {
 
     // non-empty vector with assigning size less than capacity
     {
-        // greater than size
+        std::cout << "\tStart checking test_assign_1/Non-empty vector with assigning size less than capacity!" << std::endl;
 
+        // greater than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto offset {count / 2};
+            const auto real_size {count - offset};
+            vector<int> v(count);
+            v.cursor -= offset;
+            const auto new_size {this->generate_a_random_number(real_size + 1, count)};
+            const auto number {this->generate_a_random_number()};
+            v.assign(new_size, number);
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - new_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty vector with assigning size less than capacity/Greater than size done." << std::endl;
+        }
+
+        // less than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            vector<int> v(count);
+            auto new_size {this->generate_a_random_number(1, count - 1)};
+            v.cursor -= count - new_size;
+            const auto number {this->generate_a_random_number()};
+            v.assign(new_size, number);
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - new_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty vector with assigning size less than capacity/Less than size done." << std::endl;
+        }
+
+        // equal to size
+        {
+            auto count {this->generate_count()};
+            vector<int> v(count);
+            const auto number {this->generate_a_random_number()};
+            v.assign(count, number);
+            assert(v.size() == count);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + count == v.end());
+            assert(v.cbegin() + count == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty vector with assigning size less than capacity/Equal to size done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_assign_1/Non-empty vector with assigning size less than capacity finished!" << std::endl;
     }
 
     std::cout << "Checking void assign(size_type, const_reference) for vector finished!" << std::endl;
+}
+void vector_correctness::test_assign_2() {
+    std::cout << "Start checking void assign(InputIterator, InputIterator) for vector!" << std::endl;
+
+    // empty vector to non-empty vector
+    /*{
+        vector<int> v {};
+        const auto count {this->generate_count()};
+        const auto numbers {this->generate_number(count)};
+        auto stream {this->to_input_iterator(numbers)};
+        v.assign(int_input_iterator {stream}, int_input_iterator {});
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == numbers[0]);
+        assert(v.back() == numbers[count - 1]);
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[numbers_i++]);
+        }
+        std::cout << "\ttest_assign_2/Empty vector to non-empty vector done." << std::endl;
+    }*/
+
+    // non-empty vector to empty vector
+    {
+        const auto count {this->generate_count()};
+        vector<int> v(count);
+        v.assign(int_input_iterator {}, int_input_iterator {});
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\ttest_assign_2/Non-empty vector to vector done." << std::endl;
+    }
+
+    // non-empty vector with assigning size greater than capacity
+    {
+        auto count {this->generate_count()};
+        while(count <= 42) {
+            count = this->generate_count();
+        }
+        const auto numbers {this->generate_number(count)};
+        auto stream {this->to_input_iterator(numbers)};
+        vector<int> v(42);
+        v.assign(int_input_iterator {stream}, int_input_iterator {});
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == numbers[0]);
+        assert(v.back() == numbers[count - 1]);
+        auto numbers_i {0uz};
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == numbers[numbers_i++]);
+        }
+        numbers_i = 0;
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == numbers[numbers_i++]);
+        }
+        std::cout << "\ttest_assign_2/Non-empty vector with assigning size greater than capacity done." << std::endl;
+    }
+
+    // non-empty vector with assigning size less than capacity
+    {
+        std::cout << "\tStart checking test_assign_2/Non-empty vector with assigning size less than capacity!" << std::endl;
+
+        // greater than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto offset {count / 2};
+            const auto real_size {count - offset};
+            vector<int> v(count);
+            v.cursor -= offset;
+            const auto new_size {this->generate_a_random_number(real_size + 1, count)};
+            const auto numbers {this->generate_number(new_size)};
+            auto stream {this->to_input_iterator(numbers)};
+            v.assign(int_input_iterator {stream}, int_input_iterator {});
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - new_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == numbers[0]);
+            assert(v.back() == numbers[count - 1]);
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_assign_2/Non-empty vector with assigning size less than capacity/Greater than size done." << std::endl;
+        }
+
+        // less than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            vector<int> v(count);
+            auto new_size {this->generate_a_random_number(1, count - 1)};
+            v.cursor -= count - new_size;
+            const auto numbers {this->generate_number(new_size)};
+            auto stream {this->to_input_iterator(numbers)};
+            v.assign(int_input_iterator {stream}, int_input_iterator {});
+            assert(v.size() == new_size);
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - new_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == numbers[0]);
+            assert(v.back() == numbers[count - 1]);
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_assign_2/Non-empty vector with assigning size less than capacity/Less than size done." << std::endl;
+        }
+
+        // equal to size
+        {
+            auto count {this->generate_count()};
+            vector<int> v(count);
+            const auto numbers {this->generate_number(count)};
+            auto stream {this->to_input_iterator(numbers)};
+            v.assign(int_input_iterator {stream}, int_input_iterator {});
+            assert(v.size() == count);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + count == v.end());
+            assert(v.cbegin() + count == v.cend());
+            assert(v.front() == numbers[0]);
+            assert(v.back() == numbers[count - 1]);
+            auto numbers_i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_assign_2/Non-empty vector with assigning size less than capacity/Equal to size done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_assign_2/Non-empty vector with assigning size less than capacity finished!" << std::endl;
+    }
+
+    std::cout << "Checking void assign(InputIterator, InputIterator) for vector finished!" << std::endl;
 }
