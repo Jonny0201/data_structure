@@ -33,6 +33,8 @@ public:
     // void assign(ForwardIterator, ForwardIterator)
     void test_assign_3();
     void test_reserve();
+    void test_shrink_to_fit();
+    void test_resize();
     void test_push_back();
     void test_pop_back();
     void test_clear();
@@ -66,7 +68,8 @@ void vector_unit_test() {
     //correctness->test_move_assignment();
     //correctness->test_assign_1();
     //correctness->test_assign_2();
-    correctness->test_assign_3();
+    //correctness->test_assign_3();
+    correctness->test_reserve();
     delete correctness;
 }
 
@@ -6667,4 +6670,124 @@ void vector_correctness::test_assign_3() {
     }
 
     std::cout << "Checking void assign(ForwardIterator, ForwardIterator) for vector finished!" << std::endl;
+}
+void vector_correctness::test_reserve() {
+    std::cout << "Start checking reserve for ds::vector!" << std::endl;
+
+    // empty vector
+    {
+        vector<int> v {};
+        v.reserve(0);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+
+        const auto count {this->generate_count()};
+        v.reserve(count);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == count);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() not_eq nullptr);
+        std::cout << "\tChecking test_reserve/Reserve for empty vector done." << std::endl;
+    }
+
+    // non-empty vector
+    {
+        std::cout << "\tStart checking test_reserve/Reserve for non-empty vector!" << std::endl;
+
+        // greater than capacity
+        {
+            auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+            while(count_1 == 0) {
+                count_1 = this->generate_count();
+            }
+            while(count_2 == 0 or count_1 == count_2) {
+                count_2 = this->generate_count();
+            }
+            const auto initialization_size {count_1 > count_2 ? count_1 : count_2};
+            const auto reserved_size {count_1 > count_2 ? count_2 : count_1};
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(initialization_size, number);
+            assert(v.size() == initialization_size);
+            assert(not v.empty());
+            assert(v.capacity() == reserved_size);
+            assert(v.spare() == reserved_size - initialization_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + initialization_size == v.end());
+            assert(v.cbegin() + initialization_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\ttest_reserve/Non-empty vector with reserved size greater than capacity done." << std::endl;
+        }
+
+        // less equal to capacity
+        {
+            auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+            while(count_1 == 0) {
+                count_1 = this->generate_count();
+            }
+            while(count_2 == 0) {
+                count_2 = this->generate_count();
+            }
+            const auto initialization_size {count_1 > count_2 ? count_2 : count_1};
+            const auto reserved_size {count_1 > count_2 ? count_1 : count_2};
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(initialization_size, number);
+            assert(v.size() == initialization_size);
+            assert(not v.empty());
+            assert(v.capacity() == initialization_size);
+            assert(v.spare() == initialization_size - reserved_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + initialization_size == v.end());
+            assert(v.cbegin() + initialization_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\ttest_reserve/Non-empty vector with reserved size less equal to capacity done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_reserve/Reserve for non-empty vector finished!" << std::endl;
+    }
+
+    std::cout << "Checking reserve for ds::vector finished!" << std::endl;
 }
