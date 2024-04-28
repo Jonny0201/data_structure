@@ -6699,6 +6699,19 @@ void vector_correctness::test_reserve() {
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
         assert(v.data() not_eq nullptr);
+
+        auto count_2 {this->generate_count(count - 1)};
+        v.reserve(count_2);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == count);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() not_eq nullptr);
+
         std::cout << "\tChecking test_reserve/Reserve for empty vector done." << std::endl;
     }
 
@@ -6715,10 +6728,11 @@ void vector_correctness::test_reserve() {
             while(count_2 == 0 or count_1 == count_2) {
                 count_2 = this->generate_count();
             }
-            const auto initialization_size {count_1 > count_2 ? count_1 : count_2};
-            const auto reserved_size {count_1 > count_2 ? count_2 : count_1};
+            const auto initialization_size {count_1 > count_2 ? count_2 : count_1};
+            const auto reserved_size {count_1 > count_2 ? count_1 : count_2};
             const auto number {this->generate_a_random_number()};
             vector<int> v(initialization_size, number);
+            v.reserve(reserved_size);
             assert(v.size() == initialization_size);
             assert(not v.empty());
             assert(v.capacity() == reserved_size);
@@ -6748,24 +6762,51 @@ void vector_correctness::test_reserve() {
 
         // less equal to capacity
         {
-            auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
-            while(count_1 == 0) {
-                count_1 = this->generate_count();
+            auto capacity {this->generate_count()};
+            while(capacity <= 1) {
+                capacity = this->generate_count();
             }
-            while(count_2 == 0) {
-                count_2 = this->generate_count();
-            }
-            const auto initialization_size {count_1 > count_2 ? count_2 : count_1};
-            const auto reserved_size {count_1 > count_2 ? count_1 : count_2};
+            const auto size {this->generate_a_random_number(1, capacity - 1)};
             const auto number {this->generate_a_random_number()};
-            vector<int> v(initialization_size, number);
-            assert(v.size() == initialization_size);
+            vector<int> v(capacity, number);
+            v.cursor = v.first + size;
+
+            // less equal to size
+            v.reserve(this->generate_a_random_number(1, size));
+            assert(v.size() == size);
             assert(not v.empty());
-            assert(v.capacity() == initialization_size);
-            assert(v.spare() == initialization_size - reserved_size);
+            assert(v.capacity() == capacity);
+            assert(v.spare() == capacity - size);
             assert(v.data() not_eq nullptr);
-            assert(v.begin() + initialization_size == v.end());
-            assert(v.cbegin() + initialization_size == v.cend());
+            assert(v.begin() + size == v.end());
+            assert(v.cbegin() + size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+
+            // greater than size but less equal to capacity
+            v.reserve(this->generate_a_random_number(size + 1, capacity));
+            assert(v.size() == size);
+            assert(not v.empty());
+            assert(v.capacity() == capacity);
+            assert(v.spare() == capacity - size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + size == v.end());
+            assert(v.cbegin() + size == v.cend());
             assert(v.front() == number);
             assert(v.back() == number);
             for(auto it {v.begin()}; it not_eq v.end(); ++it) {
