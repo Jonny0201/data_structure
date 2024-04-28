@@ -503,16 +503,23 @@ constexpr typename vector<T, Allocator>::size_type vector<T, Allocator>::spare()
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::reserve(size_type n) {
+    const auto size {this->size()};
     if(n > this->capacity()) {
         auto &allocator {this->last.allocator()};
         if constexpr(is_trivially_copyable_v<T>) {
-            this->first = allocator.reallocate(this->first, n);
+            auto new_first {allocator.reallocate(this->first, n)};
+            if(new_first not_eq this->first) {
+                this->first = ds::move(new_first);
+                this->cursor = this->first + size;
+                this->last() = this->first + n;
+            }
         }else {
             auto new_first {allocator.allocate(n)};
             this->move_to(new_first, this->first, this->cursor, n);
             this->~vector();
             this->first = ds::move(new_first);
-            this->cursor = this->last() = this->first + n;
+            this->cursor = this->first + size;
+            this->last() = this->first + n;
         }
     }
 }
