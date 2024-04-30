@@ -69,7 +69,8 @@ void vector_unit_test() {
     //correctness->test_assign_1();
     //correctness->test_assign_2();
     //correctness->test_assign_3();
-    correctness->test_reserve();
+    //correctness->test_reserve();
+    correctness->test_shrink_to_fit();
     delete correctness;
 }
 
@@ -6831,4 +6832,104 @@ void vector_correctness::test_reserve() {
     }
 
     std::cout << "Checking reserve for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_shrink_to_fit() {
+    std::cout << "Start checking shrink_to_fit for ds::vector!" << std::endl;
+
+    // empty
+    {
+        vector<int> v {};
+        v.shrink_to_fit();
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+
+        v = vector<int>(this->generate_count(), this->generate_a_random_number());
+        v.cursor = v.first;
+        v.shrink_to_fit();
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+
+        std::cout << "\tChecking test_shrink_to_fit/Empty vector done." << std::endl;
+    }
+
+    // non-empty
+    {
+        auto count {this->generate_count()};
+        while(count <= 1) {
+            count = this->generate_count();
+        }
+        const auto number {this->generate_a_random_number()};
+        vector<int> v(count, number);
+        v.shrink_to_fit();
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+
+        const auto real_size {count / 2};
+        v.cursor = v.first + real_size;
+        v.shrink_to_fit();
+        assert(v.size() == real_size);
+        assert(not v.empty());
+        assert(v.capacity() == real_size);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + real_size == v.end());
+        assert(v.cbegin() + real_size == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+
+        std::cout << "\tChecking test_shrink_to_fit/Non-empty vector done." << std::endl;
+    }
+
+    std::cout << "Checking shrink_to_fit for ds::vector finished!" << std::endl;
 }
