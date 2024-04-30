@@ -238,9 +238,9 @@ constexpr void vector<T, Allocator>::assign_with_buffer(buffer<T, Allocator> &&b
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::resize_and_move(size_type n) {
     if constexpr(is_trivially_copyable_v<T>) {
-        this->first = this->last.allocate().reallocate(this->first, n);
+        this->first = this->last.allocator().reallocate(this->first, n);
     }else {
-        auto new_first {this->last.allocate().allocate(n)};
+        auto new_first {this->last.allocator().allocate(n)};
         auto trans {transaction {resize_handler(*this, new_first, n)}};
         for(auto &i {trans.get_rollback().i}; i < n; ++i) {
             ds::construct(new_first + i, ds::move(this->first[i]));
@@ -525,8 +525,14 @@ constexpr void vector<T, Allocator>::reserve(size_type n) {
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::shrink_to_fit() {
-    if(this->cursor not_eq this->last) {
-        this->resize_and_move(this->size());
+    if(this->cursor not_eq this->last()) {
+        const auto size {this->size()};
+        this->resize_and_move(size);
+        if(size == 0) {
+            this->cursor = this->last() = nullptr;
+        }else {
+            this->cursor = this->last() = this->first + size;
+        }
     }
 }
 template <typename T, typename Allocator>
