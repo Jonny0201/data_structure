@@ -53,7 +53,7 @@ private:
     constexpr void move_to(pointer, pointer, pointer, size_type);
     template <bool = false>
     constexpr void assign_with_buffer(buffer<T, Allocator> &&b) noexcept;
-    constexpr void resize_and_move(size_type);
+    constexpr void resize_and_move(size_type, size_type);
     constexpr void reallocate_when_insertion(size_type, size_type, difference_type);
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
@@ -236,15 +236,16 @@ constexpr void vector<T, Allocator>::assign_with_buffer(buffer<T, Allocator> &&b
     this->cursor = this->last() = this->first + b.size();
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::resize_and_move(size_type n) {
+constexpr void vector<T, Allocator>::resize_and_move(size_type n, size_type size) {
     if constexpr(is_trivially_copyable_v<T>) {
         this->first = this->last.allocator().reallocate(this->first, n);
     }else {
         auto new_first {this->last.allocator().allocate(n)};
         auto trans {transaction {resize_handler(*this, new_first, n)}};
-        for(auto &i {trans.get_rollback().i}; i < n; ++i) {
+        for(auto &i {trans.get_rollback().i}; i < size; ++i) {
             ds::construct(new_first + i, ds::move(this->first[i]));
         }
+        this->first = ds::move(new_first);
         trans.complete();
     }
 }
@@ -527,7 +528,7 @@ template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::shrink_to_fit() {
     if(this->cursor not_eq this->last()) {
         const auto size {this->size()};
-        this->resize_and_move(size);
+        this->resize_and_move(size, size);
         if(size == 0) {
             this->cursor = this->last() = nullptr;
         }else {
@@ -538,31 +539,42 @@ constexpr void vector<T, Allocator>::shrink_to_fit() {
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::resize(size_type n) {
     const auto size {this->size()};
-    if(n not_eq size) {
-        this->resize_and_move(n);
-        if(n > size) {
-            if constexpr(is_pointer_v<pointer> and is_trivially_default_constructible_v<T>) {
-                ds::memory_default_initialization(this->cursor, sizeof(T) * (n - size));
-                this->cursor += n;
-            }else {
-                do {
-                    ds::construct(this->cursor);
-                }while(++this->cursor not_eq this->last);
-            }
+    if(n not_eq size) [[likely]] {
+        this->resize_and_move(n, size);
+    }else {
+        return;
+    }
+    if(n > size) {
+        if constexpr(is_pointer_v<pointer> and is_trivially_default_constructible_v<T>) {
+            ds::memory_default_initialization(this->first + size, sizeof(T) * (n - size));
+        }else {
+            this->cursor = this->first + size;
+            do {
+                ds::construct(this->cursor);
+            }while(++this->cursor not_eq this->last);
+            this->last() = this->cursor;
+            return;
         }
     }
+    this->last() = this->cursor = this->first + n;
 }
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::resize(size_type n, const_reference value) {
     const auto size {this->size()};
-    if(n not_eq size) {
-        this->resize_and_move(n);
-        if(n > size) {
-            do {
-                ds::construct(this->cursor, value);
-            }while(++this->cursor not_eq this->last);
-        }
+    if(n not_eq size) [[likely]] {
+        this->resize_and_move(n, size);
+    }else {
+        return;
     }
+    if(n > size) {
+        this->cursor = this->first + size;
+        do {
+            ds::construct(this->cursor, value);
+        }while(++this->cursor not_eq this->last);
+        this->last() = this->cursor;
+        return;
+    }
+    this->last() = this->cursor = this->first + n;
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::front() noexcept {
