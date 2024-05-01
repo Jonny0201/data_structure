@@ -549,10 +549,10 @@ constexpr void vector<T, Allocator>::resize(size_type n) {
             ds::memory_default_initialization(this->first + size, sizeof(T) * (n - size));
         }else {
             this->cursor = this->first + size;
+            this->last() = this->first + n;
             do {
                 ds::construct(this->cursor);
-            }while(++this->cursor not_eq this->last);
-            this->last() = this->cursor;
+            }while(++this->cursor not_eq this->last());
             return;
         }
     }
@@ -568,10 +568,10 @@ constexpr void vector<T, Allocator>::resize(size_type n, const_reference value) 
     }
     if(n > size) {
         this->cursor = this->first + size;
+        this->last() = this->first + n;
         do {
             ds::construct(this->cursor, value);
-        }while(++this->cursor not_eq this->last);
-        this->last() = this->cursor;
+        }while(++this->cursor not_eq this->last());
         return;
     }
     this->last() = this->cursor = this->first + n;
