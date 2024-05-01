@@ -34,7 +34,10 @@ public:
     void test_assign_3();
     void test_reserve();
     void test_shrink_to_fit();
-    void test_resize();
+    // void resize(size_type)
+    void test_resize_1();
+    // void resize(size_type, const_reference)
+    void test_resize_2();
     void test_push_back();
     void test_pop_back();
     void test_clear();
@@ -70,7 +73,8 @@ void vector_unit_test() {
     //correctness->test_assign_2();
     //correctness->test_assign_3();
     //correctness->test_reserve();
-    correctness->test_shrink_to_fit();
+    //correctness->test_shrink_to_fit();
+    correctness->test_resize_1();
     delete correctness;
 }
 
@@ -6932,4 +6936,199 @@ void vector_correctness::test_shrink_to_fit() {
     }
 
     std::cout << "Checking shrink_to_fit for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_resize_1() {
+    std::cout << "Start checking void resize(size_type) for ds::vector!" << std::endl;
+
+    // empty to empty
+    {
+        vector<int> v {};
+        v.resize(0);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\tChecking test_resize_1/Empty to empty done." << std::endl;
+    }
+
+    // empty to non-empty
+    {
+        vector<int> v {};
+        const auto count {this->generate_count()};
+        v.resize(count);
+        assert(v.size() == count);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
+        assert(v.front() == 0);
+        assert(v.back() == 0);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 0);
+        }
+        std::cout << "\tChecking test_resize_1/Empty to non-empty done." << std::endl;
+    }
+
+    // non-empty to empty
+    {
+        const auto count {this->generate_count()};
+        vector<int> v(count);
+        v.resize(0);
+        assert(v.size() == 0);
+        assert(v.empty());
+        assert(v.capacity() == 0);
+        assert(v.spare() == 0);
+        assert(v.begin() == v.end());
+        assert(v.cbegin() == v.cend());
+        assert(v.rbegin() == v.rend());
+        assert(v.crbegin() == v.crend());
+        assert(v.data() == nullptr);
+        std::cout << "\tChecking test_resize_1/Non-empty to empty done." << std::endl;
+    }
+
+    // non-empty to non-empty
+    {
+        std::cout << "\tStart checking test_resize_1/Non-empty to non-empty for ds::vector!" << std::endl;
+
+        // less than size
+        {
+            //const auto count {this->generate_count()};
+            const auto count {42};
+            const auto new_size {this->generate_count(count - 1)};
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            v.resize(new_size);
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == new_size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\tChecking test_resize_1/Non-empty to non-empty/Less than size done." << std::endl;
+        }
+
+        // equal to size
+        {
+            const auto count {this->generate_count()};
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            v.resize(count);
+            assert(v.size() == count);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + count == v.end());
+            assert(v.cbegin() + count == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            std::cout << "\t\tChecking test_resize_1/Non-empty to non-empty/Equal to size done." << std::endl;
+        }
+
+        // greater than size
+        {
+            const auto count {this->generate_count()};
+            const auto new_size {this->generate_a_random_number(count + 1)};
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            v.resize(new_size);
+            assert(v.size() == new_size);
+            assert(not v.empty());
+            assert(v.capacity() == new_size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + new_size == v.end());
+            assert(v.cbegin() + new_size == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == 0);
+            const auto offset {new_size - count};
+            for(auto it {v.begin()}; it not_eq v.end() - offset; ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                assert(*it == 0);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend() - offset; ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                assert(*it == 0);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend() - count; ++it) {
+                assert(*it == 0);
+            }
+            for(auto it {v.rbegin() + offset}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend() - count; ++it) {
+                assert(*it == 0);
+            }
+            for(auto it {v.rbegin() + offset}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size() - offset; ++i) {
+                assert(v[i] == number);
+            }
+            for(auto i {count}; i < v.size(); ++i) {
+                assert(v[i] == 0);
+            }
+            std::cout << "\t\tChecking test_resize_1/Non-empty to non-empty/Greater than size done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_resize_1/Non-empty to non-empty for ds::vector finished!" << std::endl;
+    }
+
+    std::cout << "Checking void resize(size_type) for ds::vector finished!" << std::endl;
 }
