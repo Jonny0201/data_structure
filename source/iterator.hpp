@@ -375,7 +375,7 @@ public:
             difference_type> and is_nothrow_copy_constructible_v<Iterator>)
             requires is_random_access_iterator_v<Iterator> {
         auto backup {*this};
-        backup += -n;
+        backup += n;
         return backup;
     }
     [[nodiscard]]
@@ -383,7 +383,7 @@ public:
             difference_type> and is_nothrow_copy_constructible_v<Iterator>)
             requires is_random_access_iterator_v<Iterator> {
         auto backup {*this};
-        backup += n;
+        backup -= n;
         return backup;
     }
     [[nodiscard]]
