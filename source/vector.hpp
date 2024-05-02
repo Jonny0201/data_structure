@@ -615,7 +615,7 @@ constexpr void vector<T, Allocator>::push_back(rvalue_reference value) {
 template <typename T, typename Allocator>
 template <typename ...Args>
 constexpr void vector<T, Allocator>::emplace_back(Args &&...args) {
-    if(this->cursor == this->last) {
+    if(this->cursor == this->last()) {
         const auto size {this->size()};
         const auto allocation_size {size == 0 ? 1 : size * 2};
         if constexpr(is_trivially_copyable_v<T>) {
@@ -625,9 +625,9 @@ constexpr void vector<T, Allocator>::emplace_back(Args &&...args) {
             this->move_to(new_first, this->first, this->last, allocation_size);
             this->~vector();
             this->first = ds::move(new_first);
-            this->cursor = this->first + size;
-            this->last = this->first + allocation_size;
         }
+        this->cursor = this->first + size;
+        this->last() = this->first + allocation_size;
     }
     ds::construct(this->cursor, ds::forward<Args>(args)...);
     ++this->cursor;
