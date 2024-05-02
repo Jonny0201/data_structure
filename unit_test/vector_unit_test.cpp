@@ -38,7 +38,7 @@ public:
     void test_resize_1();
     // void resize(size_type, const_reference)
     void test_resize_2();
-    void test_push_back();
+    void test_emplace_back();
     void test_pop_back();
     void test_clear();
     void test_swap();
@@ -75,7 +75,8 @@ void vector_unit_test() {
     //correctness->test_reserve();
     //correctness->test_shrink_to_fit();
     //correctness->test_resize_1();
-    correctness->test_resize_2();
+    //correctness->test_resize_2();
+    correctness->test_emplace_back();
     delete correctness;
 }
 
@@ -7080,7 +7081,10 @@ void vector_correctness::test_resize_1() {
 
         // greater than size
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == std::numeric_limits<int>::max()) {
+                count = this->generate_count();
+            }
             const auto new_size {this->generate_a_random_number(count + 1)};
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
@@ -7284,7 +7288,10 @@ void vector_correctness::test_resize_2() {
 
         // greater than size
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == std::numeric_limits<int>::max()) {
+                count = this->generate_count();
+            }
             const auto new_size {this->generate_a_random_number(count + 1)};
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
@@ -7340,4 +7347,200 @@ void vector_correctness::test_resize_2() {
     }
 
     std::cout << "Checking void resize(size_type) for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_emplace_back() {
+    std::cout << "Start checking void emplace_back(Args &&...) for ds::vector!" << std::endl;
+
+    // empty
+    {
+        vector<int> v {};
+        const auto number {this->generate_a_random_number()};
+        v.emplace_back(number);
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.capacity() == 1);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+
+        const auto count {this->generate_count()};
+        v = vector<int>(count);
+        v.cursor = v.first;
+        v.emplace_back(number);
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.capacity() == count);
+        assert(v.spare() == count - 1);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.front() == number);
+        assert(v.back() == number);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == number);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == number);
+        }
+
+        std::cout << "\tChecking test_emplace_back/Empty done." << std::endl;
+    }
+
+    // non-empty
+    {
+        std::cout << "\tStart checking test_emplace_back/Non-empty for ds::vector!" << std::endl;
+
+        // not full
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            auto number_2 {this->generate_a_random_number()};
+            while(number == number_2) {
+                number_2 = this->generate_a_random_number();
+            }
+            const auto new_size {this->generate_a_random_number(0, count - 1)};
+            v.cursor = v.first + new_size;
+            v.emplace_back(number_2);
+            assert(v.size() == new_size + 1);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - new_size - 1);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + (new_size + 1) == v.end());
+            assert(v.cbegin() + (new_size + 1) == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number_2);
+            for(auto it {v.begin()}; it not_eq v.end() - 1; ++it) {
+                assert(*it == number);
+            }
+            assert(*(v.end() - 1) == number_2);
+            for(auto it {v.cbegin()}; it not_eq v.cend() - 1; ++it) {
+                assert(*it == number);
+            }
+            assert(*(v.cend() - 1) == number_2);
+            for(auto it {v.rbegin() + 1}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            assert(*v.rbegin() == number_2);
+            for(auto it {v.crbegin() + 1}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            assert(*v.crbegin() == number_2);
+            for(auto i {0}; i < v.size() - 1; ++i) {
+                assert(v[i] == number);
+            }
+            assert(v[v.size() - 1] == number_2);
+            std::cout << "\t\tChecking test_emplace_back/Non-empty vector/Not full done." << std::endl;
+        }
+
+        // full
+        {
+            auto count {this->generate_count()};
+            while(count == 0 or count == std::numeric_limits<int>::max()) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            auto number_2 {this->generate_a_random_number()};
+            while(number == number_2) {
+                number_2 = this->generate_a_random_number();
+            }
+            v.emplace_back(number_2);
+            assert(v.size() == count + 1);
+            assert(not v.empty());
+            assert(v.capacity() == static_cast<ds::size_t>(count) * 2);
+            assert(v.spare() == count - 1);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + (count + 1) == v.end());
+            assert(v.cbegin() + (count + 1) == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number_2);
+            for(auto it {v.begin()}; it not_eq v.end() - 1; ++it) {
+                assert(*it == number);
+            }
+            assert(*(v.end() - 1) == number_2);
+            for(auto it {v.cbegin()}; it not_eq v.cend() - 1; ++it) {
+                assert(*it == number);
+            }
+            assert(*(v.cend() - 1) == number_2);
+            for(auto it {v.rbegin() + 1}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            assert(*v.rbegin() == number_2);
+            for(auto it {v.crbegin() + 1}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            assert(*v.crbegin() == number_2);
+            for(auto i {0}; i < v.size() - 1; ++i) {
+                assert(v[i] == number);
+            }
+            assert(v[v.size() - 1] == number_2);
+            std::cout << "\t\tChecking test_emplace_back/Non-empty vector/Not full done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_emplace_back/Non-empty for ds::vector finished!" << std::endl;
+    }
+
+    // type implicit conversion
+    {
+        vector<int> v {};
+        v.emplace_back(42.2);
+        assert(v.size() == 1);
+        assert(not v.empty());
+        assert(v.capacity() == 1);
+        assert(v.spare() == 0);
+        assert(v.data() not_eq nullptr);
+        assert(v.begin() + 1 == v.end());
+        assert(v.cbegin() + 1 == v.cend());
+        assert(v.front() == 42);
+        assert(v.back() == 42);
+        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+            assert(*it == 42);
+        }
+        for(auto i {0}; i < v.size(); ++i) {
+            assert(v[i] == 42);
+        }
+    }
+
+    std::cout << "Checking void emplace_back(Args &&...) for ds::vector finished!" << std::endl;
 }
