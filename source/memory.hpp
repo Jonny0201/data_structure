@@ -29,9 +29,14 @@ inline constexpr T *address_of(T &arg) noexcept {
 __DATA_STRUCTURE_END(memory functions)
 
 __DATA_STRUCTURE_START(object construction and destruction)
-template <typename T, typename ...Args>
+template <bool ImplicitConversion = true, typename T, typename ...Args>
 inline constexpr T *construct(T *p, Args &&...args) noexcept(is_nothrow_constructible_v<T, Args...>) {
-    return new (static_cast<void *>(ds::address_of(*p))) T {ds::forward<Args>(args)...};
+    if constexpr(ImplicitConversion) {
+        return new (static_cast<void *>(ds::address_of(*p))) T(ds::forward<Args>(args)...);
+    }else {
+        return new (static_cast<void *>(ds::address_of(*p))) T {ds::forward<Args>(args)...};
+    }
+    return p;
 }
 template <typename T>
 inline constexpr void destroy(T *p) noexcept(is_nothrow_destructible_v<T>) {
