@@ -75,10 +75,10 @@ public:
     constexpr vector &operator=(vector &&) noexcept;
     constexpr vector &operator=(initializer_list<T>);
     [[nodiscard]]
-    constexpr reference operator[](difference_type) noexcept(is_nothrow_indexable_v<pointer, difference_type>);
+    constexpr reference operator[](size_type) noexcept(is_nothrow_indexable_v<pointer, size_type>);
     [[nodiscard]]
-    constexpr const_reference operator[](difference_type) const
-            noexcept(is_nothrow_indexable_v<pointer, difference_type>);
+    constexpr const_reference operator[](size_type) const
+            noexcept(is_nothrow_indexable_v<pointer, size_type>);
 public:
     constexpr void assign(size_type, const_reference = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
@@ -143,25 +143,25 @@ public:
     constexpr void pop_back() noexcept;
     constexpr void clear() noexcept;
     constexpr void swap(vector &) noexcept;
-    constexpr iterator insert(difference_type, const_reference, size_type = 1);
+    constexpr iterator insert(size_type, const_reference, size_type = 1);
     constexpr iterator insert(const_iterator, const_reference, size_type = 1);
     template <typename ...Args>
-    constexpr iterator emplace(difference_type, Args &&...);
+    constexpr iterator emplace(size_type, Args &&...);
     template <typename ...Args>
     constexpr iterator emplace(const_iterator, Args &&...);
-    constexpr iterator insert(difference_type, rvalue_reference);
+    constexpr iterator insert(size_type, rvalue_reference);
     constexpr iterator insert(const_iterator, rvalue_reference);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
-    constexpr iterator insert(difference_type, InputIterator, InputIterator);
+    constexpr iterator insert(size_type, InputIterator, InputIterator);
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
     constexpr iterator insert(const_iterator, InputIterator, InputIterator);
     template <IsForwardIterator ForwardIterator>
-    constexpr iterator insert(difference_type, ForwardIterator, ForwardIterator);
+    constexpr iterator insert(size_type, ForwardIterator, ForwardIterator);
     template <IsForwardIterator ForwardIterator>
     constexpr iterator insert(const_iterator, ForwardIterator, ForwardIterator);
-    constexpr iterator insert(difference_type, initializer_list<T>);
+    constexpr iterator insert(size_type, initializer_list<T>);
     constexpr iterator insert(const_iterator, initializer_list<T>);
-    constexpr iterator erase(difference_type, size_type = 1);
+    constexpr iterator erase(size_type, size_type = 1);
     constexpr iterator erase(const_iterator, size_type);
     constexpr iterator erase(const_iterator);
     constexpr iterator erase(const_iterator, const_iterator);
@@ -256,18 +256,14 @@ constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size
     if(allocation_size < new_size) {
         allocation_size = new_size;
     }
-    if constexpr(is_trivially_copyable_v<T>) {
-        this->first = this->last.allocator().reallocate(this->first, allocation_size);
-        if constexpr(is_pointer_v<pointer>) {
-            const auto new_head_size {static_cast<size_type>(pos) + n};
-            ds::memory_move(this->first + new_head_size, this->first + pos, old_size - new_head_size);
-        }else {
-            const auto stop_pos = this->first + (pos - 1);
-            for(auto move_it {this->cursor - 1}, it {move_it + n}; move_it not_eq stop_pos;
-                    --move_it, static_cast<void>(--it)) {
-                *it = *move_it;
-            }
+    if constexpr(is_trivially_copyable_v<T> and is_pointer_v<pointer>) {
+        auto new_first {this->last.allocator().allocate(allocation_size)};
+        if(old_size > 0) {
+            ds::memory_copy(new_first, this->first, sizeof(T) * static_cast<size_type>(pos));
+            ds::memory_copy(new_first + pos + n, this->first + pos,
+                    sizeof(T) * (old_size - static_cast<size_type>(pos)));
         }
+        this->first = ds::move(new_first);
     }else {
         struct reallocation_handler {
             Allocator &allocator;
@@ -299,9 +295,9 @@ constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size
         trans.complete();
         this->~vector();
         this->first = ds::move(new_first);
-        this->cursor = this->first + new_size;
-        this->last() = this->first + allocation_size;
     }
+    this->cursor = this->first + new_size;
+    this->last() = this->first + allocation_size;
 }
 
 /* public functions */
@@ -375,13 +371,13 @@ constexpr vector<T, Allocator> &vector<T, Allocator>::operator=(initializer_list
     return *this;
 }
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::operator[](difference_type n)
-        noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::operator[](size_type n)
+        noexcept(is_nothrow_indexable_v<pointer, size_type>) {
     return this->first[n];
 }
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::operator[](difference_type n) const
-        noexcept(is_nothrow_indexable_v<pointer, difference_type>) {
+constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::operator[](size_type n) const
+        noexcept(is_nothrow_indexable_v<pointer, size_type>) {
     return this->first[n];
 }
 template <typename T, typename Allocator>
@@ -709,7 +705,7 @@ vector<T, Allocator>::insert(const_iterator pos, const_reference value, size_typ
 }
 template <typename T, typename Allocator>
 template <typename ...Args>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(difference_type pos, Args &&...args) {
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(size_type pos, Args &&...args) {
     if(this->spare() == 0) {
         const auto size {this->size()};
         this->reallocate_when_insertion(1, size, pos);
@@ -725,7 +721,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
     for(auto it {this->cursor++}; it not_eq result; --it) {
         *it = ds::move(it[-1]);
     }
-    *result = T {ds::forward<Args>(args)...};
+    *result = T(ds::forward<Args>(args)...);
     return iterator {result};
 }
 template <typename T, typename Allocator>
@@ -735,7 +731,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, rvalue_reference value) {
+vector<T, Allocator>::insert(size_type pos, rvalue_reference value) {
     return this->emplace(pos, ds::move(value));
 }
 template <typename T, typename Allocator>
@@ -746,7 +742,7 @@ vector<T, Allocator>::insert(const_iterator pos, rvalue_reference value) {
 template <typename T, typename Allocator>
 template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, InputIterator begin, InputIterator end) {
+vector<T, Allocator>::insert(size_type pos, InputIterator begin, InputIterator end) {
     buffer<T, Allocator> b(begin, end, this->last.allocator());
     return this->insert(pos, b.mbegin(), b.mend());
 }
@@ -760,7 +756,7 @@ vector<T, Allocator>::insert(const_iterator pos, InputIterator begin, InputItera
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, ForwardIterator begin, ForwardIterator end) {
+vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterator end) {
     auto n {static_cast<size_type>(ds::distance(begin, end))};
     if(n == 0) {
         return iterator {this->first + pos};
@@ -828,7 +824,7 @@ vector<T, Allocator>::insert(const_iterator pos, ForwardIterator begin, ForwardI
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, initializer_list<T> init_list) {
+vector<T, Allocator>::insert(size_type pos, initializer_list<T> init_list) {
     return this->insert(pos, init_list.begin(), init_list.end());
 }
 template <typename T, typename Allocator>
@@ -837,7 +833,7 @@ vector<T, Allocator>::insert(const_iterator pos, initializer_list<T> init_list) 
     return this->insert(pos - this->cbegin(), init_list.begin(), init_list.end());
 }
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(difference_type pos, size_type n) {
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(size_type pos, size_type n) {
     const auto result {this->first + pos};
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         ds::memory_copy(result, result + n, sizeof(T) * (this->size() - (static_cast<size_type>(pos) + n)));
