@@ -259,9 +259,8 @@ constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size
     if constexpr(is_trivially_copyable_v<T> and is_pointer_v<pointer>) {
         auto new_first {this->last.allocator().allocate(allocation_size)};
         if(old_size > 0) {
-            ds::memory_copy(new_first, this->first, sizeof(T) * static_cast<size_type>(pos));
-            ds::memory_copy(new_first + pos + n, this->first + pos,
-                    sizeof(T) * (old_size - static_cast<size_type>(pos)));
+            ds::memory_copy(new_first, this->first, sizeof(T) * pos);
+            ds::memory_copy(new_first + pos + n, this->first + pos, sizeof(T) * (old_size - pos));
         }
         this->first = ds::move(new_first);
     }else {
@@ -281,15 +280,13 @@ constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size
             }
         };
         auto new_first {this->last.allocator().allocate(allocation_size)};
-        const auto head_size {static_cast<size_type>(pos)};
+        const auto head_size {pos};
         const auto tail_size {old_size - head_size};
-        auto trans {transaction {reallocation_handler(*this, new_first,
-                new_first + (static_cast<size_type>(pos) + n), allocation_size)}};
+        auto trans {transaction {reallocation_handler(*this, new_first, new_first + (pos + n), allocation_size)}};
         for(auto &i {trans.get_rollback().head_i}; i < pos; ++i) {
             ds::construct(new_first + i, ds::move(this->first[i]));
         }
-        for(auto i {static_cast<size_type>(pos)}, &tail_i {trans.get_rollback().tail_i}; i < tail_size;
-                ++i, static_cast<void>(++tail_i)) {
+        for(auto i {pos}, &tail_i {trans.get_rollback().tail_i}; i < tail_size; ++i, static_cast<void>(++tail_i)) {
             ds::construct(new_first + i, ds::move(this->first[i + n]));
         }
         trans.complete();
@@ -646,7 +643,7 @@ constexpr void vector<T, Allocator>::swap(vector &rhs) noexcept {
 }
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator
-vector<T, Allocator>::insert(difference_type pos, const_reference value, size_type n) {
+vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) {
     if(n == 0) {
         return iterator {this->first + pos};
     }
@@ -655,7 +652,7 @@ vector<T, Allocator>::insert(difference_type pos, const_reference value, size_ty
         this->reallocate_when_insertion(n, size, pos);
         const auto result {this->first + pos};
         auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-            this->cursor - (size - static_cast<size_type>(pos)), this->cursor, result}}};
+            this->cursor - (size - pos), this->cursor, result}}};
         for(auto &it {trans.get_rollback().now}; n not_eq 0; --n, static_cast<void>(++it)) {
             ds::construct(it, value);
         }
@@ -711,7 +708,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
         this->reallocate_when_insertion(1, size, pos);
         const auto result {this->first + pos};
         auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-                this->cursor - (size - static_cast<size_type>(pos)), this->cursor, result}}};
+                this->cursor - (size - pos), this->cursor, result}}};
         ds::construct(result, ds::forward<Args>(args)...);
         trans.complete();
         return iterator {result};
@@ -769,7 +766,7 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
             ds::memory_copy(result, begin, sizeof(T) * n);
         }else {
             auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-                    this->cursor - (size - static_cast<size_type>(pos)), this->cursor, result}}};
+                    this->cursor - (size - pos), this->cursor, result}}};
             for(auto &it {trans.get_rollback().now}; n not_eq 0; --n, static_cast<void>(++it)) {
                 ds::construct(it, *begin++);
             }
@@ -836,7 +833,7 @@ template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(size_type pos, size_type n) {
     const auto result {this->first + pos};
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
-        ds::memory_copy(result, result + n, sizeof(T) * (this->size() - (static_cast<size_type>(pos) + n)));
+        ds::memory_copy(result, result + n, sizeof(T) * (this->size() - (pos + n)));
     }else {
         auto left {result};
         for(auto right {result + n}; result not_eq this->cursor; ++left, static_cast<void>(++right)) {
