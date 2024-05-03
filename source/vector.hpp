@@ -714,6 +714,11 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
         return iterator {result};
     }
     const auto result {this->first + pos};
+    if(result == this->cursor) {
+        ds::construct(this->cursor, ds::forward<Args>(args)...);
+        ++this->cursor;
+        return iterator {result};
+    }
     ds::construct(this->cursor, this->cursor[-1]);
     for(auto it {this->cursor++}; it not_eq result; --it) {
         *it = ds::move(it[-1]);
