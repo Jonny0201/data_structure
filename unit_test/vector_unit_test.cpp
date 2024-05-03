@@ -8367,6 +8367,52 @@ void vector_correctness::test_emplace() {
 
             // without reallocation
             {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const auto new_size {this->generate_a_random_number(1, count - 1)};
+                const auto number {this->generate_a_random_number()};
+                vector<int> v(count, number);
+                v.cursor = v.first + new_size;
+                auto number_2 {this->generate_a_random_number()};
+                while(number == number_2) {
+                    number_2 = this->generate_a_random_number();
+                }
+                const auto result {v.emplace(new_size, number_2)};
+                assert(v.size() == new_size + 1);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == count - new_size - 1);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + (new_size + 1) == v.end());
+                assert(v.cbegin() + (new_size + 1) == v.cend());
+                assert(v.front() == number);
+                assert(v.back() == number_2);
+                for(auto it {v.begin()}; it not_eq v.end() - 1; ++it) {
+                    assert(*it == number);
+                }
+                assert(*(v.end() - 1) == number_2);
+                for(auto it {v.cbegin()}; it not_eq v.cend() - 1; ++it) {
+                    assert(*it == number);
+                }
+                assert(*(v.cend() - 1) == number_2);
+                for(auto it {v.rbegin() + 1}; it not_eq v.rend(); ++it) {
+                    assert(*it == number);
+                }
+                assert(*v.rbegin() == number_2);
+                for(auto it {v.crbegin() + 1}; it not_eq v.crend(); ++it) {
+                    assert(*it == number);
+                }
+                assert(*v.crbegin() == number_2);
+                for(auto i {0}; i < v.size() - 1; ++i) {
+                    assert(v[i] == number);
+                }
+                assert(v[new_size] == number_2);
+                assert(result == v.end() - 1);
+                assert(result == v.cend() - 1);
+                std::cout << "\t\t\tChecking test_emplace/Emplace to non-empty vector/Emplace to tail/Without reallocation done." << std::endl;
+            }
 
             // with reallocation
             {
