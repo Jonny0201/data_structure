@@ -29,8 +29,8 @@ namespace data_structure {
  * (2) The allocator should support reallocation by providing member function `reallocate`;
  * (3) The member function `deallocate` should be marked as noexcept, and if there exists
  *     deallocating memory in other member functions, the operation should also be nothrow;
- * (4) The copy and move operations of allocator, size_type, difference_type, pointer and
- *     const_pointer should be nothrow;
+ * (4) The copy and move operations of allocator, size_type, difference_type, pointer,
+ *     const_pointer, reference, const_reference and rvalue_reference should be nothrow;
  * (5) If the allocation size is zero, no memory should be allocated and nullptr is the
  *     returning value. Especially note that if the reallocation size is zero, the source
  *     memory should be deallocated.
