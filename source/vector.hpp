@@ -850,8 +850,8 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(si
             *left = ds::move(*right);
         }
         ds::destroy(left, this->cursor);
-        this->cursor -= n;
     }
+    this->cursor -= n;
     return iterator {result};
 }
 template <typename T, typename Allocator>
