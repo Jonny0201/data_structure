@@ -647,8 +647,8 @@ vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) 
     if(n == 0) {
         return iterator {this->first + pos};
     }
+    const auto size {this->size()};
     if(n > this->spare()) {
-        const auto size {this->size()};
         this->reallocate_when_insertion(n, size, pos);
         const auto result {this->first + pos};
         auto trans {transaction {__dsa::insertion_handler<pointer, true> {
@@ -662,10 +662,12 @@ vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) 
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         const auto start_pos {this->first + pos};
         const auto stop_pos {start_pos + n};
-        ds::memory_move(stop_pos, start_pos, sizeof(T) * (this->size() - n));
+        const auto tail_size {size - pos};
+        ds::memory_move(stop_pos, start_pos, sizeof(T) * tail_size);
         for(auto it {start_pos}; it not_eq stop_pos; ++it) {
             *it = value;
         }
+        this->cursor = stop_pos + tail_size;
         return iterator {start_pos};
     }
     auto uninitialized_size {n};
