@@ -80,7 +80,9 @@ void vector_unit_test() {
     //correctness->test_clear();
     //correctness->test_swap();
     //correctness->test_emplace();
-    correctness->test_insert_1();
+    //correctness->test_insert_1();
+    while(1)
+    correctness->test_insert_2();
     delete correctness;
 }
 
@@ -10311,4 +10313,1508 @@ void vector_correctness::test_insert_1() {
     }
 
     std::cout << "Checking iterator insert(size_type, const_reference, size_type) for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_insert_2() {
+    std::cout << "Start checking iterator insert(size_type, InputIterator, InputIterator) for ds::vector!" << std::endl;
+
+    // insert to empty vector
+    {
+        std::cout << "\tStart checking test_insert_2/Insert to empty vector for ds::vector!" << std::endl;
+
+        // insertion size equal to zero
+        {
+            vector<int> v {};
+            const auto result {v.insert(0, int_input_iterator {}, int_input_iterator {})};
+            assert(v.size() == 0);
+            assert(v.empty());
+            assert(v.capacity() == 0);
+            assert(v.spare() == 0);
+            assert(v.data() == nullptr);
+            assert(v.begin() == v.end());
+            assert(v.cbegin() == v.cend());
+            assert(result == v.begin());
+            assert(result == v.cbegin());
+            std::cout << "\t\tChecking test_insert_2/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+        }
+
+        // insertion size not equal to zero
+        {
+            vector<int> v {};
+            auto insertion_size {this->generate_count()};
+            while(insertion_size == 0) {
+                insertion_size = this->generate_count();
+            }
+            const auto numbers {this->generate_random_sequence(insertion_size)};
+            auto stream {this->to_input_iterator(numbers)};
+            const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+            assert(v.size() == insertion_size);
+            assert(not v.empty());
+            assert(v.capacity() == insertion_size);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + insertion_size == v.end());
+            assert(v.cbegin() + insertion_size == v.cend());
+            assert(v.front() == numbers.front());
+            assert(v.back() == numbers.back());
+            auto i {0uz};
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == numbers[i++]);
+            }
+            i = 0;
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == numbers[i++]);
+            }
+            i = insertion_size - 1;
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == numbers[i--]);
+            }
+            i = insertion_size - 1;
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == numbers[i--]);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == numbers[i]);
+            }
+            assert(result == v.begin());
+            assert(result == v.cbegin());
+            std::cout << "\t\tChecking test_insert_2/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_insert_2/Insert to empty vector for ds::vector finished!" << std::endl;
+    }
+
+    // insert to non-empty vector
+    {
+        std::cout << "\tStart checking test_insert_2/Insert to non-empty vector!" << std::endl;
+
+        // insert to head
+        {
+            std::cout << "\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to head!" << std::endl;
+
+            // without reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+
+                // insertion size is zero
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto new_size {this->generate_a_random_number(1, count - 1)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    v.cursor = v.first + new_size;
+                    const auto result {v.insert(0, int_input_iterator {}, int_input_iterator {})};
+                    assert(v.size() == new_size);
+                    assert(not v.empty());
+                    assert(v.capacity() == count);
+                    assert(v.spare() == count - new_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + new_size == v.end());
+                    assert(v.cbegin() + new_size == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {1}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                }
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= insertion_size + spare;
+                    const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                    const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+            }
+
+            // with reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                // insertion size less equal to double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) * 2);
+                    assert(v.spare() == count - insertion_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                }
+
+                // insertion size greater than double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                    assert(v.spare() == 0);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == numbers.front());
+                    assert(v.back() == number);
+                    auto number_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = 0;
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[number_i++]);
+                    }
+                    for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    number_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                        assert(*it == numbers[number_i--]);
+                    }
+                    number_i = 0;
+                    for(auto i {0}; i < insertion_size; ++i) {
+                        assert(v[i] == numbers[number_i++]);
+                    }
+                    for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_insert_2/Insert to non-empty vector/Insert to head finished!" << std::endl;
+        }
+
+        // insert to random position
+        {
+            std::cout << "\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to random position!" << std::endl;
+
+            // without reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+
+                // insertion size is zero
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto new_size {this->generate_a_random_number(1, count - 1)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto insertion_position {this->generate_a_random_number(1, new_size - 1)};
+                    vector<int> v(count, number);
+                    v.cursor = v.first + new_size;
+                    const auto result {v.insert(insertion_position, int_input_iterator {}, int_input_iterator {})};
+                    assert(v.size() == new_size);
+                    assert(not v.empty());
+                    assert(v.capacity() == count);
+                    assert(v.spare() == count - new_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + new_size == v.end());
+                    assert(v.cbegin() + new_size == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    for(auto it {v.begin() + 1}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin() + 1}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rend() - 1; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crend() - 1; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {1}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                }
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                    auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= insertion_size + spare;
+                    const auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                    const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                    const auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+            }
+
+            // with reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                    auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                    const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                // insertion size less equal to double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 2) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) * 2);
+                    assert(v.spare() == count - insertion_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                }
+
+                // insertion size greater than double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 2) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                    assert(v.spare() == 0);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    const auto tail_size {count - insertion_position};
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < insertion_position; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.begin() + insertion_position);
+                    assert(result == v.cbegin() + insertion_position);
+                    std::cout << "\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_insert_2/Insert to non-empty vector/Insert to random position finished!" << std::endl;
+        }
+
+        // insert to tail
+        {
+            std::cout << "\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to tail!" << std::endl;
+
+            // without reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+
+                // insertion size is zero
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto new_size {this->generate_a_random_number(1, count - 1)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    v.cursor = v.first + new_size;
+                    const auto result {v.insert(new_size, int_input_iterator {}, int_input_iterator {})};
+                    assert(v.size() == new_size);
+                    assert(not v.empty());
+                    assert(v.capacity() == count);
+                    assert(v.spare() == count - new_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + new_size == v.end());
+                    assert(v.cbegin() + new_size == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == number);
+                    for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {1}; i < v.size(); ++i) {
+                        assert(v[i] == number);
+                    }
+                    assert(result == v.end());
+                    assert(result == v.cend());
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                }
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= insertion_size + spare;
+                    const auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    const auto spare {this->generate_count(count)};
+                    vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                    const auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                    assert(v.spare() == spare);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+            }
+
+            // with reallocation
+            {
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+
+                // insertion size less equal to tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                }
+
+                // insertion size greater than tail size
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const auto insertion_size {this->generate_a_random_number(count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    const auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                        assert(v.spare() == 0);
+                    }else {
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                    }
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                }
+
+                // insertion size less equal to double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(1, count)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) * 2);
+                    assert(v.spare() == count - insertion_size);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                }
+
+                // insertion size greater than double capacity
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto numbers {this->generate_random_sequence(insertion_size)};
+                    auto stream {this->to_input_iterator(numbers)};
+                    const auto number {this->generate_a_random_number()};
+                    vector<int> v(count, number);
+                    auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
+                    assert(v.size() == count + static_cast<size_t>(insertion_size));
+                    assert(not v.empty());
+                    assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                    assert(v.spare() == 0);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                    assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                    assert(v.front() == number);
+                    assert(v.back() == numbers.back());
+                    auto numbers_i {0uz};
+                    for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = 0;
+                    for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                        assert(*it == numbers[numbers_i++]);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                        assert(*it == number);
+                    }
+                    numbers_i = insertion_size - 1;
+                    for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                        assert(*it == numbers[numbers_i--]);
+                    }
+                    for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                        assert(*it == number);
+                    }
+                    for(auto i {0}; i < count; ++i) {
+                        assert(v[i] == number);
+                    }
+                    numbers_i = 0;
+                    for(auto i {count}; i < count + insertion_size; ++i) {
+                        assert(v[i] == numbers[numbers_i++]);
+                    }
+                    assert(result == v.begin() + count);
+                    assert(result == v.cbegin() + count);
+                    std::cout << "\t\t\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                }
+
+                std::cout << "\t\t\tStart checking test_insert_2/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_insert_2/Insert to non-empty vector/Insert to tail finished!" << std::endl;
+        }
+
+        std::cout << "\tChecking test_insert_2/Insert to non-empty vector finished!" << std::endl;
+    }
+
+    std::cout << "Checking iterator insert(size_type, InputIterator, InputIterator) for ds::vector finished!" << std::endl;
 }
