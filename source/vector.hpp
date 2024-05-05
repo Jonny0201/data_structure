@@ -761,12 +761,13 @@ template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr typename vector<T, Allocator>::iterator
 vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterator end) {
+    // Todo : if ForwardIterator is pointer?
     auto n {static_cast<size_type>(ds::distance(begin, end))};
     if(n == 0) {
         return iterator {this->first + pos};
     }
+    const auto size {this->size()};
     if(n > this->spare()) {
-        const auto size {this->size()};
         this->reallocate_when_insertion(n, size, pos);
         const auto result {this->first + pos};
         if constexpr(is_pointer_v<pointer> and is_pointer_v<ForwardIterator> and is_trivially_copyable_v<T>) {
@@ -784,13 +785,15 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         const auto start_pos {this->first + pos};
         const auto stop_pos {start_pos + n};
-        ds::memory_move(stop_pos, start_pos, sizeof(T) * (this->size() - n));
+        const auto tail_size {size - pos};
+        ds::memory_move(stop_pos, start_pos, sizeof(T) * tail_size);
         if constexpr(is_pointer_v<ForwardIterator>) {
             ds::memory_copy(start_pos, begin, sizeof(T) * n);
         }
         for(auto it {start_pos}; it not_eq stop_pos; ++it) {
             *it = *begin++;
         }
+        this->cursor = stop_pos + tail_size;
         return iterator {start_pos};
     }
     auto uninitialized_size {n};
