@@ -82,7 +82,8 @@ void vector_unit_test() {
     //correctness->test_emplace();
     //correctness->test_insert_1();
     //correctness->test_insert_2();
-    correctness->test_insert_3();
+    //correctness->test_insert_3();
+    correctness->test_erase();
     delete correctness;
 }
 
@@ -16342,4 +16343,269 @@ void vector_correctness::test_insert_3() {
     // Todo : contiguous iterator (pointer)
 
     std::cout << "Checking iterator insert(size_type, ForwardIterator, ForwardIterator) for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_erase() {
+    std::cout << "Start checking iterator erase(size_type, size_type) for ds::vector!" << std::endl;
+
+    // erase from head
+    {
+        std::cout << "\tStart checking test_erase/Erase from head for ds::vector!" << std::endl;
+
+        // erasion size is zero
+        {
+            std::cout << "\t\tStart checking test_erase/Erase from head/Erasion size is zero for ds::vector!" << std::endl;
+
+            // empty
+            {
+                vector<int> v {};
+                auto result {v.erase(0, 0)};
+                assert(v.size() == 0);
+                assert(v.empty());
+                assert(v.capacity() == 0);
+                assert(v.spare() == 0);
+                assert(v.begin() == v.end());
+                assert(v.cbegin() == v.cend());
+                assert(v.rbegin() == v.rend());
+                assert(v.crbegin() == v.crend());
+                assert(v.crbegin() == v.crend());
+                assert(v.data() == nullptr);
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                assert(result == v.end());
+                assert(result == v.cend());
+                std::cout << "\t\t\tChecking test_erase/Erase from head/Erasion size is zero/Empty done." << std::endl;
+            }
+
+            // non-empty
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const auto number {this->generate_a_random_number()};
+                vector<int> v(count, number);
+                auto result {v.erase(0, 0)};
+                assert(v.size() == count);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == 0);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + count == v.end());
+                assert(v.cbegin() + count == v.cend());
+                assert(v.front() == number);
+                assert(v.back() == number);
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == number);
+                }
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == number);
+                }
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == number);
+                }
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == number);
+                }
+                for(auto i {0}; i < v.size(); ++i) {
+                    assert(v[i] == number);
+                }
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                std::cout << "\t\t\tChecking test_erase/Erase from head/Erasion size is zero/Non-empty done." << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_erase/Erase from head/Erasion size is zero for ds::vector finished!" << std::endl;
+        }
+
+        // erasion size is random
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            const auto erasion_size {this->generate_a_random_number(1, count - 1)};
+            auto result {v.erase(0, erasion_size)};
+            assert(v.size() == count - erasion_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == erasion_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + (count - erasion_size) == v.end());
+            assert(v.cbegin() + (count - erasion_size) == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < count - erasion_size; ++i) {
+                assert(v[i] == number);
+            }
+            assert(result == v.begin());
+            assert(result == v.cbegin());
+            std::cout << "\t\tChecking test_erase/Erase from head/Erasion size is random done." << std::endl;
+        }
+
+        // erase all
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            auto result {v.erase(0, count)};
+            assert(v.size() == 0);
+            assert(v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() == v.end());
+            assert(v.cbegin() == v.cend());
+            assert(result == v.begin());
+            assert(result == v.cbegin());
+            assert(result == v.end());
+            assert(result == v.cend());
+            std::cout << "\t\tChecking test_erase/Erase from head/Erasion all done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_erase/Erase from head for ds::vector finished!" << std::endl;
+    }
+
+    // erase from any position
+    {
+        std::cout << "\tStart checking test_erase/Erase from any position for ds::vector!" << std::endl;
+
+        // erasion size is zero
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+            auto result {v.erase(erasion_position, 0)};
+            assert(v.size() == count);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == 0);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + count == v.end());
+            assert(v.cbegin() + count == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < v.size(); ++i) {
+                assert(v[i] == number);
+            }
+            assert(result == v.begin() + erasion_position);
+            assert(result == v.cbegin() + erasion_position);
+            std::cout << "\t\t\tChecking test_erase/Erase from head/Erase from any position/Erasion size is zero done." << std::endl;
+        }
+
+        // erasion size is not zero
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+            const auto erasion_size {this->generate_a_random_number(1, count - erasion_position)};
+            auto result {v.erase(erasion_position, erasion_size)};
+            assert(v.size() == count - erasion_size);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == erasion_size);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + (count - erasion_size) == v.end());
+            assert(v.cbegin() + (count - erasion_size) == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < count - erasion_size; ++i) {
+                assert(v[i] == number);
+            }
+            assert(result == v.begin() + erasion_position);
+            assert(result == v.cbegin() + erasion_position);
+            std::cout << "\t\t\tChecking test_erase/Erase from head/Erase from any position/Erasion size is not zero done." << std::endl;
+        }
+
+        // erase to tail
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            const auto number {this->generate_a_random_number()};
+            vector<int> v(count, number);
+            const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+            auto result {v.erase(erasion_position, count - erasion_position)};
+            assert(v.size() == erasion_position);
+            assert(not v.empty());
+            assert(v.capacity() == count);
+            assert(v.spare() == count - erasion_position);
+            assert(v.data() not_eq nullptr);
+            assert(v.begin() + erasion_position == v.end());
+            assert(v.cbegin() + erasion_position == v.cend());
+            assert(v.front() == number);
+            assert(v.back() == number);
+            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                assert(*it == number);
+            }
+            for(auto i {0}; i < erasion_position; ++i) {
+                assert(v[i] == number);
+            }
+            assert(result == v.begin() + erasion_position);
+            assert(result == v.cbegin() + erasion_position);
+            std::cout << "\t\t\tChecking test_erase/Erase from head/Erase from any position/Erase to tail done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_erase/Erase from any position for ds::vector finished!" << std::endl;
+    }
+
+    std::cout << "Checking iterator erase(size_type, size_type) for ds::vector finished!" << std::endl;
 }
