@@ -843,7 +843,7 @@ template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(size_type pos, size_type n) {
     const auto result {this->first + pos};
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
-        ds::memory_copy(result, result + n, sizeof(T) * (this->size() - (pos + n)));
+        ds::memory_move(result, result + n, sizeof(T) * (this->size() - (pos + n)));
     }else {
         auto left {result};
         for(auto right {result + n}; result not_eq this->cursor; ++left, static_cast<void>(++right)) {
