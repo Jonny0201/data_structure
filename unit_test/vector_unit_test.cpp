@@ -83,7 +83,8 @@ void vector_unit_test() {
     //correctness->test_insert_1();
     //correctness->test_insert_2();
     //correctness->test_insert_3();
-    correctness->test_erase();
+    //correctness->test_erase();
+    correctness->test_allocator();
     delete correctness;
 }
 
@@ -16608,4 +16609,14 @@ void vector_correctness::test_erase() {
     }
 
     std::cout << "Checking iterator erase(size_type, size_type) for ds::vector finished!" << std::endl;
+}
+void vector_correctness::test_allocator() {
+    std::cout << "Start checking allocator for ds::vector!" << std::endl;
+
+    vector<int> v {1, 2, 3};
+    auto allocator {v.allocator()};
+    static_assert(allocator == typename buffer<int>::allocator_type {});
+    static_assert(allocator == typename buffer<char>::allocator_type {});
+
+    std::cout << "Checking allocator for ds::vector finished!" << std::endl;
 }
