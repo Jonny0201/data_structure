@@ -86,7 +86,7 @@ void vector_unit_test() {
     //correctness->test_erase();
     //correctness->test_allocator();
     while(true)
-    correctness->test_non_trivial();
+        correctness->test_non_trivial();
     delete correctness;
 }
 
@@ -4581,7 +4581,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                 }
 
                 // insertion size greater than tail size
@@ -4658,7 +4658,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                 }
 
                 // the value is from self
@@ -4734,7 +4734,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/The value is from self done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation/The value is from self done." << std::endl;
                 }
 
                 std::cout << "\t\t\tStart checking test_insert_1/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
@@ -4821,7 +4821,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                 }
 
                 // insertion size greater than tail size
@@ -4901,7 +4901,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                 }
 
                 // insertion size less equal to double capacity
@@ -4976,7 +4976,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                 }
 
                 // insertion size greater than double capacity
@@ -5051,7 +5051,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                 }
 
                 // the value is from self
@@ -5131,7 +5131,7 @@ void vector_correctness::test_insert_1() {
                     }
                     assert(result == v.begin() + insertion_position);
                     assert(result == v.cbegin() + insertion_position);
-                    std::cout << "\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/The value is from self done." << std::endl;
+                    std::cout << "\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/The value is from self done." << std::endl;
                 }
 
                 std::cout << "\t\t\tStart checking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
@@ -12737,11 +12737,3593 @@ void vector_correctness::test_non_trivial() {
 
     // iterator insert(size_type, const_reference, size_type)
     {
-        std::cout << "Start checking iterator insert(size_type, const_reference, size_type) for ds::vector!" << std::endl;
+        std::cout << "\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type) for ds::vector!" << std::endl;
 
-        {}
+        {
+            // insert to empty vector
+            {
+                std::cout << "\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to empty vector for ds::vector!" << std::endl;
 
-        std::cout << "Checking iterator insert(size_type, const_reference, size_type) for ds::vector finished!" << std::endl;
+                // insertion size equal to zero
+                {
+                    vector<std::string> v {};
+                    const auto result {v.insert(0, "hello", 0)};
+                    assert(v.size() == 0);
+                    assert(v.empty());
+                    assert(v.capacity() == 0);
+                    assert(v.spare() == 0);
+                    assert(v.data() == nullptr);
+                    assert(v.begin() == v.end());
+                    assert(v.cbegin() == v.cend());
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\tChecking test_insert_1/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+                }
+
+                // insertion size not equal to zero
+                {
+                    vector<std::string> v {};
+                    auto insertion_size {this->generate_count()};
+                    while(insertion_size == 0) {
+                        insertion_size = this->generate_count();
+                    }
+                    const std::string s {"insertion"};
+                    const auto result {v.insert(0, s, insertion_size)};
+                    assert(v.size() == insertion_size);
+                    assert(not v.empty());
+                    assert(v.capacity() == insertion_size);
+                    assert(v.spare() == 0);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + insertion_size == v.end());
+                    assert(v.cbegin() + insertion_size == v.cend());
+                    assert(v.front() == s);
+                    assert(v.back() == s);
+                    for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto i {0}; i < v.size(); ++i) {
+                        assert(v[i] == s);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\tChecking test_non_trivial/test_insert_1/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+                }
+
+                std::cout << "\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to empty vector for ds::vector finished!" << std::endl;
+            }
+
+            // insert to non-empty vector
+            {
+                std::cout << "\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector!" << std::endl;
+
+                // insert to head
+                {
+                    std::cout << "\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head!" << std::endl;
+
+                    // without reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+
+                        // insertion size is zero
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto new_size {this->generate_a_random_number(1, count - 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            destroy(v.first + new_size, v.cursor);
+                            v.cursor = v.first + new_size;
+                            const auto result {v.insert(0, "hello", 0)};
+                            assert(v.size() == new_size);
+                            assert(not v.empty());
+                            assert(v.capacity() == count);
+                            assert(v.spare() == count - new_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + new_size == v.end());
+                            assert(v.cbegin() + new_size == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {1}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        }
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const auto s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            destroy(v.cursor - (insertion_size + spare), v.cursor);
+                            v.cursor -= insertion_size + spare;
+                            auto s2 {"insert"};
+                            const auto result {v.insert(0, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_size {this->generate_a_random_number(count + 1)};
+                            const std::string s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(0, s, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size), s);
+                            destroy(v.cursor - insertion_size, v.cursor);
+                            v.cursor -= insertion_size;
+                            const std::string s2 {"insert"};
+                            v[0] = s2;
+                            auto result {v.insert(0, v[0], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_size + 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + (count - 1)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + (count - 1)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size + 1; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size + 1}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/Without reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+                    }
+
+                    // with reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(0, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_size {this->generate_a_random_number(count + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(0, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // insertion size less equal to double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            auto result {v.insert(0, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        }
+
+                        // insertion size greater than double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const auto s2 {"insert"};
+                            auto result {v.insert(0, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            v[0] = s2;
+                            auto result {v.insert(0, v[0], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s2);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_size + 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + (count - 1)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + (count - 1)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto i {0}; i < insertion_size + 1; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_size + 1}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin());
+                            assert(result == v.cbegin());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+                    }
+
+                    std::cout << "\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to head finished!" << std::endl;
+                }
+
+                // insert to random position
+                {
+                    std::cout << "\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position!" << std::endl;
+
+                    // without reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+
+                        // insertion size is zero
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto new_size {this->generate_a_random_number(1, count - 1)};
+                            const std::string s {"insert"};
+                            const auto insertion_position {this->generate_a_random_number(1, new_size - 1)};
+                            vector<std::string> v(count, s);
+                            destroy(v.first + new_size, v.cursor);
+                            v.cursor = v.first + new_size;
+                            const auto result {v.insert(insertion_position, "hello", 0)};
+                            assert(v.size() == new_size);
+                            assert(not v.empty());
+                            assert(v.capacity() == count);
+                            assert(v.spare() == count - new_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + new_size == v.end());
+                            assert(v.cbegin() + new_size == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin() + 1}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + 1}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rend() - 1; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crend() - 1; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {1}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        }
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                            const auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                            const auto s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            destroy(v.cursor - (insertion_size + spare), v.cursor);
+                            v.cursor -= insertion_size + spare;
+                            auto s2 {"insert"};
+                            const auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                            const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                            const std::string s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 2) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size), s);
+                            destroy(v.cursor - insertion_size, v.cursor);
+                            v.cursor -= insertion_size;
+                            const std::string s2 {"insert"};
+                            v[insertion_position] = s2;
+                            auto result {v.insert(insertion_position, v[insertion_position], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (tail_size - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + (tail_size - 1)}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (tail_size - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + (tail_size - 1)}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+                    }
+
+                    // with reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                            auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_insert_1/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                            const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // insertion size less equal to double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 2) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        }
+
+                        // insertion size greater than double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 2) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                            auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            auto result {v.insert(insertion_position, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 2) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            v[insertion_position] = s2;
+                            auto result {v.insert(insertion_position, v[insertion_position], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            const auto tail_size {count - insertion_position};
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (tail_size - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin() + (tail_size - 1)}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (tail_size - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin() + (tail_size - 1)}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < insertion_position; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.begin() + insertion_position);
+                            assert(result == v.cbegin() + insertion_position);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+                    }
+
+                    std::cout << "\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to random position finished!" << std::endl;
+                }
+
+                // insert to tail
+                {
+                    std::cout << "\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail!" << std::endl;
+
+                    // without reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+
+                        // insertion size is zero
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto new_size {this->generate_a_random_number(1, count - 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            destroy(v.first + new_size, v.cursor);
+                            v.cursor = v.first + new_size;
+                            const auto result {v.insert(new_size, "hello", 0)};
+                            assert(v.size() == new_size);
+                            assert(not v.empty());
+                            assert(v.capacity() == count);
+                            assert(v.spare() == count - new_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + new_size == v.end());
+                            assert(v.cbegin() + new_size == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s);
+                            for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {1}; i < v.size(); ++i) {
+                                assert(v[i] == s);
+                            }
+                            assert(result == v.end());
+                            assert(result == v.cend());
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        }
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            v.cursor -= insertion_size + spare;
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_size {this->generate_a_random_number(count + 1)};
+                            const std::string s {"init"};
+                            const auto spare {this->generate_count(count)};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                            destroy(v.cursor - (static_cast<size_t>(insertion_size + spare)), v.cursor);
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                            assert(v.spare() == spare);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count + static_cast<size_t>(insertion_size), s);
+                            destroy(v.cursor - insertion_size, v.cursor);
+                            v.cursor -= insertion_size;
+                            const std::string s2 {"insert"};
+                            v[count - 1] = s2;
+                            const auto result {v.insert(count, v[count - 1], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + (count - 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + (count - 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (insertion_size + 1)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (insertion_size + 1)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count - 1; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count - 1}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+                    }
+
+                    // with reallocation
+                    {
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+
+                        // insertion size less equal to tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const auto s2 {"insert"};
+                            const auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        }
+
+                        // insertion size greater than tail size
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            const auto insertion_size {this->generate_a_random_number(count + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            const auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        }
+
+                        // insertion size less equal to double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        }
+
+                        // insertion size greater than double capacity
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            auto result {v.insert(count, s2, insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                            assert(v.spare() == 0);
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        }
+
+                        // the value is from self
+                        {
+                            auto count {this->generate_count()};
+                            while(count <= 1) {
+                                count = this->generate_count();
+                            }
+                            auto insertion_size {this->generate_count()};
+                            while(insertion_size == 0) {
+                                insertion_size = this->generate_count();
+                            }
+                            const std::string s {"init"};
+                            vector<std::string> v(count, s);
+                            const std::string s2 {"insert"};
+                            v[count - 1] = s2;
+                            auto result {v.insert(count, v[count - 1], insertion_size)};
+                            assert(v.size() == count + static_cast<size_t>(insertion_size));
+                            assert(not v.empty());
+                            if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                                assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                                assert(v.spare() == 0);
+                            }else {
+                                assert(v.capacity() == static_cast<size_t>(count) * 2);
+                                assert(v.spare() == count - insertion_size);
+                            }
+                            assert(v.data() not_eq nullptr);
+                            assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                            assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                            assert(v.front() == s);
+                            assert(v.back() == s2);
+                            for(auto it {v.begin()}; it not_eq v.begin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.begin() + (count - 1)}; it not_eq v.end(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.cbegin()}; it not_eq v.cbegin() + (count - 1); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.cbegin() + (count - 1)}; it not_eq v.cend(); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin()}; it not_eq v.rbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.rbegin() + (insertion_size + 1)}; it not_eq v.rend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto it {v.crbegin()}; it not_eq v.crbegin() + (insertion_size + 1); ++it) {
+                                assert(*it == s2);
+                            }
+                            for(auto it {v.crbegin() + (insertion_size + 1)}; it not_eq v.crend(); ++it) {
+                                assert(*it == s);
+                            }
+                            for(auto i {0}; i < count - 1; ++i) {
+                                assert(v[i] == s);
+                            }
+                            for(auto i {count - 1}; i < count + insertion_size; ++i) {
+                                assert(v[i] == s2);
+                            }
+                            assert(result == v.begin() + count);
+                            assert(result == v.cbegin() + count);
+                            std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation/The value is from self done." << std::endl;
+                        }
+
+                        std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+                    }
+
+                    std::cout << "\t\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector/Insert to tail finished!" << std::endl;
+                }
+
+                std::cout << "\t\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type)/Insert to non-empty vector finished!" << std::endl;
+            }
+        }
+
+        std::cout << "\tChecking test_non_trivial/iterator insert(size_type, const_reference, size_type) for ds::vector finished!" << std::endl;
+    }
+
+    // iterator insert(size_type, ForwardIterator, ForwardIterator)
+    {
+        std::cout << "\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/ for ds::vector!" << std::endl;
+
+        // insert to empty vector
+        {
+            std::cout << "\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to empty vector for ds::vector!" << std::endl;
+
+            // insertion size equal to zero
+            {
+                vector<std::string> v {};
+                const auto result {v.insert(0, std_string_random_access_iterator {}, std_string_random_access_iterator {})};
+                assert(v.size() == 0);
+                assert(v.empty());
+                assert(v.capacity() == 0);
+                assert(v.spare() == 0);
+                assert(v.data() == nullptr);
+                assert(v.begin() == v.end());
+                assert(v.cbegin() == v.cend());
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+            }
+
+            // insertion size not equal to zero
+            {
+                vector<std::string> v {};
+                auto insertion_size {this->generate_count()};
+                while(insertion_size == 0) {
+                    insertion_size = this->generate_count();
+                }
+                const std::vector<std::string> strings(insertion_size, "init");
+                auto d {this->to_random_access_iterator(strings)};
+                const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                assert(v.size() == insertion_size);
+                assert(not v.empty());
+                assert(v.capacity() == insertion_size);
+                assert(v.spare() == 0);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + insertion_size == v.end());
+                assert(v.cbegin() + insertion_size == v.cend());
+                assert(v.front() == strings.front());
+                assert(v.back() == strings.back());
+                auto i {0uz};
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == strings[i++]);
+                }
+                i = 0;
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == strings[i++]);
+                }
+                i = insertion_size - 1;
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == strings[i--]);
+                }
+                i = insertion_size - 1;
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == strings[i--]);
+                }
+                for(auto i {0}; i < v.size(); ++i) {
+                    assert(v[i] == strings[i]);
+                }
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
+            }
+
+            std::cout << "\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to empty vector for ds::vector finished!" << std::endl;
+        }
+
+        // insert to non-empty vector
+        {
+            std::cout << "\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector!" << std::endl;
+
+            // insert to head
+            {
+                std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head!" << std::endl;
+
+                // without reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+
+                    // insertion size is zero
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto new_size {this->generate_a_random_number(1, count - 1)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        v.cursor = v.first + new_size;
+                        const auto result {v.insert(0, std_string_random_access_iterator {}, std_string_random_access_iterator {})};
+                        assert(v.size() == new_size);
+                        assert(not v.empty());
+                        assert(v.capacity() == count);
+                        assert(v.spare() == count - new_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + new_size == v.end());
+                        assert(v.cbegin() + new_size == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {1}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                    }
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        destroy(v.cursor - (insertion_size + spare), v.cursor);
+                        v.cursor -= insertion_size + spare;
+                        const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                        const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+                }
+
+                // with reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    // insertion size less equal to double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                    }
+
+                    // insertion size greater than double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                        assert(v.spare() == 0);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == strings.front());
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + insertion_size}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + insertion_size}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + count}; it not_eq v.rend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + count}; it not_eq v.crend(); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        string_i = 0;
+                        for(auto i {0}; i < insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_size}; i < count + insertion_size; ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin());
+                        assert(result == v.cbegin());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+                }
+
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to head finished!" << std::endl;
+            }
+
+            // insert to random position
+            {
+                std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position!" << std::endl;
+
+                // without reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+
+                    // insertion size is zero
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto new_size {this->generate_a_random_number(1, count - 1)};
+                        const std::string s {"init"};
+                        const auto insertion_position {this->generate_a_random_number(1, new_size - 1)};
+                        vector<std::string> v(count, s);\
+                        destroy(v.first + new_size, v.cursor);
+                        v.cursor = v.first + new_size;
+                        const auto result {v.insert(insertion_position, std_string_random_access_iterator {}, std_string_random_access_iterator {})};
+                        assert(v.size() == new_size);
+                        assert(not v.empty());
+                        assert(v.capacity() == count);
+                        assert(v.spare() == count - new_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + new_size == v.end());
+                        assert(v.cbegin() + new_size == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        for(auto it {v.begin() + 1}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin() + 1}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rend() - 1; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crend() - 1; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {1}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                    }
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                        auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        v.cursor -= insertion_size + spare;
+                        const auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                        const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                        const auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+                }
+
+                // with reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                        auto insertion_size {this->generate_a_random_number(1, count - insertion_position)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 1)};
+                        const auto insertion_size {this->generate_a_random_number(count - insertion_position + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    // insertion size less equal to double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 2) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                    }
+
+                    // insertion size greater than double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 2) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_position {this->generate_a_random_number(1, count - 2)};
+                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                        assert(v.spare() == 0);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        const auto tail_size {count - insertion_position};
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin() + tail_size}; it not_eq v.rbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + (tail_size + insertion_size)}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + tail_size; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin() + tail_size}; it not_eq v.crbegin() + (tail_size + insertion_size); ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + (tail_size + insertion_size)}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < insertion_position; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.begin() + insertion_position);
+                        assert(result == v.cbegin() + insertion_position);
+                        std::cout << "\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+                }
+
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to random position finished!" << std::endl;
+            }
+
+            // insert to tail
+            {
+                std::cout << "\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail!" << std::endl;
+
+                // without reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+
+                    // insertion size is zero
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto new_size {this->generate_a_random_number(1, count - 1)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        destroy(v.first + new_size, v.cursor);
+                        v.cursor = v.first + new_size;
+                        const auto result {v.insert(new_size, std_string_random_access_iterator {}, std_string_random_access_iterator {})};
+                        assert(v.size() == new_size);
+                        assert(not v.empty());
+                        assert(v.capacity() == count);
+                        assert(v.spare() == count - new_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + new_size == v.end());
+                        assert(v.cbegin() + new_size == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == s);
+                        for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {1}; i < v.size(); ++i) {
+                            assert(v[i] == s);
+                        }
+                        assert(result == v.end());
+                        assert(result == v.cend());
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                    }
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        destroy(v.cursor - (insertion_size + spare), v.cursor);
+                        v.cursor -= insertion_size + spare;
+                        const auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        const auto spare {this->generate_count(count)};
+                        vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
+                        destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
+                        const auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
+                        assert(v.spare() == spare);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+                }
+
+                // with reallocation
+                {
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+
+                    // insertion size less equal to tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                    }
+
+                    // insertion size greater than tail size
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        const auto insertion_size {this->generate_a_random_number(count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        const auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        if(static_cast<size_t>(insertion_size) + count > static_cast<size_t>(count) * 2) {
+                            assert(v.capacity() == count + static_cast<size_t>(insertion_size));
+                            assert(v.spare() == 0);
+                        }else {
+                            assert(v.capacity() == static_cast<size_t>(count) * 2);
+                            assert(v.spare() == count - insertion_size);
+                        }
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                    }
+
+                    // insertion size less equal to double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(1, count)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) * 2);
+                        assert(v.spare() == count - insertion_size);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                    }
+
+                    // insertion size greater than double capacity
+                    {
+                        auto count {this->generate_count()};
+                        while(count <= 1) {
+                            count = this->generate_count();
+                        }
+                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const std::vector<std::string> strings(insertion_size, "init");
+                        auto d {this->to_random_access_iterator(strings)};
+                        const std::string s {"init"};
+                        vector<std::string> v(count, s);
+                        auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
+                        assert(v.size() == count + static_cast<size_t>(insertion_size));
+                        assert(not v.empty());
+                        assert(v.capacity() == static_cast<size_t>(count) + insertion_size);
+                        assert(v.spare() == 0);
+                        assert(v.data() not_eq nullptr);
+                        assert(v.begin() + (count + static_cast<size_t>(insertion_size)) == v.end());
+                        assert(v.cbegin() + (count + static_cast<size_t>(insertion_size)) == v.cend());
+                        assert(v.front() == s);
+                        assert(v.back() == strings.back());
+                        auto string_i {0uz};
+                        for(auto it {v.begin()}; it not_eq v.begin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto it {v.begin() + count}; it not_eq v.end(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        for(auto it {v.cbegin()}; it not_eq v.cbegin() + count; ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = 0;
+                        for(auto it {v.cbegin() + count}; it not_eq v.cend(); ++it) {
+                            assert(*it == strings[string_i++]);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.rbegin()}; it not_eq v.rbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.rbegin() + insertion_size}; it not_eq v.rend(); ++it) {
+                            assert(*it == s);
+                        }
+                        string_i = insertion_size - 1;
+                        for(auto it {v.crbegin()}; it not_eq v.crbegin() + insertion_size; ++it) {
+                            assert(*it == strings[string_i--]);
+                        }
+                        for(auto it {v.crbegin() + insertion_size}; it not_eq v.crend(); ++it) {
+                            assert(*it == s);
+                        }
+                        for(auto i {0}; i < count; ++i) {
+                            assert(v[i] == s);
+                        }
+                        string_i = 0;
+                        for(auto i {count}; i < count + insertion_size; ++i) {
+                            assert(v[i] == strings[string_i++]);
+                        }
+                        assert(result == v.begin() + count);
+                        assert(result == v.cbegin() + count);
+                        std::cout << "\t\t\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                    }
+
+                    std::cout << "\t\t\t\t\tStart checking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+                }
+
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector/Insert to tail finished!" << std::endl;
+            }
+
+            std::cout << "\t\t\tChecking test_non_trivial/iterator insert(size_type, ForwardIterator, ForwardIterator)/Insert to non-empty vector finished!" << std::endl;
+        }
+
+        std::cout << "\t\tChecking test_insert3/Random access iterator for ds::vector finished!" << std::endl;
+    }
+
+    // iterator erase(size_type, size_type)
+    {
+        std::cout << "\tStart checking test_non_trivial/iterator erase(size_type, size_type) for ds::vector!" << std::endl;
+
+        // erase from head
+        {
+            std::cout << "\t\tStart checking test_non_trivial/iterator erase(size_type, size_type)/Erase from head for ds::vector!" << std::endl;
+
+            // erasion size is zero
+            {
+                std::cout << "\t\t\tStart checking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion size is zero for ds::vector!" << std::endl;
+
+                // empty
+                {
+                    vector<std::string> v {};
+                    auto result {v.erase(0, 0)};
+                    assert(v.size() == 0);
+                    assert(v.empty());
+                    assert(v.capacity() == 0);
+                    assert(v.spare() == 0);
+                    assert(v.begin() == v.end());
+                    assert(v.cbegin() == v.cend());
+                    assert(v.rbegin() == v.rend());
+                    assert(v.crbegin() == v.crend());
+                    assert(v.crbegin() == v.crend());
+                    assert(v.data() == nullptr);
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    assert(result == v.end());
+                    assert(result == v.cend());
+                    std::cout << "\t\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion size is zero/Empty done." << std::endl;
+                }
+
+                // non-empty
+                {
+                    auto count {this->generate_count()};
+                    while(count <= 1) {
+                        count = this->generate_count();
+                    }
+                    const std::string s {"init"};
+                    vector<std::string> v(count, s);
+                    auto result {v.erase(0, 0)};
+                    assert(v.size() == count);
+                    assert(not v.empty());
+                    assert(v.capacity() == count);
+                    assert(v.spare() == 0);
+                    assert(v.data() not_eq nullptr);
+                    assert(v.begin() + count == v.end());
+                    assert(v.cbegin() + count == v.cend());
+                    assert(v.front() == s);
+                    assert(v.back() == s);
+                    for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                        assert(*it == s);
+                    }
+                    for(auto i {0}; i < v.size(); ++i) {
+                        assert(v[i] == s);
+                    }
+                    assert(result == v.begin());
+                    assert(result == v.cbegin());
+                    std::cout << "\t\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion size is zero/Non-empty done." << std::endl;
+                }
+
+                std::cout << "\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion size is zero for ds::vector finished!" << std::endl;
+            }
+
+            // erasion size is random
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const std::string s {"init"};
+                vector<std::string> v(count, s);
+                const auto erasion_size {this->generate_a_random_number(1, count - 1)};
+                auto result {v.erase(0, erasion_size)};
+                assert(v.size() == count - erasion_size);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == erasion_size);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + (count - erasion_size) == v.end());
+                assert(v.cbegin() + (count - erasion_size) == v.cend());
+                assert(v.front() == s);
+                assert(v.back() == s);
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto i {0}; i < count - erasion_size; ++i) {
+                    assert(v[i] == s);
+                }
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                std::cout << "\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion size is random done." << std::endl;
+            }
+
+            // erase all
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const std::string s {"init"};
+                vector<std::string> v(count, s);
+                auto result {v.erase(0, count)};
+                assert(v.size() == 0);
+                assert(v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == count);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() == v.end());
+                assert(v.cbegin() == v.cend());
+                assert(result == v.begin());
+                assert(result == v.cbegin());
+                assert(result == v.end());
+                assert(result == v.cend());
+                std::cout << "\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erasion all done." << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head for ds::vector finished!" << std::endl;
+        }
+
+        // erase from any position
+        {
+            std::cout << "\t\tStart checking test_non_trivial/iterator erase(size_type, size_type)/Erase from any position for ds::vector!" << std::endl;
+
+            // erasion size is zero
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const std::string s {"init"};
+                vector<std::string> v(count, s);
+                const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+                auto result {v.erase(erasion_position, 0)};
+                assert(v.size() == count);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == 0);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + count == v.end());
+                assert(v.cbegin() + count == v.cend());
+                assert(v.front() == s);
+                assert(v.back() == s);
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto i {0}; i < v.size(); ++i) {
+                    assert(v[i] == s);
+                }
+                assert(result == v.begin() + erasion_position);
+                assert(result == v.cbegin() + erasion_position);
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erase from any position/Erasion size is zero done." << std::endl;
+            }
+
+            // erasion size is not zero
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const std::string s {"init"};
+                vector<std::string> v(count, s);
+                const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+                const auto erasion_size {this->generate_a_random_number(1, count - erasion_position)};
+                auto result {v.erase(erasion_position, erasion_size)};
+                assert(v.size() == count - erasion_size);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == erasion_size);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + (count - erasion_size) == v.end());
+                assert(v.cbegin() + (count - erasion_size) == v.cend());
+                assert(v.front() == s);
+                assert(v.back() == s);
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto i {0}; i < count - erasion_size; ++i) {
+                    assert(v[i] == s);
+                }
+                assert(result == v.begin() + erasion_position);
+                assert(result == v.cbegin() + erasion_position);
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erase from any position/Erasion size is not zero done." << std::endl;
+            }
+
+            // erase to tail
+            {
+                auto count {this->generate_count()};
+                while(count <= 1) {
+                    count = this->generate_count();
+                }
+                const std::string s {"init"};
+                vector<std::string> v(count, s);
+                const auto erasion_position {this->generate_a_random_number(1, count - 1)};
+                auto result {v.erase(erasion_position, count - erasion_position)};
+                assert(v.size() == erasion_position);
+                assert(not v.empty());
+                assert(v.capacity() == count);
+                assert(v.spare() == count - erasion_position);
+                assert(v.data() not_eq nullptr);
+                assert(v.begin() + erasion_position == v.end());
+                assert(v.cbegin() + erasion_position == v.cend());
+                assert(v.front() == s);
+                assert(v.back() == s);
+                for(auto it {v.begin()}; it not_eq v.end(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.cbegin()}; it not_eq v.cend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.rbegin()}; it not_eq v.rend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto it {v.crbegin()}; it not_eq v.crend(); ++it) {
+                    assert(*it == s);
+                }
+                for(auto i {0}; i < erasion_position; ++i) {
+                    assert(v[i] == s);
+                }
+                assert(result == v.begin() + erasion_position);
+                assert(result == v.cbegin() + erasion_position);
+                std::cout << "\t\t\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from head/Erase from any position/Erase to tail done." << std::endl;
+            }
+
+            std::cout << "\t\tChecking test_non_trivial/iterator erase(size_type, size_type)/Erase from any position for ds::vector finished!" << std::endl;
+        }
+
+        std::cout << "\tChecking test_non_trivial/iterator erase(size_type, size_type) for ds::vector finished!" << std::endl;
     }
 
     std::cout << "Checking non-trivial type for ds::vector finished!" << std::endl;
