@@ -54,7 +54,7 @@ private:
     template <bool = false>
     constexpr void assign_with_buffer(buffer<T, Allocator> &&b) noexcept;
     constexpr void resize_and_move(size_type, size_type);
-    constexpr void reallocate_when_insertion(size_type, size_type, difference_type);
+    constexpr void reallocate_when_insertion(size_type, size_type, size_type);
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
@@ -250,7 +250,7 @@ constexpr void vector<T, Allocator>::resize_and_move(size_type n, size_type size
     }
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size_type old_size, difference_type pos) {
+constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size_type old_size, size_type pos) {
     auto allocation_size {this->capacity() * 2};
     const auto new_size {old_size + n};
     if(allocation_size < new_size) {
