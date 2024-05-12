@@ -236,9 +236,11 @@ constexpr buffer<T, Allocator>::buffer(initializer_list<T> init_list, const Allo
 
 template <typename T, typename Allocator>
 constexpr buffer<T, Allocator>::~buffer() noexcept {
-    const auto size {this->buffer_size()};
-    ds::destroy(this->first, this->first + size);
-    this->buffer_size.allocator().deallocate(this->first, size);
+    if(this->first) {
+        const auto size {this->buffer_size()};
+        ds::destroy(this->first, this->first + size);
+        this->buffer_size.allocator().deallocate(this->first, size);
+    }
 }
 template <typename T, typename Allocator>
 constexpr typename buffer<T, Allocator>::const_pointer buffer<T, Allocator>::begin() const & noexcept {
