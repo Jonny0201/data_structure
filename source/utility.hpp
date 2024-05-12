@@ -89,6 +89,9 @@ public:
     void complete() noexcept {
         this->done = true;
     }
+    void restart() noexcept {
+        this->done = false;
+    }
     void rollback() noexcept {
         this->rollback_block();
         this->done = true;
