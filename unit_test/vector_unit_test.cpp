@@ -13463,7 +13463,7 @@ void vector_correctness::test_non_trivial() {
                                 assert(v[i] == s2);
                             }
                             for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
-                                assert(v[i] == s2);
+                                assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
                             assert(result == v.cbegin() + insertion_position);
