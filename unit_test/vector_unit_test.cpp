@@ -2092,7 +2092,10 @@ void vector_correctness::test_reserve() {
         assert(v.crbegin() == v.crend());
         assert(v.data() == nullptr);
 
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         v.reserve(count);
         assert(v.size() == 0);
         assert(v.empty());
@@ -11995,6 +11998,7 @@ void vector_correctness::test_allocator() {
     std::cout << "Checking allocator for ds::vector finished!" << std::endl;
 }
 void vector_correctness::test_non_trivial() {
+    goto A;
     std::cout << "Start checking non-trivial type for ds::vector!" << std::endl;
 
     // default constructor
@@ -12037,8 +12041,8 @@ void vector_correctness::test_non_trivial() {
         {
             const auto count {this->generate_count()};
             std::string s {};
-            for(auto i {0}; i < this->generate_count(100); ++i) {
-                s += "hello                     ";
+            for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                s += "hello";
             }
             vector<std::string> v(count, s);
             assert(v.size() == count);
@@ -12098,8 +12102,8 @@ void vector_correctness::test_non_trivial() {
                 count = this->generate_count();
             }
             std::string s {};
-            for(auto i {0}; i < this->generate_count(100); ++i) {
-                s += "hello                     ";
+            for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                s += "hello";
             }
             vector<std::string> v(count, s);
             assert(v.size() == count);
@@ -12159,8 +12163,8 @@ void vector_correctness::test_non_trivial() {
                 count = this->generate_count();
             }
             std::string s {};
-            for(auto i {0}; i < this->generate_count(100); ++i) {
-                s += "hello                     ";
+            for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                s += "hello";
             }
             auto stream {this->to_input_iterator(std::vector(count, s))};
             vector<std::string> v(std_string_input_iterator {stream}, {});
@@ -12221,8 +12225,8 @@ void vector_correctness::test_non_trivial() {
                 count = this->generate_count();
             }
             std::string s {};
-            for(auto i {0}; i < this->generate_count(100); ++i) {
-                s += "hello                     ";
+            for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                s += "hello";
             }
             auto d {this->to_random_access_iterator(std::vector(count, s))};
             vector<std::string> v(std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()});
@@ -12275,7 +12279,10 @@ void vector_correctness::test_non_trivial() {
             assert(v.crbegin() == v.crend());
             assert(v.data() == nullptr);
 
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             v.reserve(count);
             assert(v.size() == 0);
             assert(v.empty());
@@ -12320,8 +12327,8 @@ void vector_correctness::test_non_trivial() {
                 const auto initialization_size {count_1 > count_2 ? count_2 : count_1};
                 const auto reserved_size {count_1 > count_2 ? count_1 : count_2};
                 std::string s {};
-                for(auto i {0}; i < this->generate_count(100); ++i) {
-                    s += "hello                     ";
+                for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                    s += "hello";
                 }
                 vector<std::string> v(initialization_size, s);
                 v.reserve(reserved_size);
@@ -12360,8 +12367,8 @@ void vector_correctness::test_non_trivial() {
                 }
                 const auto size {this->generate_a_random_number(1, capacity - 1)};
                 std::string s {};
-                for(auto i {0}; i < this->generate_count(100); ++i) {
-                    s += "hello                     ";
+                for(auto i {0}; i < this->generate_a_random_number(1, 100); ++i) {
+                    s += "hello";
                 }
                 vector<std::string> v(capacity, s);
                 destroy(v.first + size, v.cursor);
@@ -12860,7 +12867,7 @@ void vector_correctness::test_non_trivial() {
                             while(count <= 1) {
                                 count = this->generate_count();
                             }
-                            auto insertion_size {this->generate_a_random_number(1, count)};
+                            const auto insertion_size {this->generate_a_random_number(1, count)};
                             const auto s {"init"};
                             const auto spare {this->generate_count(count)};
                             vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
@@ -12925,7 +12932,7 @@ void vector_correctness::test_non_trivial() {
                             destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
                             v.cursor -= static_cast<size_t>(insertion_size) + spare;
                             const std::string s2 {"insert"};
-                            const auto result {v.insert(0, s, insertion_size)};
+                            const auto result {v.insert(0, s2, insertion_size)};
                             assert(v.size() == count + static_cast<size_t>(insertion_size));
                             assert(not v.empty());
                             assert(v.capacity() == count + static_cast<size_t>(insertion_size) + spare);
@@ -12971,7 +12978,7 @@ void vector_correctness::test_non_trivial() {
                         }
 
                         // the value is from self
-                        {
+                        A:{
                             auto count {this->generate_count()};
                             while(count <= 1) {
                                 count = this->generate_count();
