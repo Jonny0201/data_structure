@@ -45,6 +45,8 @@ public:
 private:
     struct resize_handler;
     friend struct resize_handler;
+    struct insertion_handler;
+    struct reallocation_handler;
 private:
     pointer first {};
     pointer cursor {};
@@ -54,7 +56,15 @@ private:
     template <bool = false>
     constexpr void assign_with_buffer(buffer<T, Allocator> &&b) noexcept;
     constexpr void resize_and_move(size_type, size_type);
-    constexpr void reallocate_when_insertion(size_type, size_type, size_type);
+    template <typename ...Args>
+    constexpr void copy_value(pointer, size_type, size_type, size_type, Args &&...)
+            noexcept(is_nothrow_constructible_v<T, Args...>);
+    template <typename Iterator>
+    constexpr void copy_range(pointer, size_type, size_type, Iterator, Iterator)
+            noexcept(is_nothrow_constructible_v<T, typename iterator_traits<Iterator>::reference>);
+    template <bool = true, typename ...Args>
+    constexpr void reallocate_when_insertion(size_type, size_type, size_type, Args &&...);
+    constexpr bool is_insertion_value_need_fix(const_pointer, const_pointer) noexcept;
 public:
     constexpr vector() noexcept(is_nothrow_default_constructible_v<Allocator>) = default;
     explicit constexpr vector(const Allocator &) noexcept;
@@ -175,28 +185,6 @@ inline constexpr some_ordering operator<=>(vector<T, Allocator> &, vector<T, All
 __DATA_STRUCTURE_END(vector declaration)
 
 __DATA_STRUCTURE_START(vector implementation)
-/* exceptional helper class */
-namespace __data_structure_auxiliary {
-template <typename Pointer, bool Resized = false>
-struct insertion_handler {
-    Pointer begin;
-    Pointer end;
-    constexpr void operator()() noexcept {
-        ds::destroy(this->begin + 1, this->end);
-    }
-};
-template <typename Pointer>
-struct insertion_handler<Pointer, true> {
-    Pointer begin;
-    Pointer &end;
-    Pointer now;
-    insertion_handler(Pointer begin, Pointer &end, Pointer now) : begin {begin}, end {end}, now {now} {}
-    constexpr void operator()() noexcept {
-        ds::destroy(this->begin, this->end);
-        this->end = this->now;
-    }
-};
-}
 
 /* private types */
 template <typename T, typename Allocator>
@@ -209,7 +197,29 @@ struct vector<T, Allocator>::resize_handler {
             allocator {v.last.allocator()}, new_place {new_place}, new_size {new_size} {}
     constexpr void operator()() noexcept {
         ds::destroy(this->new_place, this->new_place + this->i);
-        allocator.deallocate(this->new_place, this->new_size);
+        this->allocator.deallocate(this->new_place, this->new_size);
+    }
+};
+template <typename T, typename Allocator>
+struct vector<T, Allocator>::insertion_handler {
+    pointer begin;
+    pointer end;
+    constexpr void operator()() noexcept {
+        ds::destroy(this->begin, this->end);
+    }
+};
+template <typename T, typename Allocator>
+struct vector<T, Allocator>::reallocation_handler {
+    Allocator &allocator;
+    pointer new_place;
+    pointer begin;
+    size_type new_size;
+    size_type i {0};
+    reallocation_handler(vector &v, pointer new_place, pointer begin, size_type new_size) noexcept :
+            allocator {v.last.allocator()}, new_place {new_place}, begin {begin}, new_size {new_size} {}
+    constexpr void operator()() noexcept {
+        ds::destroy(this->begin, this->begin + i);
+        this->allocator.deallocate(this->new_place, this->new_size);
     }
 };
 
@@ -242,7 +252,8 @@ constexpr void vector<T, Allocator>::resize_and_move(size_type n, size_type size
     }else {
         auto new_first {this->last.allocator().allocate(n)};
         auto trans {transaction {resize_handler(*this, new_first, n)}};
-        for(auto &i {trans.get_rollback().i}; i < size; ++i) {
+        const auto move_size {size < n ? size : n};
+        for(auto &i {trans.get_rollback().i}; i < move_size; ++i) {
             ds::construct(new_first + i, ds::move(this->first[i]));
         }
         this->first = ds::move(new_first);
@@ -250,51 +261,71 @@ constexpr void vector<T, Allocator>::resize_and_move(size_type n, size_type size
     }
 }
 template <typename T, typename Allocator>
-constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size_type old_size, size_type pos) {
+template <typename ...Args>
+constexpr void vector<T, Allocator>::copy_value(pointer new_first, size_type n, size_type pos,
+        size_type allocation_size, Args &&...args) noexcept(is_nothrow_constructible_v<T, Args...>) {
+    transaction trans {reallocation_handler(*this, new_first, new_first + pos, allocation_size)};
+    for(auto &i {trans.get_rollback().i}; i < n; ++i) {
+        ds::construct(new_first + (pos + i), ds::forward<Args>(args)...);
+    }
+    trans.complete();
+}
+template <typename T, typename Allocator>
+template <typename Iterator>
+constexpr void vector<T, Allocator>::copy_range(pointer new_first, size_type pos, size_type allocation_size,
+        Iterator begin, Iterator end)
+        noexcept(is_nothrow_constructible_v<T, typename iterator_traits<Iterator>::reference>) {
+    transaction trans {reallocation_handler(*this, new_first, new_first + pos, allocation_size)};
+    for(auto &i {trans.get_rollback().i}; begin not_eq end; ++i) {
+        ds::construct(new_first + (pos + i), *begin++);
+    }
+    trans.complete();
+}
+template <typename T, typename Allocator>
+template <bool Value, typename ...Args>
+constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size_type old_size, size_type pos,
+        Args &&...args) {
     auto allocation_size {this->capacity() * 2};
     const auto new_size {old_size + n};
     if(allocation_size < new_size) {
         allocation_size = new_size;
     }
+    auto new_first {this->last.allocator().allocate(allocation_size)};
+    if constexpr(Value) {
+        this->copy_value(new_first, n, pos, allocation_size, ds::forward<Args>(args)...);
+    }else {
+        this->copy_range(new_first, pos, allocation_size, ds::forward<Args>(args)...);
+    }
     if constexpr(is_trivially_copyable_v<T> and is_pointer_v<pointer>) {
-        auto new_first {this->last.allocator().allocate(allocation_size)};
         if(old_size > 0) {
             ds::memory_copy(new_first, this->first, sizeof(T) * pos);
             ds::memory_copy(new_first + pos + n, this->first + pos, sizeof(T) * (old_size - pos));
         }
         this->first = ds::move(new_first);
     }else {
-        struct reallocation_handler {
-            Allocator &allocator;
-            pointer head;
-            pointer tail;
-            size_type size;
-            size_type head_i {0};
-            size_type tail_i {0};
-            constexpr reallocation_handler(vector &v, pointer head, pointer tail, size_type size) noexcept :
-                    allocator {v.last.allocator()}, head {head}, tail {tail}, size {size} {}
-            constexpr void operator()() noexcept {
-                ds::destroy(this->head, this->head + this->head_i);
-                ds::destroy(this->tail, this->tail + this->tail_i);
-                allocator.deallocate(this->head, this->size);
-            }
-        };
-        auto new_first {this->last.allocator().allocate(allocation_size)};
-        const auto head_size {pos};
-        const auto tail_size {old_size - head_size};
-        auto trans {transaction {reallocation_handler(*this, new_first, new_first + (pos + n), allocation_size)}};
-        for(auto &i {trans.get_rollback().head_i}; i < pos; ++i) {
+        transaction trans {resize_handler(*this, new_first, allocation_size)};
+        auto &i {trans.get_rollback().i};
+        for(; i < pos; ++i) {
             ds::construct(new_first + i, ds::move(this->first[i]));
         }
-        for(auto i {pos}, &tail_i {trans.get_rollback().tail_i}; i < tail_size; ++i, static_cast<void>(++tail_i)) {
-            ds::construct(new_first + i, ds::move(this->first[i + n]));
+        i += n;
+        const auto total_size {old_size + n};
+        for(auto j {pos}; i < total_size; ++i, static_cast<void>(++j)) {
+            ds::construct(new_first + i, ds::move(this->first[j]));
         }
         trans.complete();
-        this->~vector();
         this->first = ds::move(new_first);
     }
     this->cursor = this->first + new_size;
     this->last() = this->first + allocation_size;
+}
+template <typename T, typename Allocator>
+constexpr bool vector<T, Allocator>::is_insertion_value_need_fix(const_pointer position,
+        const_pointer pointer_to_value) noexcept {
+    if consteval {
+        return pointer_to_value - position >= 0 and pointer_to_value - this->cursor < 0;
+    }
+    return position <= pointer_to_value and pointer_to_value < this->cursor;
 }
 
 /* public functions */
@@ -649,15 +680,8 @@ vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) 
     }
     const auto size {this->size()};
     if(n > this->spare()) {
-        this->reallocate_when_insertion(n, size, pos);
-        const auto result {this->first + pos};
-        auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-            this->cursor - (size - pos), this->cursor, result}}};
-        for(auto &it {trans.get_rollback().now}; n not_eq 0; --n, static_cast<void>(++it)) {
-            ds::construct(it, value);
-        }
-        trans.complete();
-        return iterator {result};
+        this->reallocate_when_insertion(n, size, pos, value);
+        return iterator {this->first + pos};
     }
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         const auto start_pos {this->first + pos};
@@ -673,7 +697,7 @@ vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) 
     auto uninitialized_size {n};
     const auto construction_stop_at {this->cursor - 1};
     const auto last_element {construction_stop_at + n};
-    auto trans {transaction {__dsa::insertion_handler<pointer> {last_element, last_element + 1}}};
+    auto trans {transaction {insertion_handler {last_element, last_element + 1}}};
     auto move_start_from {construction_stop_at};
     const auto result {this->first + pos};
     const auto move_stop_at {result - 1};
@@ -682,18 +706,25 @@ vector<T, Allocator>::insert(size_type pos, const_reference value, size_type n) 
         if(--uninitialized_size == 0) {
             trans.complete();
             while(move_start_from not_eq move_stop_at) {
-                *it = ds::move(*move_start_from--);
+                *(--it) = ds::move(*move_start_from--);
             }
+            trans.restart();
             break;
         }
     }
+    auto pointer_to_value {&value};
+    const auto cursor_advance_size {n};
+    if(this->is_insertion_value_need_fix(result, pointer_to_value)) {
+        pointer_to_value += cursor_advance_size;
+    }
     for(auto &it {trans.get_rollback().begin}; uninitialized_size not_eq 0;
         --it, static_cast<void>(--uninitialized_size), --n) {
-        ds::construct(it, value);
+        ds::construct(it, *pointer_to_value);
     }
     trans.complete();
-    for(auto it {result}; n not_eq 0; ++it) {
-        *it = value;
+    this->cursor += cursor_advance_size;
+    for(auto it {result}; n not_eq 0; --n) {
+        *it++ = *pointer_to_value;
     }
     return iterator {result};
 }
@@ -706,14 +737,8 @@ template <typename T, typename Allocator>
 template <typename ...Args>
 constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(size_type pos, Args &&...args) {
     if(this->spare() == 0) {
-        const auto size {this->size()};
-        this->reallocate_when_insertion(1, size, pos);
-        const auto result {this->first + pos};
-        auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-                this->cursor - (size - pos), this->cursor, result}}};
-        ds::construct(result, ds::forward<Args>(args)...);
-        trans.complete();
-        return iterator {result};
+        this->reallocate_when_insertion(1, this->size(), pos, ds::forward<Args>(args)...);
+        return iterator {this->first + pos};
     }
     const auto result {this->first + pos};
     if(result == this->cursor) {
@@ -768,19 +793,8 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
     }
     const auto size {this->size()};
     if(n > this->spare()) {
-        this->reallocate_when_insertion(n, size, pos);
-        const auto result {this->first + pos};
-        if constexpr(is_pointer_v<pointer> and is_pointer_v<ForwardIterator> and is_trivially_copyable_v<T>) {
-            ds::memory_copy(result, begin, sizeof(T) * n);
-        }else {
-            auto trans {transaction {__dsa::insertion_handler<pointer, true> {
-                    this->cursor - (size - pos), this->cursor, result}}};
-            for(auto &it {trans.get_rollback().now}; n not_eq 0; --n, static_cast<void>(++it)) {
-                ds::construct(it, *begin++);
-            }
-            trans.complete();
-        }
-        return iterator {result};
+        this->reallocate_when_insertion<false>(n, size, pos, begin, end);
+        return iterator {this->first + pos};
     }
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         const auto start_pos {this->first + pos};
@@ -799,7 +813,7 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
     auto uninitialized_size {n};
     const auto construction_stop_at {this->cursor - 1};
     const auto last_element {construction_stop_at + n};
-    auto trans {transaction {__dsa::insertion_handler<pointer> {last_element, last_element + 1}}};
+    auto trans {transaction {insertion_handler {last_element, last_element + 1}}};
     auto move_start_from {construction_stop_at};
     const auto result {this->first + pos};
     const auto move_stop_at {result - 1};
@@ -808,9 +822,17 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
         if(--uninitialized_size == 0) {
             trans.complete();
             while(move_start_from not_eq move_stop_at) {
-                *it = ds::move(*move_start_from--);
+                *(--it) = ds::move(*move_start_from--);
             }
+            trans.restart();
             break;
+        }
+    }
+    const auto cursor_advance_size {n};
+    if constexpr(is_pointer_v<ForwardIterator>) {
+        if(this->is_insertion_value_need_fix(result, begin)) {
+            begin += cursor_advance_size;
+            end += cursor_advance_size;
         }
     }
     for(auto &it {trans.get_rollback().begin}; uninitialized_size not_eq 0;
@@ -818,8 +840,9 @@ vector<T, Allocator>::insert(size_type pos, ForwardIterator begin, ForwardIterat
         ds::construct(it, *begin++);
     }
     trans.complete();
-    for(auto it {result}; n not_eq 0; ++it) {
-        *it = *begin++;
+    this->cursor += cursor_advance_size;
+    for(auto it {result}; n not_eq 0; --n) {
+        *it++ = *begin++;
     }
     return iterator {result};
 }
@@ -842,12 +865,15 @@ vector<T, Allocator>::insert(const_iterator pos, initializer_list<T> init_list) 
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(size_type pos, size_type n) {
     const auto result {this->first + pos};
+    if(n == 0) {
+        return iterator {result};
+    }
     if constexpr(is_pointer_v<pointer> and is_trivially_copyable_v<T>) {
         ds::memory_move(result, result + n, sizeof(T) * (this->size() - (pos + n)));
     }else {
         auto left {result};
-        for(auto right {result + n}; result not_eq this->cursor; ++left, static_cast<void>(++right)) {
-            *left = ds::move(*right);
+        for(auto right {result + n}; right not_eq this->cursor;) {
+            *left++ = ds::move(*right++);
         }
         ds::destroy(left, this->cursor);
     }
