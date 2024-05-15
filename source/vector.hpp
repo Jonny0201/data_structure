@@ -322,9 +322,7 @@ constexpr void vector<T, Allocator>::reallocate_when_insertion(size_type n, size
 template <typename T, typename Allocator>
 constexpr bool vector<T, Allocator>::is_insertion_value_need_fix(const_pointer position,
         const_pointer pointer_to_value) noexcept {
-    if consteval {
-        return pointer_to_value - position >= 0 and pointer_to_value - this->cursor < 0;
-    }
+    // Todo : The comparison is not allowed in compile time
     return position <= pointer_to_value and pointer_to_value < this->cursor;
 }
 
