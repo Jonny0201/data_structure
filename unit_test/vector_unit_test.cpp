@@ -57,36 +57,36 @@ public:
 
 void vector_unit_test() {
     auto correctness {new vector_correctness {}};
-    //correctness->test_default_constructor();
-    //correctness->test_constructor_1();
-    //correctness->test_constructor_2();
-    //correctness->test_constructor_3();
-    //correctness->test_constructor_4();
-    //correctness->test_constructor_5();
-    //correctness->test_constructor_6();
-    //correctness->test_copy_constructor();
-    //correctness->test_move_constructor();
-    //correctness->test_copy_assignment();
-    //correctness->test_move_assignment();
-    //correctness->test_assign_1();
-    //correctness->test_assign_2();
-    //correctness->test_assign_3();
-    //correctness->test_reserve();
-    //correctness->test_shrink_to_fit();
-    //correctness->test_resize_1();
-    //correctness->test_resize_2();
-    //correctness->test_emplace_back();
-    //correctness->test_pop_back();
-    //correctness->test_clear();
-    //correctness->test_swap();
-    //correctness->test_emplace();
-    //correctness->test_insert_1();
-    //correctness->test_insert_2();
-    //correctness->test_insert_3();
-    //correctness->test_erase();
-    //correctness->test_allocator();
-    while(true)
-        correctness->test_non_trivial();
+    A: correctness->test_default_constructor();
+    correctness->test_constructor_1();
+    correctness->test_constructor_2();
+    correctness->test_constructor_3();
+    correctness->test_constructor_4();
+    correctness->test_constructor_5();
+    correctness->test_constructor_6();
+    correctness->test_copy_constructor();
+    correctness->test_move_constructor();
+    correctness->test_copy_assignment();
+    correctness->test_move_assignment();
+    correctness->test_assign_1();
+    correctness->test_assign_2();
+    correctness->test_assign_3();
+    correctness->test_reserve();
+    correctness->test_shrink_to_fit();
+    correctness->test_resize_1();
+    correctness->test_resize_2();
+    correctness->test_emplace_back();
+    correctness->test_pop_back();
+    correctness->test_clear();
+    correctness->test_swap();
+    correctness->test_emplace();
+    correctness->test_insert_1();
+    correctness->test_insert_2();
+    correctness->test_insert_3();
+    correctness->test_erase();
+    correctness->test_allocator();
+    correctness->test_non_trivial();
+    goto A;
     delete correctness;
 }
 
@@ -209,15 +209,18 @@ void vector_correctness::test_constructor_2() {
 
     // random size
     {
-        const auto size {this->generate_count()};
-        vector<int> v(size);
-        assert(v.size() == size);
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        vector<int> v(count);
+        assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
-        assert(v.begin() + size == v.end());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
         assert(v.front() == 0);
         assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
@@ -235,7 +238,7 @@ void vector_correctness::test_constructor_2() {
         for(auto i {0}; i < v.size(); ++i) {
             assert(v[i] == 0);
         }
-        std::cout << "\ttest_constructor_2/Random size done." << std::endl;
+        std::cout << "\ttest_constructor_2/Random count done." << std::endl;
     }
 
     std::cout << "Checking vector(size_type) finished!" << std::endl;
@@ -262,15 +265,18 @@ void vector_correctness::test_constructor_3() {
     // random size
     {
         auto e {this->generate_a_random_number()};
-        const auto size {this->generate_count()};
-        vector<int> v(size, e);
-        assert(v.size() == size);
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        vector<int> v(count, e);
+        assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
-        assert(v.begin() + size == v.end());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
         assert(v.front() == e);
         assert(v.back() == e);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
@@ -288,7 +294,7 @@ void vector_correctness::test_constructor_3() {
         for(auto i {0}; i < v.size(); ++i) {
             assert(v[i] == e);
         }
-        std::cout << "\ttest_constructor_3/Random size done." << std::endl;
+        std::cout << "\ttest_constructor_3/Random count done." << std::endl;
     }
 
     std::cout << "Checking vector(size_type, const T &) finished!" << std::endl;
@@ -314,23 +320,26 @@ void vector_correctness::test_constructor_4() {
 
     // random size
     {
-        const auto size {this->generate_count()};
-        const auto numbers {this->generate_number(size)};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        const auto numbers {this->generate_number(count)};
         auto stream {this->to_input_iterator(numbers)};
         vector<int> v(int_input_iterator {stream}, {});
-        assert(v.size() == size);
+        assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
         assert(v.begin() not_eq v.end());
-        assert(v.begin() + size == v.end());
+        assert(v.begin() + count == v.end());
         assert(v.cbegin() not_eq v.cend());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.cbegin() + count == v.cend());
         assert(v.cbegin() not_eq v.end());
-        assert(v.cbegin() + size == v.end());
+        assert(v.cbegin() + count == v.end());
         assert(v.begin() not_eq v.cend());
-        assert(v.begin() + size == v.cend());
+        assert(v.begin() + count == v.cend());
         assert(*v.begin() == *numbers.begin());
         assert(v.front() == numbers.front());
         assert(v.back() == numbers.back());
@@ -353,7 +362,7 @@ void vector_correctness::test_constructor_4() {
         for(auto i {0}; i < v.size(); ++i) {
             assert(v[i] == numbers[i]);
         }
-        std::cout << "\ttest_constructor_4/Random size done." << std::endl;
+        std::cout << "\ttest_constructor_4/Random count done." << std::endl;
     }
 
     std::cout << "Checking buffer(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
@@ -382,23 +391,26 @@ void vector_correctness::test_constructor_5() {
 
         // random size
         {
-            const auto size {this->generate_count()};
-            const auto numbers {this->generate_number(size)};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
             auto l {this->to_forward_iterator(numbers)};
             vector<int> v(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
-            assert(v.size() == size);
+            assert(v.size() == count);
             assert(not v.empty());
-            assert(v.capacity() == size);
+            assert(v.capacity() == count);
             assert(v.spare() == 0);
             assert(v.data() not_eq nullptr);
             assert(v.begin() not_eq v.end());
-            assert(v.begin() + size == v.end());
+            assert(v.begin() + count == v.end());
             assert(v.cbegin() not_eq v.cend());
-            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() + count == v.cend());
             assert(v.cbegin() not_eq v.end());
-            assert(v.cbegin() + size == v.end());
+            assert(v.cbegin() + count == v.end());
             assert(v.begin() not_eq v.cend());
-            assert(v.begin() + size == v.cend());
+            assert(v.begin() + count == v.cend());
             assert(*v.begin() == *numbers.begin());
             assert(v.front() == numbers.front());
             assert(v.back() == numbers.back());
@@ -421,7 +433,7 @@ void vector_correctness::test_constructor_5() {
             for(auto i {0}; i < v.size(); ++i) {
                 assert(v[i] == numbers[i]);
             }
-            std::cout << "\t\ttest_constructor_5/Forward iterator/Random size done." << std::endl;
+            std::cout << "\t\ttest_constructor_5/Forward iterator/Random count done." << std::endl;
         }
         std::cout << "\tChecking forward iterator version finished!" << std::endl;
     }
@@ -447,23 +459,26 @@ void vector_correctness::test_constructor_5() {
 
         // random size
         {
-            const auto size {this->generate_count()};
-            const auto numbers {this->generate_number(size)};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
             auto l {this->to_bidirectional_iterator(numbers)};
             vector<int> v(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
-            assert(v.size() == size);
+            assert(v.size() == count);
             assert(not v.empty());
-            assert(v.capacity() == size);
+            assert(v.capacity() == count);
             assert(v.spare() == 0);
             assert(v.data() not_eq nullptr);
             assert(v.begin() not_eq v.end());
-            assert(v.begin() + size == v.end());
+            assert(v.begin() + count == v.end());
             assert(v.cbegin() not_eq v.cend());
-            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() + count == v.cend());
             assert(v.cbegin() not_eq v.end());
-            assert(v.cbegin() + size == v.end());
+            assert(v.cbegin() + count == v.end());
             assert(v.begin() not_eq v.cend());
-            assert(v.begin() + size == v.cend());
+            assert(v.begin() + count == v.cend());
             assert(*v.begin() == *numbers.begin());
             assert(v.front() == numbers.front());
             assert(v.back() == numbers.back());
@@ -486,7 +501,7 @@ void vector_correctness::test_constructor_5() {
             for(auto i {0}; i < v.size(); ++i) {
                 assert(v[i] == numbers[i]);
             }
-            std::cout << "\t\ttest_constructor_5/Bidirectional iterator/Random size done." << std::endl;
+            std::cout << "\t\ttest_constructor_5/Bidirectional iterator/Random count done." << std::endl;
         }
 
         std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
@@ -513,23 +528,26 @@ void vector_correctness::test_constructor_5() {
 
         // random size
         {
-            const auto size {this->generate_count()};
-            const auto numbers {this->generate_number(size)};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
             auto d {this->to_random_access_iterator(numbers)};
             vector<int> v(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
-            assert(v.size() == size);
+            assert(v.size() == count);
             assert(not v.empty());
-            assert(v.capacity() == size);
+            assert(v.capacity() == count);
             assert(v.spare() == 0);
             assert(v.data() not_eq nullptr);
             assert(v.begin() not_eq v.end());
-            assert(v.begin() + size == v.end());
+            assert(v.begin() + count == v.end());
             assert(v.cbegin() not_eq v.cend());
-            assert(v.cbegin() + size == v.cend());
+            assert(v.cbegin() + count == v.cend());
             assert(v.cbegin() not_eq v.end());
-            assert(v.cbegin() + size == v.end());
+            assert(v.cbegin() + count == v.end());
             assert(v.begin() not_eq v.cend());
-            assert(v.begin() + size == v.cend());
+            assert(v.begin() + count == v.cend());
             assert(*v.begin() == *numbers.begin());
             assert(v.front() == numbers.front());
             assert(v.back() == numbers.back());
@@ -552,7 +570,7 @@ void vector_correctness::test_constructor_5() {
             for(auto i {0}; i < v.size(); ++i) {
                 assert(v[i] == numbers[i]);
             }
-            std::cout << "\t\ttest_constructor_5/Random access iterator/Random size done." << std::endl;
+            std::cout << "\t\ttest_constructor_5/Random access iterator/Random count done." << std::endl;
         }
         std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
     }
@@ -634,16 +652,19 @@ void vector_correctness::test_copy_constructor() {
 
     // random size
     {
-        const auto size {this->generate_count()};
-        vector<int> v0(size);
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        vector<int> v0(count);
         auto v {v0};
-        assert(v.size() == size);
+        assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
-        assert(v.begin() + size == v.end());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
         assert(v.front() == 0);
         assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
@@ -661,7 +682,7 @@ void vector_correctness::test_copy_constructor() {
         for(auto i {0}; i < v.size(); ++i) {
             assert(v[i] == 0);
         }
-        std::cout << "\ttest_copy_constructor/Random size done." << std::endl;
+        std::cout << "\ttest_copy_constructor/Random count done." << std::endl;
     }
 
     std::cout << "Checking copy constructor finished!" << std::endl;
@@ -697,7 +718,10 @@ void vector_correctness::test_move_constructor() {
 
     // random size
     {
-        const auto size {this->generate_count()};
+        auto size {this->generate_count()};
+        while(size == 0) {
+            size = this->generate_count();
+        }
         vector<int> v0(size);
         auto v {move(v0)};
         assert(v0.size() == 0);
@@ -767,18 +791,21 @@ void vector_correctness::test_copy_assignment() {
 
     // random size
     {
-        const auto size {this->generate_count()};
-        vector<int> v0(size);
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        vector<int> v0(count);
         vector<int> v {};
         v = v0;
         bool rechecked {};
-        RECHECK_RANDOM : assert(v.size() == size);
+        RECHECK_RANDOM : assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
-        assert(v.begin() + size == v.end());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
         assert(v.front() == 0);
         assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
@@ -844,8 +871,11 @@ void vector_correctness::test_move_assignment() {
 
     // random size
     {
-        const auto size {this->generate_count()};
-        vector<int> v0(size);
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        vector<int> v0(count);
         vector<int> v {};
         v = move(v0);
         bool rechecked {};
@@ -858,13 +888,13 @@ void vector_correctness::test_move_assignment() {
         assert(v0.rbegin() == v0.rend());
         assert(v0.crbegin() == v0.crend());
         assert(v0.data() == nullptr);
-        RECHECK_RANDOM : assert(v.size() == size);
+        RECHECK_RANDOM : assert(v.size() == count);
         assert(not v.empty());
-        assert(v.capacity() == size);
+        assert(v.capacity() == count);
         assert(v.spare() == 0);
         assert(v.data() not_eq nullptr);
-        assert(v.begin() + size == v.end());
-        assert(v.cbegin() + size == v.cend());
+        assert(v.begin() + count == v.end());
+        assert(v.cbegin() + count == v.cend());
         assert(v.front() == 0);
         assert(v.back() == 0);
         for(auto it {v.begin()}; it not_eq v.end(); ++it) {
@@ -887,7 +917,7 @@ void vector_correctness::test_move_assignment() {
             rechecked = true;
             goto RECHECK_RANDOM;
         }
-        std::cout << "\tChecking test_move_assignment/Random size done." << std::endl;
+        std::cout << "\tChecking test_move_assignment/Random count done." << std::endl;
     }
 
     std::cout << "Checking move assignment for ds::vector finished!" << std::endl;
@@ -898,7 +928,10 @@ void vector_correctness::test_assign_1() {
     // empty vector to non-empty vector
     {
         vector<int> v {};
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         const auto number {this->generate_a_random_number()};
         v.assign(count, number);
         assert(v.size() == count);
@@ -930,7 +963,10 @@ void vector_correctness::test_assign_1() {
 
     // non-empty vector to empty vector
     {
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         vector<int> v(count);
         v.assign(0);
         assert(v.size() == 0);
@@ -1067,6 +1103,9 @@ void vector_correctness::test_assign_1() {
         // equal to size
         {
             auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             vector<int> v(count);
             const auto number {this->generate_a_random_number()};
             v.assign(count, number);
@@ -1108,7 +1147,10 @@ void vector_correctness::test_assign_2() {
     // empty vector to non-empty vector
     {
         vector<int> v {};
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         const auto numbers {this->generate_number(count)};
         auto stream {this->to_input_iterator(numbers)};
         v.assign(int_input_iterator {stream}, int_input_iterator {});
@@ -1302,6 +1344,9 @@ void vector_correctness::test_assign_2() {
         // equal to size
         {
             auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             vector<int> v(count);
             const auto numbers {this->generate_number(count)};
             auto stream {this->to_input_iterator(numbers)};
@@ -1353,7 +1398,10 @@ void vector_correctness::test_assign_3() {
         // empty vector to non-empty vector
         {
             vector<int> v {};
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             const auto numbers {this->generate_number(count)};
             auto l {this->to_forward_iterator(numbers)};
             v.assign(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
@@ -1391,7 +1439,10 @@ void vector_correctness::test_assign_3() {
 
         // non-empty vector to empty vector
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             vector<int> v(count);
             v.assign(int_forward_iterator {}, int_forward_iterator {});
             assert(v.size() == 0);
@@ -1546,6 +1597,9 @@ void vector_correctness::test_assign_3() {
             // equal to size
             {
                 auto count {this->generate_count()};
+                while(count == 0) {
+                    count = this->generate_count();
+                }
                 vector<int> v(count);
                 const auto numbers {this->generate_number(count)};
                 auto l {this->to_forward_iterator(numbers)};
@@ -1595,7 +1649,10 @@ void vector_correctness::test_assign_3() {
         // empty vector to non-empty vector
         {
             vector<int> v {};
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             const auto numbers {this->generate_number(count)};
             auto l {this->to_bidirectional_iterator(numbers)};
             v.assign(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
@@ -1633,7 +1690,10 @@ void vector_correctness::test_assign_3() {
 
         // non-empty vector to empty vector
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             vector<int> v(count);
             v.assign(int_bidirectional_iterator {}, int_bidirectional_iterator {});
             assert(v.size() == 0);
@@ -1788,6 +1848,9 @@ void vector_correctness::test_assign_3() {
             // equal to size
             {
                 auto count {this->generate_count()};
+                while(count == 0) {
+                    count = this->generate_count();
+                }
                 vector<int> v(count);
                 const auto numbers {this->generate_number(count)};
                 auto l {this->to_bidirectional_iterator(numbers)};
@@ -1837,7 +1900,10 @@ void vector_correctness::test_assign_3() {
         // empty vector to non-empty vector
         {
             vector<int> v {};
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             const auto numbers {this->generate_number(count)};
             auto d {this->to_random_access_iterator(numbers)};
             v.assign(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
@@ -1875,7 +1941,10 @@ void vector_correctness::test_assign_3() {
 
         // non-empty vector to empty vector
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             vector<int> v(count);
             v.assign(int_random_access_iterator {}, int_random_access_iterator {});
             assert(v.size() == 0);
@@ -2030,6 +2099,9 @@ void vector_correctness::test_assign_3() {
             // equal to size
             {
                 auto count {this->generate_count()};
+                while(count == 0) {
+                    count = this->generate_count();
+                }
                 vector<int> v(count);
                 const auto numbers {this->generate_number(count)};
                 auto d {this->to_random_access_iterator(numbers)};
@@ -2366,7 +2438,10 @@ void vector_correctness::test_resize_1() {
     // empty to non-empty
     {
         vector<int> v {};
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         v.resize(count);
         assert(v.size() == count);
         assert(not v.empty());
@@ -2419,8 +2494,14 @@ void vector_correctness::test_resize_1() {
 
         // less than size
         {
-            const auto count {this->generate_count()};
-            const auto new_size {this->generate_count(count - 1)};
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            auto new_size {this->generate_count(count - 1)};
+            while(new_size == 0) {
+                new_size = this->generate_count(count - 1);
+            }
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
             v.resize(new_size);
@@ -2453,7 +2534,10 @@ void vector_correctness::test_resize_1() {
 
         // equal to size
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
             v.resize(count);
@@ -2487,6 +2571,9 @@ void vector_correctness::test_resize_1() {
         // greater than size
         {
             auto count {this->generate_count(std::numeric_limits<int>::max() - 1)};
+            while(count == 0) {
+                count = this->generate_count(std::numeric_limits<int>::max() - 1);
+            }
             const auto new_size {this->generate_a_random_number(count + 1)};
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
@@ -2562,7 +2649,10 @@ void vector_correctness::test_resize_2() {
     // empty to non-empty
     {
         vector<int> v {};
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         const auto number {this->generate_a_random_number()};
         v.resize(count, number);
         assert(v.size() == count);
@@ -2616,8 +2706,14 @@ void vector_correctness::test_resize_2() {
 
         // less than size
         {
-            const auto count {this->generate_count()};
-            const auto new_size {this->generate_count(count - 1)};
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            auto new_size {this->generate_count(count - 1)};
+            while(new_size == 0) {
+                new_size = this->generate_count(count - 1);
+            }
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
             auto number_2 {this->generate_a_random_number()};
@@ -2654,7 +2750,10 @@ void vector_correctness::test_resize_2() {
 
         // equal to size
         {
-            const auto count {this->generate_count()};
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
             auto number_2 {this->generate_a_random_number()};
@@ -2692,6 +2791,9 @@ void vector_correctness::test_resize_2() {
         // greater than size
         {
             auto count {this->generate_count(std::numeric_limits<int>::max() - 1)};
+            while(count == 0) {
+                count = this->generate_count(std::numeric_limits<int>::max() - 1);
+            }
             const auto new_size {this->generate_a_random_number(count + 1)};
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
@@ -2781,7 +2883,10 @@ void vector_correctness::test_emplace_back() {
             assert(v[i] == number);
         }
 
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         v = vector<int>(count);
         v.cursor = v.first;
         v.emplace_back(number);
@@ -2829,7 +2934,10 @@ void vector_correctness::test_emplace_back() {
             while(number == number_2) {
                 number_2 = this->generate_a_random_number();
             }
-            const auto new_size {this->generate_a_random_number(0, count - 1)};
+            auto new_size {this->generate_a_random_number(0, count - 1)};
+            while(new_size == 0) {
+                new_size = this->generate_a_random_number(0, count - 1);
+            }
             v.cursor = v.first + new_size;
             v.emplace_back(number_2);
             assert(v.size() == new_size + 1);
@@ -2867,6 +2975,9 @@ void vector_correctness::test_emplace_back() {
         // full
         {
             auto count {this->generate_count(std::numeric_limits<int>::max() - 1)};
+            while(count == 0) {
+                count = this->generate_count(std::numeric_limits<int>::max() - 1);
+            }
             const auto number {this->generate_a_random_number()};
             vector<int> v(count, number);
             auto number_2 {this->generate_a_random_number()};
@@ -2962,7 +3073,10 @@ void vector_correctness::test_pop_back() {
 
     // random size
     {
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         const auto pop_count {this->generate_count(count - 1)};
         const auto number {this->generate_a_random_number()};
         vector<int> v(count, number);
@@ -3015,7 +3129,10 @@ void vector_correctness::test_clear() {
         assert(v.rbegin() == v.rend());
         assert(v.crbegin() == v.crend());
 
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         v = vector<int>(count);
         v.cursor = v.first;
         v.clear();
@@ -3034,7 +3151,10 @@ void vector_correctness::test_clear() {
 
     // non-empty
     {
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         vector<int> v(count, this->generate_a_random_number());
         v.clear();
         assert(v.size() == 0);
@@ -3102,7 +3222,10 @@ void vector_correctness::test_swap() {
 
     // swap empty capacity with non-zero capacity empty
     {
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         vector<int> v1 {}, v2(count, this->generate_a_random_number());
         v2.cursor = v2.first;
         v1.swap(v2);
@@ -3150,7 +3273,13 @@ void vector_correctness::test_swap() {
 
     // swap non-zero capacity empty with non-zero capacity empty
     {
-        const auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        while(count_1 == 0) {
+            count_1 = this->generate_count();
+        }
+        while(count_2 == 0) {
+            count_2 = this->generate_count();
+        }
         vector<int> v1(count_1, this->generate_a_random_number()), v2(count_2, this->generate_a_random_number());
         v1.cursor = v1.first;
         v2.cursor = v2.first;
@@ -3201,7 +3330,10 @@ void vector_correctness::test_swap() {
 
     // swap empty with non-empty
     {
-        const auto count {this->generate_count()};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
         const auto number {this->generate_a_random_number()};
         vector<int> v1 {}, v2(count, number);
         v1.swap(v2);
@@ -3279,7 +3411,13 @@ void vector_correctness::test_swap() {
 
     // swap non-zero capacity empty with non-empty
     {
-        const auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        while(count_1 == 0) {
+            count_1 = this->generate_count();
+        }
+        while(count_2 == 0) {
+            count_2 = this->generate_count();
+        }
         const auto number {this->generate_a_random_number()};
         vector<int> v1(count_1), v2(count_2, number);
         v1.cursor = v1.first;
@@ -3360,7 +3498,13 @@ void vector_correctness::test_swap() {
 
     // Swap non-empty with non-empty
     {
-        const auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        auto count_1 {this->generate_count()}, count_2 {this->generate_count()};
+        while(count_1 == 0) {
+            count_1 = this->generate_count();
+        }
+        while(count_2 == 0) {
+            count_2 = this->generate_count();
+        }
         const auto number_1 {this->generate_a_random_number()};
         auto number_2 {this->generate_a_random_number()};
         while(number_1 == number_2) {
@@ -3569,7 +3713,10 @@ void vector_correctness::test_emplace() {
 
             // with reallocation
             {
-                const auto count {this->generate_count(std::numeric_limits<int>::max() - 1)};
+                auto count {this->generate_count(std::numeric_limits<int>::max() - 1)};
+                while(count == 0) {
+                    count = this->generate_count(std::numeric_limits<int>::max() - 1);
+                }
                 const auto number {this->generate_a_random_number()};
                 auto number_2 {this->generate_a_random_number()};
                 while(number == number_2) {
@@ -3621,10 +3768,13 @@ void vector_correctness::test_emplace() {
             // without reallocation
             {
                 auto count {this->generate_count()};
-                while(count <= 1) {
+                while(count <= 2) {
                     count = this->generate_count();
                 }
-                const auto new_size {this->generate_a_random_number(1, count - 1)};
+                auto new_size {this->generate_a_random_number(1, count - 1)};
+                while(new_size <= 1) {
+                    new_size = this->generate_a_random_number(1, count - 1);
+                }
                 const auto number {this->generate_a_random_number()};
                 vector<int> v(count, number);
                 v.cursor = v.first + new_size;
@@ -3685,7 +3835,10 @@ void vector_correctness::test_emplace() {
 
             // with reallocation
             {
-                const auto count {this->generate_count()};
+                auto count {this->generate_count()};
+                while(count <= 2) {
+                    count = this->generate_count();
+                }
                 const auto number {this->generate_a_random_number()};
                 auto number_2 {this->generate_a_random_number()};
                 while(number == number_2) {
@@ -3798,7 +3951,10 @@ void vector_correctness::test_emplace() {
 
             // with reallocation
             {
-                const auto count {this->generate_count()};
+                auto count {this->generate_count()};
+                while(count == 0) {
+                    count = this->generate_count();
+                }
                 const auto number {this->generate_a_random_number()};
                 auto number_2 {this->generate_a_random_number()};
                 while(number == number_2) {
