@@ -57,7 +57,7 @@ public:
 
 void vector_unit_test() {
     auto correctness {new vector_correctness {}};
-    A: correctness->test_default_constructor();
+    correctness->test_default_constructor();
     correctness->test_constructor_1();
     correctness->test_constructor_2();
     correctness->test_constructor_3();
@@ -86,7 +86,6 @@ void vector_unit_test() {
     correctness->test_erase();
     correctness->test_allocator();
     correctness->test_non_trivial();
-    goto A;
     delete correctness;
 }
 
