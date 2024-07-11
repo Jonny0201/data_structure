@@ -593,8 +593,11 @@ __DATA_STRUCTURE_START(forward list node)
 template <typename ValueNode>
 struct forward_list_base_node {
     forward_list_base_node *next;
-    decltype(auto) value() noexcept {
+    constexpr decltype(auto) value() noexcept {
         return static_cast<ValueNode *>(this)->value;
+    }
+    constexpr ValueNode *node() noexcept {
+        return static_cast<ValueNode *>(this);
     }
 };
 template <typename T>
@@ -612,7 +615,7 @@ class forward_list_iterator {
             const forward_list_iterator<ValueType, IsConstRHS> &) noexcept;
     template <typename, typename> friend class forward_list;
 private:
-    using node_type = forward_list_base_node<T> *;
+    using node_type = forward_list_base_node<forward_list_node<T>> *;
 public:
     using iterator_type = forward_list_iterator;
     using size_type = size_t;
@@ -623,8 +626,10 @@ private:
     node_type node {};
 public:
     constexpr forward_list_iterator() noexcept = default;
-    explicit constexpr forward_list_iterator(forward_list_base_node<T> *node) noexcept : node {node} {}
-    constexpr forward_list_iterator(enable_if_t<IsConst, forward_list_iterator<T, false>> non_const_iterator) :
+    explicit constexpr forward_list_iterator(forward_list_base_node<forward_list_node<T>> *node) noexcept :
+            node {node} {}
+    template <typename U> requires is_same_v<U, forward_list_iterator<T, false>>
+    constexpr forward_list_iterator(enable_if_t<IsConst, const U &> non_const_iterator) :
             node {non_const_iterator.node} {}
     constexpr forward_list_iterator(const forward_list_iterator &) noexcept = default;
     constexpr forward_list_iterator(forward_list_iterator &&) noexcept = default;
@@ -656,7 +661,7 @@ public:
     explicit operator bool() const noexcept {
         return this->node;
     }
-    operator enable_if_t<not IsConst, forward_list_iterator<T, true>>() const noexcept {
+    operator forward_list_iterator<T, true>() const noexcept {
         return forward_list_iterator<T, true>(this->node);
     }
 };
