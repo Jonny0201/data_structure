@@ -162,7 +162,7 @@ private:
         } *recorder;
     } *shared_list;
 public:
-    constexpr static bool linked_after_allocation {true};
+    constexpr static auto linked_after_allocation {true};
 private:
     constexpr void release_this() noexcept {
         if(this->shared_list and --this->shared_list->strong_count == 0) {
@@ -297,7 +297,7 @@ public:
         if(node) {
             auto it {node};
             this->shared_list->node_size += n;
-            for(; n not_eq 1; it = it->next, static_cast<void>(--n));
+            for(; n not_eq 1; it = it->next->node(), static_cast<void>(--n));
             reinterpret_cast<shared_block::free_node *>(it)->next = this->shared_list->free_list;
             this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(node);
         }
