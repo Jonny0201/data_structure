@@ -393,7 +393,7 @@ constexpr forward_list<T, Allocator>::forward_list(forward_list &&rhs, const All
 }
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator>::~forward_list() noexcept {
-    this->deallocate_nodes(this->head, this->node_size());
+    this->deallocate_nodes(this->head.next->node(), this->node_size());
 }
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(const forward_list &rhs) {
@@ -492,15 +492,15 @@ forward_list<T, Allocator>::cbefore_begin() const noexcept {
 }
 template <typename T, typename Allocator>
 constexpr typename forward_list<T, Allocator>::iterator forward_list<T, Allocator>::begin() noexcept {
-    return iterator {this->head->next};
+    return iterator {this->head.next};
 }
 template <typename T, typename Allocator>
 constexpr typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::begin() const noexcept {
-    return const_iterator {this->head->next};
+    return const_iterator {this->head.next};
 }
 template <typename T, typename Allocator>
 constexpr typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::cbegin() const noexcept {
-    return const_iterator {this->head->next};
+    return const_iterator {this->head.next};
 }
 template <typename T, typename Allocator>
 consteval typename forward_list<T, Allocator>::iterator forward_list<T, Allocator>::end() noexcept {
