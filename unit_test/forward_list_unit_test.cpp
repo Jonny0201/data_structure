@@ -17,13 +17,16 @@ void forward_list_unit_test::test_default_constructor() {
     {
         forward_list<int> l {};
         const forward_list<int> cl {};
-        static_assert(noexcept(forward_list<int, std::allocator<int>> {}));
         static_assert(noexcept(forward_list<int> {move(l)}));
         static_assert(noexcept(l = move(l)));
+        static_assert(noexcept(l.before_begin()));
+        static_assert(noexcept(cl.before_begin()));
         static_assert(noexcept(l.begin()));
         static_assert(noexcept(cl.begin()));
         static_assert(noexcept(l.end()));
         static_assert(noexcept(cl.end()));
+        static_assert(noexcept(l.cbefore_begin()));
+        static_assert(noexcept(cl.cbefore_begin()));
         static_assert(noexcept(l.cbegin()));
         static_assert(noexcept(l.cend()));
         static_assert(noexcept(l.size()));
