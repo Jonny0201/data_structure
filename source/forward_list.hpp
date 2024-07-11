@@ -26,7 +26,6 @@ template <typename T, typename Allocator = allocator<T>>
 class forward_list {
 private:
     using begin_node_value_type = __dsa::forward_list_base_node<__dsa::forward_list_node<T>>;
-    using begin_node_type = begin_node_value_type *;
     using node_value_type = __dsa::forward_list_node<T>;
     using node_type = node_value_type *;
     using real_allocator = __dsa::node_allocator<T, __dsa::forward_list_node, Allocator>;
@@ -60,7 +59,8 @@ private:
     constexpr void deallocate_nodes(node_type, size_type) noexcept;
 public:
     constexpr forward_list() noexcept(is_nothrow_default_constructible_v<real_allocator>) = default;
-    explicit constexpr forward_list(const Allocator &) noexcept(is_nothrow_constructible_v<real_allocator, const Allocator &>);
+    explicit constexpr forward_list(const Allocator &)
+            noexcept(is_nothrow_constructible_v<real_allocator, const Allocator &>);
     explicit constexpr forward_list(size_type, const Allocator & = {});
     constexpr forward_list(size_type, const_reference, const Allocator & = {});
     template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
@@ -164,11 +164,11 @@ struct forward_list_allocation_handler {
     constexpr forward_list_allocation_handler(NodeType begin, Allocator &allocator) noexcept :
             begin {begin}, now {begin}, allocator {allocator} {}
     constexpr void operator()() noexcept {
-        now->next = nullptr;
+        this->now->next = nullptr;
         while(this->begin) {
             const auto backup {this->begin};
             this->begin = this->begin->next;
-            allocator.deallocate(backup);
+            this->allocator.deallocate(backup);
         }
     }
     consteval void done() const noexcept {}
@@ -183,17 +183,17 @@ struct forward_list_allocation_handler<NodeType, Allocator, false> {
     constexpr forward_list_allocation_handler(NodeType begin, Allocator &allocator) noexcept :
             begin {begin}, now {begin}, allocator {allocator} {}
     constexpr void operator()() noexcept {
-        now->next = nullptr;
+        this->now->next = nullptr;
         while(this->begin->next) {
             ds::destroy(ds::address_of(this->begin->value));
             const auto backup {this->begin};
             this->begin = this->begin->next;
-            allocator.deallocate(backup);
+            this->allocator.deallocate(backup);
         }
         if(this->value_construction_done) {
             ds::destroy(ds::address_of(this->begin->value));
         }
-        allocator.deallocate(this->begin);
+        this->allocator.deallocate(this->begin);
     }
     constexpr void done() noexcept {
         this->value_construction_done = true;
@@ -214,10 +214,10 @@ struct forward_list<T, Allocator>::linked_allocation_handler {
     constexpr linked_allocation_handler(node_type begin, Allocator &allocator, size_type n) noexcept : begin {begin},
             n {n}, allocator {allocator} {}
     constexpr void operator()() noexcept {
-        for(auto cursor {this->begin}; i-- > 0; cursor = cursor->next) {
+        for(auto cursor {this->begin}; this->i-- > 0; cursor = cursor->next) {
             ds::destroy(ds::address_of(cursor->value));
         }
-        allocator.deallocate(begin, begin[n - 1], n);
+        this->allocator.deallocate(this->begin, this->begin[this->n - 1], this->n);
     }
 };
 
