@@ -167,6 +167,19 @@ inline constexpr typename iterator_traits<InputIterator>::difference_type distan
 inline constexpr ptrdiff_t distance(void *begin, void *end) noexcept {
     return static_cast<char *>(end) - static_cast<char *>(begin);
 }
+
+template <IsRandomAccessIterator RandomAccessIterator>
+inline constexpr RandomAccessIterator advance(RandomAccessIterator begin,
+        typename iterator_traits<RandomAccessIterator>::difference_type n) noexcept(is_nothrow_addable_v<
+                RandomAccessIterator, typename iterator_traits<RandomAccessIterator>::difference_type>) {
+    return begin + n;
+}
+template <typename InputIterator>
+inline constexpr InputIterator advance(InputIterator begin, typename iterator_traits<InputIterator>::difference_type n)
+        noexcept(is_nothrow_prefix_increasable_v<InputIterator>) {
+    for(; n not_eq 0; --n, static_cast<void>(++begin));
+    return begin;
+}
 __DATA_STRUCTURE_END(iterator functions)
 
 __DATA_STRUCTURE_START(wrap iterator)
@@ -593,7 +606,7 @@ __DATA_STRUCTURE_START(forward list node)
 template <typename ValueNode>
 struct forward_list_base_node {
     forward_list_base_node *next;
-    constexpr decltype(auto) value() noexcept {
+    constexpr auto &value() noexcept {
         return static_cast<ValueNode *>(this)->value;
     }
     constexpr ValueNode *node() noexcept {
