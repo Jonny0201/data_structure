@@ -16,6 +16,8 @@ public:
     void test_constructor_3();
     // forward_list(InputIterator, InputIterator)
     void test_constructor_4();
+    // forward_list(ForwardIterator, ForwardIterator)
+    void test_constructor_5();
 };
 
 void forward_list_unit_test() {
@@ -25,6 +27,7 @@ void forward_list_unit_test() {
     correctness->test_constructor_2();
     correctness->test_constructor_3();
     correctness->test_constructor_4();
+    correctness->test_constructor_5();
     delete correctness;
 }
 
@@ -209,4 +212,154 @@ void forward_list_correctness::test_constructor_4() {
     }
 
     std::cout << "Checking forward_list(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
+}
+void forward_list_correctness::test_constructor_5() {
+    std::cout << "Start checking forward_list(ForwardIterator, ForwardIterator)!" << std::endl;
+
+    // forward iterator
+    {
+        std::cout << "\tStart checking forward_iterator version!" << std::endl;
+
+        // empty
+        {
+            forward_list<int> f(int_forward_iterator {}, {});
+            assert(f.size() == 0);
+            assert(f.empty());
+            assert(f.begin() == f.end());
+            assert(f.cbegin() == f.cend());
+            std::cout << "\t\ttest_constructor_5/forward iterator/Empty forward_list checking done." << std::endl;
+        }
+
+        // random size
+        {
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
+            auto l {this->to_forward_iterator(numbers)};
+            forward_list<int> f(int_forward_iterator {l.begin()}, int_forward_iterator {l.end()});
+            assert(f.size() == count);
+            assert(not f.empty());
+            assert(f.begin() not_eq f.end());
+            assert(advance(f.begin(), count) == f.end());
+            assert(f.cbegin() not_eq f.cend());
+            assert(advance(f.cbegin(), count) == f.cend());
+            assert(f.cbegin() not_eq f.end());
+            assert(advance(f.cbegin(), count) == f.end());
+            assert(f.begin() not_eq f.cend());
+            assert(advance(f.begin(), count) == f.cend());
+            assert(*f.begin() == *numbers.begin());
+            assert(f.front() == numbers.front());
+            auto numbers_i {0uz};
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_constructor_5/Forward iterator/Random count done." << std::endl;
+        }
+        std::cout << "\tChecking forward iterator version finished!" << std::endl;
+    }
+
+    // bidirectional iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+
+        // empty
+        {
+            forward_list<int> f(int_bidirectional_iterator {}, {});
+            assert(f.size() == 0);
+            assert(f.empty());
+            assert(f.begin() == f.end());
+            assert(f.cbegin() == f.cend());
+            std::cout << "\t\ttest_constructor_5/bidirectional iterator/Empty forward_list checking done." << std::endl;
+        }
+
+        // random size
+        {
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
+            auto l {this->to_bidirectional_iterator(numbers)};
+            forward_list<int> f(int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()});
+            assert(f.size() == count);
+            assert(not f.empty());
+            assert(f.begin() not_eq f.end());
+            assert(advance(f.begin(), count) == f.end());
+            assert(f.cbegin() not_eq f.cend());
+            assert(advance(f.cbegin(), count) == f.cend());
+            assert(f.cbegin() not_eq f.end());
+            assert(advance(f.cbegin(), count) == f.end());
+            assert(f.begin() not_eq f.cend());
+            assert(advance(f.begin(), count) == f.cend());
+            assert(*f.begin() == *numbers.begin());
+            assert(f.front() == numbers.front());
+            auto numbers_i {0uz};
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_constructor_5/Bidirectional iterator/Random count done." << std::endl;
+        }
+
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    // random access iterator
+    {
+        std::cout << "\tStart checking bidirectional iterator version!" << std::endl;
+
+        // empty
+        {
+            forward_list<int> f(int_random_access_iterator {}, {});
+            assert(f.size() == 0);
+            assert(f.empty());
+            assert(f.begin() == f.end());
+            assert(f.cbegin() == f.cend());
+            std::cout << "\t\ttest_constructor_5/random access iterator/Empty forward_list checking done." << std::endl;
+        }
+
+        // random size
+        {
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            const auto numbers {this->generate_number(count)};
+            auto d {this->to_random_access_iterator(numbers)};
+            forward_list<int> f(int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()});
+            assert(f.size() == count);
+            assert(not f.empty());
+            assert(f.begin() not_eq f.end());
+            assert(advance(f.begin(), count) == f.end());
+            assert(f.cbegin() not_eq f.cend());
+            assert(advance(f.cbegin(), count) == f.cend());
+            assert(f.cbegin() not_eq f.end());
+            assert(advance(f.cbegin(), count) == f.end());
+            assert(f.begin() not_eq f.cend());
+            assert(advance(f.begin(), count) == f.cend());
+            assert(*f.begin() == *numbers.begin());
+            assert(f.front() == numbers.front());
+            auto numbers_i {0uz};
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            numbers_i = 0;
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == numbers[numbers_i++]);
+            }
+            std::cout << "\t\ttest_constructor_5/Random access iterator/Random count done." << std::endl;
+        }
+        std::cout << "\tChecking bidirectional iterator version finished!" << std::endl;
+    }
+
+    std::cout << "Checking forward_list(ForwardIterator, ForwardIterator) finished!" << std::endl;
 }
