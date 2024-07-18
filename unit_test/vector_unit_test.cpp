@@ -314,7 +314,7 @@ void vector_correctness::test_constructor_4() {
         assert(v.crbegin() == v.crend());
         assert(v.crbegin() == v.crend());
         assert(v.data() == nullptr);
-        std::cout << "\ttest_constructor_4/Empty buffer checking done." << std::endl;
+        std::cout << "\ttest_constructor_4/Empty vector checking done." << std::endl;
     }
 
     // random size
@@ -364,7 +364,7 @@ void vector_correctness::test_constructor_4() {
         std::cout << "\ttest_constructor_4/Random count done." << std::endl;
     }
 
-    std::cout << "Checking buffer(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
+    std::cout << "Checking vector(InputIterator, InputIterator), size, empty and iterator finished!" << std::endl;
 }
 void vector_correctness::test_constructor_5() {
     std::cout << "Start checking vector(ForwardIterator, ForwardIterator)!" << std::endl;
@@ -12147,8 +12147,8 @@ void vector_correctness::test_allocator() {
 
     vector<int> v {1, 2, 3};
     auto allocator {v.allocator()};
-    static_assert(allocator == typename buffer<int>::allocator_type {});
-    static_assert(allocator == typename buffer<char>::allocator_type {});
+    static_assert(allocator == typename vector<int>::allocator_type {});
+    static_assert(allocator == typename vector<char>::allocator_type {});
 
     std::cout << "Checking allocator for ds::vector finished!" << std::endl;
 }
