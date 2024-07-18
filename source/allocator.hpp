@@ -155,7 +155,7 @@ private:
         size_t strong_count;
         struct recorder_list {
             struct {
-                NodeTemplate<T> *recorde;
+                NodeTemplate<T> *record;
                 size_t size;
             };
             recorder_list *next;
@@ -169,7 +169,8 @@ private:
             for(auto it {this->shared_list->recorder}; it;) {
                 auto backup {it};
                 it = it->next;
-                this->NodeAllocator::deallocate(backup->recorde, backup->size);
+                this->NodeAllocator::deallocate(backup->record, backup->size);
+                ::delete backup;
             }
             ::delete this->shared_list;
         }
@@ -217,7 +218,7 @@ public:
         if(n == 0) {
             return nullptr;
         }
-        const auto result {this->shared_list->free_list};
+        auto result {this->shared_list->free_list};
         if(n < this->shared_list->node_size) {
             this->shared_list->node_size -= n;
             auto cursor {result};
@@ -259,9 +260,12 @@ public:
             nodes[i].next = nodes + (i + 1);
         }
         nodes[last_position].next = link_to;
-        auto cursor {this->shared_list->free_list};
-        for(; cursor->next; cursor = cursor->next);
-        cursor->next = reinterpret_cast<shared_block::free_node *>(nodes);
+        if(auto cursor {result}; cursor) {
+            for(; cursor->next; cursor = cursor->next);
+            cursor->next = reinterpret_cast<shared_block::free_node *>(nodes);
+        }else {
+            result = reinterpret_cast<shared_block::free_node *>(nodes);
+        }
         this->shared_list->free_list = nullptr;
         return reinterpret_cast<NodeTemplate<T> *>(result);
     }
