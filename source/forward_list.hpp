@@ -51,7 +51,7 @@ private:
 private:
     template <bool = true>
     constexpr node_type allocate_n(size_type, const_reference = {}, node_type = {});
-    template <typename Iterator>
+    template <bool = false, typename Iterator>
     constexpr node_type allocate_n(Iterator, Iterator, node_type = {});
     template <typename ...Args>
     constexpr node_type allocate_1(node_type, Args &&...);
@@ -267,10 +267,13 @@ forward_list<T, Allocator>::allocate_n(size_type n, const_reference value, node_
     return result_node;
 }
 template <typename T, typename Allocator>
-template <typename Iterator>
+template <bool FromConstructor, typename Iterator>
 constexpr typename forward_list<T, Allocator>::node_type
 forward_list<T, Allocator>::allocate_n(Iterator begin, Iterator end, node_type link_to) {
     auto n {static_cast<size_type>(ds::distance(begin, end))};
+    if(FromConstructor) {
+        this->node_size() = n;
+    }
     if(n == 0) {
         return {};
     }
@@ -362,15 +365,14 @@ template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<Inp
 constexpr forward_list<T, Allocator>::forward_list(InputIterator begin, InputIterator end,
         const Allocator &allocator, size_type default_size) : head {}, node_size(real_allocator {allocator}) {
     buffer<T, Allocator> b(begin, end, allocator, default_size);
-    this->node_size() = b.size();
-    auto first_node {this->allocate_n(b.mbegin(), b.mend())};
+    auto first_node {this->allocate_n<true>(b.mbegin(), b.mend())};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr forward_list<T, Allocator>::forward_list(ForwardIterator begin, ForwardIterator end,
         const Allocator &allocator) : head {}, node_size(real_allocator {allocator}) {
-    auto first_node {this->allocate_n(begin, end)};
+    auto first_node {this->allocate_n<true>(begin, end)};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
