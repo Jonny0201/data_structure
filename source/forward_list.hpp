@@ -97,11 +97,11 @@ public:
     [[nodiscard]]
     constexpr const_iterator cbegin() const noexcept;
     [[nodiscard]]
-    consteval iterator end() noexcept;
+    constexpr iterator end() noexcept;
     [[nodiscard]]
-    consteval const_iterator end() const noexcept;
+    constexpr const_iterator end() const noexcept;
     [[nodiscard]]
-    consteval const_iterator cend() const noexcept;
+    constexpr const_iterator cend() const noexcept;
     [[nodiscard]]
     constexpr size_type size() const noexcept;
     [[nodiscard]]
@@ -387,7 +387,7 @@ constexpr forward_list<T, Allocator>::forward_list(const forward_list &rhs, cons
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator>::forward_list(forward_list &&rhs) noexcept : head {ds::move(rhs.head)},
         node_size {ds::move(rhs.node_size)} {
-    rhs.head = nullptr;
+    rhs.head.next = nullptr;
     rhs.node_size() = 0;
 }
 template <typename T, typename Allocator>
@@ -403,7 +403,7 @@ constexpr forward_list<T, Allocator>::~forward_list() noexcept {
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(const forward_list &rhs) {
     if(this not_eq &rhs) {
-        this->deallocate_nodes(this->head, this->node_size());
+        this->deallocate_nodes(this->head.next->node(), this->node_size());
         this->node_size.allocator() = rhs.node_size.allocator();
         this->assign(rhs.cbegin(), rhs.cend());
     }
@@ -459,17 +459,18 @@ constexpr void forward_list<T, Allocator>::assign(ForwardIterator begin, Forward
     const auto n {ds::distance(begin, end)};
     const auto size {this->node_size()};
     if(n >= size) {
-        for(auto it {this->head->next}; it; it = it->next) {
-            it->value() = *begin++;
+        for(auto it {this->head.next->node()}; it; it = it->next->node()) {
+            it->value = *begin++;
         }
         if(const auto allocation_size {n - size}; allocation_size not_eq 0) {
-            auto new_first_node {this->allocate_n(begin, end, this->head->next)};
-            this->head->next = new_first_node;
+            auto new_first_node {this->allocate_n(begin, end, this->head.next->node())};
+            this->head.next = new_first_node;
             this->node_size() += allocation_size;
         }
     }else {
-        auto it {this->head};
-        for(; n not_eq 0; --n, static_cast<void>(it = it->next)) {
+        auto it {&this->head};
+        for(auto assignment_size {n}; assignment_size not_eq 0;
+                --assignment_size, static_cast<void>(it = it->next->node())) {
             it->next->value() = *begin++;
         }
         this->node_size() -= n;
@@ -508,15 +509,15 @@ constexpr typename forward_list<T, Allocator>::const_iterator forward_list<T, Al
     return const_iterator {this->head.next};
 }
 template <typename T, typename Allocator>
-consteval typename forward_list<T, Allocator>::iterator forward_list<T, Allocator>::end() noexcept {
+constexpr typename forward_list<T, Allocator>::iterator forward_list<T, Allocator>::end() noexcept {
     return {};
 }
 template <typename T, typename Allocator>
-consteval typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::end() const noexcept {
+constexpr typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::end() const noexcept {
     return {};
 }
 template <typename T, typename Allocator>
-consteval typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::cend() const noexcept {
+constexpr typename forward_list<T, Allocator>::const_iterator forward_list<T, Allocator>::cend() const noexcept {
     return {};
 }
 template <typename T, typename Allocator>
