@@ -666,7 +666,7 @@ public:
         this->node = this->node->next;
         return *this;
     }
-    constexpr forward_list_iterator &operator++(int) & noexcept {
+    constexpr forward_list_iterator operator++(int) & noexcept {
         auto backup {*this};
         ++*this;
         return backup;
