@@ -10,19 +10,19 @@ public:
     void test_default_constructor();
     // vector(const Allocator &)
     void test_constructor_1();
-    // vector(size_type), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(size_type)
     void test_constructor_2();
-    // vector(size_type, const T &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(size_type, const T &)
     void test_constructor_3();
-    // vector(InputIterator, InputIterator), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(InputIterator, InputIterator)
     void test_constructor_4();
-    // vector(ForwardIterator, ForwardIterator), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(ForwardIterator, ForwardIterator)
     void test_constructor_5();
-    // vector(initializer_list<T>), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(initializer_list<T>)
     void test_constructor_6();
-    // vector(const vector &), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(const vector &)
     void test_copy_constructor();
-    // vector(vector &&), size, empty, capacity, spare, front, back, data, index and iterator
+    // vector(vector &&)
     void test_move_constructor();
     void test_copy_assignment();
     void test_move_assignment();
@@ -577,7 +577,7 @@ void vector_correctness::test_constructor_5() {
     std::cout << "Checking vector(ForwardIterator, ForwardIterator) finished!" << std::endl;
 }
 void vector_correctness::test_constructor_6() {
-    std::cout << "Start checking vector(initializer_list<T>,)!" << std::endl;
+    std::cout << "Start checking vector(initializer_list<T>)!" << std::endl;
 
     const std::initializer_list<int> empty_list = {};
     const auto single_list = {42};
