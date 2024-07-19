@@ -18,6 +18,11 @@ public:
     void test_constructor_4();
     // forward_list(ForwardIterator, ForwardIterator)
     void test_constructor_5();
+    // forward_list(initializer_list<T>)
+    void test_constructor_6();
+    void test_copy_constructor();
+    void test_move_constructor();
+    void test_copy_assignment();
 };
 
 void forward_list_unit_test() {
@@ -28,6 +33,10 @@ void forward_list_unit_test() {
     correctness->test_constructor_3();
     correctness->test_constructor_4();
     correctness->test_constructor_5();
+    correctness->test_constructor_6();
+    correctness->test_copy_constructor();
+    correctness->test_move_constructor();
+    correctness->test_copy_assignment();
     delete correctness;
 }
 
@@ -362,4 +371,203 @@ void forward_list_correctness::test_constructor_5() {
     }
 
     std::cout << "Checking forward_list(ForwardIterator, ForwardIterator) finished!" << std::endl;
+}
+void forward_list_correctness::test_constructor_6() {
+    std::cout << "Start checking forward_list(initializer_list<T>)!" << std::endl;
+
+    const std::initializer_list<int> empty_list = {};
+    const auto single_list = {42};
+    const auto list = {-5, -2, 0, 1, 4, 6, 8, 111};
+
+    // empty from initializer_list
+    {
+        forward_list<int> f1(empty_list);
+        assert(f1.size() == 0);
+        assert(f1.empty());
+        assert(f1.begin() == f1.end());
+        assert(f1.cbegin() == f1.cend());
+
+        forward_list<int> f2({});
+        assert(f2.size() == 0);
+        assert(f2.empty());
+        assert(f2.begin() == f2.end());
+        assert(f2.cbegin() == f2.cend());
+        std::cout << "\ttest_constructor_6/Empty forward_list from initializer_list checking done." << std::endl;
+    }
+
+    // single element
+    {
+        forward_list<int> f1 {42};
+        assert(f1.size() == 1);
+        assert(not f1.empty());
+        assert(f1.begin() not_eq f1.end());
+        assert(advance(f1.begin(), 1) == f1.end());
+        assert(*f1.begin() == 42);
+        assert(*f1.cbegin()== 42);
+        assert(f1.front() == 42);
+
+        forward_list<int> f2(single_list);
+        assert(f2.size() == 1);
+        assert(not f2.empty());
+        assert(f2.begin() not_eq f2.end());
+        assert(advance(f2.begin(), 1) == f2.end());
+        assert(*f2.begin() == 42);
+        assert(*f2.cbegin() == 42);
+        assert(f2.front() == 42);
+        std::cout << "\ttest_constructor_6/Single element forward_list checking done." << std::endl;
+    }
+
+    // other test
+    {
+        forward_list<int> f(list);
+        assert(f.size() == 8);
+        assert(not f.empty());
+        assert(advance(f.begin(), 8) == f.end());
+        assert(advance(f.cbegin(), 8) == f.cend());
+        assert(*f.begin() == -5);
+        assert(*f.cbegin() == -5);
+        assert(f.front() == -5);
+        for(auto i {0}; i < list.size(); ++i) {
+            assert(*advance(f.begin(), i) == *(list.begin() + i));
+        }
+        std::cout << "\ttest_constructor_6/forward_list other test checking done." << std::endl;
+    }
+
+    std::cout << "Checking forward_list(initializer_list<T>) finished!" << std::endl;
+}
+void forward_list_correctness::test_copy_constructor() {
+    std::cout << "Start checking copy constructor!" << std::endl;
+
+    // empty
+    {
+        forward_list<int> f0(0);
+        auto f {f0};
+        assert(f.size() == 0);
+        assert(f.empty());
+        assert(f.begin() == f.end());
+        assert(f.cbegin() == f.cend());
+        std::cout << "\ttest_default_copy_constructor/Empty forward_list checking done." << std::endl;
+    }
+
+    // random size
+    {
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        forward_list<int> f0(count);
+        auto f {f0};
+        assert(f.size() == count);
+        assert(not f.empty());
+        assert(advance(f.begin(), count) == f.end());
+        assert(advance(f.cbegin(), count) == f.cend());
+        assert(f.front() == 0);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_copy_constructor/Random count done." << std::endl;
+    }
+
+    std::cout << "Checking copy constructor finished!" << std::endl;
+}
+void forward_list_correctness::test_move_constructor() {
+    std::cout << "Start checking move constructor!" << std::endl;
+
+    // empty
+    {
+        forward_list<int> f0(0);
+        auto f {move(f0)};
+        assert(f0.size() == 0);
+        assert(f0.empty());
+        assert(f0.begin() == f0.end());
+        assert(f0.cbegin() == f0.cend());
+        assert(f.size() == 0);
+        assert(f.empty());
+        assert(f.begin() == f.end());
+        assert(f.cbegin() == f.cend());
+        std::cout << "\ttest_default_move_constructor/Empty forward_list checking done." << std::endl;
+    }
+
+    // random size
+    {
+        auto size {this->generate_count()};
+        while(size == 0) {
+            size = this->generate_count();
+        }
+        forward_list<int> f0(size);
+        auto f {move(f0)};
+        assert(f0.size() == 0);
+        assert(f0.empty());
+        assert(f0.begin() == f0.end());
+        assert(f0.cbegin() == f0.cend());
+        assert(f.size() == size);
+        assert(not f.empty());
+        assert(advance(f.begin(), size) == f.end());
+        assert(advance(f.cbegin(), size) == f.cend());
+        assert(f.front() == 0);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == 0);
+        }
+        std::cout << "\ttest_move_constructor/Random size done." << std::endl;
+    }
+
+    std::cout << "Checking move constructor finished!" << std::endl;
+}
+void forward_list_correctness::test_copy_assignment() {
+    std::cout << "Start checking copy assignment for ds::forward_list!" << std::endl;
+
+    // empty
+    {
+        forward_list<int> f0(0);
+        forward_list<int> f {};
+        f = f0;
+        bool rechecked {};
+        RECHECK_EMPTY : assert(f.size() == 0);
+        assert(f.empty());
+        assert(f.begin() == f.end());
+        assert(f.cbegin() == f.cend());
+        if(not rechecked) {
+            f = f;
+            rechecked = true;
+            goto RECHECK_EMPTY;
+        }
+        std::cout << "\ttest_default_copy_assignment/Empty forward_list checking done." << std::endl;
+    }
+
+    // random size
+    {
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        forward_list<int> f0(count);
+        forward_list<int> f {};
+        f = f0;
+        bool rechecked {};
+        RECHECK_RANDOM : assert(f.size() == count);
+        assert(not f.empty());
+        assert(advance(f.begin(), count) == f.end());
+        assert(advance(f.cbegin(), count) == f.cend());
+        assert(f.front() == 0);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == 0);
+        }
+        if(not rechecked) {
+            f = f;
+            rechecked = true;
+            goto RECHECK_RANDOM;
+        }
+        std::cout << "\ttest_copy_assignment/Random sized elements done." << std::endl;
+    }
+
+    std::cout << "Checking copy assignment for ds::forward_list finished!" << std::endl;
 }
