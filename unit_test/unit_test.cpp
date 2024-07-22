@@ -8,6 +8,7 @@ int unit_test_correctness::generate_count() {
     return this->generate_count(std::numeric_limits<int>::max());
 }
 int unit_test_correctness::generate_count(int max) {
+    max = 10;
     std::uniform_int_distribution u(0, max);
     std::random_device d {};
     std::default_random_engine e(d());

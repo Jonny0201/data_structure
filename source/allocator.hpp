@@ -145,10 +145,14 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using value_type = T;
+    static_assert(not is_same_v<T, typename allocator_traits<Allocator>::value_type>,
+            "The value type of node_allocator must be same as original allocator!");
 private:
     struct shared_block {
-        NodeTemplate<T> *free_list;
-        size_t node_size;
+        struct {
+            NodeTemplate<T> *free_list;
+            size_t node_size;
+        };
         size_t strong_count;
         struct recorder_list {
             struct {
