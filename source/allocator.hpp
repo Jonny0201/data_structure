@@ -145,7 +145,7 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using value_type = T;
-    static_assert(not is_same_v<T, typename allocator_traits<Allocator>::value_type>,
+    static_assert(is_same_v<T, typename allocator_traits<Allocator>::value_type>,
             "The value type of node_allocator must be same as original allocator!");
 private:
     struct shared_block {
