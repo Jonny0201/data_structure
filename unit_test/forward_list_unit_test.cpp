@@ -12,7 +12,7 @@ public:
     void test_constructor_1();
     // forward_list(size_type)
     void test_constructor_2();
-    // forward_list(size_type, const T &)
+    // forward_list(size_type, const_reference)
     void test_constructor_3();
     // forward_list(InputIterator, InputIterator)
     void test_constructor_4();
@@ -23,6 +23,9 @@ public:
     void test_copy_constructor();
     void test_move_constructor();
     void test_copy_assignment();
+    void test_move_assignment();
+    // void assign(size_type, const_reference)
+    void test_assign_1();
 };
 
 void forward_list_unit_test() {
@@ -37,6 +40,8 @@ void forward_list_unit_test() {
     correctness->test_copy_constructor();
     correctness->test_move_constructor();
     correctness->test_copy_assignment();
+    correctness->test_move_assignment();
+    correctness->test_assign_1();
     delete correctness;
 }
 
@@ -570,4 +575,232 @@ void forward_list_correctness::test_copy_assignment() {
     }
 
     std::cout << "Checking copy assignment for ds::forward_list finished!" << std::endl;
+}
+void forward_list_correctness::test_move_assignment() {
+    std::cout << "Start checking move assignment for ds::forward_list!" << std::endl;
+
+    // empty
+    {
+        forward_list<int> f0(0);
+        forward_list<int> f {};
+        f = move(f0);
+        bool rechecked {};
+        assert(f0.size() == 0);
+        assert(f0.empty());
+        assert(f0.begin() == f0.end());
+        assert(f0.cbegin() == f0.cend());
+        RECHECK_EMPTY : assert(f.size() == 0);
+        assert(f.empty());
+        assert(f.begin() == f.end());
+        assert(f.cbegin() == f.cend());
+        if(not rechecked) {
+            f = move(f);
+            rechecked = true;
+            goto RECHECK_EMPTY;
+        }
+        std::cout << "\tChecking test_move_assignment/Empty forward_list checking done." << std::endl;
+    }
+
+    // random size
+    {
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        forward_list<int> f0(count);
+        forward_list<int> f {};
+        f = move(f0);
+        bool rechecked {};
+        assert(f0.size() == 0);
+        assert(f0.empty());
+        assert(f0.begin() == f0.end());
+        assert(f0.cbegin() == f0.cend());
+        RECHECK_RANDOM : assert(f.size() == count);
+        assert(not f.empty());
+        assert(advance(f.begin(), count) == f.end());
+        assert(advance(f.cbegin(), count) == f.cend());
+        assert(f.front() == 0);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == 0);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == 0);
+        }
+        if(not rechecked) {
+            f = move(f);
+            rechecked = true;
+            goto RECHECK_RANDOM;
+        }
+        std::cout << "\tChecking test_move_assignment/Random count done." << std::endl;
+    }
+
+    std::cout << "Checking move assignment for ds::forward_list finished!" << std::endl;
+}
+void forward_list_correctness::test_assign_1() {
+    std::cout << "Start checking void assign(size_type, const_reference) for forward_list!" << std::endl;
+
+    // empty forward_list to non-empty forward_list
+    {
+        forward_list<int> f {};
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        const auto number {this->generate_a_random_number()};
+        f.assign(count, number);
+        assert(f.size() == count);
+        assert(not f.empty());
+        assert(advance(f.begin(), count) == f.end());
+        assert(advance(f.cbegin(), count) == f.cend());
+        assert(f.front() == number);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == number);
+        }
+        std::cout << "\ttest_assign_1/Empty forward_list to non-empty forward_list done." << std::endl;
+    }
+
+    // non-empty forward_list to empty forward_list
+    {
+        auto count {this->generate_count()};
+        while(count == 0) {
+            count = this->generate_count();
+        }
+        forward_list<int> f(count);
+        f.assign(0);
+        assert(f.size() == 0);
+        assert(f.empty());
+        assert(f.begin() == f.end());
+        assert(f.cbegin() == f.cend());
+        std::cout << "\ttest_assign_1/Non-empty forward_list to forward_list done." << std::endl;
+    }
+
+    // non-empty forward_list with assigning size greater than capacity
+    {
+        auto count {this->generate_count()};
+        while(count <= 5) {
+            count = this->generate_count();
+        }
+        const auto number {this->generate_a_random_number()};
+        forward_list<int> f(5);
+        f.assign(count, number);
+        assert(f.size() == count);
+        assert(not f.empty());
+        assert(advance(f.begin(), count) == f.end());
+        assert(advance(f.cbegin(), count) == f.cend());
+        assert(f.front() == number);
+        for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+            assert(*it == number);
+        }
+        for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+            assert(*it == number);
+        }
+        std::cout << "\ttest_assign_1/Non-empty forward_list with assigning size greater than capacity done." << std::endl;
+    }
+
+    // non-empty forward_list with assigning size less than capacity
+    {
+        std::cout << "\tStart checking test_assign_1/Non-empty forward_list with assigning size less than capacity!" << std::endl;
+
+        // greater than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            count = 7;
+            const auto offset {count / 2};
+            const auto real_size {count - offset};
+            forward_list<int> f(count);
+            auto erasion {&f.head};
+            for(auto i {real_size};; erasion = erasion->next) {
+                if(i-- == 0) {
+                    auto backup {erasion->next};
+                    erasion->next = nullptr;
+                    f.node_size.allocator().deallocate(backup->node(), offset);
+                    f.node_size() = real_size;
+                    break;
+                }
+            }
+            auto new_size {this->generate_a_random_number(real_size + 1, count)};
+            const auto number {this->generate_a_random_number()};
+            new_size = 5;
+            f.assign(new_size, number);
+            assert(f.size() == new_size);
+            assert(not f.empty());
+            assert(advance(f.begin(), new_size) == f.end());
+            assert(advance(f.cbegin(), new_size) == f.cend());
+            assert(f.front() == number);
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty forward_list with assigning size less than capacity/Greater than size done." << std::endl;
+        }
+
+        // less than size
+        {
+            auto count {this->generate_count()};
+            while(count <= 1) {
+                count = this->generate_count();
+            }
+            forward_list<int> f(count);
+            auto new_size {this->generate_a_random_number(1, count - 1)};
+            auto erasion {&f.head};
+            for(auto i {new_size};; erasion = erasion->next) {
+                if(i-- == 0) {
+                    auto backup {erasion->next};
+                    erasion->next = nullptr;
+                    f.node_size.allocator().deallocate(backup->node(), count - new_size);
+                    f.node_size() = new_size;
+                    break;
+                }
+            }
+            const auto number {this->generate_a_random_number()};
+            f.assign(new_size, number);
+            assert(f.size() == new_size);
+            assert(not f.empty());
+            assert(advance(f.begin(), new_size) == f.end());
+            assert(advance(f.cbegin(), new_size) == f.cend());
+            assert(f.front() == number);
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty forward_list with assigning size less than capacity/Less than size done." << std::endl;
+        }
+
+        // equal to size
+        {
+            auto count {this->generate_count()};
+            while(count == 0) {
+                count = this->generate_count();
+            }
+            forward_list<int> f(count);
+            const auto number {this->generate_a_random_number()};
+            f.assign(count, number);
+            assert(f.size() == count);
+            assert(not f.empty());
+            assert(advance(f.begin(), count) == f.end());
+            assert(advance(f.cbegin(), count) == f.cend());
+            assert(f.front() == number);
+            for(auto it {f.begin()}; it not_eq f.end(); ++it) {
+                assert(*it == number);
+            }
+            for(auto it {f.cbegin()}; it not_eq f.cend(); ++it) {
+                assert(*it == number);
+            }
+            std::cout << "\t\ttest_assign_1/Non-empty forward_list with assigning size less than capacity/Equal to size done." << std::endl;
+        }
+
+        std::cout << "\tChecking test_assign_1/Non-empty forward_list with assigning size less than capacity finished!" << std::endl;
+    }
+
+    std::cout << "Checking void assign(size_type, const_reference) for forward_list finished!" << std::endl;
 }
