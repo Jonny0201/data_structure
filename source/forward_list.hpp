@@ -233,13 +233,17 @@ forward_list<T, Allocator>::allocate_n(size_type n, const_reference value, node_
     if constexpr(__dsa::IsLinkedAfterAllocation<real_allocator>) {
         const auto result_node {allocator.allocate(n, link_to)};
         auto trans {transaction {linked_allocation_handler(result_node, this->node_size.allocator(), n)}};
-        for(auto i {0}; i < n; ++i) {
+        for(auto cursor {result_node};; cursor = cursor->next->node()) {
             if constexpr(CopyFromValue) {
-                ds::construct(ds::address_of(result_node[i].value), value);
+                ds::construct(ds::address_of(cursor->value), value);
             }else {
-                ds::construct(ds::address_of(result_node[i].value));
+                ds::construct(ds::address_of(cursor->value));
+            }
+            if(--n == 0) {
+                break;
             }
         }
+        trans.complete();
         return result_node;
     }
     const auto result_node {allocator.allocate(1)};
@@ -271,7 +275,7 @@ template <bool FromConstructor, typename Iterator>
 constexpr typename forward_list<T, Allocator>::node_type
 forward_list<T, Allocator>::allocate_n(Iterator begin, Iterator end, node_type link_to) {
     auto n {static_cast<size_type>(ds::distance(begin, end))};
-    if(FromConstructor) {
+    if constexpr(FromConstructor) {
         this->node_size() = n;
     }
     if(n == 0) {
@@ -412,10 +416,10 @@ constexpr forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(cons
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(forward_list &&rhs) noexcept {
     if (this not_eq &rhs) {
-        this->deallocate_nodes(this->head, this->node_size());
+        this->deallocate_nodes(this->head.next->node(), this->node_size());
         this->head = ds::move(rhs.head);
         this->node_size = ds::move(rhs.node_size);
-        rhs.head = nullptr;
+        rhs.head.next = nullptr;
         rhs.node_size() = 0;
     }
     return *this;
@@ -429,20 +433,20 @@ template <typename T, typename Allocator>
 constexpr void forward_list<T, Allocator>::assign(size_type n, const_reference value) {
     const auto size {this->node_size()};
     if(n >= size) {
-        for(auto it {this->head->next}; it; it = it->next) {
+        for(auto it {this->head.next}; it; it = it->next) {
             it->value() = value;
         }
         if(const auto allocation_size {n - size}; allocation_size not_eq 0) {
-            auto new_first_node {this->allocate_n(allocation_size, value, this->head->next)};
-            this->head->next = new_first_node;
+            auto new_first_node {this->allocate_n(allocation_size, value, this->head.next->node())};
+            this->head.next = new_first_node;
             this->node_size() += allocation_size;
         }
     }else {
-        auto it {this->head};
+        this->node_size() = n;
+        auto it {&this->head};
         for(; n not_eq 0; --n, static_cast<void>(it = it->next)) {
             it->next->value() = value;
         }
-        this->node_size() -= n;
         this->deallocate_nodes(static_cast<node_type>(it->next), size - n);
         it->next = nullptr;
     }
@@ -459,8 +463,8 @@ constexpr void forward_list<T, Allocator>::assign(ForwardIterator begin, Forward
     const auto n {ds::distance(begin, end)};
     const auto size {this->node_size()};
     if(n >= size) {
-        for(auto it {this->head.next->node()}; it; it = it->next->node()) {
-            it->value = *begin++;
+        for(auto it {this->head.next}; it; it = it->next) {
+            it->value() = *begin++;
         }
         if(const auto allocation_size {n - size}; allocation_size not_eq 0) {
             auto new_first_node {this->allocate_n(begin, end, this->head.next->node())};
@@ -468,12 +472,12 @@ constexpr void forward_list<T, Allocator>::assign(ForwardIterator begin, Forward
             this->node_size() += allocation_size;
         }
     }else {
+        this->node_size() = n;
         auto it {&this->head};
         for(auto assignment_size {n}; assignment_size not_eq 0;
                 --assignment_size, static_cast<void>(it = it->next->node())) {
             it->next->value() = *begin++;
         }
-        this->node_size() -= n;
         this->deallocate_nodes(static_cast<node_type>(it->next), size - n);
         it->next = nullptr;
     }
