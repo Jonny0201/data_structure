@@ -147,10 +147,7 @@ public:
     using value_type = T;
 private:
     struct shared_block {
-        union free_node {
-            NodeTemplate<T> *node;
-            free_node *next;
-        } *free_list;
+        NodeTemplate<T> *free_list;
         size_t node_size;
         size_t strong_count;
         struct recorder_list {
@@ -222,19 +219,18 @@ public:
         if(n < this->shared_list->node_size) {
             this->shared_list->node_size -= n;
             auto cursor {result};
-            do {
-                cursor = cursor->next;
-            }while(--n not_eq 0);
-            this->shared_list->free_list = cursor;
-            return reinterpret_cast<NodeTemplate<T> *>(result);
-        }
-        n -= this->shared_list->node_size;
-        this->shared_list->node_size = 0;
-        if(n == 0) {
+            while(n not_eq 1) {
+                cursor = cursor->next->node();
+                --n;
+            }
+            this->shared_list->free_list = cursor->next->node();
+            cursor->next = link_to;
+            return result;
+        }else if(n == this->shared_list->node_size) {
             this->shared_list->free_list = nullptr;
-            return reinterpret_cast<NodeTemplate<T> *>(result);
+            return result;
         }
-        const auto nodes {this->NodeAllocator::allocate(n)};
+        const auto nodes {this->NodeAllocator::template allocate<NoThrow>(n -= this->shared_list->node_size)};
         if constexpr(NoThrow) {
             if(not nodes) {
                 return nullptr;
@@ -261,13 +257,14 @@ public:
         }
         nodes[last_position].next = link_to;
         if(auto cursor {result}; cursor) {
-            for(; cursor->next; cursor = cursor->next);
-            cursor->next = reinterpret_cast<shared_block::free_node *>(nodes);
+            for(; cursor->next; cursor = cursor->next->node());
+            cursor->next = nodes;
         }else {
-            result = reinterpret_cast<shared_block::free_node *>(nodes);
+            result = nodes;
         }
         this->shared_list->free_list = nullptr;
-        return reinterpret_cast<NodeTemplate<T> *>(result);
+        this->shared_list->node_size = 0;
+        return result;
     }
     template <bool = false>
     [[nodiscard]]
@@ -291,9 +288,8 @@ public:
     }
     constexpr void deallocate(NodeTemplate<T> *node) noexcept {
         if(node) {
-            const auto free_node {reinterpret_cast<shared_block::free_node *>(node)};
-            free_node->next = this->shared_list->free_list;
-            this->shared_list->free_list = free_node;
+            node->next = this->shared_list->free_list;
+            this->shared_list->free_list = node;
             ++this->shared_list->node_size;
         }
     }
@@ -302,24 +298,24 @@ public:
             auto it {node};
             this->shared_list->node_size += n;
             for(; n not_eq 1; it = it->next->node(), static_cast<void>(--n));
-            reinterpret_cast<shared_block::free_node *>(it)->next = this->shared_list->free_list;
-            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(node);
+            it->next = this->shared_list->free_list;
+            this->shared_list->free_list = node;
         }
     }
     constexpr void deallocate(NodeTemplate<T> *begin, NodeTemplate<T> *end) noexcept {
         if(begin) {
             auto n {1uz};
-            for(auto it {begin}; it not_eq end; it = it->next, static_cast<void>(++n));
+            end->next = this->shared_list->free_list;
+            this->shared_list->free_list = begin;
+            for(; begin not_eq end; begin = begin->next, static_cast<void>(++n));
             this->shared_list->node_size += n;
-            reinterpret_cast<shared_block::free_node *>(end)->next = this->shared_list->free_list;
-            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(begin);
         }
     }
     constexpr void deallocate(NodeTemplate<T> *begin, NodeTemplate<T> *end, size_t n) noexcept {
-        if(begin and n > 0) {
+        if(begin) {
             this->shared_list->node_size += n;
-            reinterpret_cast<shared_block::free_node *>(end)->next = this->shared_list->free_list;
-            this->shared_list->free_list = reinterpret_cast<shared_block::free_node *>(begin);
+            end->next = this->shared_list->free_list;
+            this->shared_list->free_list = begin;
         }
     }
 };
