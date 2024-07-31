@@ -25,9 +25,7 @@ __DATA_STRUCTURE_START(forward_list declaration)
 template <typename T, typename Allocator = allocator<T>>
 class forward_list {
 private:
-    using begin_node_value_type = __dsa::forward_list_base_node<__dsa::forward_list_node<T>>;
-    using node_value_type = __dsa::forward_list_node<T>;
-    using node_type = node_value_type *;
+    using node_type = __dsa::forward_list_node<T> *;
     using real_allocator = __dsa::node_allocator<T, __dsa::forward_list_node, Allocator>;
 public:
     using allocator_type = Allocator;
@@ -46,7 +44,7 @@ public:
 private:
     struct linked_allocation_handler;
 private:
-    begin_node_value_type head {};
+    __dsa::forward_list_base_node<__dsa::forward_list_node<T>> head {};
     __dsa::allocator_compressor<size_type, real_allocator> node_size {};
 private:
     template <bool = true>
