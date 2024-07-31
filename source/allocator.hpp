@@ -220,7 +220,7 @@ public:
             return nullptr;
         }
         auto result {this->shared_list->free_list};
-        if(n < this->shared_list->node_size) {
+        if(n <= this->shared_list->node_size) {
             this->shared_list->node_size -= n;
             auto cursor {result};
             while(n not_eq 1) {
@@ -229,9 +229,6 @@ public:
             }
             this->shared_list->free_list = cursor->next->node();
             cursor->next = link_to;
-            return result;
-        }else if(n == this->shared_list->node_size) {
-            this->shared_list->free_list = nullptr;
             return result;
         }
         const auto nodes {this->NodeAllocator::template allocate<NoThrow>(n -= this->shared_list->node_size)};

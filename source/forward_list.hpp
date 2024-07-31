@@ -283,8 +283,8 @@ forward_list<T, Allocator>::allocate_n(Iterator begin, Iterator end, node_type l
     if constexpr(__dsa::IsLinkedAfterAllocation<real_allocator>) {
         const auto result_node {allocator.allocate(n, link_to)};
         auto trans {transaction {linked_allocation_handler(result_node, this->node_size.allocator(), n)}};
-        for(auto i {0}; i < n; ++i) {
-            ds::construct(ds::address_of(result_node[i].value), *begin++);
+        for(auto cursor {result_node}; n not_eq 0; cursor = cursor->next->node(), static_cast<void>(--n)) {
+            ds::construct(ds::address_of(cursor->value), *begin++);
         }
         trans.complete();
         return result_node;
