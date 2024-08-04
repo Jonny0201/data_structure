@@ -650,13 +650,13 @@ public:
 public:
     constexpr forward_list_iterator &operator=(const forward_list_iterator &) noexcept = default;
     constexpr forward_list_iterator &operator=(forward_list_iterator &&) noexcept = default;
-    constexpr conditional_t<IsConst, T &, const T &> operator*() noexcept {
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
         return this->node->value();
     }
     constexpr const T &operator*() const noexcept {
         return this->node->value();
     }
-    constexpr conditional_t<IsConst, T *, const T *> operator->() noexcept {
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
         return ds::address_of(**this);
     }
     constexpr const T *operator->() const noexcept {
