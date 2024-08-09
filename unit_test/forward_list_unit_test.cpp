@@ -1687,16 +1687,18 @@ void forward_list_correctness::test_resize_1() {
             assert(advance(f.begin(), new_size) == f.end());
             assert(advance(f.cbegin(), new_size) == f.cend());
             assert(f.front() == number);
-            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+            const auto end {advance(f.begin(), count)};
+            for(auto it {f.begin()}; it not_eq end; ++it) {
                 assert(*it == number);
             }
-            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+            for(auto it {end}; it not_eq f.end(); ++it) {
                 assert(*it == 0);
             }
-            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+            const auto cend {advance(f.cbegin(), count)};
+            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                 assert(*it == number);
             }
-            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+            for(auto it {cend}; it not_eq f.cend(); ++it) {
                 assert(*it == 0);
             }
             std::cout << "\t\tChecking test_resize_1/Non-empty to non-empty/Greater than size done." << std::endl;
@@ -1837,17 +1839,18 @@ void forward_list_correctness::test_resize_2() {
             assert(advance(f.begin(), new_size) == f.end());
             assert(advance(f.cbegin(), new_size) == f.cend());
             assert(f.front() == number);
-            const auto offset {new_size - count};
-            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+            const auto end {advance(f.begin(), count)};
+            for(auto it {f.begin()}; it not_eq end; ++it) {
                 assert(*it == number);
             }
-            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+            for(auto it {end}; it not_eq f.end(); ++it) {
                 assert(*it == number_2);
             }
-            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+            const auto cend {advance(f.cbegin(), count)};
+            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                 assert(*it == number);
             }
-            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+            for(auto it {cend}; it not_eq f.cend(); ++it) {
                 assert(*it == number_2);
             }
             std::cout << "\t\tChecking test_resize_1/Non-empty to non-empty/Greater than size done." << std::endl;
@@ -2470,10 +2473,7 @@ void forward_list_correctness::test_emplace_after() {
                 while(count <= 2) {
                     count = this->generate_count();
                 }
-                auto new_size {this->generate_a_random_number(1, count - 1)};
-                while(new_size <= 1) {
-                    new_size = this->generate_a_random_number(1, count - 1);
-                }
+                auto new_size {this->generate_a_random_number(2, count - 1)};
                 const auto number {this->generate_a_random_number()};
                 forward_list<int> f(count, number);
                 auto erasion {&f.head};
@@ -2497,17 +2497,19 @@ void forward_list_correctness::test_emplace_after() {
                 assert(advance(f.begin(), new_size + 1) == f.end());
                 assert(advance(f.cbegin(), new_size + 1) == f.cend());
                 assert(f.front() == number);
-                for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                const auto end {advance(f.begin(), insertion_position)};
+                for(auto it {f.begin()}; it not_eq end; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.begin(), insertion_position)) == number_2);
+                assert(*end == number_2);
                 for(auto it {advance(f.begin(), insertion_position + 1)}; it not_eq f.end(); ++it) {
                     assert(*it == number);
                 }
-                for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                const auto cend {advance(f.cbegin(), insertion_position)};
+                for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.cbegin(), insertion_position)) == number_2);
+                assert(*cend == number_2);
                 for(auto it {advance(f.cbegin(), insertion_position + 1)}; it not_eq f.cend(); ++it) {
                     assert(*it == number);
                 }
@@ -2535,17 +2537,19 @@ void forward_list_correctness::test_emplace_after() {
                 assert(advance(f.begin(), count + 1) == f.end());
                 assert(advance(f.cbegin(), count + 1) == f.cend());
                 assert(f.front() == number);
-                for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                const auto end {advance(f.begin(), insertion_position)};
+                for(auto it {f.begin()}; it not_eq end; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.begin(), insertion_position)) == number_2);
+                assert(*end == number_2);
                 for(auto it {advance(f.begin(), insertion_position + 1)}; it not_eq f.end(); ++it) {
                     assert(*it == number);
                 }
-                for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                const auto cend {advance(f.cbegin(), insertion_position)};
+                for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.cbegin(), insertion_position)) == number_2);
+                assert(*cend == number_2);
                 for(auto it {advance(f.cbegin(), insertion_position + 1)}; it not_eq f.cend(); ++it) {
                     assert(*it == number);
                 }
@@ -2587,14 +2591,16 @@ void forward_list_correctness::test_emplace_after() {
                 assert(advance(f.begin(), new_size + 1) == f.end());
                 assert(advance(f.cbegin(), new_size + 1) == f.cend());
                 assert(f.front() == number);
-                for(auto it {f.begin()}; it not_eq advance(f.before_begin(), f.size() - 1); ++it) {
+                const auto end {advance(f.before_begin(), f.size())};
+                for(auto it {f.begin()}; it not_eq end; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.begin(), f.size() - 1)) == number_2);
-                for(auto it {f.cbegin()}; it not_eq advance(f.cbefore_begin(), f.size() - 1); ++it) {
+                assert(*end == number_2);
+                const auto cend {advance(f.cbefore_begin(), f.size())};
+                for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.begin(), f.size() - 1)) == number_2);
+                assert(*cend == number_2);
                 assert(result == advance(f.begin(), f.size() - 1));
                 assert(result == advance(f.cbegin(), f.size() - 1));
                 std::cout << "\t\t\tChecking test_emplace/Emplace to non-empty forward_list/Emplace to tail/Without reallocation done." << std::endl;
@@ -2618,14 +2624,16 @@ void forward_list_correctness::test_emplace_after() {
                 assert(advance(f.begin(), count + 1) == f.end());
                 assert(advance(f.cbegin(), count + 1) == f.cend());
                 assert(f.front() == number);
-                for(auto it {f.begin()}; it not_eq advance(f.before_begin(), f.size() - 1); ++it) {
+                const auto end {advance(f.before_begin(), f.size())};
+                for(auto it {f.begin()}; it not_eq end; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.begin(), f.size() - 1)) == number_2);
-                for(auto it {f.cbegin()}; it not_eq advance(f.cbefore_begin(), f.size() - 1); ++it) {
+                assert(*end == number_2);
+                const auto cend {advance(f.cbefore_begin(), f.size())};
+                for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                     assert(*it == number);
                 }
-                assert(*(advance(f.cbegin(), f.size() - 1)) == number_2);
+                assert(*cend == number_2);
                 assert(result == advance(f.begin(), f.size() - 1));
                 assert(result == advance(f.cbegin(), f.size() - 1));
                 std::cout << "\t\t\tChecking test_emplace/Emplace to non-empty forward_list/Emplace to tail/With reallocation done." << std::endl;
@@ -2765,16 +2773,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -2812,16 +2822,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -2858,16 +2870,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number + 1);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size + 1); ++it) {
+                    const auto end {advance(f.begin(), insertion_size + 1)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.begin(), insertion_size + 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size + 1); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size + 1)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -2901,16 +2915,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -2937,16 +2953,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -2973,16 +2991,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -3009,16 +3029,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number_2);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -3045,16 +3067,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number + 1);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size + 1); ++it) {
+                    const auto end {advance(f.begin(), insertion_size + 1)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.begin(), insertion_size + 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size + 1); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size + 1)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -3144,22 +3168,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3198,22 +3226,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3253,22 +3285,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size + 1); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size + 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size + 1); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3303,22 +3339,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3346,22 +3386,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3389,22 +3433,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3432,22 +3480,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3477,22 +3529,26 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size + 1); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size + 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size + 1); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend2}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -3580,16 +3636,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3627,16 +3685,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3675,16 +3735,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count - 1); ++it) {
+                    const auto end {advance(f.begin(), count - 1)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count - 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count - 1); ++it) {
+                    const auto cend {advance(f.cbegin(), count - 1)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count - 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number + 1);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3718,16 +3780,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3754,16 +3818,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3790,16 +3856,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3826,16 +3894,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number_2);
                     }
                     assert(result == advance(f.begin(), count));
@@ -3864,16 +3934,18 @@ void forward_list_correctness::test_insert_after_1() {
                     assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count - 1); ++it) {
+                    const auto end {advance(f.begin(), count - 1)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count - 1)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count - 1); ++it) {
+                    const auto cend {advance(f.cbegin(), count - 1)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.cbegin(), count - 1)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number + 1);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4020,17 +4092,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4067,17 +4141,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4110,17 +4186,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4146,17 +4224,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4182,17 +4262,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4218,17 +4300,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == numbers.front());
                     auto number_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                    const auto end {advance(f.begin(), insertion_size)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
                     number_i = 0;
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                    const auto cend {advance(f.cbegin(), insertion_size)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == numbers[number_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == f.begin());
@@ -4317,20 +4401,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4371,20 +4459,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4421,20 +4513,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4464,20 +4560,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4507,20 +4607,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4550,20 +4654,24 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                    const auto end1 {advance(f.begin(), insertion_position)};
+                    for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                    for(auto it {end2}; it not_eq f.end(); ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                    const auto cend1 {advance(f.cbegin(), insertion_position)};
+                    for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
@@ -4653,17 +4761,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4700,17 +4810,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4743,17 +4855,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4779,17 +4893,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4815,17 +4931,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -4851,17 +4969,19 @@ void forward_list_correctness::test_insert_after_2() {
                     assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                     assert(f.front() == number);
                     auto numbers_i {0uz};
-                    for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                    const auto end {advance(f.begin(), count)};
+                    for(auto it {f.begin()}; it not_eq end; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                    for(auto it {end}; it not_eq f.end(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                    const auto cend {advance(f.cbegin(), count)};
+                    for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                    for(auto it {cend}; it not_eq f.cend(); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
                     assert(result == advance(f.begin(), count));
@@ -5012,17 +5132,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5059,17 +5181,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5102,17 +5226,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5138,17 +5264,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5174,17 +5302,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5210,17 +5340,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -5309,23 +5441,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5363,23 +5499,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5413,23 +5553,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5456,23 +5600,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5499,23 +5647,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5542,23 +5694,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -5645,17 +5801,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -5692,17 +5850,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -5735,17 +5895,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -5771,17 +5933,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -5807,17 +5971,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -5843,17 +6009,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6002,17 +6170,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6049,17 +6219,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6092,17 +6264,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6128,17 +6302,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6164,17 +6340,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6200,17 +6378,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -6299,23 +6479,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6353,23 +6537,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6403,23 +6591,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6446,23 +6638,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6489,23 +6685,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6532,23 +6732,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -6635,17 +6839,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6682,17 +6888,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6725,17 +6933,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6761,17 +6971,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6797,17 +7009,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6833,17 +7047,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -6992,17 +7208,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7039,17 +7257,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7082,17 +7302,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7118,17 +7340,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7154,17 +7378,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7190,17 +7416,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == numbers.front());
                         auto number_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
                         number_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == numbers[number_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == f.begin());
@@ -7289,23 +7517,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7343,23 +7575,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7393,23 +7629,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7436,23 +7676,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7479,23 +7723,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7522,23 +7770,27 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == number);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -7625,17 +7877,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -7672,17 +7926,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -7715,17 +7971,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -7751,17 +8009,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -7787,17 +8047,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -7823,17 +8085,19 @@ void forward_list_correctness::test_insert_after_3() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == number);
                         auto numbers_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -8358,16 +8622,18 @@ void forward_list_correctness::test_non_trivial() {
                 assert(advance(f.begin(), new_size) == f.end());
                 assert(advance(f.cbegin(), new_size) == f.cend());
                 assert(f.front() == s);
-                for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                const auto end {advance(f.begin(), count)};
+                for(auto it {f.begin()}; it not_eq end; ++it) {
                     assert(*it == s);
                 }
-                for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                for(auto it {end}; it not_eq f.end(); ++it) {
                     assert(*it == "");
                 }
-                for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                const auto cend {advance(f.cbegin(), count)};
+                for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                     assert(*it == s);
                 }
-                for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                for(auto it {cend}; it not_eq f.cend(); ++it) {
                     assert(*it == "");
                 }
                 std::cout << "\t\t\tChecking test_non_trivial/Resize/Non-empty to non-empty/Greater than size done." << std::endl;
@@ -8504,16 +8770,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8548,16 +8816,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8595,16 +8865,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size + 1); ++it) {
+                            const auto end {advance(f.begin(), insertion_size + 1)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size + 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size + 1); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size + 1)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8635,16 +8907,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8668,16 +8942,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8701,16 +8977,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8734,16 +9012,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                            const auto end {advance(f.begin(), insertion_size)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8771,16 +9051,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s2);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size + 1); ++it) {
+                            const auto end {advance(f.begin(), insertion_size + 1)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_size + 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size + 1); ++it) {
+                            const auto cend {advance(f.cbegin(), insertion_size + 1)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == f.begin());
@@ -8867,22 +9149,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -8918,22 +9204,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -8972,22 +9262,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size + 1); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size + 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size + 1); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9019,22 +9313,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9059,22 +9357,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9099,22 +9401,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9139,22 +9445,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9183,22 +9493,26 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                            const auto end1 {advance(f.begin(), insertion_position)};
+                            for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size + 1); ++it) {
+                            const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                            for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.begin(), insertion_position + insertion_size + 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end2}; it not_eq f.end(); ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                            const auto cend1 {advance(f.cbegin(), insertion_position)};
+                            for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size + 1); ++it) {
+                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                            for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {advance(f.cbegin(), insertion_position + insertion_size + 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend2}; it not_eq f.cend(); ++it) {
                                 assert(*it == s);
                             }
                             assert(result == advance(f.begin(), insertion_position));
@@ -9283,16 +9597,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9327,16 +9643,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9374,16 +9692,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count - 1); ++it) {
+                            const auto end {advance(f.begin(), count - 1)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count - 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count - 1); ++it) {
+                            const auto cend {advance(f.cbegin(), count - 1)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count - 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9414,16 +9734,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9447,16 +9769,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9480,16 +9804,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9513,16 +9839,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                            const auto end {advance(f.begin(), count)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                            const auto cend {advance(f.cbegin(), count)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9550,16 +9878,18 @@ void forward_list_correctness::test_non_trivial() {
                             assert(advance(f.begin(), count + static_cast<size_t>(insertion_size)) == f.end());
                             assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                             assert(f.front() == s);
-                            for(auto it {f.begin()}; it not_eq advance(f.begin(), count - 1); ++it) {
+                            const auto end {advance(f.begin(), count - 1)};
+                            for(auto it {f.begin()}; it not_eq end; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.begin(), count - 1)}; it not_eq f.end(); ++it) {
+                            for(auto it {end}; it not_eq f.end(); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count - 1); ++it) {
+                            const auto cend {advance(f.cbegin(), count - 1)};
+                            for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {advance(f.cbegin(), count - 1)}; it not_eq f.cend(); ++it) {
+                            for(auto it {cend}; it not_eq f.cend(); ++it) {
                                 assert(*it == s2);
                             }
                             assert(result == advance(f.begin(), count));
@@ -9709,17 +10039,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -9756,17 +10088,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -9799,17 +10133,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -9835,17 +10171,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -9871,17 +10209,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -9907,17 +10247,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == strings.front());
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_size); ++it) {
+                        const auto end {advance(f.begin(), insertion_size)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_size); ++it) {
+                        const auto cend {advance(f.cbegin(), insertion_size)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == f.begin());
@@ -10006,23 +10348,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10060,23 +10406,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10110,23 +10460,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10153,23 +10507,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10196,23 +10554,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10239,23 +10601,27 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), insertion_position); ++it) {
+                        const auto end1 {advance(f.begin(), insertion_position)};
+                        for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), insertion_position)}; it not_eq advance(f.begin(), insertion_position + insertion_size); ++it) {
+                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.begin(), insertion_position + insertion_size)}; it not_eq f.end(); ++it) {
+                        for(auto it {end2}; it not_eq f.end(); ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), insertion_position); ++it) {
+                        const auto cend1 {advance(f.cbegin(), insertion_position)};
+                        for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), insertion_position)}; it not_eq advance(f.cbegin(), insertion_position + insertion_size); ++it) {
+                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend2}; it not_eq f.cend(); ++it) {
                             assert(*it == s);
                         }
                         assert(result == advance(f.begin(), insertion_position));
@@ -10342,17 +10708,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -10389,17 +10757,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -10432,17 +10802,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -10468,17 +10840,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -10504,17 +10878,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
@@ -10540,17 +10916,19 @@ void forward_list_correctness::test_non_trivial() {
                         assert(advance(f.cbegin(), count + static_cast<size_t>(insertion_size)) == f.cend());
                         assert(f.front() == s);
                         auto string_i {0uz};
-                        for(auto it {f.begin()}; it not_eq advance(f.begin(), count); ++it) {
+                        const auto end {advance(f.begin(), count)};
+                        for(auto it {f.begin()}; it not_eq end; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {advance(f.begin(), count)}; it not_eq f.end(); ++it) {
+                        for(auto it {end}; it not_eq f.end(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {f.cbegin()}; it not_eq advance(f.cbegin(), count); ++it) {
+                        const auto cend {advance(f.cbegin(), count)};
+                        for(auto it {f.cbegin()}; it not_eq cend; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {advance(f.cbegin(), count)}; it not_eq f.cend(); ++it) {
+                        for(auto it {cend}; it not_eq f.cend(); ++it) {
                             assert(*it == strings[string_i++]);
                         }
                         assert(result == advance(f.begin(), count));
