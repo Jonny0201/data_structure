@@ -157,7 +157,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Vector</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
     <td><code>vector.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
@@ -169,7 +169,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Forward List</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Part Testing-1A94BC" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
     <td><code>forward_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
