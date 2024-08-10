@@ -17,7 +17,7 @@
 #ifndef DATA_STRUCTURE_ALLOCATOR_HPP
 #define DATA_STRUCTURE_ALLOCATOR_HPP
 
-#include "type_traits.hpp"
+#include "utility.hpp"
 
 namespace data_structure {
 
@@ -139,8 +139,7 @@ __DATA_STRUCTURE_START(data structure node-based structure allocator)
 template <typename T, template <typename> typename NodeTemplate, typename Allocator = allocator<T>,
         typename NodeAllocator = typename allocator_traits<Allocator>::template rebind<NodeTemplate<T>>>
 class node_allocator : public Allocator, public NodeAllocator {
-    template <typename U, typename V>
-    friend constexpr bool operator==(const allocator<U> &, const allocator<V> &) noexcept;
+    friend constexpr bool operator==(const node_allocator &, const node_allocator &) noexcept;
 public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
@@ -253,7 +252,7 @@ public:
             }
         }
         const auto last_position {n - 1};
-        for(auto i {0}; i < last_position; ++i) {
+        for(auto i {0uz}; i < last_position; ++i) {
             nodes[i].next = nodes + (i + 1);
         }
         nodes[last_position].next = link_to;
@@ -320,16 +319,6 @@ public:
         }
     }
 };
-template <typename T, typename U>
-[[nodiscard]]
-inline constexpr bool operator==(const allocator<T> &lhs, const allocator<U> &rhs) noexcept {
-    return lhs.shared_list == rhs.shared_list;
-}
-template <typename T, typename U>
-[[nodiscard]]
-inline constexpr bool operator!=(const allocator<T> &lhs, const allocator<U> &rhs) noexcept {
-    return not(lhs == rhs);
-}
 __DATA_STRUCTURE_END(inner tools for data structure library)
 
 }       // namespace data_structure::__data_structure_auxiliary

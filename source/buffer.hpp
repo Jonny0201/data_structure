@@ -111,7 +111,7 @@ constexpr void buffer<T, Allocator>::move_to(pointer new_buffer, size_type old_s
         if constexpr(is_pointer_v<pointer>) {
             ds::memory_copy(new_buffer, this->first, sizeof(T) * old_size);
         }else {
-            for(auto i {0}; i < old_size; ++i) {
+            for(size_type i {0}; i < old_size; ++i) {
                 ds::construct(new_buffer + i, ds::move(this->first[i]));
             }
         }

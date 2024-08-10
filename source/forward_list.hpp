@@ -552,11 +552,11 @@ constexpr void forward_list<T, Allocator>::resize(size_type n, const_reference v
     if(n > size) {
         const auto new_first_node {this->allocate_n(n - size, value)};
         auto cursor {&this->head};
-        for(auto i {0}; i < this->node_size(); ++i, static_cast<void>(cursor = cursor->next));
+        for(size_type i {0}; i < this->node_size(); ++i, static_cast<void>(cursor = cursor->next));
         cursor->next = new_first_node;
     }else if(n < size) {
         auto last_node {&this->head};
-        for(auto i {0}; i < n; ++i, static_cast<void>(last_node = last_node->next));
+        for(size_type i {0}; i < n; ++i, static_cast<void>(last_node = last_node->next));
         this->deallocate_nodes(last_node->next->node(), size - n);
         last_node->next = nullptr;
     }
@@ -694,16 +694,16 @@ template <typename T, typename Allocator>
 constexpr typename forward_list<T, Allocator>::iterator
 forward_list<T, Allocator>::erase(size_type pos, size_type n) {
     auto begin {this->cbefore_begin()};
-    for(auto i {0}; i not_eq pos; ++i, static_cast<void>(++begin));
+    for(size_type i {0}; i not_eq pos; ++i, static_cast<void>(++begin));
     auto end {begin};
-    for(auto i {0}; i not_eq n; ++i, static_cast<void>(++end));
+    for(size_type i {0}; i not_eq n; ++i, static_cast<void>(++end));
     return this->erase(begin, end, n);
 }
 template <typename T, typename Allocator>
 constexpr typename forward_list<T, Allocator>::iterator
 forward_list<T, Allocator>::erase_after(const_iterator pos, size_type n) {
     auto end_pos {pos};
-    for(auto i {0}; i not_eq n; ++i, static_cast<void>(++end_pos));
+    for(size_type i {0}; i not_eq n; ++i, static_cast<void>(++end_pos));
     return this->erase(pos, end_pos, n);
 }
 template <typename T, typename Allocator>

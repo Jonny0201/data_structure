@@ -74,7 +74,7 @@ public:
     }
     constexpr void assign(initializer_list<T> init_list) noexcept(is_nothrow_copy_assignable_v<T>) {
         const T *list {init_list.begin()};
-        for(auto i {0}; i < N; ++i) {
+        for(auto i {0uz}; i < N; ++i) {
             this->elements[i] = ds::move(list[i]);
         }
     }
@@ -160,7 +160,7 @@ public:
     }
     constexpr void swap(array &rhs) noexcept {
         using ds::swap;
-        for(auto i {0}; i < N; ++i) {
+        for(auto i {0uz}; i < N; ++i) {
             swap(this->elements[i], rhs.elements[i]);
         }
     }
