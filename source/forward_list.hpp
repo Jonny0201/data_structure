@@ -26,7 +26,7 @@ template <typename T, typename Allocator = allocator<T>>
 class forward_list {
 private:
     using node_type = __dsa::forward_list_node<T> *;
-    using real_allocator = __dsa::node_allocator<T, __dsa::forward_list_node, Allocator>;
+    using real_allocator = __dsa::forward_list_node_allocator<T, __dsa::forward_list_node, Allocator>;
 public:
     using allocator_type = Allocator;
     using size_type = typename Allocator::size_type;
@@ -42,17 +42,13 @@ public:
     static_assert(is_same_v<T, typename Allocator::value_type>,
                   "The value type of forward_list should same as the allocator's value_type!");
 private:
-    struct linked_allocation_handler;
-private:
     __dsa::forward_list_base_node<__dsa::forward_list_node<T>> head {};
     __dsa::allocator_compressor<size_type, real_allocator> node_size {};
 private:
-    template <bool = true>
-    constexpr node_type allocate_n(size_type, const_reference = {}, node_type = {});
-    template <bool = false, typename Iterator>
-    constexpr node_type allocate_n(Iterator, Iterator, node_type = {});
     template <typename ...Args>
-    constexpr node_type allocate_1(node_type, Args &&...);
+    constexpr node_type allocate_values(size_type, node_type, Args &&...args);
+    template <IsInputIterator InputIterator>
+    constexpr node_type allocate_range(size_type, node_type, InputIterator);
     constexpr void deallocate_nodes(node_type, node_type) noexcept;
     constexpr void deallocate_nodes(node_type, size_type) noexcept;
     constexpr iterator erase(const_iterator, const_iterator, size_type) noexcept;
@@ -202,92 +198,38 @@ struct forward_list_allocation_handler<NodeType, Allocator, false> {
 };
 }
 
-/* private type */
-template <typename T, typename Allocator>
-struct forward_list<T, Allocator>::linked_allocation_handler {
-    node_type begin;
-    size_type n;
-    real_allocator &allocator;
-    size_type i {0};
-    constexpr linked_allocation_handler(node_type begin, real_allocator &allocator, size_type n) noexcept :
-            begin {begin}, n {n}, allocator {allocator} {}
-    constexpr void operator()() noexcept {
-        for(auto cursor {this->begin}; this->i-- > 0; cursor = cursor->next->node()) {
-            ds::destroy(ds::address_of(cursor->value));
-        }
-        this->allocator.deallocate(this->begin, &this->begin[this->n - 1], this->n);
-    }
-};
-
 /* private functions */
 template <typename T, typename Allocator>
-template <bool CopyFromValue>
+template <typename ...Args>
 constexpr typename forward_list<T, Allocator>::node_type
-forward_list<T, Allocator>::allocate_n(size_type n, const_reference value, node_type link_to) {
-    if(n == 0) {
-        return {};
-    }
+forward_list<T, Allocator>::allocate_values(size_type n, node_type link_to, Args &&...args) {
     auto &allocator {this->node_size.allocator()};
     if constexpr(__dsa::IsLinkedAfterAllocation<real_allocator>) {
-        const auto result_node {allocator.allocate(n, link_to)};
-        auto trans {transaction {linked_allocation_handler(result_node, this->node_size.allocator(), n)}};
-        for(auto cursor {result_node};; cursor = cursor->next->node()) {
-            if constexpr(CopyFromValue) {
-                ds::construct(ds::address_of(cursor->value), value);
-            }else {
-                ds::construct(ds::address_of(cursor->value));
-            }
-            if(--n == 0) {
-                break;
-            }
-        }
-        trans.complete();
-        return result_node;
+        return allocator.allocate_with_value(n, link_to, ds::forward<Args>(args)...);
     }
     const auto result_node {allocator.allocate(1)};
     auto trans {transaction {__dsa::forward_list_allocation_handler<node_type, real_allocator,
             is_trivially_destructible_v<T>>(result_node, allocator)}};
     auto &handler {trans.get_rollback()};
     while(--n not_eq 0) {
-        if constexpr(CopyFromValue) {
-            ds::construct(ds::address_of(handler.now->value), value);
-        }else {
-            ds::construct(ds::address_of(handler.now->value));
-        }
+        ds::construct(ds::address_of(handler.now->value), ds::forward<Args>(args)...);
         handler.done();
         handler.now->next = allocator.allocate(1);
         handler.doing();
     }
     handler.now->next = link_to;
-    if constexpr(CopyFromValue) {
-        ds::construct(ds::address_of(handler.now->value), value);
-    }else {
-        ds::construct(ds::address_of(handler.now->value));
-    }
+    ds::construct(ds::address_of(handler.now->value), ds::forward<Args>(args)...);
     handler.done();
     trans.complete();
     return result_node;
 }
 template <typename T, typename Allocator>
-template <bool FromConstructor, typename Iterator>
+template <IsInputIterator InputIterator>
 constexpr typename forward_list<T, Allocator>::node_type
-forward_list<T, Allocator>::allocate_n(Iterator begin, Iterator end, node_type link_to) {
-    auto n {static_cast<size_type>(ds::distance(begin, end))};
-    if constexpr(FromConstructor) {
-        this->node_size() = n;
-    }
-    if(n == 0) {
-        return {};
-    }
+forward_list<T, Allocator>::allocate_range(size_type n, node_type link_to, InputIterator begin) {
     auto &allocator {this->node_size.allocator()};
     if constexpr(__dsa::IsLinkedAfterAllocation<real_allocator>) {
-        const auto result_node {allocator.allocate(n, link_to)};
-        auto trans {transaction {linked_allocation_handler(result_node, this->node_size.allocator(), n)}};
-        for(auto cursor {result_node}; n not_eq 0; cursor = cursor->next->node(), static_cast<void>(--n)) {
-            ds::construct(ds::address_of(cursor->value), *begin++);
-        }
-        trans.complete();
-        return result_node;
+        return allocator.allocate_with_range(n, link_to, begin);
     }
     const auto result_node {allocator.allocate(1)};
     auto trans {transaction {__dsa::forward_list_allocation_handler<node_type, real_allocator,
@@ -302,21 +244,6 @@ forward_list<T, Allocator>::allocate_n(Iterator begin, Iterator end, node_type l
     handler.now->next = link_to;
     ds::construct(ds::address_of(handler.now->value), *begin);
     handler.done();
-    trans.complete();
-    return result_node;
-}
-template <typename T, typename Allocator>
-template <typename ...Args>
-constexpr typename forward_list<T, Allocator>::node_type
-forward_list<T, Allocator>::allocate_1(node_type link_to, Args &&...args) {
-    auto &allocator {this->node_size.allocator()};
-    const auto result_node {allocator.allocate(1)};
-    auto trans {transaction {__dsa::forward_list_allocation_handler<node_type, real_allocator,
-            is_trivially_destructible_v<T>>(result_node, allocator)}};
-    auto &handler {trans.get_rollback()};
-    ds::construct(ds::address_of(handler.now->value), ds::forward<Args>(args)...);
-    handler.done();
-    handler.now->next = link_to;
     trans.complete();
     return result_node;
 }
@@ -365,13 +292,13 @@ constexpr forward_list<T, Allocator>::forward_list(const Allocator &allocator)
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator>::forward_list(size_type n, const Allocator &allocator) :
         head {}, node_size(n, real_allocator {allocator}) {
-    auto first_node {this->allocate_n<false>(n)};
+    auto first_node {this->allocate_values(n, nullptr)};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator>::forward_list(size_type n, const_reference value, const Allocator &allocator) :
         head {}, node_size(n, real_allocator {allocator}) {
-    auto first_node {this->allocate_n(n, value)};
+    auto first_node {this->allocate_values(n, nullptr, value)};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
@@ -379,14 +306,15 @@ template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<Inp
 constexpr forward_list<T, Allocator>::forward_list(InputIterator begin, InputIterator end,
         const Allocator &allocator, size_type default_size) : head {}, node_size(real_allocator {allocator}) {
     buffer<T, Allocator> b(begin, end, allocator, default_size);
-    auto first_node {this->allocate_n<true>(b.mbegin(), b.mend())};
+    auto first_node {this->allocate_range(this->node_size() = b.size(), nullptr, b.mbegin())};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr forward_list<T, Allocator>::forward_list(ForwardIterator begin, ForwardIterator end,
         const Allocator &allocator) : head {}, node_size(real_allocator {allocator}) {
-    auto first_node {this->allocate_n<true>(begin, end)};
+    const auto n {static_cast<size_type>(ds::distance(begin, end))};
+    auto first_node {this->allocate_range(n, nullptr, begin)};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
@@ -447,8 +375,7 @@ constexpr void forward_list<T, Allocator>::assign(size_type n, const_reference v
             it->value() = value;
         }
         if(const auto allocation_size {n - size}; allocation_size not_eq 0) {
-            auto new_first_node {this->allocate_n(allocation_size, value, this->head.next->node())};
-            this->head.next = new_first_node;
+            this->head.next = this->allocate_values(allocation_size, this->head.next->node(), value);
             this->node_size() += allocation_size;
         }
     }else {
@@ -470,15 +397,14 @@ constexpr void forward_list<T, Allocator>::assign(InputIterator begin, InputIter
 template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr void forward_list<T, Allocator>::assign(ForwardIterator begin, ForwardIterator end) {
-    const auto n {ds::distance(begin, end)};
+    const auto n {static_cast<size_type>(ds::distance(begin, end))};
     const auto size {this->node_size()};
     if(n >= size) {
         for(auto it {this->head.next}; it; it = it->next) {
             it->value() = *begin++;
         }
         if(const auto allocation_size {n - size}; allocation_size not_eq 0) {
-            auto new_first_node {this->allocate_n(begin, end, this->head.next->node())};
-            this->head.next = new_first_node;
+            this->head.next = this->allocate_range(allocation_size, this->head.next->node(), begin);
             this->node_size() += allocation_size;
         }
     }else {
@@ -550,7 +476,7 @@ template <typename T, typename Allocator>
 constexpr void forward_list<T, Allocator>::resize(size_type n, const_reference value) {
     const auto size {this->node_size()};
     if(n > size) {
-        const auto new_first_node {this->allocate_n(n - size, value)};
+        const auto new_first_node {this->allocate_values(n - size, nullptr, value)};
         auto cursor {&this->head};
         for(size_type i {0}; i < this->node_size(); ++i, static_cast<void>(cursor = cursor->next));
         cursor->next = new_first_node;
@@ -572,7 +498,10 @@ constexpr typename forward_list<T, Allocator>::const_reference forward_list<T, A
 }
 template <typename T, typename Allocator>
 constexpr Allocator forward_list<T, Allocator>::allocator() const noexcept {
-    return this->node_size.allocator();
+    if constexpr(__dsa::IsLinkedAfterAllocation<real_allocator>) {
+        return this->node_size.allocator();
+    }
+    return {};
 }
 template <typename T, typename Allocator>
 constexpr void forward_list<T, Allocator>::push_front(const_reference value) {
@@ -585,7 +514,7 @@ constexpr void forward_list<T, Allocator>::push_front(rvalue_reference value) {
 template <typename T, typename Allocator>
 template <typename ...Args>
 constexpr void forward_list<T, Allocator>::emplace_front(Args &&...args) {
-    this->head.next = this->allocate_1(this->head.next->node(), ds::forward<Args>(args)...);
+    this->head.next = this->allocate_values(1, this->head.next->node(), ds::forward<Args>(args)...);
     this->node_size() += 1;
 }
 template <typename T, typename Allocator>
@@ -620,7 +549,7 @@ forward_list<T, Allocator>::insert_after(const_iterator pos, const_reference val
     if(n == 0) {
         return iterator {pos.node->next->node()};
     }
-    const auto new_first_node {this->allocate_n(n, value, pos.node->next->node())};
+    const auto new_first_node {this->allocate_values(n, pos.node->next->node(), value)};
     pos.node->next = new_first_node;
     this->node_size() += n;
     return iterator {new_first_node};
@@ -637,7 +566,7 @@ template <typename T, typename Allocator>
 template <typename ...Args>
 constexpr typename forward_list<T, Allocator>::iterator
 forward_list<T, Allocator>::emplace_after(const_iterator pos, Args &&...args) {
-    const auto new_first_node {this->allocate_1(pos.node->next->node(), ds::forward<Args>(args)...)};
+    const auto new_first_node {this->allocate_values(1, pos.node->next->node(), ds::forward<Args>(args)...)};
     pos.node->next = new_first_node;
     ++this->node_size();
     return iterator {new_first_node};
@@ -673,9 +602,10 @@ forward_list<T, Allocator>::insert_after(const_iterator pos, ForwardIterator beg
     if(begin == end) {
         return iterator {pos.node->next->node()};
     }
-    auto new_first_node {this->allocate_n(begin, end, pos.node->next->node())};
+    const auto n {static_cast<size_type>(ds::distance(begin, end))};
+    const auto new_first_node {this->allocate_range(n, pos.node->next->node(), begin)};
     pos.node->next = new_first_node;
-    this->node_size() += static_cast<size_type>(ds::distance(begin, end));
+    this->node_size() += n;
     return iterator {new_first_node};
 }
 template <typename T, typename Allocator>
