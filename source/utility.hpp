@@ -28,7 +28,7 @@ inline constexpr remove_reference_t<T> &&move(T &&value) noexcept {
 }
 template <bool Conditional, typename T>
 inline constexpr conditional_t<Conditional, remove_reference_t<T> &&, const T &>
-move_if(T &value) noexcept {
+move_if(T &&value) noexcept {
     return ds::move(value);
 }
 template <typename T>
