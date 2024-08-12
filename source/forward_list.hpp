@@ -313,8 +313,8 @@ template <typename T, typename Allocator>
 template <IsForwardIterator ForwardIterator>
 constexpr forward_list<T, Allocator>::forward_list(ForwardIterator begin, ForwardIterator end,
         const Allocator &allocator) : head {}, node_size(real_allocator {allocator}) {
-    const auto n {static_cast<size_type>(ds::distance(begin, end))};
-    auto first_node {this->allocate_range(n, nullptr, begin)};
+    auto first_node {this->allocate_range(this->node_size() = static_cast<size_type>(ds::distance(begin, end)),
+            nullptr, begin)};
     this->head.next = first_node;
 }
 template <typename T, typename Allocator>
