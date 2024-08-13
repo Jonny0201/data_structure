@@ -53,7 +53,7 @@ private:
     constexpr void deallocate_nodes(node_type, size_type) noexcept;
     constexpr iterator erase(const_iterator, const_iterator, size_type) noexcept;
 public:
-    constexpr forward_list() = default;
+    constexpr forward_list()  noexcept(is_nothrow_default_constructible_v<real_allocator>) = default;
     explicit constexpr forward_list(const Allocator &)
             noexcept(is_nothrow_constructible_v<real_allocator, const Allocator &>);
     explicit constexpr forward_list(size_type, const Allocator & = {});
