@@ -4126,7 +4126,7 @@ void vector_correctness::test_insert_1() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     auto number_2 {this->generate_a_random_number()};
                     while(number == number_2) {
                         number_2 = this->generate_a_random_number();
@@ -4492,7 +4492,7 @@ void vector_correctness::test_insert_1() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     vector<int> v(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -4673,7 +4673,7 @@ void vector_correctness::test_insert_1() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     auto number_2 {this->generate_a_random_number()};
                     while(number == number_2) {
                         number_2 = this->generate_a_random_number();
@@ -4691,19 +4691,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -4728,10 +4728,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -4768,19 +4768,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -4805,10 +4805,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -4844,19 +4844,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -4881,10 +4881,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size + 1; ++i) {
                         assert(v[i] == number + 1);
                     }
-                    for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size + 1}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -4931,19 +4931,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -4968,10 +4968,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -5011,19 +5011,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -5048,10 +5048,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -5086,19 +5086,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -5123,10 +5123,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -5141,7 +5141,7 @@ void vector_correctness::test_insert_1() {
                         count = this->generate_count();
                     }
                     const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     vector<int> v(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -5161,19 +5161,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == number_2);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -5198,10 +5198,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == number_2);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -5241,19 +5241,19 @@ void vector_correctness::test_insert_1() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                         assert(*it == number + 1);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -5278,10 +5278,10 @@ void vector_correctness::test_insert_1() {
                     for(auto i {0}; i < insertion_position; ++i) {
                         assert(v[i] == number);
                     }
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size + 1; ++i) {
                         assert(v[i] == number + 1);
                     }
-                    for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size + 1}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -5353,7 +5353,7 @@ void vector_correctness::test_insert_1() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     auto number_2 {this->generate_a_random_number()};
                     while(number == number_2) {
                         number_2 = this->generate_a_random_number();
@@ -5719,7 +5719,7 @@ void vector_correctness::test_insert_1() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     vector<int> v(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -5978,7 +5978,7 @@ void vector_correctness::test_insert_2() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     const auto result {v.insert(0, int_input_iterator {stream}, int_input_iterator {})};
                     assert(v.size() == count + static_cast<size_t>(insertion_size));
                     assert(not v.empty());
@@ -6298,7 +6298,7 @@ void vector_correctness::test_insert_2() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -6421,7 +6421,7 @@ void vector_correctness::test_insert_2() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     const auto result {v.insert(insertion_position, int_input_iterator {stream}, int_input_iterator {})};
                     assert(v.size() == count + static_cast<size_t>(insertion_size));
                     assert(not v.empty());
@@ -6436,20 +6436,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6477,10 +6477,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6516,20 +6516,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6557,10 +6557,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6606,20 +6606,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6647,10 +6647,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6689,20 +6689,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6730,10 +6730,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6767,20 +6767,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6808,10 +6808,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6826,7 +6826,7 @@ void vector_correctness::test_insert_2() {
                         count = this->generate_count();
                     }
                     const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -6845,20 +6845,20 @@ void vector_correctness::test_insert_2() {
                     for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
-                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                    for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                         assert(*it == number);
                     }
                     for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                    for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                    for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                         assert(*it == number);
                     }
                     const auto tail_size {count - insertion_position};
@@ -6886,10 +6886,10 @@ void vector_correctness::test_insert_2() {
                         assert(v[i] == number);
                     }
                     numbers_i = 0;
-                    for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                    for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                         assert(v[i] == numbers[numbers_i++]);
                     }
-                    for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                    for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                         assert(v[i] == number);
                     }
                     assert(result == v.begin() + insertion_position);
@@ -6963,7 +6963,7 @@ void vector_correctness::test_insert_2() {
                     const auto number {this->generate_a_random_number()};
                     const auto spare {this->generate_count(count)};
                     vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                    v.cursor -= insertion_size + spare;
+                    v.cursor -= static_cast<size_t>(insertion_size) + spare;
                     const auto result {v.insert(count, int_input_iterator {stream}, int_input_iterator {})};
                     assert(v.size() == count + static_cast<size_t>(insertion_size));
                     assert(not v.empty());
@@ -7283,7 +7283,7 @@ void vector_correctness::test_insert_2() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -7358,7 +7358,7 @@ void vector_correctness::test_insert_3() {
 
         // insert to empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Forward iteratorInsert to empty vector for ds::vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Forward iterator/Insert to empty vector for ds::vector!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -7373,7 +7373,7 @@ void vector_correctness::test_insert_3() {
                 assert(v.cbegin() == v.cend());
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -7416,23 +7416,23 @@ void vector_correctness::test_insert_3() {
                 }
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Forward iteratorInsert to empty vector for ds::vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Forward iterator/Insert to empty vector for ds::vector finished!" << std::endl;
         }
 
         // insert to non-empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -7471,7 +7471,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -7486,7 +7486,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(0, int_forward_iterator {l.begin()}, int_forward_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -7534,7 +7534,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7597,15 +7597,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -7670,7 +7670,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7736,7 +7736,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -7797,7 +7797,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -7806,7 +7806,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -7858,22 +7858,22 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -7913,7 +7913,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -7929,7 +7929,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(insertion_position, int_forward_iterator {l.begin()}, int_forward_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -7944,20 +7944,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -7985,15 +7985,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -8024,20 +8024,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -8065,23 +8065,23 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -8114,20 +8114,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -8155,15 +8155,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -8197,20 +8197,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -8238,15 +8238,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -8275,20 +8275,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -8316,15 +8316,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -8334,7 +8334,7 @@ void vector_correctness::test_insert_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -8353,20 +8353,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -8394,30 +8394,30 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -8456,7 +8456,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.end());
                         assert(result == v.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -8471,7 +8471,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(count, int_forward_iterator {l.begin()}, int_forward_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -8519,7 +8519,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -8582,15 +8582,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -8655,7 +8655,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -8721,7 +8721,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -8782,7 +8782,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -8791,7 +8791,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -8843,16 +8843,16 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Forward iteratorInsert to non-empty vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Forward iterator/Insert to non-empty vector finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Forward iterator for ds::vector finished!" << std::endl;
@@ -8864,7 +8864,7 @@ void vector_correctness::test_insert_3() {
 
         // insert to empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Bidirectional iteratorInsert to empty vector for ds::vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Bidirectional iterator/Insert to empty vector for ds::vector!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -8879,7 +8879,7 @@ void vector_correctness::test_insert_3() {
                 assert(v.cbegin() == v.cend());
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -8922,23 +8922,23 @@ void vector_correctness::test_insert_3() {
                 }
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty vector for ds::vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty vector for ds::vector finished!" << std::endl;
         }
 
         // insert to non-empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -8977,7 +8977,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -8992,7 +8992,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(0, int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -9040,7 +9040,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -9103,15 +9103,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -9176,7 +9176,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -9242,7 +9242,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -9303,7 +9303,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -9312,7 +9312,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -9364,22 +9364,22 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -9419,7 +9419,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -9435,7 +9435,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(insertion_position, int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -9450,20 +9450,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9491,15 +9491,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -9530,20 +9530,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9571,23 +9571,23 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -9620,20 +9620,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9661,15 +9661,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -9703,20 +9703,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9744,15 +9744,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -9781,20 +9781,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9822,15 +9822,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -9840,7 +9840,7 @@ void vector_correctness::test_insert_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -9859,20 +9859,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -9900,30 +9900,30 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -9962,7 +9962,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.end());
                         assert(result == v.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -9977,7 +9977,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(count, int_bidirectional_iterator {l.begin()}, int_bidirectional_iterator {l.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -10025,7 +10025,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -10088,15 +10088,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -10161,7 +10161,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -10227,7 +10227,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -10288,7 +10288,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -10297,7 +10297,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -10349,16 +10349,16 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty vector finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Bidirectional iterator for ds::vector finished!" << std::endl;
@@ -10370,7 +10370,7 @@ void vector_correctness::test_insert_3() {
 
         // insert to empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Random access iteratorInsert to empty vector for ds::vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Random access iterator/Insert to empty vector for ds::vector!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -10385,7 +10385,7 @@ void vector_correctness::test_insert_3() {
                 assert(v.cbegin() == v.cend());
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -10428,23 +10428,23 @@ void vector_correctness::test_insert_3() {
                 }
                 assert(result == v.begin());
                 assert(result == v.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to empty vector/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to empty vector/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Random access iteratorInsert to empty vector for ds::vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Random access iterator/Insert to empty vector for ds::vector finished!" << std::endl;
         }
 
         // insert to non-empty vector
         {
-            std::cout << "\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -10483,7 +10483,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -10498,7 +10498,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(0, int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -10546,7 +10546,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -10609,15 +10609,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -10682,7 +10682,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -10748,7 +10748,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -10809,7 +10809,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -10818,7 +10818,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -10870,22 +10870,22 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin());
                         assert(result == v.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -10925,7 +10925,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -10941,7 +10941,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(insertion_position, int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -10956,20 +10956,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -10997,15 +10997,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -11036,20 +11036,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -11077,23 +11077,23 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -11126,20 +11126,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -11167,15 +11167,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -11209,20 +11209,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -11250,15 +11250,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -11287,20 +11287,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -11328,15 +11328,15 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -11346,7 +11346,7 @@ void vector_correctness::test_insert_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -11365,20 +11365,20 @@ void vector_correctness::test_insert_3() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == number);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == number);
                         }
                         const auto tail_size {count - insertion_position};
@@ -11406,30 +11406,30 @@ void vector_correctness::test_insert_3() {
                             assert(v[i] == number);
                         }
                         numbers_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == numbers[numbers_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == number);
                         }
                         assert(result == v.begin() + insertion_position);
                         assert(result == v.cbegin() + insertion_position);
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -11468,7 +11468,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.end());
                         assert(result == v.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -11483,7 +11483,7 @@ void vector_correctness::test_insert_3() {
                         const auto number {this->generate_a_random_number()};
                         const auto spare {this->generate_count(count)};
                         vector<int> v(count + static_cast<size_t>(insertion_size) + spare, number);
-                        v.cursor -= insertion_size + spare;
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(count, int_random_access_iterator {d.begin()}, int_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -11531,7 +11531,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -11594,15 +11594,15 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -11667,7 +11667,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -11733,7 +11733,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -11794,7 +11794,7 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -11803,7 +11803,7 @@ void vector_correctness::test_insert_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -11855,16 +11855,16 @@ void vector_correctness::test_insert_3() {
                         }
                         assert(result == v.begin() + count);
                         assert(result == v.cbegin() + count);
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Random access iteratorInsert to non-empty vector finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Random access iterator/Insert to non-empty vector finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Random access iterator for ds::vector finished!" << std::endl;
@@ -13037,8 +13037,8 @@ void vector_correctness::test_non_trivial() {
                             const auto s {"init"};
                             const auto spare {this->generate_count(count)};
                             vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                            destroy(v.cursor - (insertion_size + spare), v.cursor);
-                            v.cursor -= insertion_size + spare;
+                            destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
                             auto s2 {"insert"};
                             const auto result {v.insert(0, s2, insertion_size)};
                             assert(v.size() == count + static_cast<size_t>(insertion_size));
@@ -13392,7 +13392,7 @@ void vector_correctness::test_non_trivial() {
                             while(count <= 1) {
                                 count = this->generate_count();
                             }
-                            const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             vector<std::string> v(count, s);
                             const auto s2 {"insert"};
@@ -13572,8 +13572,8 @@ void vector_correctness::test_non_trivial() {
                             const auto s {"init"};
                             const auto spare {this->generate_count(count)};
                             vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                            destroy(v.cursor - (insertion_size + spare), v.cursor);
-                            v.cursor -= insertion_size + spare;
+                            destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
                             auto s2 {"insert"};
                             const auto result {v.insert(insertion_position, s2, insertion_size)};
                             assert(v.size() == count + static_cast<size_t>(insertion_size));
@@ -13588,19 +13588,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -13625,10 +13625,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -13663,19 +13663,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -13700,10 +13700,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -13741,19 +13741,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -13778,10 +13778,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size + 1; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size + 1}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -13825,19 +13825,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -13862,10 +13862,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -13902,19 +13902,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -13939,10 +13939,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -13974,19 +13974,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -14011,10 +14011,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -14029,7 +14029,7 @@ void vector_correctness::test_non_trivial() {
                                 count = this->generate_count();
                             }
                             const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                            auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             vector<std::string> v(count, s);
                             const std::string s2 {"insert"};
@@ -14046,19 +14046,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -14083,10 +14083,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -14127,19 +14127,19 @@ void vector_correctness::test_non_trivial() {
                             for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size + 1); ++it) {
+                            for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.begin() + (insertion_position + insertion_size + 1)}; it not_eq v.end(); ++it) {
+                            for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.end(); ++it) {
                                 assert(*it == s);
                             }
                             for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                                 assert(*it == s);
                             }
-                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size + 1); ++it) {
+                            for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1); ++it) {
                                 assert(*it == s2);
                             }
-                            for(auto it {v.cbegin() + (insertion_position + insertion_size + 1)}; it not_eq v.cend(); ++it) {
+                            for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size + 1)}; it not_eq v.cend(); ++it) {
                                 assert(*it == s);
                             }
                             const auto tail_size {count - insertion_position};
@@ -14164,10 +14164,10 @@ void vector_correctness::test_non_trivial() {
                             for(auto i {0}; i < insertion_position; ++i) {
                                 assert(v[i] == s);
                             }
-                            for(auto i {insertion_position}; i < insertion_position + insertion_size + 1; ++i) {
+                            for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size + 1; ++i) {
                                 assert(v[i] == s2);
                             }
-                            for(auto i {insertion_position + insertion_size + 1}; i < v.size(); ++i) {
+                            for(auto i {static_cast<size_t>(insertion_position) + insertion_size + 1}; i < v.size(); ++i) {
                                 assert(v[i] == s);
                             }
                             assert(result == v.begin() + insertion_position);
@@ -14241,7 +14241,7 @@ void vector_correctness::test_non_trivial() {
                             const auto spare {this->generate_count(count)};
                             vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
                             destroy(v.first + count, v.cursor);
-                            v.cursor -= insertion_size + spare;
+                            v.cursor -= static_cast<size_t>(insertion_size) + spare;
                             const std::string s2 {"insert"};
                             const auto result {v.insert(count, s2, insertion_size)};
                             assert(v.size() == count + static_cast<size_t>(insertion_size));
@@ -14298,7 +14298,7 @@ void vector_correctness::test_non_trivial() {
                             const std::string s {"init"};
                             const auto spare {this->generate_count(count)};
                             vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                            destroy(v.cursor - (static_cast<size_t>(insertion_size + spare)), v.cursor);
+                            destroy(v.cursor - (static_cast<size_t>(static_cast<size_t>(insertion_size) + spare)), v.cursor);
                             v.cursor -= static_cast<size_t>(insertion_size) + spare;
                             const std::string s2 {"insert"};
                             const auto result {v.insert(count, s2, insertion_size)};
@@ -14595,7 +14595,7 @@ void vector_correctness::test_non_trivial() {
                             while(count <= 1) {
                                 count = this->generate_count();
                             }
-                            auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             vector<std::string> v(count, s);
                             const std::string s2 {"insert"};
@@ -14856,8 +14856,8 @@ void vector_correctness::test_non_trivial() {
                         const std::string s {"init"};
                         const auto spare {this->generate_count(count)};
                         vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                        destroy(v.cursor - (insertion_size + spare), v.cursor);
-                        v.cursor -= insertion_size + spare;
+                        destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(0, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -15178,7 +15178,7 @@ void vector_correctness::test_non_trivial() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
@@ -15302,8 +15302,8 @@ void vector_correctness::test_non_trivial() {
                         const std::string s {"init"};
                         const auto spare {this->generate_count(count)};
                         vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                        destroy(v.cursor - (insertion_size + spare), v.cursor);
-                        v.cursor -= insertion_size + spare;
+                        destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(insertion_position, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -15318,20 +15318,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15359,10 +15359,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15399,20 +15399,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15440,10 +15440,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15489,20 +15489,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15530,10 +15530,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15572,20 +15572,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15613,10 +15613,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15650,20 +15650,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15691,10 +15691,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15709,7 +15709,7 @@ void vector_correctness::test_non_trivial() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
@@ -15728,20 +15728,20 @@ void vector_correctness::test_non_trivial() {
                         for(auto it {v.begin()}; it not_eq v.begin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
-                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.begin() + insertion_position}; it not_eq v.begin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.begin() + (insertion_position + insertion_size)}; it not_eq v.end(); ++it) {
+                        for(auto it {v.begin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.end(); ++it) {
                             assert(*it == s);
                         }
                         for(auto it {v.cbegin()}; it not_eq v.cbegin() + insertion_position; ++it) {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (insertion_position + insertion_size); ++it) {
+                        for(auto it {v.cbegin() + insertion_position}; it not_eq v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size); ++it) {
                             assert(*it == strings[string_i++]);
                         }
-                        for(auto it {v.cbegin() + (insertion_position + insertion_size)}; it not_eq v.cend(); ++it) {
+                        for(auto it {v.cbegin() + (static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq v.cend(); ++it) {
                             assert(*it == s);
                         }
                         const auto tail_size {count - insertion_position};
@@ -15769,10 +15769,10 @@ void vector_correctness::test_non_trivial() {
                             assert(v[i] == s);
                         }
                         string_i = 0;
-                        for(auto i {insertion_position}; i < insertion_position + insertion_size; ++i) {
+                        for(auto i {insertion_position}; i < static_cast<size_t>(insertion_position) + insertion_size; ++i) {
                             assert(v[i] == strings[string_i++]);
                         }
-                        for(auto i {insertion_position + insertion_size}; i < v.size(); ++i) {
+                        for(auto i {static_cast<size_t>(insertion_position) + insertion_size}; i < v.size(); ++i) {
                             assert(v[i] == s);
                         }
                         assert(result == v.begin() + insertion_position);
@@ -15847,8 +15847,8 @@ void vector_correctness::test_non_trivial() {
                         const std::string s {"init"};
                         const auto spare {this->generate_count(count)};
                         vector<std::string> v(count + static_cast<size_t>(insertion_size) + spare, s);
-                        destroy(v.cursor - (insertion_size + spare), v.cursor);
-                        v.cursor -= insertion_size + spare;
+                        destroy(v.cursor - (static_cast<size_t>(insertion_size) + spare), v.cursor);
+                        v.cursor -= static_cast<size_t>(insertion_size) + spare;
                         const auto result {v.insert(count, std_string_random_access_iterator {d.begin()}, std_string_random_access_iterator {d.end()})};
                         assert(v.size() == count + static_cast<size_t>(insertion_size));
                         assert(not v.empty());
@@ -16169,7 +16169,7 @@ void vector_correctness::test_non_trivial() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
