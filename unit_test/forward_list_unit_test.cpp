@@ -52,6 +52,7 @@ public:
 
 void forward_list_unit_test() {
     auto correctness {new forward_list_correctness {}};
+    goto A;
     correctness->test_default_constructor();
     correctness->test_constructor_1();
     correctness->test_constructor_2();
@@ -71,7 +72,7 @@ void forward_list_unit_test() {
     correctness->test_clear();
     correctness->test_emplace_after();
     correctness->test_insert_after_1();
-    correctness->test_insert_after_2();
+    A:correctness->test_insert_after_2();
     correctness->test_insert_after_3();
     correctness->test_erase();
     correctness->test_allocator();
@@ -2758,7 +2759,7 @@ void forward_list_correctness::test_insert_after_1() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -3016,7 +3017,7 @@ void forward_list_correctness::test_insert_after_1() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     forward_list<int> f(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -3153,7 +3154,7 @@ void forward_list_correctness::test_insert_after_1() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -3172,7 +3173,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3183,7 +3184,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3230,7 +3231,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3241,7 +3242,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3289,7 +3290,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number + 1);
                     }
@@ -3300,7 +3301,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number + 1);
                     }
@@ -3343,7 +3344,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3354,7 +3355,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3390,7 +3391,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3401,7 +3402,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3437,7 +3438,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3448,7 +3449,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3467,7 +3468,7 @@ void forward_list_correctness::test_insert_after_1() {
                         count = this->generate_count();
                     }
                     const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     forward_list<int> f(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -3484,7 +3485,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3495,7 +3496,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number_2);
                     }
@@ -3533,7 +3534,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == number + 1);
                     }
@@ -3544,7 +3545,7 @@ void forward_list_correctness::test_insert_after_1() {
                     for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                         assert(*it == number);
                     }
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == number + 1);
                     }
@@ -3621,7 +3622,7 @@ void forward_list_correctness::test_insert_after_1() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -3881,7 +3882,7 @@ void forward_list_correctness::test_insert_after_1() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto number {this->generate_a_random_number()};
                     forward_list<int> f(count, number);
                     auto number_2 {this->generate_a_random_number()};
@@ -3966,6 +3967,7 @@ void forward_list_correctness::test_insert_after_1() {
 }
 void forward_list_correctness::test_insert_after_2() {
     std::cout << "Start checking iterator insert(size_type, InputIterator, InputIterator) for ds::forward_list!" << std::endl;
+    goto A;
 
     // insert to empty forward_list
     {
@@ -4080,7 +4082,7 @@ void forward_list_correctness::test_insert_after_2() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -4288,7 +4290,7 @@ void forward_list_correctness::test_insert_after_2() {
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -4389,7 +4391,7 @@ void forward_list_correctness::test_insert_after_2() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -4405,7 +4407,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4417,11 +4419,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4463,7 +4465,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4475,11 +4477,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4517,7 +4519,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4529,11 +4531,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4564,7 +4566,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4576,11 +4578,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4611,7 +4613,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4623,11 +4625,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4642,7 +4644,7 @@ void forward_list_correctness::test_insert_after_2() {
                         count = this->generate_count();
                     }
                     const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                    auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -4658,7 +4660,7 @@ void forward_list_correctness::test_insert_after_2() {
                     for(auto it {f.begin()}; it not_eq end1; ++it) {
                         assert(*it == number);
                     }
-                    const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                    const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {end1}; it not_eq end2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
@@ -4670,11 +4672,11 @@ void forward_list_correctness::test_insert_after_2() {
                         assert(*it == number);
                     }
                     numbers_i = 0;
-                    const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                    const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                     for(auto it {cend1}; it not_eq cend2; ++it) {
                         assert(*it == numbers[numbers_i++]);
                     }
-                    for(auto it {advance(f.cbegin(), insertion_position + insertion_size)}; it not_eq f.cend(); ++it) {
+                    for(auto it {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)}; it not_eq f.cend(); ++it) {
                         assert(*it == number);
                     }
                     assert(result == advance(f.begin(), insertion_position));
@@ -4749,7 +4751,7 @@ void forward_list_correctness::test_insert_after_2() {
                         if(i-- == 0) {
                             auto backup {erasion->next};
                             erasion->next = nullptr;
-                            f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                            f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                             f.node_size() = count;
                             break;
                         }
@@ -4952,12 +4954,12 @@ void forward_list_correctness::test_insert_after_2() {
                 }
 
                 // insertion size greater than double capacity
-                {
+                A:{
                     auto count {this->generate_count()};
                     while(count <= 1) {
                         count = this->generate_count();
                     }
-                    const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                    const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                     const auto numbers {this->generate_random_sequence(insertion_size)};
                     auto stream {this->to_input_iterator(numbers)};
                     const auto number {this->generate_a_random_number()};
@@ -5009,7 +5011,7 @@ void forward_list_correctness::test_insert_after_3() {
 
         // insert to empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Forward iteratorInsert to empty forward_list for ds::forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Forward iterator/Insert to empty forward_list for ds::forward_list!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -5021,7 +5023,7 @@ void forward_list_correctness::test_insert_after_3() {
                 assert(f.cbegin() == f.cend());
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -5049,23 +5051,23 @@ void forward_list_correctness::test_insert_after_3() {
                 }
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Forward iteratorInsert to empty forward_list for ds::forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Forward iterator/Insert to empty forward_list for ds::forward_list finished!" << std::endl;
         }
 
         // insert to non-empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -5100,7 +5102,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -5120,7 +5122,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -5149,7 +5151,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5198,15 +5200,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -5243,7 +5245,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5281,7 +5283,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -5319,7 +5321,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -5328,7 +5330,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -5357,22 +5359,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -5408,7 +5410,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -5429,7 +5431,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -5445,7 +5447,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5457,7 +5459,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5466,7 +5468,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5503,7 +5505,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5515,7 +5517,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5524,15 +5526,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -5557,7 +5559,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5569,7 +5571,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5578,7 +5580,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5604,7 +5606,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5616,7 +5618,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5625,7 +5627,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -5651,7 +5653,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5663,7 +5665,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5672,7 +5674,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -5682,7 +5684,7 @@ void forward_list_correctness::test_insert_after_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -5698,7 +5700,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5710,7 +5712,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -5719,22 +5721,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -5769,7 +5771,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.end());
                         assert(result == f.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -5789,7 +5791,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -5818,7 +5820,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5867,15 +5869,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -5912,7 +5914,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -5950,7 +5952,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -5988,7 +5990,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -5997,7 +5999,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_forward_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -6026,16 +6028,16 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Forward iteratorInsert to non-empty forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Forward iterator/Insert to non-empty forward_list finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Forward iterator for ds::forward_list finished!" << std::endl;
@@ -6047,7 +6049,7 @@ void forward_list_correctness::test_insert_after_3() {
 
         // insert to empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Bidirectional iteratorInsert to empty forward_list for ds::forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Bidirectional iterator/Insert to empty forward_list for ds::forward_list!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -6059,7 +6061,7 @@ void forward_list_correctness::test_insert_after_3() {
                 assert(f.cbegin() == f.cend());
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -6087,23 +6089,23 @@ void forward_list_correctness::test_insert_after_3() {
                 }
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Bidirectional iteratorInsert to empty forward_list for ds::forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Bidirectional iterator/Insert to empty forward_list for ds::forward_list finished!" << std::endl;
         }
 
         // insert to non-empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -6138,7 +6140,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -6158,7 +6160,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -6187,7 +6189,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6236,15 +6238,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -6281,7 +6283,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6319,7 +6321,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -6357,7 +6359,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -6366,7 +6368,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -6395,22 +6397,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -6446,7 +6448,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -6467,7 +6469,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -6483,7 +6485,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6495,7 +6497,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6504,7 +6506,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6541,7 +6543,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6553,7 +6555,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6562,15 +6564,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -6595,7 +6597,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6607,7 +6609,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6616,7 +6618,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6642,7 +6644,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6654,7 +6656,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6663,7 +6665,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -6689,7 +6691,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6701,7 +6703,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6710,7 +6712,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -6720,7 +6722,7 @@ void forward_list_correctness::test_insert_after_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -6736,7 +6738,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6748,7 +6750,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -6757,22 +6759,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -6807,7 +6809,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.end());
                         assert(result == f.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -6827,7 +6829,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -6856,7 +6858,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6905,15 +6907,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -6950,7 +6952,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -6988,7 +6990,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -7026,7 +7028,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -7035,7 +7037,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto l {this->to_bidirectional_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -7064,16 +7066,16 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Bidirectional iteratorInsert to non-empty forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Bidirectional iterator/Insert to non-empty forward_list finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Bidirectional iterator for ds::forward_list finished!" << std::endl;
@@ -7085,7 +7087,7 @@ void forward_list_correctness::test_insert_after_3() {
 
         // insert to empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Random access iteratorInsert to empty forward_list for ds::forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Random access iterator/Insert to empty forward_list for ds::forward_list!" << std::endl;
 
             // insertion size equal to zero
             {
@@ -7097,7 +7099,7 @@ void forward_list_correctness::test_insert_after_3() {
                 assert(f.cbegin() == f.cend());
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
             // insertion size not equal to zero
@@ -7125,23 +7127,23 @@ void forward_list_correctness::test_insert_after_3() {
                 }
                 assert(result == f.begin());
                 assert(result == f.cbegin());
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to empty forward_list/Insertion size not equal to zero done." << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to empty forward_list/Insertion size not equal to zero done." << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Random access iteratorInsert to empty forward_list for ds::forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Random access iterator/Insert to empty forward_list for ds::forward_list finished!" << std::endl;
         }
 
         // insert to non-empty forward_list
         {
-            std::cout << "\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list!" << std::endl;
+            std::cout << "\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list!" << std::endl;
 
             // insert to head
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -7176,7 +7178,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -7196,7 +7198,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -7225,7 +7227,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7274,15 +7276,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -7319,7 +7321,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7357,7 +7359,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -7395,7 +7397,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -7404,7 +7406,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -7433,22 +7435,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.begin());
                         assert(result == f.cbegin());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to head finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to head finished!" << std::endl;
             }
 
             // insert to random position
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -7484,7 +7486,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -7505,7 +7507,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -7521,7 +7523,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7533,7 +7535,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7542,7 +7544,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7579,7 +7581,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7591,7 +7593,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7600,15 +7602,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -7633,7 +7635,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7645,7 +7647,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7654,7 +7656,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7680,7 +7682,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7692,7 +7694,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7701,7 +7703,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -7727,7 +7729,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7739,7 +7741,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7748,7 +7750,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -7758,7 +7760,7 @@ void forward_list_correctness::test_insert_after_3() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -7774,7 +7776,7 @@ void forward_list_correctness::test_insert_after_3() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == number);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7786,7 +7788,7 @@ void forward_list_correctness::test_insert_after_3() {
                             assert(*it == number);
                         }
                         numbers_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == numbers[numbers_i++]);
                         }
@@ -7795,22 +7797,22 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), insertion_position));
                         assert(result == advance(f.cbegin(), insertion_position));
-                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to random position finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to random position finished!" << std::endl;
             }
 
             // insert to tail
             {
-                std::cout << "\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail!" << std::endl;
+                std::cout << "\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail!" << std::endl;
 
                 // without reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation!" << std::endl;
 
                     // insertion size is zero
                     {
@@ -7845,7 +7847,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == f.end());
                         assert(result == f.cend());
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size is zero done." << std::endl;
                     }
 
                     // insertion size less equal to tail size
@@ -7865,7 +7867,7 @@ void forward_list_correctness::test_insert_after_3() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -7894,7 +7896,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -7943,15 +7945,15 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/Without reallocation finished!" << std::endl;
                 }
 
                 // with reallocation
                 {
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation!" << std::endl;
 
                     // insertion size less equal to tail size
                     {
@@ -7988,7 +7990,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to tail size done." << std::endl;
                     }
 
                     // insertion size greater than tail size
@@ -8026,7 +8028,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than tail size done." << std::endl;
                     }
 
                     // insertion size less equal to double capacity
@@ -8064,7 +8066,7 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size less equal to double capacity done." << std::endl;
                     }
 
                     // insertion size greater than double capacity
@@ -8073,7 +8075,7 @@ void forward_list_correctness::test_insert_after_3() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const auto numbers {this->generate_random_sequence(insertion_size)};
                         auto d {this->to_random_access_iterator(numbers)};
                         const auto number {this->generate_a_random_number()};
@@ -8102,16 +8104,16 @@ void forward_list_correctness::test_insert_after_3() {
                         }
                         assert(result == advance(f.begin(), count));
                         assert(result == advance(f.cbegin(), count));
-                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
+                        std::cout << "\t\t\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation/Insertion size greater than double capacity done." << std::endl;
                     }
 
-                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
+                    std::cout << "\t\t\t\tStart checking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail/With reallocation finished!" << std::endl;
                 }
 
-                std::cout << "\t\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list/Insert to tail finished!" << std::endl;
+                std::cout << "\t\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list/Insert to tail finished!" << std::endl;
             }
 
-            std::cout << "\t\tChecking test_insert_3/Random access iteratorInsert to non-empty forward_list finished!" << std::endl;
+            std::cout << "\t\tChecking test_insert_3/Random access iterator/Insert to non-empty forward_list finished!" << std::endl;
         }
 
         std::cout << "\tChecking test_insert3/Random access iterator for ds::forward_list finished!" << std::endl;
@@ -8758,7 +8760,7 @@ void forward_list_correctness::test_non_trivial() {
                                 if(i-- == 0) {
                                     auto backup {erasion->next};
                                     erasion->next = nullptr;
-                                    f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                    f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                     f.node_size() = count;
                                     break;
                                 }
@@ -9002,7 +9004,7 @@ void forward_list_correctness::test_non_trivial() {
                             while(count <= 1) {
                                 count = this->generate_count();
                             }
-                            const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             forward_list<std::string> f(count, s);
                             const auto s2 {"insert"};
@@ -9137,7 +9139,7 @@ void forward_list_correctness::test_non_trivial() {
                                 if(i-- == 0) {
                                     auto backup {erasion->next};
                                     erasion->next = nullptr;
-                                    f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                    f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                     f.node_size() = count;
                                     break;
                                 }
@@ -9153,7 +9155,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9164,7 +9166,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9208,7 +9210,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9219,7 +9221,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9266,7 +9268,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9277,7 +9279,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9317,7 +9319,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9328,7 +9330,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9361,7 +9363,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9372,7 +9374,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9405,7 +9407,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9416,7 +9418,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9435,7 +9437,7 @@ void forward_list_correctness::test_non_trivial() {
                                 count = this->generate_count();
                             }
                             const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                            const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             forward_list<std::string> f(count, s);
                             const std::string s2 {"insert"};
@@ -9449,7 +9451,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9460,7 +9462,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9497,7 +9499,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.begin()}; it not_eq end1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto end2 {advance(f.begin(), insertion_position + insertion_size + 1)};
+                            const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                             for(auto it {end1}; it not_eq end2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9508,7 +9510,7 @@ void forward_list_correctness::test_non_trivial() {
                             for(auto it {f.cbegin()}; it not_eq cend1; ++it) {
                                 assert(*it == s);
                             }
-                            const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size + 1)};
+                            const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size + 1)};
                             for(auto it {cend1}; it not_eq cend2; ++it) {
                                 assert(*it == s2);
                             }
@@ -9585,7 +9587,7 @@ void forward_list_correctness::test_non_trivial() {
                                 if(i-- == 0) {
                                     auto backup {erasion->next};
                                     erasion->next = nullptr;
-                                    f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                    f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                     f.node_size() = count;
                                     break;
                                 }
@@ -9829,7 +9831,7 @@ void forward_list_correctness::test_non_trivial() {
                             while(count <= 1) {
                                 count = this->generate_count();
                             }
-                            const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                            const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                             const std::string s {"init"};
                             forward_list<std::string> f(count, s);
                             const std::string s2 {"insert"};
@@ -10027,7 +10029,7 @@ void forward_list_correctness::test_non_trivial() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -10235,7 +10237,7 @@ void forward_list_correctness::test_non_trivial() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
@@ -10336,7 +10338,7 @@ void forward_list_correctness::test_non_trivial() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -10352,7 +10354,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10364,7 +10366,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10410,7 +10412,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10422,7 +10424,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10464,7 +10466,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10476,7 +10478,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10511,7 +10513,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10523,7 +10525,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10558,7 +10560,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10570,7 +10572,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10589,7 +10591,7 @@ void forward_list_correctness::test_non_trivial() {
                             count = this->generate_count();
                         }
                         const auto insertion_position {this->generate_a_random_number(1, count - 2)};
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
@@ -10605,7 +10607,7 @@ void forward_list_correctness::test_non_trivial() {
                         for(auto it {f.begin()}; it not_eq end1; ++it) {
                             assert(*it == s);
                         }
-                        const auto end2 {advance(f.begin(), insertion_position + insertion_size)};
+                        const auto end2 {advance(f.begin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {end1}; it not_eq end2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10617,7 +10619,7 @@ void forward_list_correctness::test_non_trivial() {
                             assert(*it == s);
                         }
                         string_i = 0;
-                        const auto cend2 {advance(f.cbegin(), insertion_position + insertion_size)};
+                        const auto cend2 {advance(f.cbegin(), static_cast<size_t>(insertion_position) + insertion_size)};
                         for(auto it {cend1}; it not_eq cend2; ++it) {
                             assert(*it == strings[string_i++]);
                         }
@@ -10696,7 +10698,7 @@ void forward_list_correctness::test_non_trivial() {
                             if(i-- == 0) {
                                 auto backup {erasion->next};
                                 erasion->next = nullptr;
-                                f.node_size.allocator().deallocate(backup->node(), insertion_size + spare);
+                                f.node_size.allocator().deallocate(backup->node(), static_cast<size_t>(insertion_size) + spare);
                                 f.node_size() = count;
                                 break;
                             }
@@ -10904,7 +10906,7 @@ void forward_list_correctness::test_non_trivial() {
                         while(count <= 1) {
                             count = this->generate_count();
                         }
-                        const auto insertion_size {this->generate_a_random_number(2 * count + 1)};
+                        const auto insertion_size {this->generate_a_random_number(2 * (count >= std::numeric_limits<int>::max() / 2 - 1 ? std::numeric_limits<int>::max() / 2 - 1 : count) + 1)};
                         const std::vector<std::string> strings(insertion_size, "init");
                         auto d {this->to_random_access_iterator(strings)};
                         const std::string s {"init"};
