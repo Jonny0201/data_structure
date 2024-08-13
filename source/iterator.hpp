@@ -599,6 +599,7 @@ __DATA_STRUCTURE_START(inner tools for data structure)
 
 __DATA_STRUCTURE_START(container forward declaration)
 template <typename, typename> class forward_list;
+template <typename, typename, typename> class list;
 __DATA_STRUCTURE_END(container forward declaration)
 
 namespace __data_structure_auxiliary {
@@ -689,6 +690,102 @@ inline constexpr bool operator!=(const forward_list_iterator<T, IsConstLHS> &lhs
     return not(lhs == rhs);
 }
 __DATA_STRUCTURE_END(data structure special iterator, forward list iterator)
+
+__DATA_STRUCTURE_START(list node)
+template <typename ValueNode>
+struct list_base_node {
+    list_base_node *next;
+    list_base_node *previous;
+    constexpr auto &value() noexcept {
+        return static_cast<ValueNode *>(this)->value;
+    }
+    constexpr ValueNode *node() noexcept {
+        return static_cast<ValueNode *>(this);
+    }
+};
+template <typename T>
+struct list_node : list_base_node<list_node<T>> {
+    T value;
+};
+__DATA_STRUCTURE_END(list node)
+
+__DATA_STRUCTURE_START(data structure special iterator, list iterator)
+template <typename T, bool IsConst = false>
+class list_iterator {
+    friend class list_iterator<T, false>;
+    template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const list_iterator<ValueType, IsConstLHS> &,
+            const list_iterator<ValueType, IsConstRHS> &) noexcept;
+    template <typename, typename> friend class list;
+private:
+    using node_type = list_base_node<list_node<T>> *;
+public:
+    using iterator_type = list_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = bidirectional_iterator_tag;
+private:
+    node_type node {};
+public:
+    constexpr list_iterator() noexcept = default;
+    explicit constexpr list_iterator(list_base_node<list_node<T>> *node) noexcept : node {node} {}
+    template <typename U> requires is_same_v<U, list_iterator<T, false>>
+    constexpr list_iterator(enable_if_t<IsConst, const U &> non_const_iterator) : node {non_const_iterator.node} {}
+    constexpr list_iterator(const list_iterator &) noexcept = default;
+    constexpr list_iterator(list_iterator &&) noexcept = default;
+    constexpr ~list_iterator() noexcept = default;
+public:
+    constexpr list_iterator &operator=(const list_iterator &) noexcept = default;
+    constexpr list_iterator &operator=(list_iterator &&) noexcept = default;
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
+        return this->node->value();
+    }
+    constexpr const T &operator*() const noexcept {
+        return this->node->value();
+    }
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr list_iterator &operator++() & noexcept {
+        this->node = this->node->next;
+        return *this;
+    }
+    constexpr list_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    constexpr list_iterator &operator--() & noexcept {
+        this->node = this->node->previous;
+        return *this;
+    }
+    constexpr list_iterator operator--(int) & noexcept {
+        auto backup {*this};
+        --*this;
+        return backup;
+    }
+    explicit operator bool() const noexcept {
+        return this->node;
+    }
+    operator list_iterator<T, true>() const noexcept {
+        return list_iterator<T, true>(this->node);
+    }
+};
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+inline constexpr bool operator==(const list_iterator<T, IsConstLHS> &lhs,
+        const list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.node == rhs.node;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+inline constexpr bool operator!=(const list_iterator<T, IsConstLHS> &lhs,
+        const list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+__DATA_STRUCTURE_END(data structure special iterator, list iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure)
