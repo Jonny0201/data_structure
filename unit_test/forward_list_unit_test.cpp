@@ -52,7 +52,6 @@ public:
 
 void forward_list_unit_test() {
     auto correctness {new forward_list_correctness {}};
-    goto A;
     correctness->test_default_constructor();
     correctness->test_constructor_1();
     correctness->test_constructor_2();
@@ -72,7 +71,7 @@ void forward_list_unit_test() {
     correctness->test_clear();
     correctness->test_emplace_after();
     correctness->test_insert_after_1();
-    A:correctness->test_insert_after_2();
+    correctness->test_insert_after_2();
     correctness->test_insert_after_3();
     correctness->test_erase();
     correctness->test_allocator();
@@ -3967,7 +3966,6 @@ void forward_list_correctness::test_insert_after_1() {
 }
 void forward_list_correctness::test_insert_after_2() {
     std::cout << "Start checking iterator insert(size_type, InputIterator, InputIterator) for ds::forward_list!" << std::endl;
-    goto A;
 
     // insert to empty forward_list
     {
@@ -4954,7 +4952,7 @@ void forward_list_correctness::test_insert_after_2() {
                 }
 
                 // insertion size greater than double capacity
-                A:{
+                {
                     auto count {this->generate_count()};
                     while(count <= 1) {
                         count = this->generate_count();
