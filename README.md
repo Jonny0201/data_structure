@@ -151,7 +151,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Buffer</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
     <td><code>buffer.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
