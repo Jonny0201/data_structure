@@ -360,8 +360,101 @@ This project is being refactored.
         <th>MSVC</th>
     </tr>
 </thead>
+<tr style="text-align: center; border-top:2px solid #000">
+    <th rowspan="4" style="border-right:2px solid #000">Type Traits</th>
+    <td>macOS</td>
+    <td><img src="https://img.shields.io/badge/Partial-Pass-55BB8A" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
+    <td rowspan="4"></td>
+</tr>
 <tr style="text-align: center;">
-    <th rowspan="4" style="border-right:2px solid #000"><code>buffer</code></th>
+    <td>Windows</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows Arm</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center; border-top:2px solid #000">
+    <th rowspan="4" style="border-right:2px solid #000">Buffer</th>
+    <td>macOS</td>
+    <td><img src="https://img.shields.io/badge/Partial-Pass-55BB8A" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
+    <td rowspan="4"></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows Arm</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center; border-top:2px solid #000">
+    <th rowspan="4" style="border-right:2px solid #000">Vector</th>
+    <td>macOS</td>
+    <td><img src="https://img.shields.io/badge/Partial-Pass-55BB8A" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
+    <td rowspan="4"></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows Arm</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center; border-top:2px solid #000">
+    <th rowspan="4" style="border-right:2px solid #000">Forward List</th>
     <td>macOS</td>
     <td><img src="https://img.shields.io/badge/Partial-Pass-55BB8A" alt="None" /></td>
     <td></td>
