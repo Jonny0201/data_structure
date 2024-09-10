@@ -23,7 +23,8 @@
 namespace data_structure {
 
 __DATA_STRUCTURE_START(list declaration)
-template <typename T, typename Allocator = allocator<T>, typename NodeAllocator = void>
+template <typename T, typename Allocator = allocator<T>,typename NodeAllocator = __dsa::node_allocator<Allocator,
+        __dsa::list_node, __dsa::list_node_linker>>
 class list {
 private:
     using node_type = __dsa::list_node<T> *;
