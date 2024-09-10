@@ -454,7 +454,7 @@ union free_node {
     free_node *next;
     char data[1];
     NodeType *as_node() noexcept {
-        return static_cast<NodeType *>(this->data);
+        return reinterpret_cast<NodeType *>(this->data);
     }
 };
 
