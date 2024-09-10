@@ -363,7 +363,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th rowspan="4" style="border-right:2px solid #000"><code>buffer</code></th>
     <td>macOS</td>
-    <td></td>
+    <td><img src="https://img.shields.io/badge/Partial-Pass-55BB8A" alt="None" /></td>
     <td></td>
     <td></td>
     <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
