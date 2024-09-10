@@ -707,6 +707,28 @@ template <typename T>
 struct list_node : list_base_node<list_node<T>> {
     T value;
 };
+template <typename T>
+struct list_node_linker {
+    template <bool FromFreeList = false>
+    constexpr void operator()(list_base_node<T> *previous, list_base_node<T> *next) const noexcept {
+        if constexpr(not FromFreeList) {
+            previous->next = next;
+        }
+        next->previous = previous;
+    }
+    template <bool FromFreeList = false, typename FreeNode>
+    constexpr void operator()(list_base_node<T> *previous, FreeNode *free_next) const noexcept {
+        this->operator()<FromFreeList>(previous, free_next->as_node());
+    }
+    template <bool FromFreeList = false, typename FreeNode>
+    constexpr void operator()(FreeNode *previous, list_base_node<T> *next) const noexcept {
+        this->operator()<FromFreeList>(previous->as_node(), next);
+    }
+    template <bool FromFreeList = false, typename FreeNode>
+    constexpr void operator()(FreeNode *previous, FreeNode *next) const noexcept {
+        this->operator()<FromFreeList>(previous->as_node(), next->as_node());
+    }
+};
 __DATA_STRUCTURE_END(list node)
 
 __DATA_STRUCTURE_START(data structure special iterator, list iterator)
