@@ -456,30 +456,6 @@ template <typename T>
 inline constexpr auto is_floating_point_v {is_floating_point<T>::value};
 
 namespace __data_structure_auxiliary {
-template <typename T, typename = void>
-struct is_signed_auxiliary : false_type {};
-template <typename T>
-struct is_signed_auxiliary<T, make_void_t<decltype(static_cast<T>(-1) < static_cast<T>(0))>> :
-        conditional_t<static_cast<T>(-1) < static_cast<T>(0), true_type, false_type> {};
-}
-template <typename T>
-struct is_signed : __dsa::is_signed_auxiliary<remove_cv_t<T>> {};
-template <typename T>
-inline constexpr auto is_signed_v {is_signed<T>::value};
-
-namespace __data_structure_auxiliary {
-template <typename T, typename = void>
-struct is_unsigned_auxiliary : false_type {};
-template <typename T>
-struct is_unsigned_auxiliary<T, make_void_t<decltype(static_cast<T>(0) < static_cast<T>(-1))>> :
-        conditional_t<static_cast<T>(0) < static_cast<T>(-1), true_type, false_type> {};
-}
-template <typename T>
-struct is_unsigned : __dsa::is_unsigned_auxiliary<remove_cv_t<T>> {};
-template <typename T>
-inline constexpr auto is_unsigned_v {is_unsigned<T>::value};
-
-namespace __data_structure_auxiliary {
 template <typename>
 struct is_character_auxiliary : false_type {};
 template <>
@@ -780,6 +756,36 @@ template <typename T>
 struct is_arithmetic : bool_constant<is_integral_v<T> or is_floating_point_v<T>> {};
 template <typename T>
 inline constexpr auto is_arithmetic_v {is_arithmetic<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, bool = is_arithmetic_v<T>, bool = is_integral_v<T>>
+struct is_signed_auxiliary : false_type {};
+template <typename T>
+struct is_signed_auxiliary<T, true, false> : true_type {};
+template <typename T>
+struct is_signed_auxiliary<T, true, true> : bool_constant<static_cast<T>(-1) < static_cast<T>(0)> {};
+template <typename T, bool Any>
+struct is_signed_auxiliary<T, false, Any> : false_type {};
+}
+template <typename T>
+struct is_signed : __dsa::is_signed_auxiliary<remove_cv_t<T>> {};
+template <typename T>
+inline constexpr auto is_signed_v {is_signed<T>::value};
+
+namespace __data_structure_auxiliary {
+template <typename T, bool = is_arithmetic_v<T>, bool = is_integral_v<T>>
+struct is_unsigned_auxiliary : false_type {};
+template <typename T>
+struct is_unsigned_auxiliary<T, true, false> : false_type {};
+template <typename T>
+struct is_unsigned_auxiliary<T, true, true> : bool_constant<static_cast<T>(0) < static_cast<T>(-1)> {};
+template <typename T, bool Any>
+struct is_unsigned_auxiliary<T, false, Any> : false_type {};
+}
+template <typename T>
+struct is_unsigned : __dsa::is_unsigned_auxiliary<remove_cv_t<T>> {};
+template <typename T>
+inline constexpr auto is_unsigned_v {is_unsigned<T>::value};
 
 template <typename T>
 struct is_fundamental : bool_constant<is_arithmetic_v<T> or is_void_v<T> or
