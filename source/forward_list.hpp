@@ -345,8 +345,6 @@ constexpr forward_list<T, Allocator>::~forward_list() noexcept {
 template <typename T, typename Allocator>
 constexpr forward_list<T, Allocator> &forward_list<T, Allocator>::operator=(const forward_list &rhs) {
     if(this not_eq &rhs) {
-        this->deallocate_nodes(this->head.next->node(), this->node_size());
-        this->node_size.allocator() = rhs.node_size.allocator();
         this->assign(rhs.cbegin(), rhs.cend());
     }
     return *this;
