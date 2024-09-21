@@ -493,6 +493,13 @@ private:
             this->allocator.deallocate(this->nodes, this->n);
         }
     };
+    struct return_pair {
+        NodeTemplate<value_type> *first_node;
+        NodeTemplate<value_type> *last_node;
+        constexpr operator NodeTemplate<value_type> *() noexcept {
+            return this->first_node;
+        }
+    };
 private:
     struct shared_block : NodeLinker<free_node<NodeTemplate<value_type>>> {
         struct {
@@ -522,9 +529,9 @@ private:
             ::delete this->shared_list;
         }
     }
-    template <typename T, typename U>
+    template <bool FromFreeList, typename T, typename U>
     constexpr void link(T *previous, U *next) const noexcept {
-        this->shared_list(previous, next);
+        this->shared_list<FromFreeList>(previous, next);
     }
 public:
     constexpr node_allocator() : Allocator(), NodeAllocator(), shared_list {::new shared_block {.strong_count {1}}} {}
@@ -565,7 +572,7 @@ public:
 public:
     template <bool NoThrow = false>
     [[nodiscard]]
-    constexpr NodeTemplate<value_type> *allocate(size_t n, NodeTemplate<value_type> *link_to = {}) noexcept(NoThrow) {
+    constexpr return_pair allocate(size_t n) noexcept(NoThrow) {
         if(n == 0) {
             return nullptr;
         }
@@ -573,25 +580,25 @@ public:
         if(n <= this->shared_list->node_size) {
             auto cursor {result};
             while(n not_eq 1) {
-                cursor = cursor->next->node();
+                this->link<true>(cursor, cursor->next);
+                cursor = cursor->next;
                 --n;
             }
             this->shared_list->node_size -= n;
-            this->shared_list->free_list = cursor->next->node();
-            cursor->next = link_to;
-            return result;
+            this->shared_list->free_list = cursor->next;
+            return {result->as_node(), cursor};
         }
         const auto nodes {this->NodeAllocator::template allocate<NoThrow>(n -= this->shared_list->node_size)};
         if constexpr(NoThrow) {
             if(not nodes) {
-                return nullptr;
+                return {};
             }
             auto new_record {::new (ds::nothrow) shared_block::recorder_list {{nodes, n}, this->shared_list->recorder}};
             if(new_record) {
                 this->shared_list->recorder = new_record;
             }else {
                 this->NodeAllocator::deallocate(nodes, n);
-                return nullptr;
+                return {};
             }
         }else {
             try {
@@ -604,23 +611,20 @@ public:
         }
         const auto last_position {n - 1};
         for(auto i {0uz}; i < last_position; ++i) {
-            this->link(nodes + i, nodes + (i + 1));
+            this->link<false>(nodes + i, nodes + (i + 1));
         }
-        this->link(nodes + last_position, link_to);
         if(auto cursor {result}; cursor) {
-            for(; cursor->next; cursor = cursor->next->node());
-            this->link(cursor, nodes);
-        }else {
-            result = nodes;
+            for(; cursor->next; cursor = cursor->next);
+            this->link<false>(cursor, nodes);
+            this->shared_list->free_list = nullptr;
+            this->shared_list->node_size = 0;
+            return {result->as_node(), nodes + last_position};
         }
-        this->shared_list->free_list = nullptr;
-        this->shared_list->node_size = 0;
-        return result;
+        return {nodes, nodes + last_position};
     }
     template <typename ...Args>
     [[nodiscard]]
-    constexpr NodeTemplate<value_type> *allocate_with_value(size_t n,
-            NodeTemplate<value_type> *link_to, Args &&...args) {
+    constexpr return_pair allocate_with_value(size_t n, Args &&...args) {
         if(n == 0) {
             return nullptr;
         }
@@ -629,48 +633,52 @@ public:
             auto trans {transaction {free_list_exception_handler {result, result}}};
             auto &cursor {trans.get_rollback().end};
             while(n not_eq 1) {
-                ds::construct(ds::address_of(cursor->value), ds::forward<Args>(args)...);
-                cursor = cursor->next->node();
+                ds::construct(ds::address_of(cursor->as_node()->value), ds::forward<Args>(args)...);
+                this->link<true>(cursor, cursor->next);
+                cursor = cursor->next;
                 --n;
             }
-            ds::construct(ds::address_of(cursor->value), ds::forward<Args>(args)...);
+            ds::construct(ds::address_of(cursor->as_node()->value), ds::forward<Args>(args)...);
             trans.complete();
             this->shared_list->node_size -= n;
-            this->shared_list->free_list = cursor->next->node();
-            this->link(cursor, link_to);
-            return result;
+            this->shared_list->free_list = cursor->next;
+            return {result->as_node(), cursor};
         }
+        free_node<NodeTemplate<value_type>> *last_free_node {};
         if(result) {
             auto trans {transaction {free_list_exception_handler {result, result}}};
             auto &cursor {trans.get_rollback().end};
-            for(; cursor->next; cursor = cursor->next->node()) {
-                ds::construct(ds::address_of(cursor->value), ds::forward<Args>(args)...);
+            for(; cursor->next; cursor = cursor->next) {
+                ds::construct(ds::address_of(cursor->as_node()->value), ds::forward<Args>(args)...);
+                this->link<true>(cursor, cursor->next);
             }
             ds::construct(ds::address_of(cursor->value), ds::forward<Args>(args)...);
-            this->link(cursor, link_to);
             trans.complete();
+            last_free_node = cursor;
         }
         const auto nodes {this->NodeAllocator::template allocate<false>(n -= this->shared_list->node_size)};
         const auto last_position {n - 1};
         auto trans {transaction {allocation_exception_handler(nodes, n, *this)}};
         auto &i {trans.get_rollback().i};
         for(; i < last_position; ++i) {
-            this->link(nodes + i, nodes + (i + 1));
+            this->link<false>(nodes + i, nodes + (i + 1));
             ds::construct(ds::address_of(nodes[i].value), ds::forward<Args>(args)...);
         }
         ds::construct(ds::address_of(nodes[i].value), ds::forward<Args>(args)...);
         ++i;
         this->shared_list->recorder = ::new shared_block::recorder_list {{nodes, n}, this->shared_list->recorder};
         trans.complete();
-        this->link(nodes + last_position, link_to);
-        this->shared_list->free_list = nullptr;
-        this->shared_list->node_size = 0;
-        return nodes;
+        if(last_free_node) {
+            this->link<false>(last_free_node, nodes);
+            this->shared_list->free_list = nullptr;
+            this->shared_list->node_size = 0;
+            return {result->as_node(), nodes + last_position};
+        }
+        return {nodes, nodes + last_position};
     }
     template <IsInputIterator InputIterator>
     [[nodiscard]]
-    constexpr NodeTemplate<value_type> *allocate_with_range(size_t n,
-            NodeTemplate<value_type> *link_to, InputIterator begin) {
+    constexpr return_pair allocate_with_range(size_t n, InputIterator begin) {
         if(n == 0) {
             return nullptr;
         }
@@ -679,45 +687,51 @@ public:
             auto trans {transaction {free_list_exception_handler {result, result}}};
             auto &cursor {trans.get_rollback().end};
             while(n not_eq 1) {
-                ds::construct(ds::address_of(cursor->value),
+                ds::construct(ds::address_of(cursor->as_node()->value),
                         ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
-                cursor = cursor->next->node();
+                this->link<true>(cursor, cursor->next);
+                cursor = cursor->next;
                 --n;
+            }
+            ds::construct(ds::address_of(cursor->as_node()->value),
+                    ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
+            trans.complete();
+            this->shared_list->node_size -= n;
+            this->shared_list->free_list = cursor->next;
+            return {result->as_node(), cursor};
+        }
+        free_node<NodeTemplate<value_type>> *last_free_node {};
+        if(result) {
+            auto trans {transaction {free_list_exception_handler {result, result}}};
+            auto &cursor {trans.get_rollback().end};
+            for(; cursor->next; cursor = cursor->next) {
+                ds::construct(ds::address_of(cursor->as_node()->value),
+                        ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
+                this->link<true>(cursor, cursor->next);
             }
             ds::construct(ds::address_of(cursor->value), ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
             trans.complete();
-            this->shared_list->node_size -= n;
-            this->shared_list->free_list = cursor->next->node();
-            this->link(cursor, link_to);
-            return result;
+            last_free_node = cursor;
         }
         const auto nodes {this->NodeAllocator::template allocate<false>(n -= this->shared_list->node_size)};
         const auto last_position {n - 1};
         auto trans {transaction {allocation_exception_handler(nodes, n, *this)}};
         auto &i {trans.get_rollback().i};
         for(; i < last_position; ++i) {
-            this->link(nodes + i, nodes + (i + 1));
+            this->link<false>(nodes + i, nodes + (i + 1));
             ds::construct(ds::address_of(nodes[i].value), ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
         }
         ds::construct(ds::address_of(nodes[i].value), ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
         ++i;
         this->shared_list->recorder = ::new shared_block::recorder_list {{nodes, n}, this->shared_list->recorder};
-        if(result) {
-            auto trans {transaction {free_list_exception_handler {result, result}}};
-            auto &cursor {trans.get_rollback().end};
-            for(; cursor->next; cursor = cursor->next->node()) {
-                ds::construct(ds::address_of(cursor->value),
-                        ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
-            }
-            ds::construct(ds::address_of(cursor->value), ds::move_if<not IsForwardIterator<InputIterator>>(*begin++));
-            this->link(cursor, link_to);
-            trans.complete();
-        }
         trans.complete();
-        this->link(nodes + last_position, link_to);
-        this->shared_list->free_list = nullptr;
-        this->shared_list->node_size = 0;
-        return nodes;
+        if(last_free_node) {
+            this->link<false>(last_free_node, nodes);
+            this->shared_list->free_list = nullptr;
+            this->shared_list->node_size = 0;
+            return {result->as_node(), nodes + last_position};
+        }
+        return {nodes, nodes + last_position};
     }
     template <bool = false>
     [[nodiscard]]
