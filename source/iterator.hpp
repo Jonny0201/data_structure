@@ -753,7 +753,8 @@ public:
     constexpr list_iterator() noexcept = default;
     explicit constexpr list_iterator(list_base_node<list_node<T>> *node) noexcept : node {node} {}
     template <typename U> requires is_same_v<U, list_iterator<T, false>>
-    constexpr list_iterator(enable_if_t<IsConst, const U &> non_const_iterator) : node {non_const_iterator.node} {}
+    constexpr list_iterator(enable_if_t<IsConst, const U &> non_const_iterator) noexcept :
+            node {non_const_iterator.node} {}
     constexpr list_iterator(const list_iterator &) noexcept = default;
     constexpr list_iterator(list_iterator &&) noexcept = default;
     constexpr ~list_iterator() noexcept = default;
@@ -808,6 +809,106 @@ inline constexpr bool operator!=(const list_iterator<T, IsConstLHS> &lhs,
     return not(lhs == rhs);
 }
 __DATA_STRUCTURE_END(data structure special iterator, list iterator)
+
+__DATA_STRUCTURE_START(data structure special iterator, deque_iterator)
+template <typename T, bool IsConst = false>
+class deque_iterator {
+public:
+    using iterator_type = deque_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = random_access_iterator_tag;
+private:
+    static constexpr auto block_size {sizeof(T) < 256 ? 4096 / sizeof(T) : 16};
+private:
+    T **map;
+    T *now;
+public:
+    constexpr deque_iterator() noexcept = default;
+    constexpr deque_iterator(T **map, T *now) noexcept : map {map}, now {now} {}
+    template <typename U> requires is_same_v<U, deque_iterator<T, false>>
+    constexpr deque_iterator(enable_if_t<IsConst, const U &> non_const_iterator) : map {non_const_iterator.map},
+            now {non_const_iterator.now} {}
+    constexpr deque_iterator(const deque_iterator &) noexcept = default;
+    constexpr deque_iterator(deque_iterator &&) noexcept = default;
+    constexpr ~deque_iterator() noexcept = default;
+public:
+    constexpr deque_iterator &operator=(const deque_iterator &) noexcept = default;
+    constexpr deque_iterator &operator=(deque_iterator &&) noexcept = default;
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
+        return *this->now;
+    }
+    constexpr const T &operator*() const noexcept {
+        return *this->now;
+    }
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr deque_iterator &operator++() & noexcept {
+        if(this->now - *this->map == this->block_size - 1) {
+            ++this->map;
+            this->now = *this->map;
+        }else {
+            ++this->now;
+        }
+        return *this;
+    }
+    constexpr deque_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    constexpr deque_iterator &operator--() & noexcept {
+        if(this->now == *this->map) {
+            --this->map;
+            this->now = *this->map + (this->block_size - 1);
+        }else {
+            --this->now;
+        }
+        return *this;
+    }
+    constexpr deque_iterator operator--(int) & noexcept {
+        auto backup {*this};
+        --*this;
+        return backup;
+    }
+    constexpr deque_iterator &operator+=(difference_type n) noexcept {
+        if(n > 0) {
+            n += this->now - *this->map;
+            this->map += n / this->block_size;
+            this->now = *this->map + n % this->block_size;
+        }else if(n < 0) {
+            n -= this->now - *this->map;
+            this->map -= (n = -n) / this->block_size;
+            this->now = *this->map + n % this->block_size;
+        }
+        return *this;
+    }
+    constexpr deque_iterator &operator-=(difference_type n) noexcept {
+        return *this += -n;
+    }
+    constexpr deque_iterator operator+(difference_type n) const noexcept {
+        auto backup {*this};
+        backup += n;
+        return backup;
+    }
+    constexpr deque_iterator operator-(difference_type n) const noexcept {
+        auto backup {*this};
+        backup += -n;
+        return backup;
+    }
+    explicit operator bool() const noexcept {
+        return this->now;
+    }
+    operator list_iterator<T, true>() const noexcept {
+        return list_iterator<T, true>(this->map, this->now);
+    }
+};
+__DATA_STRUCTURE_END(data structure special iterator, deque_iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure)
