@@ -158,6 +158,7 @@ public:
 };
 __DATA_STRUCTURE_END(list declaration)
 
+__DATA_STRUCTURE_START(list implementation)
 /* exceptional handler */
 namespace __data_structure_auxiliary {
 template <typename NodeType, typename Allocator, bool>
@@ -836,6 +837,7 @@ list<T, Allocator, NodeAllocator>::erase(const_iterator begin, const_iterator en
     this->erase(begin.node, end.node, static_cast<size_type>(ds::distance(begin, end)));
     return iterator {result_node->node()};
 }
+__DATA_STRUCTURE_END(list implementation)
 
 }       // namespace data_structure
 
