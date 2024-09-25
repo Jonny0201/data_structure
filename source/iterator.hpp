@@ -222,6 +222,10 @@ public:
     constexpr decltype(auto) operator[](difference_type n) noexcept {
         return this->iterator[n];
     };
+    [[nodiscard]]
+    constexpr decltype(auto) operator[](difference_type n) const noexcept {
+        return this->iterator[n];
+    };
     constexpr wrap_iterator &operator++() & noexcept {
         ++this->iterator;
         return *this;
@@ -294,7 +298,7 @@ template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
 inline constexpr bool operator<=(const wrap_iterator<IteratorLHS> &lhs,
         const wrap_iterator<IteratorRHS> &rhs) noexcept {
-    return not(lhs > rhs);
+    return not(rhs < lhs);
 }
 template <typename IteratorLHS, typename IteratorRHS>
 [[nodiscard]]
@@ -651,15 +655,19 @@ public:
 public:
     constexpr forward_list_iterator &operator=(const forward_list_iterator &) noexcept = default;
     constexpr forward_list_iterator &operator=(forward_list_iterator &&) noexcept = default;
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
         return this->node->value();
     }
+    [[nodiscard]]
     constexpr const T &operator*() const noexcept {
         return this->node->value();
     }
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
         return ds::address_of(**this);
     }
+    [[nodiscard]]
     constexpr const T *operator->() const noexcept {
         return ds::address_of(**this);
     }
@@ -672,19 +680,23 @@ public:
         ++*this;
         return backup;
     }
+    [[nodiscard]]
     explicit operator bool() const noexcept {
         return this->node;
     }
+    [[nodiscard]]
     operator forward_list_iterator<T, true>() const noexcept {
         return forward_list_iterator<T, true>(this->node);
     }
 };
 template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
 inline constexpr bool operator==(const forward_list_iterator<T, IsConstLHS> &lhs,
         const forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
     return lhs.node == rhs.node;
 }
 template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
 inline constexpr bool operator!=(const forward_list_iterator<T, IsConstLHS> &lhs,
         const forward_list_iterator<T, IsConstRHS> &rhs) noexcept {
     return not(lhs == rhs);
@@ -761,15 +773,19 @@ public:
 public:
     constexpr list_iterator &operator=(const list_iterator &) noexcept = default;
     constexpr list_iterator &operator=(list_iterator &&) noexcept = default;
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
         return this->node->value();
     }
+    [[nodiscard]]
     constexpr const T &operator*() const noexcept {
         return this->node->value();
     }
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
         return ds::address_of(**this);
     }
+    [[nodiscard]]
     constexpr const T *operator->() const noexcept {
         return ds::address_of(**this);
     }
@@ -791,19 +807,23 @@ public:
         --*this;
         return backup;
     }
+    [[nodiscard]]
     explicit operator bool() const noexcept {
         return this->node;
     }
+    [[nodiscard]]
     operator list_iterator<T, true>() const noexcept {
         return list_iterator<T, true>(this->node);
     }
 };
 template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
 inline constexpr bool operator==(const list_iterator<T, IsConstLHS> &lhs,
         const list_iterator<T, IsConstRHS> &rhs) noexcept {
     return lhs.node == rhs.node;
 }
 template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
 inline constexpr bool operator!=(const list_iterator<T, IsConstLHS> &lhs,
         const list_iterator<T, IsConstRHS> &rhs) noexcept {
     return not(lhs == rhs);
@@ -813,6 +833,12 @@ __DATA_STRUCTURE_END(data structure special iterator, list iterator)
 __DATA_STRUCTURE_START(data structure special iterator, deque_iterator)
 template <typename T, bool IsConst = false>
 class deque_iterator {
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const deque_iterator<Type, IsConstLHS> &,
+            const deque_iterator<Type, IsConstRHS> &) noexcept;
+    template <typename Type, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator<(const deque_iterator<Type, IsConstLHS> &,
+            const deque_iterator<Type, IsConstRHS> &) noexcept;
 public:
     using iterator_type = deque_iterator;
     using size_type = size_t;
@@ -836,18 +862,30 @@ public:
 public:
     constexpr deque_iterator &operator=(const deque_iterator &) noexcept = default;
     constexpr deque_iterator &operator=(deque_iterator &&) noexcept = default;
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
         return *this->now;
     }
+    [[nodiscard]]
     constexpr const T &operator*() const noexcept {
         return *this->now;
     }
+    [[nodiscard]]
     constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
         return ds::address_of(**this);
     }
+    [[nodiscard]]
     constexpr const T *operator->() const noexcept {
         return ds::address_of(**this);
     }
+    [[nodiscard]]
+    constexpr T &operator[](difference_type n) noexcept {
+        return *(*this + n);
+    };
+    [[nodiscard]]
+    constexpr const T &operator[](difference_type n) const noexcept {
+        return *(*this + n);
+    };
     constexpr deque_iterator &operator++() & noexcept {
         if(this->now - *this->map == this->block_size - 1) {
             ++this->map;
@@ -877,14 +915,17 @@ public:
         return backup;
     }
     constexpr deque_iterator &operator+=(difference_type n) noexcept {
-        if(n > 0) {
+        if(n not_eq 0) {
             n += this->now - *this->map;
-            this->map += n / this->block_size;
-            this->now = *this->map + n % this->block_size;
-        }else if(n < 0) {
-            n -= this->now - *this->map;
-            this->map -= (n = -n) / this->block_size;
-            this->now = *this->map + n % this->block_size;
+            if(n > 0) {
+                this->map += n / this->block_size;
+                this->now = *this->map + n % this->block_size;
+            }else {
+                if(n < 0) {
+                    this->map += n / this->block_size - 1;
+                }
+                this->now = *this->map + (this->block_size + n % this->block_size);
+            }
         }
         return *this;
     }
@@ -901,13 +942,51 @@ public:
         backup += -n;
         return backup;
     }
+    [[nodiscard]]
     explicit operator bool() const noexcept {
         return this->now;
     }
+    [[nodiscard]]
     operator list_iterator<T, true>() const noexcept {
         return list_iterator<T, true>(this->map, this->now);
     }
 };
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator==(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.now == rhs.now;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator!=(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator<(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs - rhs < 0;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator<=(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return  not(rhs < lhs);
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator>(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return rhs < lhs;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator>=(const deque_iterator<T, IsConstLHS> &lhs,
+        const deque_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs < rhs);
+}
 __DATA_STRUCTURE_END(data structure special iterator, deque_iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
