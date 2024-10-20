@@ -45,7 +45,7 @@ public:
     using reverse_iterator = reverse_iterator<iterator>;
     using const_reverse_iterator = ds::reverse_iterator<const_iterator>;
     static_assert(is_same_v<T, typename Allocator::value_type>,
-            "The value type of list should same as the allocator's value_type!");
+            "The value type of list should be same as the allocator's value_type!");
 private:
     __dsa::list_base_node<__dsa::list_node<T>> tail {};
     __dsa::allocator_compressor<size_type, real_allocator> node_size {};

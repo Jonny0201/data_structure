@@ -41,7 +41,7 @@ public:
     using reverse_iterator = reverse_iterator<pointer>;
     using const_reverse_iterator = ds::reverse_iterator<const_pointer>;
     static_assert(is_same_v<T, typename Allocator::value_type>,
-            "The value type of vector should same as the allocator's value_type!");
+            "The value type of vector should be same as the allocator's value_type!");
 private:
     struct resize_handler;
     friend struct resize_handler;

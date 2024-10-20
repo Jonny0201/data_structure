@@ -40,7 +40,7 @@ public:
     using const_iterator = const_pointer;
     using move_iterator = ds::move_iterator<pointer>;
     static_assert(is_same_v<T, typename Allocator::value_type>,
-            "The value type of buffer should same as the allocator's value_type!");
+            "The value type of buffer should be same as the allocator's value_type!");
 private:
     struct exception_handler;
     friend struct exception_handler;
