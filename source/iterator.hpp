@@ -881,11 +881,11 @@ public:
     [[nodiscard]]
     constexpr T &operator[](difference_type n) noexcept {
         return *(*this + n);
-    };
+    }
     [[nodiscard]]
     constexpr const T &operator[](difference_type n) const noexcept {
         return *(*this + n);
-    };
+    }
     constexpr deque_iterator &operator++() & noexcept {
         if(this->now - *this->map == this->block_size - 1) {
             ++this->map;
