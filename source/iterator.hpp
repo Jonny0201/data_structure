@@ -604,6 +604,7 @@ __DATA_STRUCTURE_START(inner tools for data structure)
 __DATA_STRUCTURE_START(container forward declaration)
 template <typename, typename> class forward_list;
 template <typename, typename, typename> class list;
+template <typename, typename> class deque;
 __DATA_STRUCTURE_END(container forward declaration)
 
 namespace __data_structure_auxiliary {
@@ -839,6 +840,7 @@ class deque_iterator {
     template <typename Type, bool IsConstLHS, bool IsConstRHS>
     friend constexpr bool operator<(const deque_iterator<Type, IsConstLHS> &,
             const deque_iterator<Type, IsConstRHS> &) noexcept;
+    template <typename, typename> friend class deque;
 public:
     using iterator_type = deque_iterator;
     using size_type = size_t;
