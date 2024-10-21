@@ -15,7 +15,7 @@ Data structures provide a means to manage large amounts of data efficiently for 
 
 This project is being refactored.
 
-## Enviorment ##
+## Environment ##
 
 <table style="border: 3px solid #000">
 <thead>
