@@ -163,14 +163,10 @@ public:
     constexpr iterator emplace(const_iterator, Args &&...);
     constexpr iterator insert(size_type, rvalue_reference);
     constexpr iterator insert(const_iterator, rvalue_reference);
-    template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
+    template <IsInputIterator InputIterator>
     constexpr iterator insert(size_type, InputIterator, InputIterator);
-    template <IsInputIterator InputIterator> requires (not is_forward_iterator_v<InputIterator>)
+    template <IsInputIterator InputIterator>
     constexpr iterator insert(const_iterator, InputIterator, InputIterator);
-    template <IsForwardIterator ForwardIterator>
-    constexpr iterator insert(size_type, ForwardIterator, ForwardIterator);
-    template <IsForwardIterator ForwardIterator>
-    constexpr iterator insert(const_iterator, ForwardIterator, ForwardIterator);
     constexpr iterator insert(size_type, initializer_list<T>);
     constexpr iterator insert(const_iterator, initializer_list<T>);
     constexpr iterator erase(size_type, size_type = 1);
@@ -194,13 +190,13 @@ struct deque<T, Allocator>::map_allocation_handler {
             typename allocator_traits<Allocator>::template rebind<T *> &map_allocator) :
             map {map}, map_size {map_size}, allocator {allocator}, map_allocator {map_allocator} {}
     constexpr void operator()() const noexcept {
-        while(i not_eq 0) {
+        while(this->i not_eq 0) {
             if constexpr(AppendToTail) {
-                this->allocator.deallocate(this->map[this->map_size - (i + 1)], deque::block_size);
+                this->allocator.deallocate(this->map[this->map_size - (this->i + 1)], deque::block_size);
             }else {
-                this->allocator.deallocate(this->map[i], deque::block_size);
+                this->allocator.deallocate(this->map[this->i], deque::block_size);
             }
-            --i;
+            --this->i;
         }
         this->map_allocator.deallocate(this->map, this->map_size);
     }
@@ -211,7 +207,7 @@ struct deque<T, Allocator>::construction_handler {
     size_type from;
     size_type i {0};
     constexpr void operator()() noexcept {
-        if(i - from <= deque::block_size) {
+        if(this->i - this->from <= deque::block_size) {
             const auto start_from {*this->map + this->from};
             ds::destroy(start_from, start_from + this->i);
         }else {
@@ -261,6 +257,9 @@ constexpr void deque<T, Allocator>::allocate_blocks(size_type n) {
     map_allocator.deallocate(this->map, map_size);
     this->map = new_map;
     this->map_size = allocation_size;
+    if constexpr(AppendToTail) {
+        this->first += deque::block_size * append_size;
+    }
 }
 template <typename T, typename Allocator>
 template <typename ...Args>
@@ -370,10 +369,6 @@ constexpr void deque<T, Allocator>::move_range(size_type from, size_type to, siz
         }
     }
 }
-template <typename T, typename Allocator>
-constexpr deque<T, Allocator>::size_type deque<T, Allocator>::total_size() const noexcept {
-
-}
 
 /* public functions */
 template <typename T, typename Allocator>
@@ -418,7 +413,8 @@ constexpr deque<T, Allocator>::deque(deque &&rhs) noexcept : map {ds::move(rhs.m
     rhs.element_size() = 0;
 }
 template <typename T, typename Allocator>
-constexpr deque<T, Allocator>::deque(deque &&rhs, const Allocator &allocator) : map {ds::move(rhs.map)},
+constexpr deque<T, Allocator>::deque(deque &&rhs, const Allocator &allocator)
+        noexcept(is_nothrow_copy_constructible_v<Allocator>) : map {ds::move(rhs.map)},
         map_size {ds::move(rhs.map_size)}, first {ds::move(rhs.first)},
         element_size(ds::move(rhs.element_size()), allocator) {
     rhs.map = nullptr;
@@ -503,17 +499,17 @@ template <IsInputIterator InputIterator>
 constexpr void deque<T, Allocator>::assign(InputIterator begin, InputIterator end) {
     const auto n {ds::distance(begin, end)};
     auto it {this->begin()};
-    const auto end {this->end()};
+    const auto this_end {this->end()};
     size_type i {0};
     const auto size {this->element_size()};
     this->element_size() = n;
-    for(; i not_eq n and it not_eq end; ++i) {
+    for(; i not_eq n and it not_eq this_end; ++i) {
         *it++ = *begin++;
     }
-    if(it not_eq end) {
+    if(it not_eq this_end) {
         do {
             ds::destroy(ds::address_of(*it++));
-        }while(it not_eq end);
+        }while(it not_eq this_end);
         return;
     }
     const auto remaining {n - i};
@@ -621,6 +617,285 @@ constexpr void deque<T, Allocator>::reserve_front(size_type n) {
         return;
     }
     this->allocate_blocks<false, false>(n - front_spare);
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::shrink_to_fit() {
+    const auto block_from {this->first / deque::block_size};
+    const auto block_to {this->element_size() / deque::block_size};
+    if(block_from == 0 and block_to == this->map_size()) {
+        return;
+    }
+    const auto new_size {block_to - block_from};
+    auto &map_allocator {this->map_size.allocator()};
+    const auto new_map {map_allocator.allocate(new_size)};
+    ds::memory_copy(new_map, this->map + block_from, new_size);
+    auto &block_allocator {this->element_size.allocator()};
+    for(auto i {0}; i <= block_from; ++i) {
+        block_allocator.deallocate(this->map[i]);
+    }
+    for(auto i {block_to}; i < this->map_size(); ++i) {
+        block_allocator.deallocate(this->map[i]);
+    }
+    map_allocator.deallocate(this->map);
+    this->map = new_map;
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::resize(size_type n) {
+    this->resize(n, {});
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::resize(size_type n, const_reference value) {
+    auto &size {this->element_size()};
+    if(n < size) {
+        const auto end {this->end()};
+        for(auto it {this->begin() + n}; it not_eq end;) {
+            ds::destroy(ds::address_of(*it++));
+        }
+    }else if(n > size) {
+        const auto insertion_size {n - this->size()};
+        if(const auto back_spare {this->back_spare()}; back_spare < insertion_size) {
+            this->allocate_blocks<true, false>(insertion_size - back_spare);
+        }
+        this->construct_with_value(size, n, value);
+    }
+    size = n;
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::reference deque<T, Allocator>::front() noexcept {
+    return *this->begin();
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::const_reference deque<T, Allocator>::front() const noexcept {
+    return *this->begin();
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::reference deque<T, Allocator>::back() noexcept {
+    return *(this->end() - 1);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::const_reference deque<T, Allocator>::back() const noexcept {
+    return *(this->end() - 1);
+}
+template <typename T, typename Allocator>
+constexpr Allocator deque<T, Allocator>::allocator() const noexcept {
+    return this->element_size.allocator();
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::push_back(const_reference value) {
+    this->emplace_back(value);
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::push_back(rvalue_reference value) {
+    this->emplace_back(ds::move(value));
+}
+template <typename T, typename Allocator>
+template <typename ...Args>
+constexpr void deque<T, Allocator>::emplace_back(Args &&...args) {
+    auto &size {this->element_size()};
+    if(size == this->capacity()) {
+        this->allocate_blocks<true, false>(1);
+    }
+    this->construct_with_value(size, size + 1, ds::forward<Args>(args)...);
+    ++size;
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::push_front(const_reference value) {
+    this->emplace_front(value);
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::push_front(rvalue_reference value) {
+    this->emplace_front(ds::move(value));
+}
+template <typename T, typename Allocator>
+template <typename ...Args>
+constexpr void deque<T, Allocator>::emplace_front(Args &&...args) {
+    if(this->first == 0) {
+        this->allocate_blocks<false, false>(1);
+    }
+    this->construct_with_value(this->first - 1, this->first, ds::forward<Args>(args)...);
+    --this->first;
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::pop_back() noexcept {
+    ds::destroy(ds::address_of(*(this->end() - 1)));
+    --this->element_size();
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::pop_front() noexcept {
+    ds::destroy(ds::address_of(*this->begin()));
+    ++this->first;
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::clear() noexcept {
+    const auto end {this->end()};
+    for(auto it {this->begin()}; it not_eq end;) {
+        ds::destroy(ds::address_of(*it++));
+    }
+    this->element_size() = 0;
+}
+template <typename T, typename Allocator>
+constexpr void deque<T, Allocator>::swap(deque &rhs) noexcept {
+    using ds::swap;
+    ds::swap(this->map, rhs.map);
+    ds::swap(this->map_size, rhs.map_size);
+    ds::swap(this->first, rhs.first);
+    ds::swap(this->element_size, rhs.element_size);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(size_type pos, const_reference value,
+        size_type n) {
+    if(n == 0) {
+        return this->begin() + pos;
+    }
+    if(const auto back_spare {this->back_spare()}; back_spare < n) {
+        this->allocate_blocks<true, false>(back_spare - n);
+    }
+    const auto result {this->begin() + pos};
+    auto &size {this->element_size()};
+    const auto tail_size {size - pos};
+    if(tail_size < n) {
+        const auto overflowed_size {n - tail_size};
+        this->construct_with_value(size, size + overflowed_size, value);
+        size += overflowed_size;
+        this->construct_with_range(size, size + tail_size, move_iterator {result});
+        size += tail_size;
+        const auto end {result + n};
+        for(const auto it {result}; it != end;) {
+            *it++ = value;
+        }
+    }else {
+        this->construct_with_range(size, size + n, move_iterator {result});
+        const auto old_size {size};
+        size += n;
+        this->move_range(pos, old_size, pos + n);
+        const auto end {this->begin() + old_size};
+        for(auto it {result}; it not_eq end;) {
+            *it++ = value;
+        }
+    }
+    return result;
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(const_iterator pos, const_reference value,
+        size_type n) {
+    return this->insert(pos - this->cbegin(), value, n);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(size_type pos, rvalue_reference value) {
+    return this->emplace(pos, ds::move(value));
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(const_iterator pos,
+    rvalue_reference value) {
+    return this->emplace(pos - this->cbegin(), ds::move(value));
+}
+template <typename T, typename Allocator>
+template <typename ...Args>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::emplace(size_type pos, Args &&...args) {
+    const auto old_size {this->element_size()};
+    if(pos == old_size) {
+        this->emplace_back(ds::forward<Args>(args)...);
+        return this->begin() + pos;
+    }
+    if(this->back_spare() == 0) {
+        this->allocate_blocks<true, false>(1);
+    }
+    ds::construct(ds::address_of(*this->end()), ds::forward<Args>(args)...);
+    ++this->element_size();
+    this->move_range(pos, old_size, pos + 1);
+    return this->begin() + pos;
+}
+template <typename T, typename Allocator>
+template <typename ...Args>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::emplace(const_iterator pos, Args &&...args) {
+    return this->emplace(pos - this->cbegin(), ds::forward<Args>(args)...);
+}
+template <typename T, typename Allocator>
+template <IsInputIterator InputIterator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(size_type pos, InputIterator begin,
+        InputIterator end) {
+    if(begin == end) {
+        return this->begin() + pos;
+    }
+    const auto n {static_cast<size_type>(ds::distance(begin, end))};
+    if(const auto back_spare {this->back_spare()}; back_spare < n) {
+        this->allocate_blocks<true, false>(back_spare - n);
+    }
+    const auto result {this->begin() + pos};
+    auto &size {this->element_size()};
+    const auto tail_size {size - pos};
+    if(tail_size < n) {
+        const auto overflowed_size {n - tail_size};
+        this->construct_with_value(size, size + overflowed_size, ds::advance(begin, tail_size));
+        size += overflowed_size;
+        this->construct_with_range(size, size + tail_size, move_iterator {result});
+        size += tail_size;
+        const auto end {result + n};
+        for(const auto it {result}; it != end;) {
+            *it++ = ds::move_if<not is_forward_iterator_v<InputIterator>>(*begin++);
+        }
+    }else {
+        this->construct_with_range(size, size + n, move_iterator {result});
+        const auto old_size {size};
+        size += n;
+        this->move_range(pos, old_size, pos + n);
+        const auto end {this->begin() + old_size};
+        for(auto it {result}; it not_eq end;) {
+            *it++ = ds::move_if<not is_forward_iterator_v<InputIterator>>(*begin++);;
+        }
+    }
+    return result;
+}
+template <typename T, typename Allocator>
+template <IsInputIterator InputIterator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(const_iterator pos, InputIterator begin,
+        InputIterator end) {
+    return this->insert(pos - this->cbegin(), begin, end);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(size_type pos,
+        initializer_list<T> init_list) {
+    return this->insert(pos, init_list.begin(), init_list.end());
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::insert(const_iterator pos,
+        initializer_list<T> init_list) {
+    return this->insert(pos - this->cbegin(), init_list.begin(), init_list.end());
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::erase(size_type pos, size_type n) {
+    auto &size {this->element_size()};
+    if(size - pos - n < pos) {
+        this->move_range(pos + n, size, pos);
+        auto it {this->end() - 1};
+        size -= n;
+        while(n not_eq 0) {
+            ds::destroy(*it--);
+            --n;
+        }
+    }else {
+        this->move_range(this->first, pos, this->first + n);
+        size -= n;
+        auto it {this->begin()};
+        this->first += n;
+        while(n not_eq 0) {
+            ds::destroy(*it++);
+            --n;
+        }
+    }
+    return this->begin() + pos;
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::erase(const_iterator pos, size_type n) {
+    return this->erase(pos - this->cbegin(), n);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::erase(const_iterator pos) {
+    return this->erase(pos - this->cbegin(), 1);
+}
+template <typename T, typename Allocator>
+constexpr typename deque<T, Allocator>::iterator deque<T, Allocator>::erase(const_iterator begin, const_iterator end) {
+    return this->erase(begin - this->cbegin(), end - begin);
 }
 __DATA_STRUCTURE_END(deque implementation)
 
