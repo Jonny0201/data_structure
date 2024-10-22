@@ -35,7 +35,7 @@ This project is being refactored.
     <td rowspan="2">8 GB</td>
     <td rowspan="2">Apple M2</td>
     <td rowspan="2">Apple SSD AP0256Z</td>
-    <td>macOS Sonoma 14.4</td>
+    <td>macOS Sequoia 15.0.1</td>
     <td>
         <img src="https://img.shields.io/badge/Apple Clang-1600.0.26.3-815C94" alt="Apple Clang" />
         <br />
@@ -60,7 +60,7 @@ This project is being refactored.
     <td rowspan="2">128 GB</td>
     <td rowspan="2">Apple M3 Max</td>
     <td rowspan="2">Apple SSD AP1024Z</td>
-    <td>macOS Sonoma 14.4</td>
+    <td>macOS Sequoia 15.0.1</td>
     <td>
         <img src="https://img.shields.io/badge/Apple Clang-1600.0.26.3-815C94" alt="Apple Clang" />
         <br />
@@ -83,7 +83,7 @@ This project is being refactored.
     <td rowspan="2">16 GB</td>
     <td rowspan="2">Intel UHD Graphics 630 & AMD Radeon Pro 555X</td>
     <td>Apple SSD AP0256M</td>
-    <td>macOS Sonoma 14.4</td>
+    <td>macOS Sequoia 15.0.1</td>
     <td>
         <img src="https://img.shields.io/badge/Apple Clang-1600.0.26.3-815C94" alt="Apple Clang" />
         <br />
