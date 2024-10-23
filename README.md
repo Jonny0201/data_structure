@@ -151,13 +151,13 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Buffer</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-12A182" alt="Done" /></td>
     <td><code>buffer.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
     <th>Vector</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-12A182" alt="Done" /></td>
     <td><code>vector.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
@@ -169,7 +169,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Forward List</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Usable-green" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Usable-12A182" alt="Done" /></td>
     <td><code>forward_list.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
@@ -187,13 +187,13 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Stack</th>
     <td>Adaptor</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
     <td><code>stack.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
     <th>Queue</th>
     <td>Adaptor</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Done-green" alt="Done" /></td>
     <td><code>queue.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
