@@ -21,6 +21,7 @@
 
 namespace data_structure {
 
+// Todo : implement Compares in `functional.hpp`
 __DATA_STRUCTURE_START(heap algorithms)
 template <IsRandomAccessIterator RandomAccessIterator, typename Compare>
 inline constexpr void make_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare compare) {
@@ -34,7 +35,8 @@ inline constexpr void make_heap(RandomAccessIterator begin, RandomAccessIterator
         for(auto parent {i};;) {
             const auto left_child {2 * parent + 1};
             auto target {left_child};
-            if(const auto right_child {left_child + 1}; right_child < distance and compare(begin[right_child], begin[left_child])) {
+            if(const auto right_child {left_child + 1}; right_child < distance and
+                    compare(begin[right_child], begin[left_child])) {
                 ++target;
             }
             if(compare(value, begin[target])) {
@@ -52,6 +54,10 @@ inline constexpr void make_heap(RandomAccessIterator begin, RandomAccessIterator
             break;
         }
     }
+}
+template <IsRandomAccessIterator RandomAccessIterator>
+inline constexpr void make_heap(RandomAccessIterator begin, RandomAccessIterator end) {
+    ds::make_heap(begin, end, std::less {});
 }
 template <IsRandomAccessIterator RandomAccessIterator, typename Compare>
 inline constexpr void push_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare compare) {
@@ -106,6 +112,32 @@ inline constexpr void pop_heap(RandomAccessIterator begin, RandomAccessIterator 
 template <IsRandomAccessIterator RandomAccessIterator>
 inline constexpr void pop_heap(RandomAccessIterator begin, RandomAccessIterator end) {
     ds::pop_heap(begin, end, std::less {});
+}
+template <IsRandomAccessIterator RandomAccessIterator, typename Compare>
+inline constexpr bool is_heap(RandomAccessIterator begin, RandomAccessIterator end, Compare compare) {
+    const auto distance {end - begin};
+    if(distance < 2) {
+        return true;
+    }
+    for(auto i {distance / 2 - 1};;) {
+        const auto parent {begin + i};
+        auto child {begin + (2 * i + 1)};
+        if(not compare(*parent, *child)) {
+            return false;
+        }
+        ++child;
+        if(child < end and not compare(*parent, *child)) {
+            return false;
+        }
+        if(--i == 0) {
+            break;
+        }
+    }
+    return true;
+}
+template <IsRandomAccessIterator RandomAccessIterator>
+inline constexpr bool is_heap(RandomAccessIterator begin, RandomAccessIterator end) {
+    return ds::is_heap(begin, end, std::less {});
 }
 __DATA_STRUCTURE_END(heap algorithms)
 
