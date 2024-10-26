@@ -22,7 +22,7 @@
 namespace data_structure {
 
 __DATA_STRUCTURE_START(queue implementation)
-template <typename T, typename Container>
+template <typename T, typename Container = deque<T>>
 class queue {
 public:
     using container_type = Container;

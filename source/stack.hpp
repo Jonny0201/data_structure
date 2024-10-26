@@ -22,7 +22,7 @@
 namespace data_structure {
 
 __DATA_STRUCTURE_START(stack implementation)
-template <typename T, typename Container>
+template <typename T, typename Container = deque<T>>
 class stack {
 public:
     using container_type = Container;
