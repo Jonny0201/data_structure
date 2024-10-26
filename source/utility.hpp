@@ -107,7 +107,8 @@ __DATA_STRUCTURE_END(transaction tool)
 __DATA_STRUCTURE_START(inner tools for data structure library)
 namespace data_structure::__data_structure_auxiliary {
 
-__DATA_STRUCTURE_START(allocator_compressor for container)
+__DATA_STRUCTURE_START(allocator
+    compressor for container)
 template <typename T, typename Allocator, bool = is_empty_v<Allocator> and not is_final_v<Allocator>>
         requires is_trivial_v<T> and is_class_v<Allocator>
 struct allocator_compressor {
@@ -190,7 +191,74 @@ public:
         return static_cast<const Allocator &>(*this);
     }
 };
-__DATA_STRUCTURE_END(allocator_compressor for container)
+__DATA_STRUCTURE_END(allocator compressor for container)
+
+__DATA_STRUCTURE_START(partial compressor for container)
+template <typename T, typename U, bool = is_empty_v<U> and not is_final_v<U>>
+        requires (is_class_v<U> and not is_same_v<T, U>)
+struct partial_compressor {
+    T t {};
+    U u {};
+public:
+    constexpr partial_compressor() = default;
+    explicit partial_compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : t {t}, u {} {}
+    explicit partial_compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : t {ds::move(t)}, u {} {}
+    explicit partial_compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : t {}, u {u} {}
+    explicit partial_compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : t {}, u {ds::move(u)} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr partial_compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            t {ds::forward<ConvertibleToT>(t)}, u {ds::forward<ConvertibleToU>(u)} {}
+public:
+    T &first() noexcept {
+        return this->t;
+    }
+    const T &first() const noexcept {
+        return this->t;
+    }
+    U &second() noexcept {
+        return this->u;
+    }
+    const U &second() const noexcept {
+        return this->u;
+    }
+};
+template <typename T, typename U> requires is_class_v<U>
+struct partial_compressor<T, U, true> : U {
+    T t;
+public:
+    constexpr partial_compressor() = default;
+    explicit partial_compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : U {}, t {t} {}
+    explicit partial_compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : U {}, t {ds::move(t)} {}
+    explicit partial_compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : U {u}, t {} {}
+    explicit partial_compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : U {ds::move(u)}, t {} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr partial_compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            U {ds::forward<ConvertibleToU>(u)}, t {ds::forward<ConvertibleToT>(t)} {}
+public:
+    T &first() noexcept {
+        return this->t;
+    }
+    const T &first() const noexcept {
+        return this->t;
+    }
+    U &second() noexcept {
+        return *this;
+    }
+    const U &second() const noexcept {
+        return *this;
+    }
+};
+__DATA_STRUCTURE_END(partial compressor for container)
 
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure library)
