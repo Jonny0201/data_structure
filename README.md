@@ -199,7 +199,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Priority Queue</th>
     <td>Adaptor</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>priority_queue.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
