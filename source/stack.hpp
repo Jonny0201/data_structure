@@ -40,10 +40,31 @@ private:
     Container container;
 public:
     constexpr stack() = default;
+    template <typename Allocator>
+    explicit constexpr stack(const Allocator &allocator) noexcept(is_nothrow_constructible_v<Container, Allocator>)
+            : container(allocator) {}
     explicit constexpr stack(const Container &container) : container {container} {}
+    template <typename Allocator>
+    explicit constexpr stack(const Container &container, const Allocator &allocator) :
+            container(container, allocator) {}
     explicit constexpr stack(Container &&container) noexcept : container {ds::move(container)} {}
+    template <typename Allocator>
+    explicit constexpr stack(Container &&container, const Allocator &allocator)
+            noexcept(is_nothrow_constructible_v<Container, Container &&, const Allocator &>) :
+            container(ds::move(container), allocator) {}
+    template <IsInputIterator InputIterator>
+    constexpr stack(InputIterator begin, InputIterator end) : container(ds::move(begin), ds::move(end)) {}
+    template <IsInputIterator InputIterator, typename Allocator>
+    constexpr stack(InputIterator begin, InputIterator end, const Allocator &allocator) :
+            container(ds::move(begin), ds::move(end), allocator) {}
     constexpr stack(const stack &) = default;
+    template <typename Allocator>
+    constexpr stack(const stack &rhs, const Allocator &allocator) : container(rhs.container, allocator) {}
     constexpr stack(stack &&) noexcept = default;
+    template <typename Allocator>
+    constexpr stack(stack &&rhs, const Allocator &allocator)
+            noexcept(is_nothrow_constructible_v<Container, Container &&, const Allocator &>) :
+            container(ds::move(rhs.container), allocator) {}
     constexpr ~stack() noexcept = default;
 public:
     constexpr stack &operator=(const stack &) = default;
