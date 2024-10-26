@@ -605,6 +605,7 @@ __DATA_STRUCTURE_START(container forward declaration)
 template <typename, typename> class forward_list;
 template <typename, typename, typename> class list;
 template <typename, typename> class deque;
+template <typename, typename, typename, typename, typename> class skip_list;
 __DATA_STRUCTURE_END(container forward declaration)
 
 namespace __data_structure_auxiliary {
@@ -682,11 +683,11 @@ public:
         return backup;
     }
     [[nodiscard]]
-    explicit operator bool() const noexcept {
+    explicit constexpr operator bool() const noexcept {
         return this->node;
     }
     [[nodiscard]]
-    operator forward_list_iterator<T, true>() const noexcept {
+    constexpr operator forward_list_iterator<T, true>() const noexcept {
         return forward_list_iterator<T, true>(this->node);
     }
 };
@@ -752,8 +753,6 @@ class list_iterator {
     friend constexpr bool operator==(const list_iterator<ValueType, IsConstLHS> &,
             const list_iterator<ValueType, IsConstRHS> &) noexcept;
     template <typename, typename> friend class list;
-private:
-    using node_type = list_base_node<list_node<T>> *;
 public:
     using iterator_type = list_iterator;
     using size_type = size_t;
@@ -761,7 +760,7 @@ public:
     using value_type = T;
     using iterator_category = bidirectional_iterator_tag;
 private:
-    node_type node {};
+    list_base_node<list_node<T>> *node {};
 public:
     constexpr list_iterator() noexcept = default;
     explicit constexpr list_iterator(list_base_node<list_node<T>> *node) noexcept : node {node} {}
@@ -809,11 +808,11 @@ public:
         return backup;
     }
     [[nodiscard]]
-    explicit operator bool() const noexcept {
+    explicit constexpr operator bool() const noexcept {
         return this->node;
     }
     [[nodiscard]]
-    operator list_iterator<T, true>() const noexcept {
+    constexpr operator list_iterator<T, true>() const noexcept {
         return list_iterator<T, true>(this->node);
     }
 };
@@ -850,8 +849,8 @@ public:
 private:
     static constexpr auto block_size {sizeof(T) < 256 ? 4096 / sizeof(T) : 16};
 private:
-    T **map;
-    T *now;
+    T **map {};
+    T *now {};
 public:
     constexpr deque_iterator() noexcept = default;
     constexpr deque_iterator(T **map, T *now) noexcept : map {map}, now {now} {}
@@ -945,11 +944,11 @@ public:
         return backup;
     }
     [[nodiscard]]
-    explicit operator bool() const noexcept {
+    explicit constexpr operator bool() const noexcept {
         return this->now;
     }
     [[nodiscard]]
-    operator list_iterator<T, true>() const noexcept {
+    constexpr operator list_iterator<T, true>() const noexcept {
         return list_iterator<T, true>(this->map, this->now);
     }
 };
@@ -975,7 +974,7 @@ template <typename T, bool IsConstLHS, bool IsConstRHS>
 [[nodiscard]]
 inline constexpr bool operator<=(const deque_iterator<T, IsConstLHS> &lhs,
         const deque_iterator<T, IsConstRHS> &rhs) noexcept {
-    return  not(rhs < lhs);
+    return not(rhs < lhs);
 }
 template <typename T, bool IsConstLHS, bool IsConstRHS>
 [[nodiscard]]
@@ -990,6 +989,110 @@ inline constexpr bool operator>=(const deque_iterator<T, IsConstLHS> &lhs,
     return not(lhs < rhs);
 }
 __DATA_STRUCTURE_END(data structure special iterator, deque_iterator)
+
+__DATA_STRUCTURE_START(skip list node)
+template <typename ValueNode>
+struct skip_list_base_node {
+    skip_list_base_node **next;
+    size_t node_size;
+    constexpr auto &value() noexcept {
+        return static_cast<ValueNode *>(this)->value;
+    }
+    constexpr ValueNode *node() noexcept {
+        return static_cast<ValueNode *>(this);
+    }
+};
+template <typename T>
+struct skip_list_node : skip_list_base_node<skip_list_node<T>> {
+    T value;
+};
+__DATA_STRUCTURE_END(skip list node)
+
+__DATA_STRUCTURE_START(skip list iterator)
+template <typename T, bool IsConst = false>
+class skip_list_iterator {
+    friend class skip_list_iterator<T, false>;
+    template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const skip_list_iterator<ValueType, IsConstLHS> &,
+            const skip_list_iterator<ValueType, IsConstRHS> &) noexcept;
+    template <typename, typename, typename, typename, typename> class skip_list;
+public:
+    using iterator_type = skip_list_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = forward_iterator_tag;
+private:
+    forward_list_base_node<forward_list_node<T>> *node {};
+    size_t level {};
+public:
+    constexpr skip_list_iterator() noexcept = default;
+    explicit constexpr skip_list_iterator(forward_list_base_node<forward_list_node<T>> *node, size_t level) noexcept :
+            node {node}, level {level} {}
+    template <typename U> requires is_same_v<U, skip_list_iterator<T, false>>
+    constexpr skip_list_iterator(enable_if_t<IsConst, const U &> non_const_iterator) :
+            node {non_const_iterator.node}, level {non_const_iterator.level} {}
+    constexpr skip_list_iterator(const skip_list_iterator &) noexcept = default;
+    constexpr skip_list_iterator(skip_list_iterator &&) noexcept = default;
+    constexpr ~skip_list_iterator() noexcept = default;
+public:
+    constexpr skip_list_iterator &operator=(const skip_list_iterator &) noexcept = default;
+    constexpr skip_list_iterator &operator=(skip_list_iterator &&) noexcept = default;
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
+        return this->node->value();
+    }
+    [[nodiscard]]
+    constexpr const T &operator*() const noexcept {
+        return this->node->value();
+    }
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr skip_list_iterator &operator++() & noexcept {
+        this->node = this->node->next;
+        return *this;
+    }
+    constexpr skip_list_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    constexpr skip_list_iterator &operator+() & noexcept {
+        ++this->level;
+        return *this;
+    }
+    constexpr skip_list_iterator &operator-() & noexcept {
+        --this->level;
+        return *this;
+    }
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept {
+        return this->node;
+    }
+    [[nodiscard]]
+    constexpr operator skip_list_iterator<T, true>() const noexcept {
+        return skip_list_iterator<T, true>(this->node);
+    }
+};
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator==(const skip_list_iterator<T, IsConstLHS> &lhs,
+        const skip_list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.node == rhs.node and lhs.level == rhs.level;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator!=(const skip_list_iterator<T, IsConstLHS> &lhs,
+        const skip_list_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+__DATA_STRUCTURE_END(skip list iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure)
