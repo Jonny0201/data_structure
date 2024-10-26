@@ -40,10 +40,31 @@ private:
     Container container;
 public:
     constexpr queue() = default;
+    template <typename Allocator>
+    explicit constexpr queue(const Allocator &allocator) noexcept(is_nothrow_constructible_v<Container, Allocator>)
+            : container(allocator) {}
     explicit constexpr queue(const Container &container) : container {container} {}
-    explicit constexpr queue(Container &&container) : container {ds::move(container)} {}
+    template <typename Allocator>
+    explicit constexpr queue(const Container &container, const Allocator &allocator) :
+            container(container, allocator) {}
+    explicit constexpr queue(Container &&container) noexcept : container {ds::move(container)} {}
+    template <typename Allocator>
+    explicit constexpr queue(Container &&container, const Allocator &allocator)
+            noexcept(is_nothrow_constructible_v<Container, Container &&, const Allocator &>) :
+            container(ds::move(container), allocator) {}
+    template <IsInputIterator InputIterator>
+    constexpr queue(InputIterator begin, InputIterator end) : container(ds::move(begin), ds::move(end)) {}
+    template <IsInputIterator InputIterator, typename Allocator>
+    constexpr queue(InputIterator begin, InputIterator end, const Allocator &allocator) :
+            container(ds::move(begin), ds::move(end), allocator) {}
     constexpr queue(const queue &) = default;
+    template <typename Allocator>
+    constexpr queue(const queue &rhs, const Allocator &allocator) : container(rhs.container, allocator) {}
     constexpr queue(queue &&) noexcept = default;
+    template <typename Allocator>
+    constexpr queue(queue &&rhs, const Allocator &allocator)
+            noexcept(is_nothrow_constructible_v<Container, Container &&, const Allocator &>) :
+            container(ds::move(rhs.container), allocator) {}
     constexpr ~queue() noexcept = default;
 public:
     constexpr queue &operator=(const queue &) = default;
