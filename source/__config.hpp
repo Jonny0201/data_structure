@@ -21,6 +21,7 @@
 #include <initializer_list>
 #include <compare>
 #include <exception>
+#include <random>
 
 #define __DATA_STRUCTURE_START(x, ...)
 #define __DATA_STRUCTURE_END(x, ...)
