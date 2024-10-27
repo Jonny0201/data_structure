@@ -1190,6 +1190,8 @@ inline constexpr auto is_nothrow_convertible_v {is_nothrow_convertible<From, To>
 template <typename R, typename Ptr, typename ...Args>
 struct is_nothrow_invocable_r : bool_constant<is_nothrow_invocable_v<Ptr, Args...> and
         is_nothrow_convertible_v<typename invoke_result<Ptr, Args...>::type, R>> {};
+template <typename R, typename Ptr, typename ...Args>
+inline constexpr auto is_nothrow_invocable_r_v {is_nothrow_invocable_r<R, Ptr, Args...>::value};
 
 namespace __data_structure_auxiliary {
 template <typename From, typename To>
