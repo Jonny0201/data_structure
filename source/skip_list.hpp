@@ -1,6 +1,18 @@
-//
-// Created by Jonny on 2024/10/27.
-//
+/*
+    * Copyright © [2019 - 2024] [Jonny]
+    *
+    * Licensed under the Apache License, Version 2.0 (the "License");
+    * you may not use this file except in compliance with the License.
+    * You may obtain a copy of the License at
+    *
+    *     http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+*/
 
 #ifndef DATA_STRUCTURE_SKIP_LIST_HPP
 #define DATA_STRUCTURE_SKIP_LIST_HPP
@@ -9,7 +21,7 @@
 
 namespace data_structure {
 
-// Todo : make default random engine and all member functions constexpr
+// Todo : make the default random engine and all member functions constexpr
 __DATA_STRUCTURE_START(skip list declaration)
 template <typename T, typename Compare = std::less<T>, typename RandomEngine = __dsa::skip_list_default_random_engine,
         typename Probability = __dsa::skip_list_default_probability, typename Allocator = allocator<T>>
@@ -33,11 +45,13 @@ public:
             "The value type of skip_list should be same as the allocator's value_type!");
 private:
     __dsa::compressor<__dsa::skip_list_base_node<__dsa::skip_list_node<T>>,
-            __dsa::compressor<Compare, __dsa::compressor<RandomEngine, Probability>>> head;
+            __dsa::compressor<Compare, __dsa::compressor<RandomEngine, Probability>>> head {};
     __dsa::allocator_compressor<size_type, typename allocator_traits<Allocator>::template rebind<
-            __dsa::skip_list_node<T>>> node_size;
+            __dsa::skip_list_node<T>>> node_size {};
 private:
     __dsa::skip_list_node<T> *allocate() const;
+    template <IsInputIterator InputIterator>
+    auto allocate_n(InputIterator, InputIterator) const;
     size_t level() const noexcept;
 public:
     skip_list() = default;
@@ -60,7 +74,7 @@ public:
     ~skip_list() noexcept;
 public:
     skip_list &operator=(const skip_list &);
-    skip_list &operator=(const skip_list &&) noexcept;
+    skip_list &operator=(skip_list &&) noexcept;
 public:
     void assign(size_type, const_reference = {});
     template <IsInputIterator InputIterator>
@@ -97,7 +111,7 @@ public:
     [[nodiscard]]
     Probability probability() const noexcept;
     [[nodiscard]]
-    constexpr Allocator allocator() const noexcept;
+    static constexpr Allocator allocator() noexcept;
     void clear() noexcept;
     void swap(skip_list &) noexcept;
     void pop_front() noexcept;
@@ -108,10 +122,10 @@ public:
     template <IsInputIterator InputIterator>
     const_iterator insert(InputIterator, InputIterator);
     const_iterator insert(initializer_list<T>);
+    const_iterator erase_after(const_iterator, size_type = 1) noexcept;
     const_iterator erase(difference_type, size_type = 1) noexcept;
-    const_iterator erase(const_iterator, size_type = 1) noexcept;
-    const_iterator erase(const_iterator) noexcept;
-    const_iterator erase(const_iterator, const_iterator) noexcept;
+    const_iterator erase_after(const_iterator) noexcept;
+    const_iterator erase_after(const_iterator, const_iterator) noexcept;
 public:
     size_type remove(const_reference) noexcept;
     template <typename UnaryPredicate>
