@@ -260,6 +260,150 @@ public:
 };
 __DATA_STRUCTURE_END(partial compressor for container)
 
+__DATA_STRUCTURE_START(compressor for container)
+template <typename T, typename U, bool = is_class_v<T> and not is_final_v<T>,
+        bool = is_class_v<U> and not is_final_v<U>> requires (not is_same_v<T, U>)
+struct compressor {
+    T t;
+    U u;
+public:
+    constexpr compressor() = default;
+    explicit constexpr compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : t {t}, u {} {}
+    explicit constexpr compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : t {ds::move(t)}, u {} {}
+    explicit constexpr compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : t {}, u {u} {}
+    explicit constexpr compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : t {}, u {ds::move(u)} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            t {ds::forward<ConvertibleToT>(t)}, u {ds::forward<ConvertibleToU>(u)} {}
+public:
+    constexpr T &first() noexcept {
+        return this->t;
+    }
+    constexpr const T &first() const noexcept {
+        return this->t;
+    }
+    constexpr U &second() noexcept {
+        return this->u;
+    }
+    constexpr const U &second() const noexcept {
+        return this->u;
+    }
+};
+template <typename T, typename U> requires (not is_same_v<T, U>)
+struct compressor<T, U, true, false> : T {
+    U u;
+public:
+    constexpr compressor() = default;
+    explicit constexpr compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : T {t}, u {} {}
+    explicit constexpr compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : T {ds::move(t)}, u {} {}
+    explicit constexpr compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : T {}, u {u} {}
+    explicit constexpr compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : T {}, u {ds::move(u)} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            T {ds::forward<ConvertibleToT>(t)}, u {ds::forward<ConvertibleToU>(u)} {}
+public:
+    constexpr T &first() noexcept {
+        return *this;
+    }
+    constexpr const T &first() const noexcept {
+        return *this;
+    }
+    constexpr U &second() noexcept {
+        return this->u;
+    }
+    constexpr const U &second() const noexcept {
+        return this->u;
+    }
+};
+template <typename T, typename U> requires (not is_same_v<T, U>)
+struct compressor<T, U, false, true> : U {
+    T t;
+public:
+    constexpr compressor() = default;
+    explicit constexpr compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : U {}, T {t} {}
+    explicit constexpr compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : U {}, T {ds::move(t)} {}
+    explicit constexpr compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : U {u}, T {} {}
+    explicit constexpr compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : U {ds::move(u)}, T {} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            U {ds::forward<ConvertibleToU>(u)}, T {ds::forward<ConvertibleToT>(t)} {}
+public:
+    constexpr T &first() noexcept {
+        return this->t;
+    }
+    constexpr const T &first() const noexcept {
+        return this->t;
+    }
+    constexpr U &second() noexcept {
+        return *this;
+    }
+    constexpr const U &second() const noexcept {
+        return *this;
+    }
+};
+template <typename T, typename U> requires (not is_same_v<T, U>)
+struct compressor<T, U, true, true> : T, U {
+public:
+    constexpr compressor() = default;
+    explicit constexpr compressor(const T &t) noexcept(is_nothrow_copy_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : T {t}, U {} {}
+    explicit constexpr compressor(T &&t) noexcept(is_nothrow_move_constructible_v<T> and
+            is_nothrow_default_constructible_v<U>) : T {ds::move(t)}, U {} {}
+    explicit constexpr compressor(const U &u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_copy_constructible_v<U>) : T {}, U {u} {}
+    explicit constexpr compressor(U &&u) noexcept(is_nothrow_default_constructible_v<T> and
+            is_nothrow_move_constructible_v<U>) : T {}, U {ds::move(u)} {}
+    template <typename ConvertibleToT, typename ConvertibleToU>
+    constexpr compressor(ConvertibleToT &&t, ConvertibleToU &&u) noexcept(
+            is_nothrow_constructible_v<T, ConvertibleToT &&> and is_nothrow_constructible_v<U, ConvertibleToU &&>) :
+            T {ds::forward<ConvertibleToT>(t)}, U {ds::forward<ConvertibleToU>(u)} {}
+public:
+    constexpr T &first() noexcept {
+        return *this;
+    }
+    constexpr const T &first() const noexcept {
+        return *this;
+    }
+    constexpr U &second() noexcept {
+        return *this;
+    }
+    constexpr const U &second() const noexcept {
+        return *this;
+    }
+};
+__DATA_STRUCTURE_END(compressor for container)
+
+__DATA_STRUCTURE_START(tools for skip list)
+struct skip_list_default_probability {
+    consteval float operator()() const noexcept {
+        return 0.5f;
+    }
+};
+struct skip_list_default_random_engine {
+    float operator()() const noexcept {
+        static std::random_device d {};
+        static std::default_random_engine e {d()};
+        static std::uniform_real_distribution u(0.0f, 1.0f);
+        return u(e);
+    }
+};
+__DATA_STRUCTURE_END(tools for skip list)
+
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure library)
 
