@@ -27,6 +27,7 @@ template <typename T, typename Container = vector<T>, typename Compare = std::le
 class priority_queue {
 public:
     using container_type = Container;
+    using comparison_type = Compare;
     using size_type = typename container_type::size_type;
     using difference_type = typename container_type::difference_type;
     using value_type = T;
