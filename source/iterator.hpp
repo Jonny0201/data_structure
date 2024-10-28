@@ -1055,7 +1055,7 @@ public:
         return ds::address_of(**this);
     }
     constexpr skip_list_iterator &operator++() & noexcept {
-        this->node = this->node->next;
+        this->node = this->node->next[this->level];
         return *this;
     }
     constexpr skip_list_iterator operator++(int) & noexcept {
