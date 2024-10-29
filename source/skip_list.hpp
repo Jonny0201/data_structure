@@ -57,8 +57,10 @@ private:
     template <typename ...Args>
     __dsa::skip_list_node<T> *allocate(Args &&...);
     size_t generate_level() noexcept;
-    __dsa::skip_list_node<T> *find_before(const_reference value)
-            noexcept(is_nothrow_invocable_r_v<bool, Compare, const_reference>);
+    void insert_a_node(__dsa::skip_list_node<T> *node) noexcept;
+    template <bool, typename UnaryPredicate>
+    iterator find_from(UnaryPredicate, __dsa::skip_list_base_node<T> *)
+            noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
 public:
     skip_list();
     explicit skip_list(const Compare &);
@@ -135,46 +137,33 @@ public:
     const_iterator erase_after(const_iterator) noexcept;
     const_iterator erase_after(const_iterator, const_iterator) noexcept;
 public:
-    size_type remove(const_reference) noexcept;
+    size_type remove(const_reference) noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
     template <typename UnaryPredicate>
-    size_type remove_if(UnaryPredicate) noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, reference>);
-    void unique() noexcept;
-    template <typename UnaryPredicate>
-    void unique_if(UnaryPredicate) noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, reference>);
+    size_type remove_if(UnaryPredicate) noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
+    void unique() noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
+    template <typename BinaryPredicate>
+    void unique_if(BinaryPredicate) noexcept(is_nothrow_invocable_r_v<bool, BinaryPredicate,
+            const_reference, const_reference>);
+    template <bool = false>
     [[nodiscard]]
-    const_iterator find(const_reference) const noexcept;
-    template <typename UnaryPredicate>
+    const_iterator find(const_reference) const noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
+    template <bool = false, typename UnaryPredicate>
     [[nodiscard]]
     const_iterator find_if(UnaryPredicate) const
             noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
     [[nodiscard]]
-    const_iterator find_first_of(const_reference) const noexcept;
-    template <typename UnaryPredicate>
-    [[nodiscard]]
-    const_iterator find_first_of_if(UnaryPredicate) const
-            noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
-    [[nodiscard]]
-    const_iterator find_last_of(const_reference) const noexcept;
-    template <typename UnaryPredicate>
-    [[nodiscard]]
-    const_iterator find_last_of_if(UnaryPredicate) const
-            noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
-    [[nodiscard]]
-    bool contains(const_reference) const noexcept;
+    bool contains(const_reference) const noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
     template <typename UnaryPredicate>
     [[nodiscard]]
     bool contains_if(UnaryPredicate) const noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
     [[nodiscard]]
-    bool contains_range(const_reference, const_reference) const noexcept;
+    bool contains_range(const_reference, const_reference) const
+            noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
     [[nodiscard]]
-    size_type count(const_reference) const noexcept;
+    size_type count(const_reference) const noexcept(is_nothrow_equal_to_comparable_v<const_reference>);
     template <typename UnaryPredicate>
     [[nodiscard]]
     size_type count_if(UnaryPredicate) const noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>);
-    void merge(skip_list &);
-    void merge(skip_list &&);
-    void splice(const_iterator, skip_list &);
-    void splice(difference_type, skip_list &);
 };
 __DATA_STRUCTURE_END(skip list declaration)
 
@@ -268,6 +257,46 @@ size_t skip_list<T, Compare, RandomEngine, Probability, Allocator>::generate_lev
         }
     }
     return level;
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+void skip_list<T, Compare, RandomEngine, Probability, Allocator>::insert_a_node(
+        __dsa::skip_list_node<T> *node) noexcept {
+    auto trans {transaction {comparison_handler {node, this->node_size.allocator().first(),
+            this->node_size.allocator().second()}}};
+    auto cursor {&this->head.first()};
+    for(auto i {node->level};; --i) {
+        for(; cursor->next[i] and compare(node->value, cursor->next[i]->value()); cursor = cursor->next[i]);
+        node->next[i] = cursor->next[i];
+        cursor->next[i] = node;
+        if(i == 0) {
+            break;
+        }
+    }
+    trans.complete();
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <bool ReturnBefore, typename UnaryPredicate>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::iterator
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::find_from(UnaryPredicate predicate,
+        __dsa::skip_list_base_node<T> *from) noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>) {
+    // Todo : confirm the relationship between the level and the searching start node
+    auto level {from->level - 1};
+    while(true) {
+        for(; not from->next[level]; --level) {
+            if(level == 0) {
+                return this->cend();
+            }
+        }
+        if(predicate(from->next[level])) {
+            from = from->next[level];
+        }else {
+            break;
+        }
+    }
+    if constexpr(ReturnBefore) {
+        return const_iterator {from, 0};
+    }
+    return const_iterator {from->next[level], 0};
 }
 
 /* public functions */
@@ -627,6 +656,129 @@ skip_list<T, Compare, RandomEngine, Probability, Allocator>::erase_after(const_i
         this->erase_after(begin++);
     }
     return iterator {end.node, 0};
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::size_type
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::remove(const_reference value)
+        noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    return this->remove([&value](const_reference candidate)
+            noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+        return value == candidate;
+    });
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <typename UnaryPredicate>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::size_type
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::remove_if(UnaryPredicate predicate)
+        noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>) {
+    size_type count {0};
+    auto result {this->find_from<true, add_lvalue_reference_t<UnaryPredicate>>(predicate, &this->head.first())};
+    for(; result.node not_eq nullptr; ++count) {
+        this->erase_after(result);
+        result = this->find_from<true, add_lvalue_reference_t<UnaryPredicate>>(predicate, result.node);
+    }
+    return count;
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+void skip_list<T, Compare, RandomEngine, Probability, Allocator>::unique()
+        noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    this->unique([](const_reference lhs, const_reference rhs)
+                noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+        return lhs == rhs;
+    });
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <typename BinaryPredicate>
+void skip_list<T, Compare, RandomEngine, Probability, Allocator>::unique_if(BinaryPredicate predicate)
+        noexcept(is_nothrow_invocable_r_v<bool, BinaryPredicate, const_reference, const_reference>) {
+    auto slow {this->cbegin()};
+    if(not slow) {
+        return;
+    }
+    auto fast {slow};
+    for(++fast; fast;) {
+        if(predicate(*slow, *fast)) {
+            fast = this->erase_after(slow);
+        }else {
+            ++slow;
+            ++fast;
+        }
+    }
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <bool ReturnBefore>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::const_iterator
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::find(const_reference value) const
+        noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    return this->find_if<ReturnBefore>([&value](const_reference candidate)
+            noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+        return value == candidate;
+    });
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <bool ReturnBefore, typename UnaryPredicate>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::const_iterator
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::find_if(UnaryPredicate predicate) const
+        noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>) {
+    return this->find_from<ReturnBefore, add_lvalue_reference_t<UnaryPredicate>>(predicate, &this->head.first());
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+bool skip_list<T, Compare, RandomEngine, Probability, Allocator>::contains(const_reference value) const
+        noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    return this->contains([&value](const_reference candidate) {
+        return value == candidate;
+    });
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <typename UnaryPredicate>
+bool skip_list<T, Compare, RandomEngine, Probability, Allocator>::contains_if(UnaryPredicate predicate) const
+        noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>) {
+    return this->find_from<false, add_lvalue_reference_t<UnaryPredicate>>(predicate,
+            &this->head.first()) not_eq this->cend();
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+bool skip_list<T, Compare, RandomEngine, Probability, Allocator>::contains_range(const_reference from,
+        const_reference to) const noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    auto &compare {this->head.second().first()};
+    const auto it {this->find_from<false>([&from, &compare](const_reference value)
+            noexcept(is_nothrow_invocable_r_v<bool, Compare, const_reference, const_reference>) {
+        return not compare(value, from);
+    }, &this->head.first())};
+    if(it == this->cend()) {
+        return false;
+    }
+    return this->find_from<false>([&to, &compare](const_reference value)
+            noexcept(is_nothrow_invocable_r_v<bool, Compare, const_reference, const_reference>) {
+        return compare(to, value);
+    }) not_eq this->cend();
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::size_type
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::count(const_reference value) const
+        noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+    auto cursor {this->find_from<false>([&value](const_reference candidate)
+            noexcept(is_nothrow_equal_to_comparable_v<const_reference>) {
+        return value == candidate;
+    }, &this->head.first())};
+    if(cursor not_eq this->cend()) {
+        size_type count {1};
+        for(++cursor; *cursor == value; ++count, static_cast<void>(++cursor));
+        return count;
+    }
+    return 0;
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+template <typename UnaryPredicate>
+typename skip_list<T, Compare, RandomEngine, Probability, Allocator>::size_type
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::count_if(UnaryPredicate predicate) const
+        noexcept(is_nothrow_invocable_r_v<bool, UnaryPredicate, const_reference>) {
+    size_type count {0};
+    for(const auto &value : *this) {
+        if(predicate(value)) {
+            ++count;
+        }
+    }
+    return count;
 }
 __DATA_STRUCTURE_END(skip list implementation)
 
