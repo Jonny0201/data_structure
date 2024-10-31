@@ -30,7 +30,7 @@ public:
     using allocator_type = Allocator;
     using size_type = typename Allocator::size_type;
     using difference_type = typename Allocator::difference_type;
-    using comparison_type = Compare;
+    using comparator = Compare;
     using random_engine_type = RandomEngine;
     using probability_type = Probability;
     using value_type = T;
