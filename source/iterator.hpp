@@ -606,6 +606,7 @@ template <typename, typename> class forward_list;
 template <typename, typename, typename> class list;
 template <typename, typename> class deque;
 template <typename, typename, typename, typename, typename> class skip_list;
+template <typename, typename, typename> class hash_table;
 __DATA_STRUCTURE_END(container forward declaration)
 
 namespace __data_structure_auxiliary {
@@ -1093,6 +1094,179 @@ inline constexpr bool operator!=(const skip_list_iterator<T, IsConstLHS> &lhs,
     return not(lhs == rhs);
 }
 __DATA_STRUCTURE_END(skip list iterator)
+
+__DATA_STRUCTURE_START(hash table node)
+template <typename T>
+struct hash_table_node {
+    hash_table_node *next;
+    size_t hash;
+    T value;
+};
+__DATA_STRUCTURE_END(hash table node)
+
+__DATA_STRUCTURE_START(data structure special iterator, hash table iterator)
+template <typename T, bool IsConst = false>
+class hash_table_iterator {
+    friend class hash_table_iterator<T, false>;
+    template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const hash_table_iterator<ValueType, IsConstLHS> &,
+            const hash_table_iterator<ValueType, IsConstRHS> &) noexcept;
+    template <typename, typename, typename> friend class hash_table;
+public:
+    using iterator_type = hash_table_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = forward_iterator_tag;
+private:
+    hash_table_node<T> **bucket {};
+    hash_table_node<T> *node {};
+    size_t bucket_location {};
+    size_t bucket_count {};
+public:
+    constexpr hash_table_iterator() noexcept = default;
+    explicit constexpr hash_table_iterator(hash_table_node<T> *node) noexcept : node {node} {}
+    template <typename U> requires is_same_v<U, hash_table_iterator<T, false>>
+    constexpr hash_table_iterator(enable_if_t<IsConst, const U &> non_const_iterator) :
+            node {non_const_iterator.node} {}
+    constexpr hash_table_iterator(const hash_table_iterator &) noexcept = default;
+    constexpr hash_table_iterator(hash_table_iterator &&) noexcept = default;
+    constexpr ~hash_table_iterator() noexcept = default;
+public:
+    constexpr hash_table_iterator &operator=(const hash_table_iterator &) noexcept = default;
+    constexpr hash_table_iterator &operator=(hash_table_iterator &&) noexcept = default;
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
+        return this->node->value;
+    }
+    [[nodiscard]]
+    constexpr const T &operator*() const noexcept {
+        return this->node->value;
+    }
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr hash_table_iterator &operator++() & noexcept {
+        if((this->node = this->node->next) == nullptr) {
+            if(++this->bucket_location not_eq this->bucket_count) {
+                do {
+                    if(*++this->bucket) {
+                        this->node = *this->bucket;
+                        break;
+                    }
+                    ++this->bucket_location;
+                }while(this->bucket_location not_eq this->bucket_count);
+            }
+        }
+        return *this;
+    }
+    constexpr hash_table_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept {
+        return this->node;
+    }
+    [[nodiscard]]
+    constexpr operator hash_table_iterator<T, true>() const noexcept {
+        return hash_table_iterator<T, true>(this->node);
+    }
+};
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator==(const hash_table_iterator<T, IsConstLHS> &lhs,
+        const hash_table_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.node == rhs.node and lhs.bucket == rhs.bucket;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator!=(const hash_table_iterator<T, IsConstLHS> &lhs,
+        const hash_table_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+__DATA_STRUCTURE_END(data structure special iterator, hash table iterator)
+
+__DATA_STRUCTURE_START(data structure special iterator, hash table local iterator)
+template <typename T, bool IsConst = false>
+class hash_table_local_iterator {
+    friend class hash_table_local_iterator<T, false>;
+    template <typename ValueType, bool IsConstLHS, bool IsConstRHS>
+    friend constexpr bool operator==(const hash_table_local_iterator<ValueType, IsConstLHS> &,
+            const hash_table_local_iterator<ValueType, IsConstRHS> &) noexcept;
+public:
+    using iterator_type = hash_table_local_iterator;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using iterator_category = forward_iterator_tag;
+private:
+    hash_table_node<T> *node {};
+public:
+    constexpr hash_table_local_iterator() noexcept = default;
+    explicit constexpr hash_table_local_iterator(hash_table_node<T> *node) noexcept : node {node} {}
+    template <typename U> requires is_same_v<U, hash_table_local_iterator<T, false>>
+    constexpr hash_table_local_iterator(enable_if_t<IsConst, const U &> non_const_iterator) :
+            node {non_const_iterator.node} {}
+    constexpr hash_table_local_iterator(const hash_table_local_iterator &) noexcept = default;
+    constexpr hash_table_local_iterator(hash_table_local_iterator &&) noexcept = default;
+    constexpr ~hash_table_local_iterator() noexcept = default;
+public:
+    constexpr hash_table_local_iterator &operator=(const hash_table_local_iterator &) noexcept = default;
+    constexpr hash_table_local_iterator &operator=(hash_table_local_iterator &&) noexcept = default;
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T &, T &> operator*() noexcept {
+        return this->node->value;
+    }
+    [[nodiscard]]
+    constexpr const T &operator*() const noexcept {
+        return this->node->value;
+    }
+    [[nodiscard]]
+    constexpr conditional_t<IsConst, const T *, T *> operator->() noexcept {
+        return ds::address_of(**this);
+    }
+    [[nodiscard]]
+    constexpr const T *operator->() const noexcept {
+        return ds::address_of(**this);
+    }
+    constexpr hash_table_local_iterator &operator++() & noexcept {
+        this->node = this->node->next;
+        return *this;
+    }
+    constexpr hash_table_local_iterator operator++(int) & noexcept {
+        auto backup {*this};
+        ++*this;
+        return backup;
+    }
+    [[nodiscard]]
+    explicit constexpr operator bool() const noexcept {
+        return this->node;
+    }
+    [[nodiscard]]
+    constexpr operator hash_table_local_iterator<T, true>() const noexcept {
+        return hash_table_local_iterator<T, true>(this->node);
+    }
+};
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator==(const hash_table_local_iterator<T, IsConstLHS> &lhs,
+        const hash_table_local_iterator<T, IsConstRHS> &rhs) noexcept {
+    return lhs.node == rhs.node;
+}
+template <typename T, bool IsConstLHS, bool IsConstRHS>
+[[nodiscard]]
+inline constexpr bool operator!=(const hash_table_local_iterator<T, IsConstLHS> &lhs,
+        const hash_table_local_iterator<T, IsConstRHS> &rhs) noexcept {
+    return not(lhs == rhs);
+}
+__DATA_STRUCTURE_END(data structure special iterator, hash table local iterator)
 
 }       // namespace data_structure::__data_structure_auxiliary
 __DATA_STRUCTURE_END(inner tools for data structure)
