@@ -85,6 +85,7 @@ public:
 public:
     skip_list &operator=(const skip_list &);
     skip_list &operator=(skip_list &&) noexcept;
+    skip_list &operator=(initializer_list<T>);
 public:
     void assign(size_type, const_reference = {});
     template <IsInputIterator InputIterator>
@@ -435,6 +436,12 @@ skip_list<T, Compare, RandomEngine, Probability, Allocator>::operator=(skip_list
         this->head = ds::move(rhs.head);
         this->node_size = ds::move(rhs.node_size);
     }
+    return *this;
+}
+template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
+skip_list<T, Compare, RandomEngine, Probability, Allocator> &
+skip_list<T, Compare, RandomEngine, Probability, Allocator>::operator=(initializer_list<T> init_list) {
+    this->assign(init_list.begin(), init_list.end());
     return *this;
 }
 template <typename T, typename Compare, typename RandomEngine, typename Probability, typename Allocator>
