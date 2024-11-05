@@ -211,7 +211,7 @@ This project is being refactored.
 <tr style="text-align: center;">
     <th>Hash Table</th>
     <td>Linear</td>
-    <td><img src="https://img.shields.io/badge/Development-Refactoring-8A2BE2" alt="Done" /></td>
+    <td><img src="https://img.shields.io/badge/Development-Testing-orange" alt="Done" /></td>
     <td><code>hash_table.hpp</code></td>
 </tr>
 <tr style="text-align: center;">
@@ -701,6 +701,37 @@ This project is being refactored.
     <td></td>
     <td></td>
 </tr>
+<tr style="text-align: center; border-top:2px solid #000">
+    <th rowspan="4" style="border-right:2px solid #000">Hash Table</th>
+    <td>macOS</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td rowspan="4"></td>
+    <td rowspan="4"></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows Arm</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
 </table>
 
 ### Benchmark ###
@@ -1065,6 +1096,49 @@ This project is being refactored.
 </tr>
 <tr style="text-align: center;">
     <th rowspan="6" style="border-right:2px solid #000">Skip List</th>
+    <td>macOS (M3 Max)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>macOS (M2)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>macOS (Intel)</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows 11 (BootCamp in Intel)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>Windows 11 Arm (Virtual in M2)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr style="text-align: center;">
+    <td>CentOS (Virtual in M3 Max)</td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+    <td></td>
+    <td></td>
+    <td><img src="https://img.shields.io/badge/None-gray" alt="None" /></td>
+</tr>
+<tr style="text-align: center;">
+    <th rowspan="6" style="border-right:2px solid #000">Hash Table</th>
     <td>macOS (M3 Max)</td>
     <td></td>
     <td></td>
